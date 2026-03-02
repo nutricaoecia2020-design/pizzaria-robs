@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Pizzaria Robs</title>
+<style>
+body{font-family:Arial;background:#f8f8f8;margin:0;padding:15px}
+.produto{background:#fff;padding:10px;margin:10px 0;border-radius:10px;display:flex;justify-content:space-between;align-items:center;box-shadow: 0 2px 5px rgba(0,0,0,0.05)}
+img{width:60px;height:60px;object-fit:cover;border-radius:8px}
+button{padding:6px 10px;border:none;border-radius:6px;cursor:pointer}
+.add{background:#007bff;color:#fff}
+.rem{background:#dc3545;color:#fff}
+.final{background:#28a745;color:#fff;width:100%;padding:12px;margin-top:15px;font-weight:bold;font-size:16px}
+input,select,textarea{width:100%;padding:10px;margin:5px 0;border:1px solid #ddd;border-radius:6px;box-sizing: border-box;}
+h2, h3 {color: #333;}
+</style>
+</head>
+<body>
+
+<h2>🍕 Pizzaria Robs</h2>
+
+<div id="produtos">Carregando cardápio...</div>
+
+<h3>🛒 Carrinho</h3>
+<div id="carrinho"></div>
+<h3>Total: R$ <span id="total">0.00</span></h3>
+
+<h3>📍 Dados do Cliente</h3>
+<input id="nome" placeholder="Seu Nome">
+<input id="endereco" placeholder="Endereço de Entrega">
+<input id="contato" placeholder="Telefone de Contato">
+<select id="pagamento">
+<option>Dinheiro</option>
+<option>Pix</option>
+<option>Cartão</option>
+</select>
+<textarea id="obs" placeholder="Alguma observação? (ex: sem cebola)"></textarea>
+
+<button class="final" onclick="finalizar()">Enviar Pedido via WhatsApp</button>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+// Dados de conexão (os mesmos da página de cadastro)
+const supabaseUrl = 'https://gsvvyktjeqlmhspqzppy.supabase.co';
+const supabaseKey = 'sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs';
+const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+let carrinho = [];
+let produtosDoBanco = []; // Guardaremos os produtos aqui para o carrinho funcionar
+
+// FUNÇÃO PARA BUSCAR PRODUTOS DO SUPABASE
+async function carregarProdutos(){
+    let lista = document.getElementById("produtos");
+    
+    const { data: produtos, error } = await _supabase
+        .from('produtos')
+        .select('*');
+
+    if (error) {
+        lista.innerHTML = "Erro ao carregar cardápio.";
+        return;
+    }
+
+    produtosDoBanco = produtos; // Salva na memória para usar no carrinho
+    lista.innerHTML = "";
+
+    produtos.forEach((p, index) => {
+        lista.innerHTML += `
+        <div class="produto">
+            <div style="display:flex; align-items:center; gap:10px">
+                <img src="${p.url_imagem || 'https://via.placeholder.com/60'}" onerror="this.src='https://via.placeholder.com/60'">
+                <div>
+                    <b>${p.nome}</b><br>
+                    R$ ${parseFloat(p.preco).toFixed(2)}
+                </div>
+            </div>
+            <button class="add" onclick="add(${index})">Adicionar</button>
+        </div>
+        `;
+    });
+}
+
+// ADICIONAR AO CARRINHO
+function add(index){
+    carrinho.push(produtosDoBanco[index]);
+    renderCarrinho();
+}
+
+// REMOVER DO CARRINHO
+function remover(index){
+    carrinho.splice(index, 1);
+    renderCarrinho();
+}
+
+// ATUALIZAR VISUAL DO CARRINHO
+function renderCarrinho(){
+    let area = document.getElementById("carrinho");
+    area.innerHTML = "";
+    let total = 0;
+
+    carrinho.forEach((p, index) => {
+        total += parseFloat(p.preco);
+        area.innerHTML += `
+        <div class="produto" style="margin: 5px 0; background: #eee">
+            <span>${p.nome} - R$ ${parseFloat(p.preco).toFixed(2)}</span>
+            <button class="rem" onclick="remover(${index})">X</button>
+        </div>
+        `;
+    });
+
+    document.getElementById("total").innerText = total.toFixed(2);
+}
+
+// FINALIZAR PEDIDO (WHATSAPP)
+function finalizar(){
+    let nome = document.getElementById("nome").value;
+    let endereco = document.getElementById("endereco").value;
+    let contato = document.getElementById("contato").value;
+    let pagamento = document.getElementById("pagamento").value;
+    let obs = document.getElementById("obs").value;
+
+    if(!nome || !endereco || !contato || carrinho.length == 0){
+        alert("Por favor, preencha seus dados e adicione itens ao carrinho!");
+        return;
+    }
+
+    let total = document.getElementById("total").innerText;
+
+    let mensagem = "🧾 *NOVO PEDIDO - PIZZARIA ROBS*\n\n";
+    carrinho.forEach(p => {
+        mensagem += `• ${p.nome} - R$ ${parseFloat(p.preco).toFixed(2)}\n`;
+    });
+    
+    mensagem += `\n*Total: R$ ${total}*\n`;
+    mensagem += `\n👤 *Cliente:* ${nome}`;
+    mensagem += `\n📍 *Endereço:* ${endereco}`;
+    mensagem += `\n📞 *Contato:* ${contato}`;
+    mensagem += `\n💳 *Pagamento:* ${pagamento}`;
+    if(obs) mensagem += `\n📝 *Obs:* ${obs}`;
+
+    let numero = "5579999769581";
+    window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`);
+}
+
+// Inicia a loja buscando os dados
+carregarProdutos();
+</script>
+
+</body>
+</html>
