@@ -1,14 +1,14 @@
-Com certeza. Vou mandar o código como texto puro para evitar que o sistema do chat oculte partes dele.
+Entendo a sua frustração. Quando você diz que a página continua "cagada", geralmente é porque o código anterior tinha erros de fechamento ou o estilo não estava amigável para celular.
 
-Siga exatamente estes passos no seu GitHub para que o visual fique perfeito e pareça um aplicativo profissional:
+Para resolver isso agora, escrevi um código limpo, robusto e com visual de aplicativo moderno. Siga estes passos exatamente:
 
-Abra o arquivo index.html.
+Acesse seu GitHub e abra o arquivo index.html.
 
-Apague todo o conteúdo antigo.
+Apague todo o conteúdo que estiver lá dentro.
 
 Copie o texto abaixo e cole no lugar.
 
-Clique no botão verde "Commit changes...".
+Clique no botão verde "Commit changes..." para salvar.
 
 COPIE O CÓDIGO ABAIXO:
 
@@ -20,30 +20,36 @@ COPIE O CÓDIGO ABAIXO:
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Pizzaria Robs</title>
 <style>
-body{font-family:Arial,sans-serif;background:#f4f4f4;margin:0;padding:15px;padding-bottom:160px}
-h2{text-align:center;color:#e31837;margin-bottom:20px}
-.produto{background:#fff;padding:15px;margin:10px 0;border-radius:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
-.nome-p{font-weight:bold;font-size:18px;display:block}
-.preco-p{color:#28a745;font-weight:bold}
-button{border:none;border-radius:8px;cursor:pointer;font-weight:bold}
-.btn-add{background:#007bff;color:#fff;padding:10px 15px}
-.checkout-area{background:#fff;padding:15px;position:fixed;bottom:0;left:0;right:0;box-shadow:0 -3px 10px rgba(0,0,0,0.1);z-index:1000}
-input{width:100%;padding:12px;margin:5px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;font-size:16px}
-.btn-final{background:#28a745;color:#fff;width:100%;padding:15px;font-size:18px;margin-top:10px}
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 15px; padding-bottom: 180px; color: #333; }
+h2 { text-align: center; color: #d32f2f; margin: 10px 0 20px; font-size: 24px; }
+#lista-pizzas { display: flex; flex-direction: column; gap: 12px; }
+.produto { background: #fff; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; }
+.info-p { display: flex; flex-direction: column; }
+.nome-p { font-weight: bold; font-size: 17px; color: #1a1a1a; }
+.preco-p { color: #2e7d32; font-weight: bold; font-size: 15px; margin-top: 4px; }
+.btn-add { background: #007bff; color: #fff; border: none; border-radius: 8px; padding: 10px 16px; font-weight: bold; cursor: pointer; }
+.btn-add:active { transform: scale(0.95); background: #0056b3; }
+.checkout-area { background: #fff; padding: 15px 20px; position: fixed; bottom: 0; left: 0; right: 0; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); border-radius: 20px 20px 0 0; z-index: 1000; }
+.total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 18px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+input { width: 100%; padding: 12px; margin: 5px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; background: #fafafa; }
+.btn-final { background: #28a745; color: #fff; width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+.btn-final:active { background: #218838; }
 </style>
 </head>
 <body>
 
 <h2>🍕 Pizzaria Robs</h2>
-<div id="lista-pizzas">Carregando cardápio...</div>
+<div id="lista-pizzas">Buscando cardápio...</div>
 
 <div class="checkout-area">
-<div style="display:flex;justify-content:space-between;margin-bottom:10px">
-<b>Total:</b> <b>R$ <span id="total-geral">0.00</span></b>
+<div class="total-row">
+<span>Total do Pedido:</span>
+<span style="color: #2e7d32; font-weight: bold;">R$ <span id="total-v">0.00</span></span>
 </div>
-<input id="nome-cli" placeholder="Seu Nome">
-<input id="end-cli" placeholder="Endereço de Entrega">
-<button class="btn-final" onclick="enviarPedido()">✅ Finalizar Pedido</button>
+<input id="cli-nome" placeholder="Seu Nome">
+<input id="cli-end" placeholder="Endereço de Entrega">
+<button class="btn-final" onclick="fazerPedido()">✅ Enviar para WhatsApp</button>
 </div>
 
 <script src=""></script>
@@ -52,7 +58,7 @@ input{width:100%;padding:12px;margin:5px 0;border:1px solid #ddd;border-radius:8
 const supabaseUrl = '';
 const supabaseKey = 'sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs';
 const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
-let pizzas = []; let carrinho = [];
+let cardapio = []; let sacola = [];
 
 </script>
 
