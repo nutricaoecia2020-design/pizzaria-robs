@@ -1,69 +1,148 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#e31837">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pizzaria Robs</title>
     <style>
-        body{font-family:Arial,sans-serif;background:#f4f4f4;margin:0;padding:15px;padding-bottom:160px}
-        h2{text-align:center;color:#e31837}
-        .produto{background:#fff;padding:15px;margin:10px 0;border-radius:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
-        .info{display:flex;flex-direction:column}
-        .nome{font-weight:bold;font-size:18px}
-        .preco{color:#28a745;font-weight:bold}
-        button{border:none;border-radius:8px;cursor:pointer;background:#007bff;color:#fff;padding:10px 15px;font-weight:bold}
-        .carrinho-fixo{background:#fff;padding:15px;position:fixed;bottom:0;left:0;right:0;box-shadow:0 -3px 10px rgba(0,0,0,0.1);z-index:100}
-        input{width:100%;padding:12px;margin:5px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box}
-        .btn-enviar{background:#28a745;width:100%;padding:15px;font-size:18px;margin-top:10px;color:#fff;font-weight:bold}
+    body{font-family:Arial;background:#f8f8f8;margin:0;padding:15px}
+    .produto{background:#fff;padding:10px;margin:10px 0;border-radius:10px;display:flex;justify-content:space-between;align-items:center;box-shadow: 0 2px 5px rgba(0,0,0,0.05)}
+    img{width:60px;height:60px;object-fit:cover;border-radius:8px}
+    button{padding:6px 10px;border:none;border-radius:6px;cursor:pointer}
+    .add{background:#007bff;color:#fff}
+    .rem{background:#dc3545;color:#fff}
+    .final{background:#28a745;color:#fff;width:100%;padding:12px;margin-top:15px;font-weight:bold;font-size:16px}
+    input,select,textarea{width:100%;padding:10px;margin:5px 0;border:1px solid #ddd;border-radius:6px;box-sizing: border-box;}
+    h2, h3 {color: #333;}
     </style>
 </head>
 <body>
 
 <h2>🍕 Pizzaria Robs</h2>
-<div id="lista">Carregando cardápio...</div>
 
-<div class="carrinho-fixo">
-    <h3 style="margin:5px 0">Total: R$ <span id="total-valor">0.00</span></h3>
-    <input id="in-nome" placeholder="Seu Nome">
-    <input id="in-end" placeholder="Seu Endereço">
-    <button class="btn-enviar" onclick="finalizar()">✅ Pedir no WhatsApp</button>
-</div>
+<div id="produtos">Carregando cardápio...</div>
+
+<h3>🛒 Carrinho</h3>
+<div id="carrinho"></div>
+<h3>Total: R$ <span id="total">0.00</span></h3>
+
+<h3>📍 Dados do Cliente</h3>
+<input id="nome" placeholder="Seu Nome">
+<input id="endereco" placeholder="Endereço de Entrega">
+<input id="contato" placeholder="Telefone de Contato">
+<select id="pagamento">
+<option>Dinheiro</option>
+<option>Pix</option>
+<option>Cartão</option>
+</select>
+<textarea id="obs" placeholder="Alguma observação? (ex: sem cebola)"></textarea>
+
+<button class="final" onclick="finalizar()">Enviar Pedido via WhatsApp</button>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-    const supabaseUrl = 'https://gsvvyktjeqlmhspqzppy.supabase.co';
-    const supabaseKey = 'sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs';
-    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
-    let produtos = []; let sacola = [];
+const supabaseUrl = 'https://gsvvyktjeqlmhspqzppy.supabase.co';
+const supabaseKey = 'sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs';
+const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    async function carregar(){
-        const {data, error} = await _supabase.from('produtos').select('*');
-        const div = document.getElementById("lista");
-        if(error){ div.innerHTML = "Erro ao carregar!"; return; }
-        produtos = data; div.innerHTML = "";
-        data.forEach((p, i) => {
-            div.innerHTML += `<div class="produto">
-                <div class="info"><span class="nome">${p.nome}</span><span class="preco">R$ ${p.preco}</span></div>
-                <button onclick="add(${i})">Adicionar</button>
-            </div>`;
-        });
+let carrinho = [];
+let produtosDoBanco = []; 
+
+async function carregarProdutos(){
+    let lista = document.getElementById("produtos");
+    
+    const { data: produtos, error } = await _supabase
+        .from('produtos')
+        .select('*');
+
+    if (error) {
+        lista.innerHTML = "Erro ao carregar cardápio.";
+        return;
     }
 
-    function add(i){
-        sacola.push(produtos[i]);
-        let total = 0; sacola.forEach(p => total += parseFloat(p.preco));
-        document.getElementById("total-valor").innerText = total.toFixed(2);
+    produtosDoBanco = produtos; 
+    lista.innerHTML = "";
+
+    produtos.forEach((p, index) => {
+        lista.innerHTML += `
+        <div class="produto">
+            <div style="display:flex; align-items:center; gap:10px">
+                <img src="${p.url_imagem || 'https://via.placeholder.com/60'}" onerror="this.src='https://via.placeholder.com/60'">
+                <div>
+                    <b>${p.nome}</b><br>
+                    R$ ${parseFloat(p.preco).toFixed(2)}
+                </div>
+            </div>
+            <button class="add" onclick="add(${index})">Adicionar</button>
+        </div>
+        `;
+    });
+}
+
+function add(index){
+    carrinho.push(produtosDoBanco[index]);
+    renderCarrinho();
+}
+
+function remover(index){
+    carrinho.splice(index, 1);
+    renderCarrinho();
+}
+
+function renderCarrinho(){
+    let area = document.getElementById("carrinho");
+    area.innerHTML = "";
+    let total = 0;
+
+    carrinho.forEach((p, index) => {
+        total += parseFloat(p.preco);
+        area.innerHTML += `
+        <div class="produto" style="margin: 5px 0; background: #eee">
+            <span>${p.nome} - R$ ${parseFloat(p.preco).toFixed(2)}</span>
+            <button class="rem" onclick="remover(${index})">X</button>
+        </div>
+        `;
+    });
+
+    document.getElementById("total").innerText = total.toFixed(2);
+}
+
+function finalizar(){
+    let nome = document.getElementById("nome").value;
+    let endereco = document.getElementById("endereco").value;
+    let contato = document.getElementById("contato").value;
+    let pagamento = document.getElementById("pagamento").value;
+    let obs = document.getElementById("obs").value;
+
+    if(!nome || !endereco || !contato || carrinho.length == 0){
+        alert("Por favor, preencha seus dados e adicione itens ao carrinho!");
+        return;
     }
 
-    function finalizar(){
-        const n = document.getElementById("in-nome").value;
-        const e = document.getElementById("in-end").value;
-        if(!n || !e || sacola.length === 0){ alert("Preencha tudo!"); return; }
-        let itens = ""; sacola.forEach(p => itens += "- " + p.nome + "\n");
-        const msg = encodeURIComponent(`*PEDIDO PIZZARIA ROBS*\n\n*Cliente:* ${n}\n*Endereço:* ${e}\n\n*Itens:*\n${itens}\n*Total:* R$ ${document.getElementById("total-valor").innerText}`);
-        window.open(`https://wa.me/5579999769581?text=${msg}`);
-    }
-    carregar();
+    let total = document.getElementById("total").innerText;
+
+    let mensagem = "🧾 *NOVO PEDIDO - PIZZARIA ROBS*\n\n";
+    carrinho.forEach(p => {
+        mensagem += `• ${p.nome} - R$ ${parseFloat(p.preco).toFixed(2)}\n`;
+    });
+    
+    mensagem += `\n*Total: R$ ${total}*\n`;
+    mensagem += `\n👤 *Cliente:* ${nome}`;
+    mensagem += `\n📍 *Endereço:* ${endereco}`;
+    mensagem += `\n📞 *Contato:* ${contato}`;
+    mensagem += `\n💳 *Pagamento:* ${pagamento}`;
+    if(obs) mensagem += `\n📝 *Obs:* ${obs}`;
+
+    let numero = "5579999769581";
+    window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`);
+}
+
+carregarProdutos();
 </script>
+
 </body>
 </html>
