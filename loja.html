@@ -1,66 +1,69 @@
-Entendo a sua frustração. Quando você diz que a página continua "cagada", geralmente é porque o código anterior tinha erros de fechamento ou o estilo não estava amigável para celular.
-
-Para resolver isso agora, escrevi um código limpo, robusto e com visual de aplicativo moderno. Siga estes passos exatamente:
-
-Acesse seu GitHub e abra o arquivo index.html.
-
-Apague todo o conteúdo que estiver lá dentro.
-
-Copie o texto abaixo e cole no lugar.
-
-Clique no botão verde "Commit changes..." para salvar.
-
-COPIE O CÓDIGO ABAIXO:
-
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Pizzaria Robs</title>
-<style>
-* { box-sizing: border-box; }
-body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 15px; padding-bottom: 180px; color: #333; }
-h2 { text-align: center; color: #d32f2f; margin: 10px 0 20px; font-size: 24px; }
-#lista-pizzas { display: flex; flex-direction: column; gap: 12px; }
-.produto { background: #fff; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; }
-.info-p { display: flex; flex-direction: column; }
-.nome-p { font-weight: bold; font-size: 17px; color: #1a1a1a; }
-.preco-p { color: #2e7d32; font-weight: bold; font-size: 15px; margin-top: 4px; }
-.btn-add { background: #007bff; color: #fff; border: none; border-radius: 8px; padding: 10px 16px; font-weight: bold; cursor: pointer; }
-.btn-add:active { transform: scale(0.95); background: #0056b3; }
-.checkout-area { background: #fff; padding: 15px 20px; position: fixed; bottom: 0; left: 0; right: 0; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); border-radius: 20px 20px 0 0; z-index: 1000; }
-.total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 18px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
-input { width: 100%; padding: 12px; margin: 5px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; background: #fafafa; }
-.btn-final { background: #28a745; color: #fff; width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; margin-top: 10px; cursor: pointer; }
-.btn-final:active { background: #218838; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizzaria Robs</title>
+    <style>
+        body{font-family:Arial,sans-serif;background:#f4f4f4;margin:0;padding:15px;padding-bottom:160px}
+        h2{text-align:center;color:#e31837}
+        .produto{background:#fff;padding:15px;margin:10px 0;border-radius:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+        .info{display:flex;flex-direction:column}
+        .nome{font-weight:bold;font-size:18px}
+        .preco{color:#28a745;font-weight:bold}
+        button{border:none;border-radius:8px;cursor:pointer;background:#007bff;color:#fff;padding:10px 15px;font-weight:bold}
+        .carrinho-fixo{background:#fff;padding:15px;position:fixed;bottom:0;left:0;right:0;box-shadow:0 -3px 10px rgba(0,0,0,0.1);z-index:100}
+        input{width:100%;padding:12px;margin:5px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box}
+        .btn-enviar{background:#28a745;width:100%;padding:15px;font-size:18px;margin-top:10px;color:#fff;font-weight:bold}
+    </style>
 </head>
 <body>
 
 <h2>🍕 Pizzaria Robs</h2>
-<div id="lista-pizzas">Buscando cardápio...</div>
+<div id="lista">Carregando cardápio...</div>
 
-<div class="checkout-area">
-<div class="total-row">
-<span>Total do Pedido:</span>
-<span style="color: #2e7d32; font-weight: bold;">R$ <span id="total-v">0.00</span></span>
-</div>
-<input id="cli-nome" placeholder="Seu Nome">
-<input id="cli-end" placeholder="Endereço de Entrega">
-<button class="btn-final" onclick="fazerPedido()">✅ Enviar para WhatsApp</button>
+<div class="carrinho-fixo">
+    <h3 style="margin:5px 0">Total: R$ <span id="total-valor">0.00</span></h3>
+    <input id="in-nome" placeholder="Seu Nome">
+    <input id="in-end" placeholder="Seu Endereço">
+    <button class="btn-enviar" onclick="finalizar()">✅ Pedir no WhatsApp</button>
 </div>
 
-<script src=""></script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const supabaseUrl = '';
-const supabaseKey = 'sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs';
-const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
-let cardapio = []; let sacola = [];
+    const supabaseUrl = 'https://gsvvyktjeqlmhspqzppy.supabase.co';
+    const supabaseKey = 'sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs';
+    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    let produtos = []; let sacola = [];
 
+    async function carregar(){
+        const {data, error} = await _supabase.from('produtos').select('*');
+        const div = document.getElementById("lista");
+        if(error){ div.innerHTML = "Erro ao carregar!"; return; }
+        produtos = data; div.innerHTML = "";
+        data.forEach((p, i) => {
+            div.innerHTML += `<div class="produto">
+                <div class="info"><span class="nome">${p.nome}</span><span class="preco">R$ ${p.preco}</span></div>
+                <button onclick="add(${i})">Adicionar</button>
+            </div>`;
+        });
+    }
+
+    function add(i){
+        sacola.push(produtos[i]);
+        let total = 0; sacola.forEach(p => total += parseFloat(p.preco));
+        document.getElementById("total-valor").innerText = total.toFixed(2);
+    }
+
+    function finalizar(){
+        const n = document.getElementById("in-nome").value;
+        const e = document.getElementById("in-end").value;
+        if(!n || !e || sacola.length === 0){ alert("Preencha tudo!"); return; }
+        let itens = ""; sacola.forEach(p => itens += "- " + p.nome + "\n");
+        const msg = encodeURIComponent(`*PEDIDO PIZZARIA ROBS*\n\n*Cliente:* ${n}\n*Endereço:* ${e}\n\n*Itens:*\n${itens}\n*Total:* R$ ${document.getElementById("total-valor").innerText}`);
+        window.open(`https://wa.me/5579999769581?text=${msg}`);
+    }
+    carregar();
 </script>
-
 </body>
 </html>
