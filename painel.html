@@ -1,51 +1,134 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PAINEL DE PEDIDOS ROBS</title>
-    <style>
-        body { font-family: sans-serif; background: #e9ecef; padding: 20px; }
-        .pedido-card { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; border-left: 10px solid #28a745; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { color: #e31837; text-align: center; }
-        .btn { background: #28a745; color: white; border: none; padding: 10px; border-radius: 5px; width: 100%; cursor: pointer; font-weight: bold; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAINEL DE PEDIDOS ROBS</title>
+
+<style>
+body{
+font-family:sans-serif;
+background:#e9ecef;
+padding:20px;
+}
+
+.pedido-card{
+background:white;
+border-radius:10px;
+padding:15px;
+margin-bottom:15px;
+border-left:10px solid #28a745;
+box-shadow:0 4px 6px rgba(0,0,0,0.1);
+}
+
+h1{
+color:#e31837;
+text-align:center;
+}
+
+.btn{
+background:#28a745;
+color:white;
+border:none;
+padding:10px;
+border-radius:5px;
+width:100%;
+cursor:pointer;
+font-weight:bold;
+}
+</style>
 </head>
+
 <body>
-    <h1>🍕 PEDIDOS CHEGANDO</h1>
-    <div id="lista">Aguardando conexão...</div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<h1>🍕 PEDIDOS CHEGANDO</h1>
+<div id="lista">Conectando...</div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAjzwX_sPyZOvZzcJc9ynBSbBN5uazaCHU",
-            authDomain: "robs-pizzariadelivery.firebaseapp.com",
-            projectId: "robs-pizzariadelivery",
-            storageBucket: "robs-pizzariadelivery.firebasestorage.app",
-            messagingSenderId: "847851003409",
-            appId: "1:847851003409:web:7f3ed9f7089d4c61861bb0"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+<audio id="somPedido">
+<source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg">
+</audio>
 
-        db.collection("pedidos").onSnapshot((snap) => {
-            const div = document.getElementById("lista");
-            div.innerHTML = "";
-            if (snap.empty) { div.innerHTML = "<h3>Nenhum pedido agora...</h3>"; return; }
-            snap.forEach((doc) => {
-                const p = doc.data();
-                div.innerHTML += `
-                    <div class="pedido-card">
-                        <h3>👤 ${p.cliente || 'Cliente'}</h3>
-                        <p>📍 ${p.endereco || '-'}</p>
-                        <p>📞 ${p.telefone || '-'}</p>
-                        <p>💰 <b>Total: R$ ${p.total || '0'}</b></p>
-                        <button class="btn" onclick="db.collection('pedidos').doc('${doc.id}').delete()">CONCLUIR / APAGAR</button>
-                    </div>`;
-            });
-        });
-    </script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<script>
+
+const firebaseConfig = {
+apiKey: "AIzaSyAjzwX_sPyZOvZzcJc9ynBSbBN5uazaCHU",
+authDomain: "robs-pizzariadelivery.firebaseapp.com",
+projectId: "robs-pizzariadelivery",
+storageBucket: "robs-pizzariadelivery.firebasestorage.app",
+messagingSenderId: "847851003409",
+appId: "1:847851003409:web:7f3ed9f7089d4c61861bb0"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+Notification.requestPermission();
+
+let primeiroCarregamento = true;
+
+db.collection("pedidos").orderBy("data","desc").onSnapshot((snap)=>{
+
+const div = document.getElementById("lista");
+div.innerHTML="";
+
+if(snap.empty){
+div.innerHTML="<h3>Nenhum pedido agora...</h3>";
+return;
+}
+
+snap.forEach((doc)=>{
+
+const p = doc.data();
+
+div.innerHTML += `
+<div class="pedido-card">
+
+<h3>👤 ${p.cliente || 'Cliente'}</h3>
+
+<p>📍 ${p.endereco || '-'}</p>
+
+<p>📞 ${p.telefone || '-'}</p>
+
+<p>💰 <b>Total: R$ ${p.total || '0'}</b></p>
+
+<button class="btn" onclick="finalizar('${doc.id}')">
+CONCLUIR / APAGAR
+</button>
+
+</div>
+`;
+
+});
+
+if(!primeiroCarregamento){
+
+document.getElementById("somPedido").play();
+
+if(Notification.permission === "granted"){
+
+new Notification("🍕 NOVO PEDIDO!",{
+body:"Chegou pedido na pizzaria",
+icon:"https://cdn-icons-png.flaticon.com/512/3595/3595455.png"
+});
+
+}
+
+}
+
+primeiroCarregamento=false;
+
+});
+
+function finalizar(id){
+
+db.collection("pedidos").doc(id).delete();
+
+}
+
+</script>
+
 </body>
 </html>
