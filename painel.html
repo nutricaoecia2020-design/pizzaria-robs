@@ -1,78 +1,172 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Painel Robs - GESTÃO</title>
-    <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; }
-        header { background: #e31837; color: white; padding: 10px; text-align: center; border-radius: 8px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
-        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-top: 5px solid #28a745; }
-        .btn-concluir { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        .itens { background: #fdf2f2; padding: 8px; margin: 10px 0; border-radius: 4px; font-size: 14px; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Robs - GESTÃO</title>
+    <style>
+        :root {
+            --primary: #e31837; /* Vermelho Pizza */
+            --secondary: #28a745; /* Verde Sucesso */
+            --bg: #f8f9fa;
+            --dark: #2d3436;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background: var(--bg); 
+            margin: 0;
+            padding: 0;
+            color: var(--dark);
+        }
+
+        header { 
+            background: var(--primary); 
+            color: white; 
+            padding: 20px; 
+            text-align: center; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 { margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px; }
+
+        .container { padding: 20px; max-width: 1200px; margin: 0 auto; }
+
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+            gap: 20px; 
+        }
+
+        .card { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 15px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05); 
+            border-left: 8px solid var(--secondary);
+            transition: transform 0.2s;
+        }
+
+        .card:hover { transform: translateY(-5px); }
+
+        .card h3 { 
+            margin-top: 0; 
+            color: var(--primary); 
+            border-bottom: 1px solid #eee; 
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-linha { margin: 10px 0; font-size: 15px; display: flex; align-items: center; gap: 10px; }
+        
+        .itens { 
+            background: #fff5f5; 
+            padding: 12px; 
+            margin: 15px 0; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            border: 1px dashed var(--primary);
+        }
+
+        .total-box {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--secondary);
+            text-align: right;
+            margin: 15px 0;
+        }
+
+        .btn-concluir { 
+            width: 100%; 
+            padding: 15px; 
+            background: var(--secondary); 
+            color: white; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 16px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-concluir:active { transform: scale(0.98); }
+
+        .empty-state { text-align: center; padding: 50px; font-size: 20px; color: #999; }
+    </style>
 </head>
 <body>
 
-<header><h1>PEDIDOS PIZZARIA ROBS</h1></header>
-<div id="listaPedidos" class="grid">Carregando pedidos...</div>
+<header><h1>🍕 PEDIDOS PIZZARIA ROBS</h1></header>
+
+<div class="container">
+    <div id="listaPedidos" class="grid">
+        <div class="empty-state">Buscando novos pedidos... 🔍</div>
+    </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyAjzwX_sPyZOvZzcJc9ynBSbBN5uazaCHU",
-        authDomain: "robs-pizzariadelivery.firebaseapp.com",
-        projectId: "robs-pizzariadelivery",
-        storageBucket: "robs-pizzariadelivery.firebasestorage.app",
-        messagingSenderId: "847851003409",
-        appId: "1:847851003409:web:7f3ed9f7089d4c61861bb0"
-    };
+    const firebaseConfig = {
+        apiKey: "AIzaSyAjzwX_sPyZOvZzcJc9ynBSbBN5uazaCHU",
+        authDomain: "robs-pizzariadelivery.firebaseapp.com",
+        projectId: "robs-pizzariadelivery",
+        storageBucket: "robs-pizzariadelivery.firebasestorage.app",
+        messagingSenderId: "847851003409",
+        appId: "1:847851003409:web:7f3ed9f7089d4c61861bb0"
+    };
 
-    // Inicializa
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    // Função de Deletar (Global)
-    function concluirPedido(id) {
-        if(confirm("Deseja remover este pedido?")) {
-            db.collection("pedidos").doc(id).delete()
-            .then(() => { console.log("Removido!"); })
-            .catch((error) => { alert("Erro ao remover: " + error); });
-        }
-    }
+    function concluirPedido(id) {
+        if(confirm("Deseja marcar este pedido como entregue?")) {
+            db.collection("pedidos").doc(id).delete()
+            .catch((error) => { alert("Erro ao remover: " + error); });
+        }
+    }
 
-    // Escuta os pedidos em tempo real
-    db.collection("pedidos").orderBy("data", "desc").onSnapshot((snapshot) => {
-        const container = document.getElementById("listaPedidos");
-        container.innerHTML = "";
+    db.collection("pedidos").orderBy("data", "desc").onSnapshot((snapshot) => {
+        const container = document.getElementById("listaPedidos");
+        container.innerHTML = "";
 
-        if (snapshot.empty) {
-            container.innerHTML = "<h3>Nenhum pedido pendente 🍕</h3>";
-            return;
-        }
+        if (snapshot.empty) {
+            container.innerHTML = "<div class='empty-state'><h3>Nenhum pedido pendente no momento 🍕</h3></div>";
+            return;
+        }
 
-        snapshot.forEach((doc) => {
-            const p = doc.data();
-            const id = doc.id;
-            
-            let itensStr = "";
-            if(p.itens) p.itens.forEach(i => itensStr += `• ${i.nome}<br>`);
+        snapshot.forEach((doc) => {
+            const p = doc.data();
+            const id = doc.id;
+            
+            let itensStr = "";
+            if(p.itens) p.itens.forEach(i => itensStr += `• ${i.nome}<br>`);
 
-            container.innerHTML += `
-                <div class="card">
-                    <h3>${p.cliente || 'Cliente'}</h3>
-                    <p>📍 ${p.endereco || 'Não informado'}</p>
-                    <p>📞 ${p.contato || '-'}</p>
-                    <p>💳 ${p.pagamento || '-'}</p>
-                    <div class="itens"><b>Itens:</b><br>${itensStr}</div>
-                    <p><b>Total: R$ ${p.total}</b></p>
-                    <button class="btn-concluir" onclick="concluirPedido('${id}')">CONCLUIR</button>
-                </div>
-            `;
-        });
-    });
+            container.innerHTML += `
+                <div class="card">
+                    <h3>👤 ${p.cliente || 'Cliente'}</h3>
+                    <div class="info-linha">📍 <b>Endereço:</b> ${p.endereco || 'Retirada'}</div>
+                    <div class="info-linha">📞 <b>Fone:</b> ${p.contato || '-'}</div>
+                    <div class="info-linha">💳 <b>Pgto:</b> ${p.pagamento || '-'}</div>
+                    
+                    <div class="itens">
+                        <b>📋 ITENS DO PEDIDO:</b><br>
+                        ${itensStr}
+                    </div>
+
+                    <div class="total-box">TOTAL: R$ ${p.total}</div>
+                    
+                    <button class="btn-concluir" onclick="concluirPedido('${id}')">FINALIZAR PEDIDO</button>
+                </div>
+            `;
+        });
+    });
 </script>
 </body>
-</html>              CRIAR NO github
+</html>
