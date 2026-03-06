@@ -5,109 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Robs - GESTÃO</title>
     <style>
-        :root {
-            --primary: #e31837; /* Vermelho Pizza */
-            --secondary: #28a745; /* Verde Sucesso */
-            --bg: #f8f9fa;
-            --dark: #2d3436;
-        }
-
-        body { 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
-            background: var(--bg); 
-            margin: 0;
-            padding: 0;
-            color: var(--dark);
-        }
-
-        header { 
-            background: var(--primary); 
-            color: white; 
-            padding: 20px; 
-            text-align: center; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        header h1 { margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px; }
-
-        .container { padding: 20px; max-width: 1200px; margin: 0 auto; }
-
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
-            gap: 20px; 
-        }
-
-        .card { 
-            background: white; 
-            padding: 20px; 
-            border-radius: 15px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05); 
-            border-left: 8px solid var(--secondary);
-            transition: transform 0.2s;
-        }
-
-        .card:hover { transform: translateY(-5px); }
-
-        .card h3 { 
-            margin-top: 0; 
-            color: var(--primary); 
-            border-bottom: 1px solid #eee; 
-            padding-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .info-linha { margin: 10px 0; font-size: 15px; display: flex; align-items: center; gap: 10px; }
-        
-        .itens { 
-            background: #fff5f5; 
-            padding: 12px; 
-            margin: 15px 0; 
-            border-radius: 8px; 
-            font-size: 16px; 
-            border: 1px dashed var(--primary);
-        }
-
-        .total-box {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--secondary);
-            text-align: right;
-            margin: 15px 0;
-        }
-
-        .btn-concluir { 
-            width: 100%; 
-            padding: 15px; 
-            background: var(--secondary); 
-            color: white; 
-            border: none; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 16px;
-            text-transform: uppercase;
-            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
-        }
-
-        .btn-concluir:active { transform: scale(0.98); }
-
-        .empty-state { text-align: center; padding: 50px; font-size: 20px; color: #999; }
+        :root { --red: #e31837; --green: #28a745; --bg: #f4f4f9; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        header { background: var(--red); color: white; padding: 15px; text-align: center; border-radius: 10px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 10px solid var(--green); }
+        .card h3 { margin: 0; color: var(--red); border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .info { margin: 10px 0; font-size: 14px; line-height: 1.5; }
+        .total { font-size: 18px; font-weight: bold; color: var(--green); margin-top: 10px; }
+        .btn { width: 100%; padding: 12px; background: var(--green); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<header><h1>🍕 PEDIDOS PIZZARIA ROBS</h1></header>
+<header>
+    <h1>🚀 PEDIDOS PIZZARIA ROBS</h1>
+    <button onclick="testarSom()" style="background: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">🔔 Testar Alerta</button>
+</header>
 
-<div class="container">
-    <div id="listaPedidos" class="grid">
-        <div class="empty-state">Buscando novos pedidos... 🔍</div>
-    </div>
-</div>
+<div id="listaPedidos" class="grid">Conectando ao banco...</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -125,19 +41,24 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    function concluirPedido(id) {
-        if(confirm("Deseja marcar este pedido como entregue?")) {
-            db.collection("pedidos").doc(id).delete()
-            .catch((error) => { alert("Erro ao remover: " + error); });
+    function testarSom() {
+        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+        audio.play();
+    }
+
+    function concluir(id) {
+        if(confirm("Pedido entregue? Isso vai apagar ele da tela.")) {
+            db.collection("pedidos").doc(id).delete();
         }
     }
 
-    db.collection("pedidos").orderBy("data", "desc").onSnapshot((snapshot) => {
+    // Escuta em tempo real os dados da coleção "pedidos"
+    db.collection("pedidos").onSnapshot((snapshot) => {
         const container = document.getElementById("listaPedidos");
         container.innerHTML = "";
 
         if (snapshot.empty) {
-            container.innerHTML = "<div class='empty-state'><h3>Nenhum pedido pendente no momento 🍕</h3></div>";
+            container.innerHTML = "<h3>Aguardando pedidos... 🍕</h3>";
             return;
         }
 
@@ -145,24 +66,17 @@
             const p = doc.data();
             const id = doc.id;
             
-            let itensStr = "";
-            if(p.itens) p.itens.forEach(i => itensStr += `• ${i.nome}<br>`);
-
+            // Ajustado para ler 'telefone' e 'total' conforme sua foto do Firebase
             container.innerHTML += `
                 <div class="card">
-                    <h3>👤 ${p.cliente || 'Cliente'}</h3>
-                    <div class="info-linha">📍 <b>Endereço:</b> ${p.endereco || 'Retirada'}</div>
-                    <div class="info-linha">📞 <b>Fone:</b> ${p.contato || '-'}</div>
-                    <div class="info-linha">💳 <b>Pgto:</b> ${p.pagamento || '-'}</div>
-                    
-                    <div class="itens">
-                        <b>📋 ITENS DO PEDIDO:</b><br>
-                        ${itensStr}
+                    <h3>👤 ${p.cliente || 'Sem Nome'}</h3>
+                    <div class="info">
+                        📍 <b>End:</b> ${p.endereco || 'Não informado'}<br>
+                        📞 <b>Tel:</b> ${p.telefone || '-'}<br>
+                        ⚙️ <b>Status:</b> ${p.status || '-'}
                     </div>
-
-                    <div class="total-box">TOTAL: R$ ${p.total}</div>
-                    
-                    <button class="btn-concluir" onclick="concluirPedido('${id}')">FINALIZAR PEDIDO</button>
+                    <div class="total">VALOR: R$ ${p.total || '0.00'}</div>
+                    <button class="btn" onclick="concluir('${id}')">CONCLUIR PEDIDO</button>
                 </div>
             `;
         });
