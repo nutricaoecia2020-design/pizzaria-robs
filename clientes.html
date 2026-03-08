@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Clientes - Pizzaria Robs</title>
+    <style>
+        :root { --primary: #e31837; --success: #28a745; --bg: #f4f4f4; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        
+        /* Formulário */
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn-save { background: var(--success); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        
+        /* Lista de Clientes */
+        .cliente-item { 
+            display: flex; align-items: center; background: white; padding: 15px; 
+            border-radius: 10px; margin-bottom: 10px; border-left: 8px solid var(--primary);
+        }
+        .foto-cliente { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 15px; border: 2px solid #ddd; }
+        .info { flex-grow: 1; }
+        .badge { 
+            display: inline-block; padding: 4px 8px; border-radius: 5px; font-size: 12px; font-weight: bold; 
+            color: white; margin-top: 5px;
+        }
+        .novo { background: #007bff; }
+        .fiel { background: #ffc107; color: #000; }
+        .contador { font-weight: bold; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h2>👤 Novo Cadastro de Cliente</h2>
+        <input type="text" id="nome" placeholder="Nome Completo">
+        <input type="text" id="telefone" placeholder="Telefone (WhatsApp)">
+        <input type="text" id="foto" placeholder="URL da Foto do Cliente (Ex: link do Facebook/Google)">
+        <input type="number" id="qtdPedidos" placeholder="Quantidade de Pedidos Inicial" value="1">
+        <button class="btn-save" onclick="salvarCliente()">CADASTRAR CLIENTE</button>
+    </div>
+
+    <h2>👥 Clientes Cadastrados</h2>
+    <div id="listaClientes">Carregando...</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<script>
+    // Configuração do Firebase (Use a mesma do seu app)
+    const firebaseConfig = {
+        apiKey: "AIzaSyAjzwX_sPyZOvZzcJc9ynBSbBN5uazaCHU",
+        authDomain: "robs-pizzariadelivery.firebaseapp.com",
+        projectId: "robs-pizzariadelivery",
+        storageBucket: "robs-pizzariadelivery.firebasestorage.app",
+        messagingSenderId: "847851003409",
+        appId: "1:847851003409:web:7f3ed9f7089d4c61861bb0"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Função para salvar cliente
+    async function salvarCliente() {
+        const nome = document.getElementById("nome").value;
+        const telefone = document.getElementById("telefone").value;
+        const foto = document.getElementById("foto").value || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+        const qtd = parseInt(document.getElementById("qtdPedidos").value);
+
+        if(!nome || !telefone) { alert("Preencha Nome e Telefone!"); return; }
+
+        try {
+            await db.collection("clientes").add({
+                nome: nome,
+                telefone: telefone,
+                foto: foto,
+                total_pedidos: qtd,
+                data_cadastro: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("Cliente cadastrado!");
+            limparCampos();
+        } catch (e) { console.error(e); }
+    }
+
+    function limparCampos() {
+        document.getElementById("nome").value = "";
+        document.getElementById("telefone").value = "";
+        document.getElementById("foto").value = "";
+    }
+
+    // Escuta os clientes em tempo real
+    db.collection("clientes").orderBy("nome").onSnapshot((snap) => {
+        const lista = document.getElementById("listaClientes");
+        lista.innerHTML = "";
+
+        snap.forEach((doc) => {
+            const c = doc.data();
+            const statusLabel = c.total_pedidos <= 1 ? 
+                '<span class="badge novo">PRIMEIRO PEDIDO</span>' : 
+                `<span class="badge fiel">JÁ É CLIENTE (${c.total_pedidos}x)</span>`;
+
+            lista.innerHTML += `
+                <div class="cliente-item">
+                    <img src="${c.foto}" class="foto-cliente">
+                    <div class="info">
+                        <strong>${c.nome}</strong><br>
+                        <small>📞 ${c.telefone}</small><br>
+                        ${statusLabel}
+                    </div>
+                    <div class="contador">
+                        <button onclick="addPedido('${doc.id}', ${c.total_pedidos})">➕ 1 Pedido</button>
+                    </div>
+                </div>
+            `;
+        });
+    });
+
+    // Função para aumentar quantidade de pedidos manualmente
+    window.addPedido = function(id, atual) {
+        db.collection("clientes").doc(id).update({
+            total_pedidos: atual + 1
+        });
+    }
+</script>
+
+</body>
+</html>
