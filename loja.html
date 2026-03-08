@@ -35,6 +35,19 @@ button{padding:8px 12px;border:none;border-radius:8px;cursor:pointer;font-weight
 input,select,textarea{width:100%;padding:10px;margin:6px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;}
 .total-box{font-size:18px;font-weight:bold;color:#e31837;margin-top:10px;}
 .pix-area{text-align:center;margin-top:15px;}
+
+/* Estilo da tela de sucesso (Check Verde) */
+.modal-sucesso {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center;
+}
+.modal-content {
+    background: white; padding: 30px; border-radius: 20px; text-align: center;
+    max-width: 300px; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.check-icon { font-size: 60px; color: #28a745; margin-bottom: 15px; }
+@keyframes popIn { from { transform: scale(0.5); } to { transform: scale(1); } }
+
 @media(max-width:600px){#produtos{grid-template-columns:1fr;}}
 </style>
 </head>
@@ -84,11 +97,18 @@ input,select,textarea{width:100%;padding:10px;margin:6px 0;border:1px solid #ddd
 
 </div>
 
+<div id="modalSucesso" class="modal-sucesso">
+    <div class="modal-content">
+        <div class="check-icon">✅</div>
+        <h2 style="color:#333; margin:0;">Pedido Enviado!</h2>
+        <p style="color:#666;">Registramos seu pedido na cozinha.<br>Abrindo o WhatsApp...</p>
+    </div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// CONFIGURAÇÃO REAL DO SEU FIREBASE
 const firebaseConfig = {
     apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE", 
     authDomain: "robs-pizzariadelivery.firebaseapp.com",
@@ -162,7 +182,7 @@ async function carregarProdutos(){
                 <img src="${p.url_imagem||'https://via.placeholder.com/70'}">
                 <div><b>${p.nome}</b><br>R$ ${parseFloat(p.preco).toFixed(2)}</div>
             </div>
-            <button class="add" onclick="window.add(${index})">Add</button>
+            <button class="add" onclick="window.add(${index})">Adicionar</button>
         </div>`;
     });
 }
@@ -197,39 +217,43 @@ window.finalizar = async function(){
         alert("Preencha todos os dados e escolha pelo menos 2 itens!"); return;
     }
 
-    // Gerando a string de produtos para o WhatsApp e para o Banco
     let listaProd = "";
     carrinho.forEach(p => { listaProd += `• ${p.nome}\n`; });
 
     try {
-        // ENVIANDO PARA O FIREBASE (Coleção: pedidos)
+        // MOSTRA TELA DE SUCESSO
+        document.getElementById("modalSucesso").style.display = "flex";
+
+        // ENVIANDO PARA O FIREBASE
         await addDoc(collection(db, "pedidos"), {
             cliente: nome,
             endereco: endereco,
             telefone: contato,
             total: total,
-            produtos: listaProd, // O NOME SOLICITADO
+            produtos: listaProd,
             pagamento: pag,
             observacao: obs,
             data: serverTimestamp()
         });
 
-        // Abrir WhatsApp
-        let msg = `*Pizzaria Robs*\n\n${listaProd}\n*Total:* R$ ${total}\n*Pagamento:* ${pag}\n*Cliente:* ${nome}\n*Endereço:* ${endereco}\n*Obs:* ${obs}`;
-        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(msg)}`);
-        
-        // Limpa carrinho e campos
-        carrinho = [];
-        document.getElementById("nome").value = "";
-        document.getElementById("endereco").value = "";
-        document.getElementById("contato").value = "";
-        document.getElementById("obs").value = "";
-        window.renderCarrinho();
-        
-        alert("Pedido enviado com sucesso!");
+        // Espera 2 segundos com o check na tela e abre o WhatsApp
+        setTimeout(() => {
+            let msg = `*Pizzaria Robs*\n\n${listaProd}\n*Total:* R$ ${total}\n*Pagamento:* ${pag}\n*Cliente:* ${nome}\n*Endereço:* ${endereco}\n*Obs:* ${obs}`;
+            window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(msg)}`);
+            
+            // Limpa tudo
+            carrinho = [];
+            document.getElementById("nome").value = "";
+            document.getElementById("endereco").value = "";
+            document.getElementById("contato").value = "";
+            document.getElementById("obs").value = "";
+            document.getElementById("modalSucesso").style.display = "none";
+            window.renderCarrinho();
+        }, 2000);
 
     } catch (e) { 
-        console.error("Erro ao salvar no Firebase: ", e);
+        document.getElementById("modalSucesso").style.display = "none";
+        console.error("Erro: ", e);
         alert("Erro ao enviar pedido para o painel!"); 
     }
 }
@@ -238,5 +262,6 @@ carregarProdutos();
 </script>
 </body>
 </html>
+
 
 
