@@ -5,22 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Clientes - Pizzaria Robs</title>
     <style>
-        :root { --primary: #e31837; --success: #28a745; --bg: #f4f4f4; }
+        :root { --primary: #e31837; --success: #28a745; --danger: #dc3545; --bg: #f4f4f4; }
         body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 20px; }
         .container { max-width: 800px; margin: auto; }
         .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
         h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
         input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .btn-save { background: var(--success); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .cliente-item { display: flex; align-items: center; background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 8px solid var(--primary); }
+        .btn-save { background: var(--success); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        .btn-save:hover { background: #218838; }
+        
+        .cliente-item { display: flex; align-items: center; background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 8px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .foto-cliente { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 15px; border: 2px solid #ddd; }
         .info { flex-grow: 1; }
-        .badge { display: inline-block; padding: 4px 8px; border-radius: 5px; font-size: 12px; font-weight: bold; color: white; margin-top: 5px; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; color: white; margin-top: 5px; text-transform: uppercase; }
         .novo { background: #007bff; }
         .fiel { background: #ffc107; color: #000; }
+        .btn-del { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 18px; padding: 5px; }
     </style>
 </head>
 <body>
+
 <div class="container">
     <div class="card">
         <h2>👤 Novo Cadastro de Cliente</h2>
@@ -30,14 +34,16 @@
         <input type="number" id="qtdPedidos" placeholder="Quantidade de Pedidos" value="1">
         <button class="btn-save" onclick="salvarCliente()">CADASTRAR CLIENTE</button>
     </div>
+
     <h2>👥 Clientes Cadastrados</h2>
-    <div id="listaClientes">Carregando...</div>
+    <div id="listaClientes">Carregando lista...</div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <script>
+    // Configuração do seu Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyAjzwX_sPyZOvZzcJc9ynBSbBN5uazaCHU",
         authDomain: "robs-pizzariadelivery.firebaseapp.com",
@@ -46,33 +52,84 @@
         messagingSenderId: "847851003409",
         appId: "1:847851003409:web:7f3ed9f7089d4c61861bb0"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // Função para Salvar Cliente
     async function salvarCliente() {
         const nome = document.getElementById("nome").value;
         const telefone = document.getElementById("telefone").value;
         const foto = document.getElementById("foto").value || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-        const qtd = parseInt(document.getElementById("qtdPedidos").value);
-        if(!nome || !telefone) { alert("Preencha Nome e Telefone!"); return; }
-        await db.collection("clientes").add({ nome, telefone, foto, total_pedidos: qtd });
-        alert("Cliente cadastrado!");
+        const qtd = parseInt(document.getElementById("qtdPedidos").value) || 1;
+
+        if(!nome || !telefone) { 
+            alert("Por favor, preencha pelo menos o Nome e o Telefone!"); 
+            return; 
+        }
+
+        try {
+            await db.collection("clientes").add({
+                nome: nome,
+                telefone: telefone,
+                foto: foto,
+                total_pedidos: qtd,
+                data_cadastro: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            alert("Cliente cadastrado com sucesso!");
+            
+            // Limpa os campos após salvar
+            document.getElementById("nome").value = "";
+            document.getElementById("telefone").value = "";
+            document.getElementById("foto").value = "";
+            document.getElementById("qtdPedidos").value = "1";
+            
+        } catch (error) {
+            console.error("Erro ao salvar:", error);
+            alert("Erro ao cadastrar cliente.");
+        }
     }
 
-    db.collection("clientes").onSnapshot((snap) => {
+    // Listagem em tempo real (Ordenada por nome)
+    db.collection("clientes").orderBy("nome", "asc").onSnapshot((snap) => {
         const lista = document.getElementById("listaClientes");
         lista.innerHTML = "";
+
+        if (snap.empty) {
+            lista.innerHTML = "<p>Nenhum cliente cadastrado ainda.</p>";
+            return;
+        }
+
         snap.forEach((doc) => {
             const c = doc.data();
+            const id = doc.id;
+            
+            // Lógica de Status (Novo vs Antigo)
             const statusLabel = c.total_pedidos <= 1 ? 
                 '<span class="badge novo">PRIMEIRO PEDIDO</span>' : 
                 `<span class="badge fiel">JÁ É CLIENTE (${c.total_pedidos}x)</span>`;
-            lista.innerHTML += `<div class="cliente-item">
-                <img src="${c.foto}" class="foto-cliente">
-                <div class="info"><strong>${c.nome}</strong><br>${statusLabel}</div>
-            </div>`;
+
+            lista.innerHTML += `
+                <div class="cliente-item">
+                    <img src="${c.foto}" class="foto-cliente" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
+                    <div class="info">
+                        <strong>${c.nome}</strong><br>
+                        <small>📞 ${c.telefone}</small><br>
+                        ${statusLabel}
+                    </div>
+                    <button class="btn-del" onclick="excluirCliente('${id}')" title="Excluir">🗑️</button>
+                </div>`;
         });
     });
+
+    // Função para excluir cliente
+    window.excluirCliente = function(id) {
+        if(confirm("Tem certeza que deseja excluir este cliente?")) {
+            db.collection("clientes").doc(id).delete();
+        }
+    }
 </script>
+
 </body>
 </html>
