@@ -42,7 +42,6 @@ background:#fff3cd;color:#856404;padding:10px;border-radius:8px;
 margin:15px 0;font-weight:bold;text-align:center;border:1px solid #ffeeba;
 }
 
-/* ===== PRODUTOS EM 2 COLUNAS ===== */
 #produtos{
 display:grid;
 grid-template-columns:1fr 1fr;
@@ -68,16 +67,9 @@ border-radius:8px;box-sizing:border-box;
 .pix-area{text-align:center;margin-top:15px;}
 .timer{font-size:22px;font-weight:bold;color:#e31837;margin-top:10px;}
 .copy-btn{background:#007bff;color:white;margin-top:5px;}
-.confirmado{
-background:#d4edda;color:#155724;padding:10px;border-radius:8px;
-margin-top:10px;font-weight:bold;display:none;text-align:center;
-}
 
-/* Responsivo */
 @media(max-width:600px){
-#produtos{
-grid-template-columns:1fr;
-}
+#produtos{grid-template-columns:1fr;}
 }
 </style>
 </head>
@@ -122,23 +114,30 @@ grid-template-columns:1fr;
 <div id="pixArea" class="pix-area" style="display:none;">
 <h3>Pagamento via Pix</h3>
 <div id="qrcode"></div>
-<p><b>Chave Pix:</b> rcsv74@gmail.com</p>
+<p>Chave Pix: rcsv74@gmail.com</p>
 <button class="copy-btn" onclick="copiarPix()">Copiar Chave Pix</button>
-<div id="confirmacao" class="confirmado">
-✅ Pagamento confirmado automaticamente!
-</div>
-</div>
-
-<div id="cronometroArea" style="display:none;">
-<h3>⏳ Tempo estimado de entrega:</h3>
-<div id="timer" class="timer"></div>
 </div>
 
 <button class="final" id="btnPedido" onclick="finalizar()">Enviar Pedido via WhatsApp</button>
 
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyD-SUA-CHAVE",
+    authDomain: "robs-pizzariadelivery.firebaseapp.com",
+    projectId: "robs-pizzariadelivery",
+    storageBucket: "robs-pizzariadelivery.appspot.com",
+    messagingSenderId: "338805720977",
+    appId: "1:338805720977:web:8666359590892994406a48"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 const supabaseUrl='https://gsvvyktjeqlmhspqzppy.supabase.co';
 const supabaseKey='sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs';
 const _supabase=supabase.createClient(supabaseUrl,supabaseKey);
@@ -146,145 +145,99 @@ const _supabase=supabase.createClient(supabaseUrl,supabaseKey);
 let carrinho=[];
 let produtosDoBanco=[];
 
-/* ===== CONTROLE DE HORÁRIO ===== */
+/* ===== STATUS DA LOJA (VERDE/VERMELHO) ===== */
 function verificarHorario(){
-let agora=new Date();
-let dia=agora.getDay();
-let hora=agora.getHours();
-let minuto=agora.getMinutes();
-let aberto=false;
+    let agora=new Date();
+    let dia=agora.getDay();
+    let hora=agora.getHours();
+    let minuto=agora.getMinutes();
+    let aberto=false;
 
-if((dia>=3 && dia<=6) || dia==0){
-if((hora>18 || (hora==18 && minuto>=0)) &&
-(hora<22 || (hora==22 && minuto<=30))){
-aberto=true;
-}
-}
+    // Quarta(3) a Domingo(0)
+    if((dia>=3 && dia<=6) || dia==0){
+        if((hora>18 || (hora==18 && minuto>=0)) && (hora<22 || (hora==22 && minuto<=30))){
+            aberto=true;
+        }
+    }
 
-let status=document.getElementById("statusLoja");
-let botao=document.getElementById("btnPedido");
-
-if(aberto){
-status.innerHTML="🟢 LOJA ABERTA";
-status.className="status-btn aberto";
-botao.innerText="Enviar Pedido via WhatsApp";
-}else{
-status.innerHTML="🔴 FECHADO - Apenas Agendamento";
-status.className="status-btn fechado";
-botao.innerText="Agendar Pedido via WhatsApp";
-}
+    let status=document.getElementById("statusLoja");
+    if(aberto){
+        status.innerHTML="🟢 LOJA ABERTA";
+        status.className="status-btn aberto";
+    }else{
+        status.innerHTML="🔴 FECHADO - Agendamento";
+        status.className="status-btn fechado";
+    }
 }
 verificarHorario();
 setInterval(verificarHorario,60000);
 
-/* ===== CARREGAR PRODUTOS ===== */
-async function carregarProdutos(){
-let lista=document.getElementById("produtos");
-const{data:produtos,error}=await _supabase.from('produtos').select('*');
-if(error){lista.innerHTML="Erro ao carregar cardápio.";return;}
-produtosDoBanco=produtos;
-lista.innerHTML="";
-produtos.forEach((p,index)=>{
-lista.innerHTML+=`
-<div class="produto">
-<div style="display:flex;align-items:center;gap:12px">
-<img src="${p.url_imagem||'https://via.placeholder.com/70'}">
-<div><b>${p.nome}</b><br>R$ ${parseFloat(p.preco).toFixed(2)}</div>
-</div>
-<button class="add" onclick="add(${index})">Adicionar</button>
-</div>`;
-});
-}
+/* ===== CARDÁPIO E CARRINHO ===== */
+window.add = function(index){carrinho.push(produtosDoBanco[index]);renderCarrinho();}
+window.remover = function(index){carrinho.splice(index,1);renderCarrinho();}
 
-function add(index){carrinho.push(produtosDoBanco[index]);renderCarrinho();}
-function remover(index){carrinho.splice(index,1);renderCarrinho();}
+async function carregarProdutos(){
+    let lista=document.getElementById("produtos");
+    const{data:produtos,error}=await _supabase.from('produtos').select('*');
+    if(error){lista.innerHTML="Erro ao carregar.";return;}
+    produtosDoBanco=produtos;
+    lista.innerHTML="";
+    produtos.forEach((p,index)=>{
+        lista.innerHTML+=`<div class="produto">
+            <div style="display:flex;align-items:center;gap:12px">
+                <img src="${p.url_imagem||'https://via.placeholder.com/70'}">
+                <div><b>${p.nome}</b><br>R$ ${parseFloat(p.preco).toFixed(2)}</div>
+            </div>
+            <button class="add" onclick="add(${index})">Add</button>
+        </div>`;
+    });
+}
 
 function renderCarrinho(){
-let area=document.getElementById("carrinho");
-area.innerHTML="";
-let total=0;
-carrinho.forEach((p,index)=>{
-total+=parseFloat(p.preco);
-area.innerHTML+=`
-<div class="produto" style="background:#f9f9f9">
-<span>${p.nome} - R$ ${parseFloat(p.preco).toFixed(2)}</span>
-<button class="rem" onclick="remover(${index})">X</button>
-</div>`;
-});
-document.getElementById("total").innerText=total.toFixed(2);
-gerarPix(total);
+    let area=document.getElementById("carrinho");
+    area.innerHTML="";
+    let total=0;
+    carrinho.forEach((p,index)=>{
+        total+=parseFloat(p.preco);
+        area.innerHTML+=`<div class="produto" style="background:#f9f9f9">
+            <span>${p.nome}</span>
+            <button class="rem" onclick="remover(${index})">X</button>
+        </div>`;
+    });
+    document.getElementById("total").innerText=total.toFixed(2);
 }
 
-/* ===== PIX ===== */
-function gerarPix(valor){
-if(document.getElementById("pagamento").value==="Pix"){
-document.getElementById("pixArea").style.display="block";
-document.getElementById("qrcode").innerHTML="";
-new QRCode(document.getElementById("qrcode"),{
-text:`Pagamento Pizzaria Robs R$ ${valor.toFixed(2)} - Pix: rcsv74@gmail.com`,
-width:180,height:180});
-simularConfirmacao();
-}else{
-document.getElementById("pixArea").style.display="none";
-}
-}
-document.getElementById("pagamento").addEventListener("change",()=>renderCarrinho());
+/* ===== FINALIZAR E ENVIAR AO PAINEL ===== */
+window.finalizar = async function(){
+    let nome=document.getElementById("nome").value;
+    let endereco=document.getElementById("endereco").value;
+    let contato=document.getElementById("contato").value;
+    let total=document.getElementById("total").innerText;
 
-function copiarPix(){
-navigator.clipboard.writeText("rcsv74@gmail.com");
-alert("Chave Pix copiada!");
-}
+    if(!nome||!endereco||!contato||carrinho.length<2){
+        alert("Preencha os dados e escolha 2 sabores!");return;
+    }
 
-function simularConfirmacao(){
-setTimeout(()=>{
-document.getElementById("confirmacao").style.display="block";
-},8000);
-}
+    let listaProd = "";
+    carrinho.forEach(p => { listaProd += `• ${p.nome}\n`; });
 
-function iniciarCronometro(minutos){
-document.getElementById("cronometroArea").style.display="block";
-let tempo=minutos*60;
-let timerDiv=document.getElementById("timer");
-let intervalo=setInterval(()=>{
-let min=Math.floor(tempo/60);
-let seg=tempo%60;
-timerDiv.innerHTML=(min<10?"0"+min:min)+":"+(seg<10?"0"+seg:seg);
-tempo--;
-if(tempo<0){clearInterval(intervalo);timerDiv.innerHTML="Pedido deve estar chegando 🍕";}
-},1000);
-}
+    try {
+        // Envia ao Firebase em minúsculo para o Painel ler
+        await addDoc(collection(db, "pedidos"), {
+            cliente: nome,
+            endereco: endereco,
+            telefone: contato,
+            total: total,
+            produtos: listaProd,
+            data: serverTimestamp()
+        });
 
-function finalizar(){
-let nome=document.getElementById("nome").value;
-let endereco=document.getElementById("endereco").value;
-let contato=document.getElementById("contato").value;
-let pagamento=document.getElementById("pagamento").value;
-let obs=document.getElementById("obs").value;
-
-if(!nome||!endereco||!contato||carrinho.length==0){
-alert("Preencha seus dados e adicione itens!");return;
-}
-if(carrinho.length<2){
-alert("É obrigatório escolher 2 sabores!");return;
-}
-
-iniciarCronometro(70);
-
-let total=document.getElementById("total").innerText;
-let mensagem="🧾 *NOVO PEDIDO - PIZZARIA ROBS*\n\n";
-carrinho.forEach(p=>{mensagem+=`• ${p.nome} - R$ ${parseFloat(p.preco).toFixed(2)}\n`;});
-mensagem+=`\n*Total: R$ ${total}*`;
-mensagem+=`\n👤 Cliente: ${nome}`;
-mensagem+=`\n📍 Endereço: ${endereco}`;
-mensagem+=`\n📞 Contato: ${contato}`;
-mensagem+=`\n💳 Pagamento: ${pagamento}`;
-if(obs) mensagem+=`\n📝 Obs: ${obs}`;
-
-let numero="5579999769581";
-window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`);
+        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent("Pizzaria Robs\n"+listaProd+"\nTotal: R$ "+total)}`);
+    } catch (e) { alert("Erro ao conectar painel!"); }
 }
 
 carregarProdutos();
 </script>
 </body>
 </html>
+
