@@ -67,9 +67,9 @@ input,select,textarea{width:100%;padding:10px;margin:6px 0;border:1px solid #ddd
 <input id="contato" placeholder="Telefone de Contato">
 
 <select id="pagamento" onchange="window.renderCarrinho()">
-<option>Dinheiro</option>
-<option>Pix</option>
-<option>Cartão</option>
+<option value="Dinheiro">Dinheiro</option>
+<option value="Pix">Pix</option>
+<option value="Cartão">Cartão</option>
 </select>
 
 <textarea id="obs" placeholder="Alguma observação?"></textarea>
@@ -90,7 +90,7 @@ import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.g
 
 // CONFIGURAÇÃO REAL DO SEU FIREBASE
 const firebaseConfig = {
-    apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE", // Certifique-se de usar sua chave aqui
+    apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE", 
     authDomain: "robs-pizzariadelivery.firebaseapp.com",
     projectId: "robs-pizzariadelivery",
     storageBucket: "robs-pizzariadelivery.appspot.com",
@@ -197,32 +197,39 @@ window.finalizar = async function(){
         alert("Preencha todos os dados e escolha pelo menos 2 itens!"); return;
     }
 
+    // Gerando a string de produtos para o WhatsApp e para o Banco
     let listaProd = "";
     carrinho.forEach(p => { listaProd += `• ${p.nome}\n`; });
 
     try {
-        // ENVIANDO PARA O PAINEL (Coleção: pedidos)
+        // ENVIANDO PARA O FIREBASE (Coleção: pedidos)
         await addDoc(collection(db, "pedidos"), {
             cliente: nome,
             endereco: endereco,
             telefone: contato,
             total: total,
-            produtos: listaProd, // Campo ajustado para o painel ler
+            produtos: listaProd, // O NOME SOLICITADO
             pagamento: pag,
             observacao: obs,
             data: serverTimestamp()
         });
 
-        // WhatsApp
-        let msg = `*Pizzaria Robs*\n\n${listaProd}\n*Total:* R$ ${total}\n*Pagamento:* ${pag}\n*Cliente:* ${nome}\n*Endereço:* ${endereco}`;
+        // Abrir WhatsApp
+        let msg = `*Pizzaria Robs*\n\n${listaProd}\n*Total:* R$ ${total}\n*Pagamento:* ${pag}\n*Cliente:* ${nome}\n*Endereço:* ${endereco}\n*Obs:* ${obs}`;
         window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(msg)}`);
         
-        // Limpa carrinho
+        // Limpa carrinho e campos
         carrinho = [];
+        document.getElementById("nome").value = "";
+        document.getElementById("endereco").value = "";
+        document.getElementById("contato").value = "";
+        document.getElementById("obs").value = "";
         window.renderCarrinho();
         
+        alert("Pedido enviado com sucesso!");
+
     } catch (e) { 
-        console.error(e);
+        console.error("Erro ao salvar no Firebase: ", e);
         alert("Erro ao enviar pedido para o painel!"); 
     }
 }
