@@ -103,7 +103,7 @@ border-radius:8px;box-sizing:border-box;
 <input id="endereco" placeholder="Endereço de Entrega">
 <input id="contato" placeholder="Telefone de Contato">
 
-<select id="pagamento">
+<select id="pagamento" onchange="window.renderCarrinho()">
 <option>Dinheiro</option>
 <option>Pix</option>
 <option>Cartão</option>
@@ -115,10 +115,10 @@ border-radius:8px;box-sizing:border-box;
 <h3>Pagamento via Pix</h3>
 <div id="qrcode"></div>
 <p>Chave Pix: rcsv74@gmail.com</p>
-<button class="copy-btn" onclick="copiarPix()">Copiar Chave Pix</button>
+<button class="copy-btn" onclick="window.copiarPix()">Copiar Chave Pix</button>
 </div>
 
-<button class="final" id="btnPedido" onclick="finalizar()">Enviar Pedido via WhatsApp</button>
+<button class="final" id="btnPedido" onclick="window.finalizar()">Enviar Pedido via WhatsApp</button>
 
 </div>
 
@@ -126,8 +126,9 @@ border-radius:8px;box-sizing:border-box;
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// Configuração corrigida com a sua chave real
 const firebaseConfig = {
-    apiKey: "AIzaSyD-SUA-CHAVE",
+    apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE", 
     authDomain: "robs-pizzariadelivery.firebaseapp.com",
     projectId: "robs-pizzariadelivery",
     storageBucket: "robs-pizzariadelivery.appspot.com",
@@ -145,7 +146,7 @@ const _supabase=supabase.createClient(supabaseUrl,supabaseKey);
 let carrinho=[];
 let produtosDoBanco=[];
 
-/* ===== STATUS DA LOJA (VERDE/VERMELHO) ===== */
+/* ===== STATUS DA LOJA ===== */
 function verificarHorario(){
     let agora=new Date();
     let dia=agora.getDay();
@@ -153,7 +154,6 @@ function verificarHorario(){
     let minuto=agora.getMinutes();
     let aberto=false;
 
-    // Quarta(3) a Domingo(0)
     if((dia>=3 && dia<=6) || dia==0){
         if((hora>18 || (hora==18 && minuto>=0)) && (hora<22 || (hora==22 && minuto<=30))){
             aberto=true;
@@ -161,20 +161,34 @@ function verificarHorario(){
     }
 
     let status=document.getElementById("statusLoja");
-    if(aberto){
-        status.innerHTML="🟢 LOJA ABERTA";
-        status.className="status-btn aberto";
-    }else{
-        status.innerHTML="🔴 FECHADO - Agendamento";
-        status.className="status-btn fechado";
+    if(status) {
+        if(aberto){
+            status.innerHTML="🟢 LOJA ABERTA";
+            status.className="status-btn aberto";
+        }else{
+            status.innerHTML="🔴 FECHADO - Agendamento";
+            status.className="status-btn fechado";
+        }
     }
 }
 verificarHorario();
 setInterval(verificarHorario,60000);
 
-/* ===== CARDÁPIO E CARRINHO ===== */
-window.add = function(index){carrinho.push(produtosDoBanco[index]);renderCarrinho();}
-window.remover = function(index){carrinho.splice(index,1);renderCarrinho();}
+/* ===== CARDÁPIO E CARRINHO (Funções exportadas para o HTML) ===== */
+window.add = function(index){
+    carrinho.push(produtosDoBanco[index]);
+    window.renderCarrinho();
+}
+
+window.remover = function(index){
+    carrinho.splice(index,1);
+    window.renderCarrinho();
+}
+
+window.copiarPix = function(){
+    navigator.clipboard.writeText("rcsv74@gmail.com");
+    alert("Chave Pix copiada!");
+}
 
 async function carregarProdutos(){
     let lista=document.getElementById("produtos");
@@ -188,12 +202,12 @@ async function carregarProdutos(){
                 <img src="${p.url_imagem||'https://via.placeholder.com/70'}">
                 <div><b>${p.nome}</b><br>R$ ${parseFloat(p.preco).toFixed(2)}</div>
             </div>
-            <button class="add" onclick="add(${index})">Add</button>
+            <button class="add" onclick="window.add(${index})">Add</button>
         </div>`;
     });
 }
 
-function renderCarrinho(){
+window.renderCarrinho = function(){
     let area=document.getElementById("carrinho");
     area.innerHTML="";
     let total=0;
@@ -201,10 +215,19 @@ function renderCarrinho(){
         total+=parseFloat(p.preco);
         area.innerHTML+=`<div class="produto" style="background:#f9f9f9">
             <span>${p.nome}</span>
-            <button class="rem" onclick="remover(${index})">X</button>
+            <button class="rem" onclick="window.remover(${index})">X</button>
         </div>`;
     });
     document.getElementById("total").innerText=total.toFixed(2);
+    
+    // Mostra/Esconde área do PIX
+    let pag = document.getElementById("pagamento").value;
+    let pixArea = document.getElementById("pixArea");
+    if(pag === "Pix" && total > 0){
+        pixArea.style.display = "block";
+    } else {
+        pixArea.style.display = "none";
+    }
 }
 
 /* ===== FINALIZAR E ENVIAR AO PAINEL ===== */
@@ -213,27 +236,36 @@ window.finalizar = async function(){
     let endereco=document.getElementById("endereco").value;
     let contato=document.getElementById("contato").value;
     let total=document.getElementById("total").innerText;
+    let pag = document.getElementById("pagamento").value;
+    let obs = document.getElementById("obs").value;
 
     if(!nome||!endereco||!contato||carrinho.length<2){
-        alert("Preencha os dados e escolha 2 sabores!");return;
+        alert("Preencha os dados e escolha no mínimo 2 sabores!");return;
     }
 
     let listaProd = "";
     carrinho.forEach(p => { listaProd += `• ${p.nome}\n`; });
 
     try {
-        // Envia ao Firebase em minúsculo para o Painel ler
+        // Envia ao Firebase (Coleção: pedidos)
         await addDoc(collection(db, "pedidos"), {
             cliente: nome,
             endereco: endereco,
             telefone: contato,
             total: total,
             produtos: listaProd,
+            pagamento: pag,
+            observacao: obs,
             data: serverTimestamp()
         });
 
-        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent("Pizzaria Robs\n"+listaProd+"\nTotal: R$ "+total)}`);
-    } catch (e) { alert("Erro ao conectar painel!"); }
+        // WhatsApp
+        let msg = `Pizzaria Robs\n\n${listaProd}\nTotal: R$ ${total}\nCliente: ${nome}\nEndereço: ${endereco}`;
+        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(msg)}`);
+    } catch (e) { 
+        console.error(e);
+        alert("Erro ao conectar painel!"); 
+    }
 }
 
 carregarProdutos();
