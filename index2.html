@@ -136,16 +136,22 @@
             <label>Nome Completo</label>
             <input type="text" id="nome_completo" placeholder="Ex: João Silva" required>
         </div>
-        <div class="field col-2">
+        <div class="field col-4">
             <label>Sexo</label>
             <select id="sexo">
-                <option value="M">Masc</option>
-                <option value="F">Fem</option>
+                <option value="M">Masculino</option>
+                <option value="F">Feminino</option>
+                <option value="O">Outro</option>
             </select>
         </div>
-        <div class="field col-2">
-            <label>Est. Civil</label>
-            <input type="text" id="estado_civil">
+
+        <div class="field col-6">
+            <label>Telefone de Contato</label>
+            <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
+        </div>
+        <div class="field col-6">
+            <label>Estado Civil</label>
+            <input type="text" id="estado_civil" placeholder="Ex: Solteiro(a)">
         </div>
 
         <div class="field col-6">
@@ -184,7 +190,7 @@
         </div>
 
         <div class="field col-12 actions">
-            <button type="button" class="btn btn-secondary" onclick="window.location.reload()">Limpar</button>
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('meuFormulario').reset()">Limpar</button>
             <button type="submit" class="btn btn-primary">Salvar Cadastro</button>
         </div>
     </form>
@@ -213,6 +219,7 @@
         const dados = {
             nome_completo: document.getElementById('nome_completo').value,
             sexo: document.getElementById('sexo').value,
+            telefone: document.getElementById('telefone').value, // Novo campo adicionado
             estado_civil: document.getElementById('estado_civil').value,
             cpf: document.getElementById('cpf').value,
             rg: document.getElementById('rg').value,
@@ -231,19 +238,16 @@
 
         if (error) {
             console.error("Erro detalhado:", error);
-            // Alerta detalhado do porquê parou de salvar
             alert("❌ Erro ao salvar!\n\nMotivo: " + error.message);
             
-            // Reativa o botão para correção
             botao.innerText = textoOriginal;
             botao.disabled = false;
         } else {
             alert("✅ Cadastro de " + dados.nome_completo + " realizado com sucesso!");
             
-            // Limpa o formulário sem recarregar a página (mais rápido e seguro)
+            // Limpa o formulário
             document.getElementById('meuFormulario').reset();
             
-            // Volta o botão ao normal
             botao.innerText = textoOriginal;
             botao.disabled = false;
         }
