@@ -190,45 +190,4 @@
     </form>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-    const supabaseUrl = 'https://gsvvyktjeqlmhspqzppy.supabase.co';
-    const supabaseKey = 'sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs';
-    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
-    // Escuta o envio do formulário
-    document.getElementById('meuFormulario').addEventListener('submit', async function(e) {
-        e.preventDefault(); // Impede a página de recarregar antes de salvar
-        
-        const botao = e.target.querySelector('.btn-primary');
-        botao.innerText = "Salvando...";
-        botao.disabled = true;
-
-        const dados = {
-            nome_completo: document.getElementById('nome_completo').value,
-            sexo: document.getElementById('sexo').value,
-            estado_civil: document.getElementById('estado_civil').value,
-            cpf: document.getElementById('cpf').value,
-            rg: document.getElementById('rg').value,
-            cep: document.getElementById('cep').value,
-            endereco: document.getElementById('endereco').value,
-            numero: document.getElementById('numero').value,
-            complemento: document.getElementById('complemento').value,
-            cidade: document.getElementById('cidade').value
-        };
-
-        const { error } = await _supabase.from('clientes').insert([dados]);
-
-        if (error) {
-            alert("Erro ao salvar: " + error.message);
-            botao.innerText = "Salvar Cadastro";
-            botao.disabled = false;
-        } else {
-            alert("✅ Cadastro de " + dados.nome_completo + " realizado com sucesso!");
-            window.location.reload(); 
-        }
-    });
-</script>
-
-</body>
-</html>
+<script src="https://
