@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Clientes - Robs</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { color: #e31837; text-align: center; border-bottom: 2px solid #e31837; padding-bottom: 10px; }
+        .login-box { text-align: center; padding: 40px; }
+        input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 250px; }
+        button { padding: 12px 20px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .hidden { display: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+        th { background: #e31837; color: white; }
+        tr:hover { background: #fff5f5; }
+        .btn-excluir { background: #dc3545; padding: 5px 10px; font-size: 11px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="area-login" class="login-box">
+        <h1>🔐 Área Restrita</h1>
+        <p>Acesse a lista de clientes cadastrados</p>
+        <input type="password" id="senha" placeholder="Senha Administrativa">
+        <button onclick="verificarAcesso()">Visualizar Dados</button>
+    </div>
+
+    <div id="area-dados" class="hidden">
+        <h1>👥 Clientes Cadastrados</h1>
+        <div style="overflow-x: auto;">
+            <table id="tabela-clientes">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>Cidade</th>
+                        <th>Endereço</th>
+                        <th>Data</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="corpo-tabela">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const supabaseUrl = 'https://gsvvyktjeqlmhspqzppy.supabase.co';
+    const supabaseKey = 'sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs';
+    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    function verificarAcesso() {
+        const senha = document.getElementById("senha").value;
+        if(senha === "robs123") { // Você pode mudar essa senha
+            document.getElementById("area-login").classList.add("hidden");
+            document.getElementById("area-dados").classList.remove("hidden");
+            carregarClientes();
+        } else {
+            alert("Senha incorreta!");
+        }
+    }
+
+    async function carregarClientes() {
+        const { data, error } = await _supabase
+            .from('clientes')
+            .select('*')
+            .order('criado_em', { ascending: false });
+
+        if (error) {
+            console.error(error);
+            return;
+        }
+
+        const corpo = document.getElementById("corpo-tabela");
+        corpo.innerHTML = "";
+
+        data.forEach(c => {
+            const dataFormatada = new Date(c.criado_em).toLocaleDateString('pt-BR');
+            corpo.innerHTML += `
+                <tr>
+                    <td><b>${c.nome_completo}</b></td>
+                    <td>${c.cpf}</td>
+                    <td>${c.cidade}</td>
+                    <td>${c.endereco}, ${c.numero}</td>
+                    <td>${dataFormatada}</td>
+                    <td><button class="btn-excluir" onclick="removerCliente(${c.id})">Remover</button></td>
+                </tr>
+            `;
+        });
+    }
+
+    async function removerCliente(id) {
+        if(confirm("Deseja apagar este cadastro permanentemente?")) {
+            const { error } = await _supabase.from('clientes').delete().eq('id', id);
+            if(!error) carregarClientes();
+        }
+    }
+</script>
+</body>
+</html>
