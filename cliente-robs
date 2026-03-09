@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Cliente | Estilo iFood</title>
+    <style>
+        :root {
+            --ifood-red: #ea1d2c;
+            --ifood-text: #3e3e3e;
+            --ifood-bg: #f7f7f7;
+            --input-border: #dcdcdc;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--ifood-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            width: 100%;
+            max-width: 900px;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: var(--ifood-red);
+            font-size: 28px;
+            margin: 0;
+        }
+
+        header p {
+            color: #717171;
+            font-size: 14px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            grid-column: span 12;
+        }
+
+        /* Ajustes de colunas para telas de notebook */
+        @media (min-width: 768px) {
+            .col-8 { grid-column: span 8; }
+            .col-4 { grid-column: span 4; }
+            .col-6 { grid-column: span 6; }
+            .col-3 { grid-column: span 3; }
+            .col-2 { grid-column: span 2; }
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ifood-text);
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            height: 48px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            padding: 0 16px;
+            font-size: 15px;
+            color: #3e3e3e;
+            background-color: #fff;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--ifood-red);
+        }
+
+        .actions {
+            margin-top: 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            height: 52px;
+            padding: 0 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+            transition: transform 0.1s;
+        }
+
+        .btn-primary {
+            background-color: var(--ifood-red);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: var(--ifood-text);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn:hover {
+            filter: brightness(0.9);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <header>
+        <h1>Cadastro de Cliente</h1>
+        <p>Preencha os dados abaixo para criar o perfil</p>
+    </header>
+
+    <form class="form-grid">
+        <div class="field col-8">
+            <label>Nome Completo</label>
+            <input type="text" placeholder="Ex: João Silva">
+        </div>
+        <div class="field col-2">
+            <label>Sexo</label>
+            <select>
+                <option value="M">Masc</option>
+                <option value="F">Fem</option>
+            </select>
+        </div>
+        <div class="field col-2">
+            <label>Est. Civil</label>
+            <input type="text">
+        </div>
+
+        <div class="field col-6">
+            <label>CPF</label>
+            <input type="text" placeholder="000.000.000-00">
+        </div>
+        <div class="field col-6">
+            <label>RG</label>
+            <input type="text">
+        </div>
+
+        <div class="field col-3">
+            <label>CEP</label>
+            <input type="text" placeholder="00000-000">
+        </div>
+        <div class="field col-7">
+            <label>Endereço / Rua</label>
+            <input type="text">
+        </div>
+        <div class="field col-2">
+            <label>Número</label>
+            <input type="text">
+        </div>
+
+        <div class="field col-6">
+            <label>Complemento / Bairro</label>
+            <input type="text" placeholder="Ex: Apto 12, Bloco B">
+        </div>
+        <div class="field col-4">
+            <label>Cidade</label>
+            <input type="text">
+        </div>
+        <div class="field col-2">
+            <label>UF</label>
+            <input type="text">
+        </div>
+
+        <div class="field col-6">
+            <label>E-mail</label>
+            <input type="email" placeholder="nome@email.com">
+        </div>
+        <div class="field col-6">
+            <label>Celular (WhatsApp)</label>
+            <input type="text" placeholder="(00) 90000-0000">
+        </div>
+
+        <div class="field col-12 actions">
+            <button type="button" class="btn btn-secondary">Pesquisar</button>
+            <button type="submit" class="btn btn-primary">Salvar Cadastro</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
