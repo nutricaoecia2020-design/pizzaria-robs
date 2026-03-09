@@ -70,7 +70,6 @@
         .p2 { animation-delay: 0.5s; }
         .p3 { animation-delay: 1s; }
 
-        /* Estilos de Conteúdo */
         .topo-info{text-align:center;font-size:14px;color:#555;margin-bottom:10px; padding-top: 20px;}
         .status-btn{display:inline-block;padding:8px 15px;border-radius:20px;color:#fff;font-weight:bold;margin-top:8px;}
         .aberto{background:#28a745;animation:piscando 1s infinite;}
@@ -94,7 +93,6 @@
         .total-box{font-size:18px;font-weight:bold;color:#e31837;margin-top:10px; text-align: right;}
         .pix-area{text-align:center;margin-top:15px; padding: 15px; background: #f8f9fa; border-radius: 10px;}
 
-        /* Painel de Gestão */
         .painel-gestao { margin-top: 40px; padding: 20px; background: #fff; border: 2px dashed #e31837; border-radius: 15px; }
         .gestao-bloqueada { text-align: center; padding: 20px; }
         .gestao-conteudo { display: none; } 
@@ -105,7 +103,6 @@
         .verde { background: #28a745; }
         .btn-status { background: #333; color: white; padding: 8px 15px; border-radius: 6px; font-size: 12px; }
 
-        /* Botões Flutuantes */
         .insta-float { position: fixed; bottom: 20px; right: 20px; z-index: 1000; text-align: center; text-decoration: none; }
         .insta-circle { width: 60px; height: 60px; background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
         .insta-circle i { color: white; font-size: 30px; }
@@ -241,17 +238,12 @@ const _supabase=supabase.createClient(supabaseUrl,supabaseKey);
 let carrinho=[];
 let produtosDoBanco=[];
 
-// --- LÓGICA DO RELÓGIO E DATA ---
 function atualizarTempo() {
     const agora = new Date();
-    
-    // Relógio
     const h = String(agora.getHours()).padStart(2, '0');
     const m = String(agora.getMinutes()).padStart(2, '0');
     const s = String(agora.getSeconds()).padStart(2, '0');
     document.getElementById('relogio').textContent = `${h}:${m}:${s}`;
-    
-    // Data
     const dia = String(agora.getDate()).padStart(2, '0');
     const mes = String(agora.getMonth() + 1).padStart(2, '0');
     const ano = agora.getFullYear();
@@ -305,7 +297,7 @@ async function carregarProdutos(){
                 <img src="${p.url_imagem||'https://via.placeholder.com/70'}">
                 <div><b>${p.nome}</b><br>R$ ${parseFloat(p.preco).toFixed(2)}</div>
             </div>
-            <button class="add" onclick="window.add(${index})">Add</button>
+            <button class="add" onclick="window.add(${index})">Adicionar</button>
         </div>`;
     });
 }
@@ -344,6 +336,7 @@ carregarProdutos();
 </script>
 </body>
 </html>
+
 
 
 
