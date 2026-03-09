@@ -13,13 +13,52 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        body{font-family:Arial, sans-serif;background:#f4f4f4;margin:0;}
+        body{font-family:Arial, sans-serif;background:#f4f4f4;margin:0; overflow-x: hidden;}
+        
+        /* --- ANIMAÇÃO DAS PIZZAS NAS BORDAS --- */
+        .pizza-border {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        /* Animação para o topo */
+        @keyframes correrTopo {
+            0% { left: -50px; }
+            100% { left: 100%; }
+        }
+        /* Animação para a base */
+        @keyframes correrBase {
+            0% { right: -50px; }
+            100% { right: 100%; }
+        }
+        /* Animação para as laterais */
+        @keyframes correrLateral {
+            0% { top: -50px; }
+            100% { top: 100%; }
+        }
+
+        .pizza-t { top: -25px; animation: correrTopo 3s linear infinite; }
+        .pizza-b { bottom: -25px; animation: correrBase 3s linear infinite; }
+        .pizza-l { left: -25px; animation: correrLateral 4s linear infinite; }
+        .pizza-r { right: -25px; animation: correrLateral 4s linear infinite; animation-delay: 2s; }
+
         .container{
-            max-width:900px;margin:auto;background:#fff;min-height:100vh;padding:20px;
-            border-left:8px solid #e31837;border-right:8px solid #e31837;
+            max-width:900px;margin:30px auto;background:#fff;min-height:100vh;padding:20px;
+            border: 8px solid #e31837;
             box-shadow:0 0 15px rgba(0,0,0,0.08);
             position: relative;
+            /* Garante que as pizzas fiquem presas à borda do container */
         }
+
+        /* Ajuste de delay para criar a "carreira" de pizzas */
+        .p2 { animation-delay: 0.5s; }
+        .p3 { animation-delay: 1s; }
+        .p4 { animation-delay: 1.5s; }
+
+        /* Estilos Originais */
         .topo-info{text-align:center;font-size:14px;color:#555;margin-bottom:10px;}
         .status-btn{display:inline-block;padding:8px 15px;border-radius:20px;color:#fff;font-weight:bold;margin-top:8px;}
         .aberto{background:#28a745;animation:piscando 1s infinite;}
@@ -27,7 +66,6 @@
         @keyframes piscando{0%{opacity:1;}50%{opacity:0.4;}100%{opacity:1;}}
         
         h2, h3{color:#e31837;margin:15px 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 5px;}
-        
         .aviso{background:#fff3cd;color:#856404;padding:10px;border-radius:8px;margin:15px 0;font-weight:bold;text-align:center;border:1px solid #ffeeba;}
         
         #produtos{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
@@ -44,27 +82,11 @@
         .total-box{font-size:18px;font-weight:bold;color:#e31837;margin-top:10px; text-align: right;}
         .pix-area{text-align:center;margin-top:15px; padding: 15px; background: #f8f9fa; border-radius: 10px;}
 
-        /* --- PAINEL DE GESTÃO COM LOGIN --- */
-        .painel-gestao {
-            margin-top: 40px;
-            padding: 20px;
-            background: #fff;
-            border: 2px dashed #e31837;
-            border-radius: 15px;
-        }
+        .painel-gestao { margin-top: 40px; padding: 20px; background: #fff; border: 2px dashed #e31837; border-radius: 15px; }
         .gestao-bloqueada { text-align: center; padding: 20px; }
         .gestao-conteudo { display: none; } 
 
-        .status-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-            background: #fdfdfd;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #eee;
-        }
+        .status-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; background: #fdfdfd; padding: 10px; border-radius: 10px; border: 1px solid #eee; }
         .bola { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; }
         .vermelha { background: #dc3545; box-shadow: 0 0 10px rgba(220, 53, 69, 0.4); }
         .azul { background: #007bff; box-shadow: 0 0 10px rgba(0, 123, 255, 0.4); }
@@ -72,23 +94,17 @@
         
         .status-row input { flex: 1; margin: 0; padding: 8px; height: 35px; }
         .btn-status { background: #333; color: white; padding: 8px 15px; border-radius: 6px; font-size: 12px; }
-        .btn-status:hover { background: #000; }
 
-        /* --- ÍCONES FLUTUANTES --- */
         .insta-float { position: fixed; bottom: 20px; right: 20px; z-index: 1000; text-align: center; text-decoration: none; }
-        .insta-circle { width: 60px; height: 60px; background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); animation: girarInsta 8s linear infinite; }
+        .insta-circle { width: 60px; height: 60px; background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
         .insta-circle i { color: white; font-size: 30px; }
         .insta-label { display: block; font-size: 9px; font-weight: bold; color: #e31837; margin-top: 5px; background: white; padding: 2px 5px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        @keyframes girarInsta { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .whatsapp-chat { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; background-color: #25d366; color: #fff; border-radius: 50px; text-align: center; font-size: 30px; box-shadow: 2px 2px 10px rgba(0,0,0,0.2); z-index: 1000; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: transform 0.3s; }
-        .whatsapp-chat:hover { transform: scale(1.1); color: white; }
+        .whatsapp-chat { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; background-color: #25d366; color: #fff; border-radius: 50px; text-align: center; font-size: 30px; box-shadow: 2px 2px 10px rgba(0,0,0,0.2); z-index: 1000; display: flex; align-items: center; justify-content: center; text-decoration: none; }
 
-        /* Modal Sucesso */
         .modal-sucesso { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 20px; text-align: center; max-width: 300px; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-content { background: white; padding: 30px; border-radius: 20px; text-align: center; max-width: 300px; }
         .check-icon { font-size: 60px; color: #28a745; margin-bottom: 15px; }
-        @keyframes popIn { from { transform: scale(0.5); } to { transform: scale(1); } }
 
         @media(max-width:600px){ #produtos{grid-template-columns:1fr;} }
     </style>
@@ -96,16 +112,26 @@
 
 <body>
 
-<a href="https://www.instagram.com/robs_pizzaria" target="_blank" class="insta-float">
-    <div class="insta-circle"><i class="fab fa-instagram"></i></div>
-    <span class="insta-label">@robs_pizzaria</span>
-</a>
-
-<a href="https://wa.me/5579999769581" class="whatsapp-chat" target="_blank">
-    <i class="fab fa-whatsapp"></i>
-</a>
-
 <div class="container">
+    <div class="pizza-border pizza-t">🍕</div>
+    <div class="pizza-border pizza-t p2">🍕</div>
+    <div class="pizza-border pizza-t p3">🍕</div>
+    
+    <div class="pizza-border pizza-b">🍕</div>
+    <div class="pizza-border pizza-b p2">🍕</div>
+    
+    <div class="pizza-border pizza-l">🍕</div>
+    <div class="pizza-border pizza-r">🍕</div>
+
+    <a href="https://www.instagram.com/robs_pizzaria" target="_blank" class="insta-float">
+        <div class="insta-circle"><i class="fab fa-instagram"></i></div>
+        <span class="insta-label">@robs_pizzaria</span>
+    </a>
+
+    <a href="https://wa.me/5579999769581" class="whatsapp-chat" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
     <div class="topo-info">
         📞 (79) 99976-9581 <br>
         📍 Delivery Bairro Luzia - Aracaju - SE <br>
@@ -145,29 +171,24 @@
 
     <div class="painel-gestao">
         <h3 style="margin-top:0; font-size: 16px;"><i class="fas fa-tools"></i> Painel do Lojista (Status)</h3>
-        
         <div id="gestaoLogin" class="gestao-bloqueada">
             <input type="password" id="senhaMestra" placeholder="Chave de Acesso" style="width: 180px; text-align: center; display: inline-block;">
             <button class="btn-status" onclick="acessarGestao()" style="background: #e31837; height: 40px;">Acessar</button>
         </div>
 
         <div id="gestaoConteudo" class="gestao-conteudo">
-            <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Aviso manual para o cliente via WhatsApp:</p>
-            
             <div class="status-row">
-                <div class="bola vermelha" title="Em Preparação"></div>
+                <div class="bola vermelha"></div>
                 <input type="text" id="status_tel_prep" placeholder="Zap do Cliente">
                 <button class="btn-status" onclick="enviarStatusManual('prep')">Enviar Prep.</button>
             </div>
-
             <div class="status-row">
-                <div class="bola azul" title="Pedido Pronto"></div>
+                <div class="bola azul"></div>
                 <input type="text" id="status_tel_pronto" placeholder="Zap do Cliente">
                 <button class="btn-status" onclick="enviarStatusManual('pronto')">Enviar Pronto</button>
             </div>
-
             <div class="status-row">
-                <div class="bola verde" title="Saiu para Entrega"></div>
+                <div class="bola verde"></div>
                 <input type="text" id="status_tel_entrega" placeholder="Zap do Cliente">
                 <button class="btn-status" onclick="enviarStatusManual('entrega')">Enviar Saída</button>
             </div>
@@ -179,8 +200,8 @@
 <div id="modalSucesso" class="modal-sucesso">
     <div class="modal-content">
         <div class="check-icon">✅</div>
-        <h2 style="color:#333; margin:0;">Pedido Enviado!</h2>
-        <p style="color:#666;">Registramos seu pedido na cozinha.<br>Abrindo o WhatsApp...</p>
+        <h2>Pedido Enviado!</h2>
+        <p>Registramos seu pedido na cozinha.<br>Abrindo o WhatsApp...</p>
     </div>
 </div>
 
@@ -207,90 +228,44 @@ const _supabase=supabase.createClient(supabaseUrl,supabaseKey);
 let carrinho=[];
 let produtosDoBanco=[];
 
-// --- FUNÇÃO DE ACESSO AO PAINEL ---
 window.acessarGestao = function() {
-    const senhaDigitada = document.getElementById("senhaMestra").value;
-    const SENHA_MESTRA = "253641"; // A sua nova senha definida
-
-    if(senhaDigitada === SENHA_MESTRA) {
+    if(document.getElementById("senhaMestra").value === "253641") {
         document.getElementById("gestaoLogin").style.display = "none";
         document.getElementById("gestaoConteudo").style.display = "block";
-    } else {
-        alert("Chave de segurança incorreta!");
-    }
+    } else { alert("Chave incorreta!"); }
 }
 
-// --- FUNÇÃO STATUS MANUAL DO LOJISTA ---
 window.enviarStatusManual = function(tipo) {
-    let telInput = "";
-    let msg = "";
-
-    if(tipo === 'prep') {
-        telInput = document.getElementById("status_tel_prep").value;
-        msg = "🔥 *Pizzaria Robs:* Olá! Seu pedido já entrou em preparação em nossa cozinha!";
-    } else if(tipo === 'pronto') {
-        telInput = document.getElementById("status_tel_pronto").value;
-        msg = "🍕 *Pizzaria Robs:* Seu pedido está prontinho! Aguardando apenas o entregador.";
-    } else if(tipo === 'entrega') {
-        telInput = document.getElementById("status_tel_entrega").value;
-        msg = "🛵 *Pizzaria Robs:* Saiu para entrega! O motoboy já está a caminho do seu endereço.";
-    }
-
-    if(!telInput || telInput.length < 8) {
-        alert("Digite o número do WhatsApp do cliente.");
-        return;
-    }
-
-    let numLimpo = telInput.replace(/\D/g, '');
-    if(!numLimpo.startsWith('55')) numLimpo = '55' + numLimpo;
-
-    window.open(`https://wa.me/${numLimpo}?text=${encodeURIComponent(msg)}`, '_blank');
+    let tel = ""; let msg = "";
+    if(tipo === 'prep') { tel = document.getElementById("status_tel_prep").value; msg = "🔥 *Pizzaria Robs:* Pedido em preparação!"; }
+    else if(tipo === 'pronto') { tel = document.getElementById("status_tel_pronto").value; msg = "🍕 *Pizzaria Robs:* Pedido pronto!"; }
+    else if(tipo === 'entrega') { tel = document.getElementById("status_tel_entrega").value; msg = "🛵 *Pizzaria Robs:* Saiu para entrega!"; }
+    
+    if(!tel) return alert("Digite o Zap!");
+    let num = tel.replace(/\D/g, '');
+    if(!num.startsWith('55')) num = '55' + num;
+    window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 function verificarHorario(){
-    let agora=new Date();
-    let dia=agora.getDay();
-    let hora=agora.getHours();
-    let minuto=agora.getMinutes();
-    let aberto=false;
-    if((dia>=3 && dia<=6) || dia==0){
-        if((hora>18 || (hora==18 && minuto>=0)) && (hora<22 || (hora==22 && minuto<=30))){
-            aberto=true;
-        }
-    }
+    let agora=new Date(); let dia=agora.getDay(); let hora=agora.getHours();
+    let aberto = ((dia>=3 && dia<=6) || dia==0) && (hora>=18 && hora<23);
     let status=document.getElementById("statusLoja");
     if(status) {
-        if(aberto){
-            status.innerHTML="🟢 LOJA ABERTA";
-            status.className="status-btn aberto";
-        }else{
-            status.innerHTML="🔴 FECHADO - Agendamento";
-            status.className="status-btn fechado";
-        }
+        status.innerHTML = aberto ? "🟢 LOJA ABERTA" : "🔴 FECHADO - Agendamento";
+        status.className = aberto ? "status-btn aberto" : "status-btn fechado";
     }
 }
 verificarHorario();
-setInterval(verificarHorario,60000);
 
-window.add = function(index){
-    carrinho.push(produtosDoBanco[index]);
-    window.renderCarrinho();
-}
-
-window.remover = function(index){
-    carrinho.splice(index,1);
-    window.renderCarrinho();
-}
-
-window.copiarPix = function(){
-    navigator.clipboard.writeText("rcsv74@gmail.com");
-    alert("Chave Pix copiada!");
-}
+window.add = (i) => { carrinho.push(produtosDoBanco[i]); window.renderCarrinho(); }
+window.remover = (i) => { carrinho.splice(i,1); window.renderCarrinho(); }
+window.copiarPix = () => { navigator.clipboard.writeText("rcsv74@gmail.com"); alert("Pix copiado!"); }
 
 async function carregarProdutos(){
     let lista=document.getElementById("produtos");
     const{data:produtos,error}=await _supabase.from('produtos').select('*');
-    if(error){lista.innerHTML="Erro ao carregar cardápio.";return;}
+    if(error) return;
     produtosDoBanco=produtos;
     lista.innerHTML="";
     produtos.forEach((p,index)=>{
@@ -305,73 +280,39 @@ async function carregarProdutos(){
 }
 
 window.renderCarrinho = function(){
-    let area=document.getElementById("carrinho");
-    area.innerHTML="";
-    let total=0;
-    carrinho.forEach((p,index)=>{
-        total+=parseFloat(p.preco);
-        area.innerHTML+=`<div class="produto" style="background:#f9f9f9; margin-bottom:5px; height: 40px; border: 1px dashed #ccc;">
-            <span style="font-size:13px">${p.nome}</span>
-            <button class="rem" onclick="window.remover(${index})">X</button>
+    let area=document.getElementById("carrinho"); area.innerHTML=""; let total=0;
+    carrinho.forEach((p,i)=>{ total+=parseFloat(p.preco);
+        area.innerHTML+=`<div class="produto" style="background:#f9f9f9; margin-bottom:5px; height: 40px;">
+            <span>${p.nome}</span><button class="rem" onclick="window.remover(${i})">X</button>
         </div>`;
     });
     document.getElementById("total").innerText=total.toFixed(2);
-    let pag = document.getElementById("pagamento").value;
-    let pixArea = document.getElementById("pixArea");
-    pixArea.style.display = (pag === "Pix" && total > 0) ? "block" : "none";
+    document.getElementById("pixArea").style.display = (document.getElementById("pagamento").value === "Pix" && total > 0) ? "block" : "none";
 }
 
 window.finalizar = async function(){
-    let nome=document.getElementById("nome").value;
-    let endereco=document.getElementById("endereco").value;
-    let contato=document.getElementById("contato").value;
-    let total=document.getElementById("total").innerText;
-    let pag = document.getElementById("pagamento").value;
-    let obs = document.getElementById("obs").value;
+    let n=document.getElementById("nome").value;
+    let e=document.getElementById("endereco").value;
+    let c=document.getElementById("contato").value;
+    if(!n||!e||carrinho.length < 2) return alert("Preencha tudo e escolha 2 itens!");
 
-    if(!nome||!endereco||!contato||carrinho.length < 2){
-        alert("Preencha todos os dados e escolha pelo menos 2 itens!"); return;
-    }
+    let lp = ""; carrinho.forEach(p => lp += `• ${p.nome}\n`);
+    document.getElementById("modalSucesso").style.display = "flex";
+    
+    await addDoc(collection(db, "pedidos"), { cliente: n, endereco: e, total: document.getElementById("total").innerText, data: serverTimestamp() });
 
-    let listaProd = "";
-    carrinho.forEach(p => { listaProd += `• ${p.nome}\n`; });
-
-    try {
-        document.getElementById("modalSucesso").style.display = "flex";
-        await addDoc(collection(db, "pedidos"), {
-            cliente: nome,
-            endereco: endereco,
-            telefone: contato,
-            total: total,
-            produtos: listaProd,
-            pagamento: pag,
-            observacao: obs,
-            data: serverTimestamp()
-        });
-
-        setTimeout(() => {
-            let msg = `*Pizzaria Robs*\n\n${listaProd}\n*Total:* R$ ${total}\n*Pagamento:* ${pag}\n*Cliente:* ${nome}\n*Endereço:* ${endereco}\n*Obs:* ${obs}`;
-            window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(msg)}`);
-            
-            carrinho = [];
-            document.getElementById("nome").value = "";
-            document.getElementById("endereco").value = "";
-            document.getElementById("contato").value = "";
-            document.getElementById("obs").value = "";
-            document.getElementById("modalSucesso").style.display = "none";
-            window.renderCarrinho();
-        }, 2000);
-    } catch (e) { 
-        document.getElementById("modalSucesso").style.display = "none";
-        console.error("Erro: ", e);
-        alert("Erro ao enviar pedido!"); 
-    }
+    setTimeout(() => {
+        let msg = `*Pizzaria Robs*\n\n${lp}\n*Total:* R$ ${document.getElementById("total").innerText}\n*Cliente:* ${n}`;
+        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(msg)}`);
+        location.reload();
+    }, 2000);
 }
 
 carregarProdutos();
 </script>
 </body>
 </html>
+
 
 
 
