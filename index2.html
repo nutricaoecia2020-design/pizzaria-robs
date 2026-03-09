@@ -207,4 +207,35 @@
 </div>
 
 </body>
-</html>
+</html><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    // Conexão com o seu projeto Supabase
+    const supabaseUrl = 'https://gsvvyktjeqlmhspqzppy.supabase.co';
+    const supabaseKey = 'sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs';
+    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function enviarCadastro() {
+        // Mapeia os campos do seu formulário (ajuste os IDs se necessário)
+        const dados = {
+            nome_completo: document.querySelector('input[placeholder="Nome Completo"]').value,
+            sexo: document.querySelector('select').value,
+            estado_civil: document.querySelectorAll('input')[2].value, // Exemplo por ordem
+            cpf: document.querySelector('input[placeholder="000.000.000-00"]').value,
+            rg: document.querySelectorAll('input')[4].value,
+            cep: document.querySelector('input[placeholder="00000-000"]').value,
+            endereco: document.querySelectorAll('input')[6].value,
+            numero: document.querySelectorAll('input')[7].value,
+            complemento: document.querySelectorAll('input')[8].value,
+            cidade: document.querySelectorAll('input')[9].value
+        };
+
+        const { error } = await _supabase.from('clientes').insert([dados]);
+
+        if (error) {
+            alert("Erro ao salvar no Supabase: " + error.message);
+        } else {
+            alert("✅ Cadastro de " + dados.nome_completo + " realizado com sucesso!");
+            location.reload(); // Limpa o formulário
+        }
+    }
+</script>
