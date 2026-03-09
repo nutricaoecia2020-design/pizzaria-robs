@@ -15,6 +15,36 @@
     <style>
         body{font-family:Arial, sans-serif;background:#f4f4f4;margin:0; overflow-x: hidden;}
         
+        /* --- BLOCO DE TEMPO (RELÓGIO + DATA) --- */
+        .tempo-container {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #222;
+            color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border: 2px solid #e31837;
+            z-index: 101;
+            min-width: 110px;
+        }
+        #relogio {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+            display: block;
+        }
+        #data {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 4px;
+            display: block;
+            text-transform: uppercase;
+        }
+
         /* --- ANIMAÇÃO DAS PIZZAS NAS BORDAS --- */
         .pizza-border {
             position: absolute;
@@ -23,23 +53,9 @@
             z-index: 100;
             pointer-events: none;
         }
-
-        /* Animação para o topo */
-        @keyframes correrTopo {
-            0% { left: -50px; }
-            100% { left: 100%; }
-        }
-        /* Animação para a base */
-        @keyframes correrBase {
-            0% { right: -50px; }
-            100% { right: 100%; }
-        }
-        /* Animação para as laterais */
-        @keyframes correrLateral {
-            0% { top: -50px; }
-            100% { top: 100%; }
-        }
-
+        @keyframes correrTopo { 0% { left: -50px; } 100% { left: 100%; } }
+        @keyframes correrBase { 0% { right: -50px; } 100% { right: 100%; } }
+        @keyframes correrLateral { 0% { top: -50px; } 100% { top: 100%; } }
         .pizza-t { top: -25px; animation: correrTopo 3s linear infinite; }
         .pizza-b { bottom: -25px; animation: correrBase 3s linear infinite; }
         .pizza-l { left: -25px; animation: correrLateral 4s linear infinite; }
@@ -50,16 +66,12 @@
             border: 8px solid #e31837;
             box-shadow:0 0 15px rgba(0,0,0,0.08);
             position: relative;
-            /* Garante que as pizzas fiquem presas à borda do container */
         }
-
-        /* Ajuste de delay para criar a "carreira" de pizzas */
         .p2 { animation-delay: 0.5s; }
         .p3 { animation-delay: 1s; }
-        .p4 { animation-delay: 1.5s; }
 
-        /* Estilos Originais */
-        .topo-info{text-align:center;font-size:14px;color:#555;margin-bottom:10px;}
+        /* Estilos de Conteúdo */
+        .topo-info{text-align:center;font-size:14px;color:#555;margin-bottom:10px; padding-top: 20px;}
         .status-btn{display:inline-block;padding:8px 15px;border-radius:20px;color:#fff;font-weight:bold;margin-top:8px;}
         .aberto{background:#28a745;animation:piscando 1s infinite;}
         .fechado{background:#6c757d;}
@@ -82,44 +94,47 @@
         .total-box{font-size:18px;font-weight:bold;color:#e31837;margin-top:10px; text-align: right;}
         .pix-area{text-align:center;margin-top:15px; padding: 15px; background: #f8f9fa; border-radius: 10px;}
 
+        /* Painel de Gestão */
         .painel-gestao { margin-top: 40px; padding: 20px; background: #fff; border: 2px dashed #e31837; border-radius: 15px; }
         .gestao-bloqueada { text-align: center; padding: 20px; }
         .gestao-conteudo { display: none; } 
-
         .status-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; background: #fdfdfd; padding: 10px; border-radius: 10px; border: 1px solid #eee; }
         .bola { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; }
-        .vermelha { background: #dc3545; box-shadow: 0 0 10px rgba(220, 53, 69, 0.4); }
-        .azul { background: #007bff; box-shadow: 0 0 10px rgba(0, 123, 255, 0.4); }
-        .verde { background: #28a745; box-shadow: 0 0 10px rgba(40, 167, 69, 0.4); }
-        
-        .status-row input { flex: 1; margin: 0; padding: 8px; height: 35px; }
+        .vermelha { background: #dc3545; }
+        .azul { background: #007bff; }
+        .verde { background: #28a745; }
         .btn-status { background: #333; color: white; padding: 8px 15px; border-radius: 6px; font-size: 12px; }
 
+        /* Botões Flutuantes */
         .insta-float { position: fixed; bottom: 20px; right: 20px; z-index: 1000; text-align: center; text-decoration: none; }
         .insta-circle { width: 60px; height: 60px; background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
         .insta-circle i { color: white; font-size: 30px; }
-        .insta-label { display: block; font-size: 9px; font-weight: bold; color: #e31837; margin-top: 5px; background: white; padding: 2px 5px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-
+        .insta-label { display: block; font-size: 9px; font-weight: bold; color: #e31837; margin-top: 5px; background: white; padding: 2px 5px; border-radius: 10px; }
         .whatsapp-chat { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; background-color: #25d366; color: #fff; border-radius: 50px; text-align: center; font-size: 30px; box-shadow: 2px 2px 10px rgba(0,0,0,0.2); z-index: 1000; display: flex; align-items: center; justify-content: center; text-decoration: none; }
 
         .modal-sucesso { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 20px; text-align: center; max-width: 300px; }
-        .check-icon { font-size: 60px; color: #28a745; margin-bottom: 15px; }
 
-        @media(max-width:600px){ #produtos{grid-template-columns:1fr;} }
+        @media(max-width:600px){ 
+            #produtos{grid-template-columns:1fr;} 
+            .tempo-container { top: 10px; right: 10px; padding: 6px; min-width: 90px; }
+            #relogio { font-size: 16px; }
+            #data { font-size: 9px; }
+        }
     </style>
 </head>
 
 <body>
 
 <div class="container">
+    <div class="tempo-container">
+        <span id="relogio">00:00:00</span>
+        <span id="data">00/00/0000</span>
+    </div>
+
     <div class="pizza-border pizza-t">🍕</div>
     <div class="pizza-border pizza-t p2">🍕</div>
-    <div class="pizza-border pizza-t p3">🍕</div>
-    
     <div class="pizza-border pizza-b">🍕</div>
-    <div class="pizza-border pizza-b p2">🍕</div>
-    
     <div class="pizza-border pizza-l">🍕</div>
     <div class="pizza-border pizza-r">🍕</div>
 
@@ -127,7 +142,6 @@
         <div class="insta-circle"><i class="fab fa-instagram"></i></div>
         <span class="insta-label">@robs_pizzaria</span>
     </a>
-
     <a href="https://wa.me/5579999769581" class="whatsapp-chat" target="_blank">
         <i class="fab fa-whatsapp"></i>
     </a>
@@ -170,27 +184,26 @@
     <button class="final" id="btnPedido" onclick="window.finalizar()">Enviar Pedido via WhatsApp</button>
 
     <div class="painel-gestao">
-        <h3 style="margin-top:0; font-size: 16px;"><i class="fas fa-tools"></i> Painel do Lojista (Status)</h3>
+        <h3 style="margin-top:0; font-size: 16px;"><i class="fas fa-tools"></i> Painel do Lojista</h3>
         <div id="gestaoLogin" class="gestao-bloqueada">
-            <input type="password" id="senhaMestra" placeholder="Chave de Acesso" style="width: 180px; text-align: center; display: inline-block;">
-            <button class="btn-status" onclick="acessarGestao()" style="background: #e31837; height: 40px;">Acessar</button>
+            <input type="password" id="senhaMestra" placeholder="Chave" style="width: 140px; display: inline-block;">
+            <button class="btn-status" onclick="acessarGestao()" style="background: #e31837; height: 40px;">Entrar</button>
         </div>
-
         <div id="gestaoConteudo" class="gestao-conteudo">
             <div class="status-row">
                 <div class="bola vermelha"></div>
-                <input type="text" id="status_tel_prep" placeholder="Zap do Cliente">
-                <button class="btn-status" onclick="enviarStatusManual('prep')">Enviar Prep.</button>
+                <input type="text" id="status_tel_prep" placeholder="Zap Cliente">
+                <button class="btn-status" onclick="enviarStatusManual('prep')">Prep.</button>
             </div>
             <div class="status-row">
                 <div class="bola azul"></div>
-                <input type="text" id="status_tel_pronto" placeholder="Zap do Cliente">
-                <button class="btn-status" onclick="enviarStatusManual('pronto')">Enviar Pronto</button>
+                <input type="text" id="status_tel_pronto" placeholder="Zap Cliente">
+                <button class="btn-status" onclick="enviarStatusManual('pronto')">Pronto</button>
             </div>
             <div class="status-row">
                 <div class="bola verde"></div>
-                <input type="text" id="status_tel_entrega" placeholder="Zap do Cliente">
-                <button class="btn-status" onclick="enviarStatusManual('entrega')">Enviar Saída</button>
+                <input type="text" id="status_tel_entrega" placeholder="Zap Cliente">
+                <button class="btn-status" onclick="enviarStatusManual('entrega')">Saída</button>
             </div>
             <button onclick="location.reload()" style="font-size: 10px; background: none; color: #999; border: none; cursor: pointer; text-decoration: underline;">Bloquear Painel</button>
         </div>
@@ -199,9 +212,9 @@
 
 <div id="modalSucesso" class="modal-sucesso">
     <div class="modal-content">
-        <div class="check-icon">✅</div>
+        <div class="check-icon" style="font-size: 60px; color: #28a745;">✅</div>
         <h2>Pedido Enviado!</h2>
-        <p>Registramos seu pedido na cozinha.<br>Abrindo o WhatsApp...</p>
+        <p>Abrindo o WhatsApp...</p>
     </div>
 </div>
 
@@ -228,6 +241,25 @@ const _supabase=supabase.createClient(supabaseUrl,supabaseKey);
 let carrinho=[];
 let produtosDoBanco=[];
 
+// --- LÓGICA DO RELÓGIO E DATA ---
+function atualizarTempo() {
+    const agora = new Date();
+    
+    // Relógio
+    const h = String(agora.getHours()).padStart(2, '0');
+    const m = String(agora.getMinutes()).padStart(2, '0');
+    const s = String(agora.getSeconds()).padStart(2, '0');
+    document.getElementById('relogio').textContent = `${h}:${m}:${s}`;
+    
+    // Data
+    const dia = String(agora.getDate()).padStart(2, '0');
+    const mes = String(agora.getMonth() + 1).padStart(2, '0');
+    const ano = agora.getFullYear();
+    document.getElementById('data').textContent = `${dia}/${mes}/${ano}`;
+}
+setInterval(atualizarTempo, 1000);
+atualizarTempo();
+
 window.acessarGestao = function() {
     if(document.getElementById("senhaMestra").value === "253641") {
         document.getElementById("gestaoLogin").style.display = "none";
@@ -240,7 +272,6 @@ window.enviarStatusManual = function(tipo) {
     if(tipo === 'prep') { tel = document.getElementById("status_tel_prep").value; msg = "🔥 *Pizzaria Robs:* Pedido em preparação!"; }
     else if(tipo === 'pronto') { tel = document.getElementById("status_tel_pronto").value; msg = "🍕 *Pizzaria Robs:* Pedido pronto!"; }
     else if(tipo === 'entrega') { tel = document.getElementById("status_tel_entrega").value; msg = "🛵 *Pizzaria Robs:* Saiu para entrega!"; }
-    
     if(!tel) return alert("Digite o Zap!");
     let num = tel.replace(/\D/g, '');
     if(!num.startsWith('55')) num = '55' + num;
@@ -263,10 +294,10 @@ window.remover = (i) => { carrinho.splice(i,1); window.renderCarrinho(); }
 window.copiarPix = () => { navigator.clipboard.writeText("rcsv74@gmail.com"); alert("Pix copiado!"); }
 
 async function carregarProdutos(){
-    let lista=document.getElementById("produtos");
     const{data:produtos,error}=await _supabase.from('produtos').select('*');
     if(error) return;
     produtosDoBanco=produtos;
+    let lista=document.getElementById("produtos");
     lista.innerHTML="";
     produtos.forEach((p,index)=>{
         lista.innerHTML+=`<div class="produto">
@@ -274,7 +305,7 @@ async function carregarProdutos(){
                 <img src="${p.url_imagem||'https://via.placeholder.com/70'}">
                 <div><b>${p.nome}</b><br>R$ ${parseFloat(p.preco).toFixed(2)}</div>
             </div>
-            <button class="add" onclick="window.add(${index})">Adicionar</button>
+            <button class="add" onclick="window.add(${index})">Add</button>
         </div>`;
     });
 }
@@ -293,13 +324,14 @@ window.renderCarrinho = function(){
 window.finalizar = async function(){
     let n=document.getElementById("nome").value;
     let e=document.getElementById("endereco").value;
-    let c=document.getElementById("contato").value;
     if(!n||!e||carrinho.length < 2) return alert("Preencha tudo e escolha 2 itens!");
 
     let lp = ""; carrinho.forEach(p => lp += `• ${p.nome}\n`);
     document.getElementById("modalSucesso").style.display = "flex";
     
-    await addDoc(collection(db, "pedidos"), { cliente: n, endereco: e, total: document.getElementById("total").innerText, data: serverTimestamp() });
+    try {
+        await addDoc(collection(db, "pedidos"), { cliente: n, endereco: e, total: document.getElementById("total").innerText, data: serverTimestamp() });
+    } catch(err) { console.error("Erro Firebase:", err); }
 
     setTimeout(() => {
         let msg = `*Pizzaria Robs*\n\n${lp}\n*Total:* R$ ${document.getElementById("total").innerText}\n*Cliente:* ${n}`;
