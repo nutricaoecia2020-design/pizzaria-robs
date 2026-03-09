@@ -10,6 +10,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
 body{font-family:Arial;background:#f4f4f4;margin:0;}
@@ -37,7 +38,7 @@ input,select,textarea{width:100%;padding:10px;margin:6px 0;border:1px solid #ddd
 .total-box{font-size:18px;font-weight:bold;color:#e31837;margin-top:10px;}
 .pix-area{text-align:center;margin-top:15px;}
 
-/* --- ESTILO DO INSTAGRAM GIRATÓRIO --- */
+/* --- ÍCONE INSTAGRAM GIRATÓRIO (DIREITA) --- */
 .insta-float {
     position: fixed;
     bottom: 20px;
@@ -47,8 +48,8 @@ input,select,textarea{width:100%;padding:10px;margin:6px 0;border:1px solid #ddd
     text-decoration: none;
 }
 .insta-circle {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
     border-radius: 50%;
     display: flex;
@@ -57,29 +58,42 @@ input,select,textarea{width:100%;padding:10px;margin:6px 0;border:1px solid #ddd
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     animation: girarInsta 8s linear infinite;
 }
-.insta-circle i {
-    color: white;
-    font-size: 35px;
-    /* Compensa a rotação do fundo para o ícone ficar reto ou remova se quiser o ícone girando junto */
-}
+.insta-circle i { color: white; font-size: 30px; }
 .insta-label {
     display: block;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: bold;
     color: #e31837;
     margin-top: 5px;
     background: white;
     padding: 2px 5px;
     border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
+@keyframes girarInsta { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-@keyframes girarInsta {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+/* --- ÍCONE WHATSAPP CHAT (ESQUERDA) --- */
+.whatsapp-chat {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #25d366;
+    color: #fff;
+    border-radius: 50px;
+    text-align: center;
+    font-size: 30px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: transform 0.3s;
 }
+.whatsapp-chat:hover { transform: scale(1.1); color: white; }
 
-/* Estilo da tela de sucesso (Check Verde) */
+/* Modal Sucesso */
 .modal-sucesso {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center;
@@ -93,60 +107,56 @@ input,select,textarea{width:100%;padding:10px;margin:6px 0;border:1px solid #ddd
 
 @media(max-width:600px){#produtos{grid-template-columns:1fr;}}
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
 <body>
 
 <a href="https://www.instagram.com/robs_pizzaria" target="_blank" class="insta-float">
-    <div class="insta-circle">
-        <i class="fab fa-instagram"></i>
-    </div>
+    <div class="insta-circle"><i class="fab fa-instagram"></i></div>
     <span class="insta-label">@robs_pizzaria</span>
 </a>
 
+<a href="https://wa.me/5579999769581" class="whatsapp-chat" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
 <div class="container">
+    <div class="topo-info">
+        📞 (79) 99976-9581 <br>
+        📍 Delivery Bairro Luzia - Aracaju - SE <br>
+        🗓 Aberto de Quarta a Domingo <br>
+        🕒 18:00 às 22:30 <br>
+        <div id="statusLoja" class="status-btn"></div>
+    </div>
 
-<div class="topo-info">
-📞 (79) 99976-9581 <br>
-📍 Delivery Bairro Luzia - Aracaju - SE <br>
-🗓 Aberto de Quarta a Domingo <br>
-🕒 18:00 às 22:30
-<br>
-<div id="statusLoja" class="status-btn"></div>
-</div>
+    <h2>🍕 Pizzaria Robs</h2>
+    <div class="aviso">⚠️ Para fechar o pedido é obrigatório escolher pelo menos 2 itens.</div>
+    <div id="produtos">Carregando cardápio...</div>
 
-<h2>🍕 Pizzaria Robs</h2>
+    <h3>🛒 Carrinho</h3>
+    <div id="carrinho"></div>
+    <div class="total-box">Total: R$ <span id="total">0.00</span></div>
 
-<div class="aviso">⚠️ Para fechar o pedido é obrigatório escolher pelo menos 2 itens.</div>
+    <h3>📍 Dados do Cliente</h3>
+    <input id="nome" placeholder="Seu Nome">
+    <input id="endereco" placeholder="Endereço de Entrega">
+    <input id="contato" placeholder="Telefone de Contato">
 
-<div id="produtos">Carregando cardápio...</div>
+    <select id="pagamento" onchange="window.renderCarrinho()">
+        <option value="Dinheiro">Dinheiro</option>
+        <option value="Pix">Pix</option>
+        <option value="Cartão">Cartão</option>
+    </select>
 
-<h3>🛒 Carrinho</h3>
-<div id="carrinho"></div>
-<div class="total-box">Total: R$ <span id="total">0.00</span></div>
+    <textarea id="obs" placeholder="Alguma observação?"></textarea>
 
-<h3>📍 Dados do Cliente</h3>
-<input id="nome" placeholder="Seu Nome">
-<input id="endereco" placeholder="Endereço de Entrega">
-<input id="contato" placeholder="Telefone de Contato">
+    <div id="pixArea" class="pix-area" style="display:none;">
+        <h3>Pagamento via Pix</h3>
+        <p>Chave Pix: rcsv74@gmail.com</p>
+        <button style="background:#007bff;color:white;padding:5px 10px;border-radius:5px;" onclick="window.copiarPix()">Copiar Chave Pix</button>
+    </div>
 
-<select id="pagamento" onchange="window.renderCarrinho()">
-<option value="Dinheiro">Dinheiro</option>
-<option value="Pix">Pix</option>
-<option value="Cartão">Cartão</option>
-</select>
-
-<textarea id="obs" placeholder="Alguma observação?"></textarea>
-
-<div id="pixArea" class="pix-area" style="display:none;">
-<h3>Pagamento via Pix</h3>
-<p>Chave Pix: rcsv74@gmail.com</p>
-<button style="background:#007bff;color:white;padding:5px 10px;border-radius:5px;" onclick="window.copiarPix()">Copiar Chave Pix</button>
-</div>
-
-<button class="final" id="btnPedido" onclick="window.finalizar()">Enviar Pedido via WhatsApp</button>
-
+    <button class="final" id="btnPedido" onclick="window.finalizar()">Enviar Pedido via WhatsApp</button>
 </div>
 
 <div id="modalSucesso" class="modal-sucesso">
@@ -180,7 +190,6 @@ const _supabase=supabase.createClient(supabaseUrl,supabaseKey);
 let carrinho=[];
 let produtosDoBanco=[];
 
-/* ===== STATUS DA LOJA ===== */
 function verificarHorario(){
     let agora=new Date();
     let dia=agora.getDay();
@@ -206,7 +215,6 @@ function verificarHorario(){
 verificarHorario();
 setInterval(verificarHorario,60000);
 
-/* ===== CARDÁPIO E CARRINHO ===== */
 window.add = function(index){
     carrinho.push(produtosDoBanco[index]);
     window.renderCarrinho();
@@ -256,7 +264,6 @@ window.renderCarrinho = function(){
     pixArea.style.display = (pag === "Pix" && total > 0) ? "block" : "none";
 }
 
-/* ===== FINALIZAR E ENVIAR AO PAINEL ===== */
 window.finalizar = async function(){
     let nome=document.getElementById("nome").value;
     let endereco=document.getElementById("endereco").value;
@@ -274,7 +281,6 @@ window.finalizar = async function(){
 
     try {
         document.getElementById("modalSucesso").style.display = "flex";
-
         await addDoc(collection(db, "pedidos"), {
             cliente: nome,
             endereco: endereco,
@@ -298,7 +304,6 @@ window.finalizar = async function(){
             document.getElementById("modalSucesso").style.display = "none";
             window.renderCarrinho();
         }, 2000);
-
     } catch (e) { 
         document.getElementById("modalSucesso").style.display = "none";
         console.error("Erro: ", e);
