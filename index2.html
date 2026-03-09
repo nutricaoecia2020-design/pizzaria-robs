@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Cliente | Estilo iFood</title>
+    <title>Cadastro de Cliente | Pizzaria Robs</title>
     <style>
         :root {
             --ifood-red: #ea1d2c;
@@ -60,7 +60,6 @@
             grid-column: span 12;
         }
 
-        /* Ajustes de colunas para telas de notebook */
         @media (min-width: 768px) {
             .col-8 { grid-column: span 8; }
             .col-4 { grid-column: span 4; }
@@ -120,14 +119,8 @@
             color: var(--ifood-text);
         }
 
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .btn:hover {
-            filter: brightness(0.9);
-        }
-
+        .btn:active { transform: scale(0.98); }
+        .btn:hover { filter: brightness(0.9); }
     </style>
 </head>
 <body>
@@ -138,104 +131,104 @@
         <p>Preencha os dados abaixo para criar o perfil</p>
     </header>
 
-    <form class="form-grid">
+    <form class="form-grid" id="meuFormulario">
         <div class="field col-8">
             <label>Nome Completo</label>
-            <input type="text" placeholder="Ex: João Silva">
+            <input type="text" id="nome_completo" placeholder="Ex: João Silva" required>
         </div>
         <div class="field col-2">
             <label>Sexo</label>
-            <select>
+            <select id="sexo">
                 <option value="M">Masc</option>
                 <option value="F">Fem</option>
             </select>
         </div>
         <div class="field col-2">
             <label>Est. Civil</label>
-            <input type="text">
+            <input type="text" id="estado_civil">
         </div>
 
         <div class="field col-6">
             <label>CPF</label>
-            <input type="text" placeholder="000.000.000-00">
+            <input type="text" id="cpf" placeholder="000.000.000-00">
         </div>
         <div class="field col-6">
             <label>RG</label>
-            <input type="text">
+            <input type="text" id="rg">
         </div>
 
         <div class="field col-3">
             <label>CEP</label>
-            <input type="text" placeholder="00000-000">
+            <input type="text" id="cep" placeholder="00000-000">
         </div>
         <div class="field col-7">
             <label>Endereço / Rua</label>
-            <input type="text">
+            <input type="text" id="endereco">
         </div>
         <div class="field col-2">
             <label>Número</label>
-            <input type="text">
+            <input type="text" id="numero">
         </div>
 
         <div class="field col-6">
             <label>Complemento / Bairro</label>
-            <input type="text" placeholder="Ex: Apto 12, Bloco B">
+            <input type="text" id="complemento" placeholder="Ex: Apto 12, Bloco B">
         </div>
         <div class="field col-4">
             <label>Cidade</label>
-            <input type="text">
+            <input type="text" id="cidade">
         </div>
         <div class="field col-2">
             <label>UF</label>
-            <input type="text">
-        </div>
-
-        <div class="field col-6">
-            <label>E-mail</label>
-            <input type="email" placeholder="nome@email.com">
-        </div>
-        <div class="field col-6">
-            <label>Celular (WhatsApp)</label>
-            <input type="text" placeholder="(00) 90000-0000">
+            <input type="text" id="uf">
         </div>
 
         <div class="field col-12 actions">
-            <button type="button" class="btn btn-secondary">Pesquisar</button>
+            <button type="button" class="btn btn-secondary" onclick="window.location.reload()">Limpar</button>
             <button type="submit" class="btn btn-primary">Salvar Cadastro</button>
         </div>
     </form>
 </div>
 
-</body>
-</html><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // Conexão com o seu projeto Supabase
     const supabaseUrl = 'https://gsvvyktjeqlmhspqzppy.supabase.co';
     const supabaseKey = 'sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs';
     const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    async function enviarCadastro() {
-        // Mapeia os campos do seu formulário (ajuste os IDs se necessário)
+    // Escuta o envio do formulário
+    document.getElementById('meuFormulario').addEventListener('submit', async function(e) {
+        e.preventDefault(); // Impede a página de recarregar antes de salvar
+        
+        const botao = e.target.querySelector('.btn-primary');
+        botao.innerText = "Salvando...";
+        botao.disabled = true;
+
         const dados = {
-            nome_completo: document.querySelector('input[placeholder="Nome Completo"]').value,
-            sexo: document.querySelector('select').value,
-            estado_civil: document.querySelectorAll('input')[2].value, // Exemplo por ordem
-            cpf: document.querySelector('input[placeholder="000.000.000-00"]').value,
-            rg: document.querySelectorAll('input')[4].value,
-            cep: document.querySelector('input[placeholder="00000-000"]').value,
-            endereco: document.querySelectorAll('input')[6].value,
-            numero: document.querySelectorAll('input')[7].value,
-            complemento: document.querySelectorAll('input')[8].value,
-            cidade: document.querySelectorAll('input')[9].value
+            nome_completo: document.getElementById('nome_completo').value,
+            sexo: document.getElementById('sexo').value,
+            estado_civil: document.getElementById('estado_civil').value,
+            cpf: document.getElementById('cpf').value,
+            rg: document.getElementById('rg').value,
+            cep: document.getElementById('cep').value,
+            endereco: document.getElementById('endereco').value,
+            numero: document.getElementById('numero').value,
+            complemento: document.getElementById('complemento').value,
+            cidade: document.getElementById('cidade').value
         };
 
         const { error } = await _supabase.from('clientes').insert([dados]);
 
         if (error) {
-            alert("Erro ao salvar no Supabase: " + error.message);
+            alert("Erro ao salvar: " + error.message);
+            botao.innerText = "Salvar Cadastro";
+            botao.disabled = false;
         } else {
             alert("✅ Cadastro de " + dados.nome_completo + " realizado com sucesso!");
-            location.reload(); // Limpa o formulário
+            window.location.reload(); 
         }
-    }
+    });
 </script>
+
+</body>
+</html>
