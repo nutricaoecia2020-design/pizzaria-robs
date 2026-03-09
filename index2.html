@@ -190,4 +190,65 @@
     </form>
 </div>
 
-<script src="https://
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    // Configurações do Banco
+    const supabaseUrl = 'https://gsvvyktjeqlmhspqzppy.supabase.co';
+    const supabaseKey = 'sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs';
+    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Escuta o envio do formulário
+    document.getElementById('meuFormulario').addEventListener('submit', async function(e) {
+        e.preventDefault(); 
+        
+        const botao = e.target.querySelector('.btn-primary');
+        const textoOriginal = botao.innerText;
+        
+        // Desativa o botão para evitar cliques duplos
+        botao.innerText = "Salvando...";
+        botao.disabled = true;
+
+        // Coleta os dados dos campos
+        const dados = {
+            nome_completo: document.getElementById('nome_completo').value,
+            sexo: document.getElementById('sexo').value,
+            estado_civil: document.getElementById('estado_civil').value,
+            cpf: document.getElementById('cpf').value,
+            rg: document.getElementById('rg').value,
+            cep: document.getElementById('cep').value,
+            endereco: document.getElementById('endereco').value,
+            numero: document.getElementById('numero').value,
+            complemento: document.getElementById('complemento').value,
+            cidade: document.getElementById('cidade').value,
+            uf: document.getElementById('uf').value
+        };
+
+        console.log("Tentando cadastrar:", dados);
+
+        // Envia para a tabela 'clientes' no Supabase
+        const { error } = await _supabase.from('clientes').insert([dados]);
+
+        if (error) {
+            console.error("Erro detalhado:", error);
+            // Alerta detalhado do porquê parou de salvar
+            alert("❌ Erro ao salvar!\n\nMotivo: " + error.message);
+            
+            // Reativa o botão para correção
+            botao.innerText = textoOriginal;
+            botao.disabled = false;
+        } else {
+            alert("✅ Cadastro de " + dados.nome_completo + " realizado com sucesso!");
+            
+            // Limpa o formulário sem recarregar a página (mais rápido e seguro)
+            document.getElementById('meuFormulario').reset();
+            
+            // Volta o botão ao normal
+            botao.innerText = textoOriginal;
+            botao.disabled = false;
+        }
+    });
+</script>
+
+</body>
+</html>
