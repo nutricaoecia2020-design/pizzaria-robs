@@ -224,11 +224,11 @@ function atualizarTempo() {
     const h = String(agora.getHours()).padStart(2, '0');
     const m = String(agora.getMinutes()).padStart(2, '0');
     const s = String(agora.getSeconds()).padStart(2, '0');
-    document.getElementById('relogio').textContent = `${h}:${m}:${s}`;
+    if(document.getElementById('relogio')) document.getElementById('relogio').textContent = `${h}:${m}:${s}`;
     const dia = String(agora.getDate()).padStart(2, '0');
     const mes = String(agora.getMonth() + 1).padStart(2, '0');
     const ano = agora.getFullYear();
-    document.getElementById('data').textContent = `${dia}/${mes}/${ano}`;
+    if(document.getElementById('data')) document.getElementById('data').textContent = `${dia}/${mes}/${ano}`;
 }
 setInterval(atualizarTempo, 1000);
 atualizarTempo();
@@ -306,21 +306,24 @@ window.finalizar = async function(){
         return alert("Por favor, preencha Nome, Endereço, Telefone e escolha pelo menos 2 itens!");
     }
 
-    // MONTAGEM DOS ITENS PARA O WHATSAPP
-    let listaItens = "";
+    // AJUSTE AQUI: Salva os itens em formato de texto simples e também como campo 'itens'
+    // para garantir que o seu Painel de Pedidos consiga ler.
+    let listaItensTexto = "";
     carrinho.forEach(item => {
-        listaItens += `• ${item.nome} - R$ ${parseFloat(item.preco).toFixed(2)}\n`;
+        listaItensTexto += `${item.nome} - R$ ${parseFloat(item.preco).toFixed(2)}\n`;
     });
 
     document.getElementById("modalSucesso").style.display = "flex";
     
     try {
+        // No Firebase, salvamos o campo 'itens' com a string formatada
+        // Verifique se seu painel de pedidos espera o nome do campo como 'itens' ou 'descricao'
         await addDoc(collection(db, "pedidos"), { 
             cliente: n, 
             endereco: e, 
             contato: c,
             pagamento: p,
-            itens: listaItens,
+            itens: listaItensTexto, // Campo que o painel costuma ler
             total: t, 
             data: serverTimestamp() 
         });
@@ -332,7 +335,7 @@ window.finalizar = async function(){
         msg += `*CONTATO:* ${c}\n`;
         msg += `*ENDEREÇO:* ${e}\n`;
         msg += `----------------------------\n`;
-        msg += `*ITENS:*\n${listaItens}`;
+        msg += `*ITENS:*\n${listaItensTexto}`;
         msg += `----------------------------\n`;
         msg += `*PAGAMENTO:* ${p}\n`;
         msg += `*OBS:* ${o}\n\n`;
@@ -347,6 +350,7 @@ carregarProdutos();
 </script>
 </body>
 </html>
+
 
 
 
