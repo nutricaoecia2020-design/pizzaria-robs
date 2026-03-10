@@ -48,8 +48,6 @@
             box-shadow:0 0 15px rgba(0,0,0,0.08);
             position: relative;
         }
-        .p2 { animation-delay: 0.5s; }
-        .p3 { animation-delay: 1s; }
 
         .topo-info{text-align:center;font-size:14px;color:#555;margin-bottom:10px; padding-top: 20px;}
         .status-btn{display:inline-block;padding:8px 15px;border-radius:20px;color:#fff;font-weight:bold;margin-top:8px;}
@@ -68,7 +66,6 @@
         .add{background:#28a745;color:#fff;}
         .rem{background:#dc3545;color:#fff;}
         .final{background:#e31837;color:#fff;width:100%;padding:14px;margin-top:20px;font-weight:bold;font-size:16px;}
-        .final:hover{background:#c4122d;}
 
         input,select,textarea{width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box; font-size: 14px;}
         .total-box{font-size:18px;font-weight:bold;color:#e31837;margin-top:10px; text-align: right;}
@@ -96,8 +93,6 @@
         @media(max-width:600px){ 
             #produtos{grid-template-columns:1fr;} 
             .tempo-container { top: 10px; right: 10px; padding: 6px; min-width: 90px; }
-            #relogio { font-size: 16px; }
-            #data { font-size: 9px; }
         }
     </style>
 </head>
@@ -111,7 +106,6 @@
     </div>
 
     <div class="pizza-border pizza-t">🍕</div>
-    <div class="pizza-border pizza-t p2">🍕</div>
     <div class="pizza-border pizza-b">🍕</div>
     <div class="pizza-border pizza-l">🍕</div>
     <div class="pizza-border pizza-r">🍕</div>
@@ -221,14 +215,8 @@ let produtosDoBanco=[];
 
 function atualizarTempo() {
     const agora = new Date();
-    const h = String(agora.getHours()).padStart(2, '0');
-    const m = String(agora.getMinutes()).padStart(2, '0');
-    const s = String(agora.getSeconds()).padStart(2, '0');
-    if(document.getElementById('relogio')) document.getElementById('relogio').textContent = `${h}:${m}:${s}`;
-    const dia = String(agora.getDate()).padStart(2, '0');
-    const mes = String(agora.getMonth() + 1).padStart(2, '0');
-    const ano = agora.getFullYear();
-    if(document.getElementById('data')) document.getElementById('data').textContent = `${dia}/${mes}/${ano}`;
+    document.getElementById('relogio').textContent = agora.toLocaleTimeString('pt-BR');
+    document.getElementById('data').textContent = agora.toLocaleDateString('pt-BR');
 }
 setInterval(atualizarTempo, 1000);
 atualizarTempo();
@@ -242,23 +230,21 @@ window.acessarGestao = function() {
 
 window.enviarStatusManual = function(tipo) {
     let tel = ""; let msg = "";
-    if(tipo === 'prep') { tel = document.getElementById("status_tel_prep").value; msg = "🔥 *Pizzaria Robs:* Pedido em preparação!"; }
-    else if(tipo === 'pronto') { tel = document.getElementById("status_tel_pronto").value; msg = "🍕 *Pizzaria Robs:* Pedido pronto!"; }
-    else if(tipo === 'entrega') { tel = document.getElementById("status_tel_entrega").value; msg = "🛵 *Pizzaria Robs:* Saiu para entrega!"; }
+    if(tipo === 'prep') tel = document.getElementById("status_tel_prep").value;
+    else if(tipo === 'pronto') tel = document.getElementById("status_tel_pronto").value;
+    else if(tipo === 'entrega') tel = document.getElementById("status_tel_entrega").value;
     if(!tel) return alert("Digite o Zap!");
     let num = tel.replace(/\D/g, '');
     if(!num.startsWith('55')) num = '55' + num;
-    window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank');
+    window.open(`https://wa.me/${num}?text=${encodeURIComponent("Pizzaria Robs: Seu pedido mudou de status!")}`, '_blank');
 }
 
 function verificarHorario(){
     let agora=new Date(); let dia=agora.getDay(); let hora=agora.getHours();
     let aberto = ((dia>=3 && dia<=6) || dia==0) && (hora>=18 && hora<23);
     let status=document.getElementById("statusLoja");
-    if(status) {
-        status.innerHTML = aberto ? "🟢 LOJA ABERTA" : "🔴 FECHADO - Agendamento";
-        status.className = aberto ? "status-btn aberto" : "status-btn fechado";
-    }
+    status.innerHTML = aberto ? "🟢 LOJA ABERTA" : "🔴 FECHADO - Agendamento";
+    status.className = aberto ? "status-btn aberto" : "status-btn fechado";
 }
 verificarHorario();
 
@@ -286,7 +272,7 @@ async function carregarProdutos(){
 window.renderCarrinho = function(){
     let area=document.getElementById("carrinho"); area.innerHTML=""; let total=0;
     carrinho.forEach((p,i)=>{ total+=parseFloat(p.preco);
-        area.innerHTML+=`<div class="produto" style="background:#f9f9f9; margin-bottom:5px; height: 40px;">
+        area.innerHTML+=`<div class="produto" style="background:#f9f9f9; margin-bottom:5px;">
             <span>${p.nome}</span><button class="rem" onclick="window.remover(${i})">X</button>
         </div>`;
     });
@@ -303,44 +289,32 @@ window.finalizar = async function(){
     let t = document.getElementById("total").innerText;
 
     if(!n || !e || !c || carrinho.length < 2) {
-        return alert("Por favor, preencha Nome, Endereço, Telefone e escolha pelo menos 2 itens!");
+        return alert("Preencha tudo e escolha pelo menos 2 itens!");
     }
 
-    // AJUSTE AQUI: Salva os itens em formato de texto simples e também como campo 'itens'
-    // para garantir que o seu Painel de Pedidos consiga ler.
-    let listaItensTexto = "";
+    let listaItensStr = "";
     carrinho.forEach(item => {
-        listaItensTexto += `${item.nome} - R$ ${parseFloat(item.preco).toFixed(2)}\n`;
+        listaItensStr += `${item.nome} - R$ ${parseFloat(item.preco).toFixed(2)}\n`;
     });
 
     document.getElementById("modalSucesso").style.display = "flex";
     
     try {
-        // No Firebase, salvamos o campo 'itens' com a string formatada
-        // Verifique se seu painel de pedidos espera o nome do campo como 'itens' ou 'descricao'
+        // ENVIANDO AMBOS OS CAMPOS PARA O PAINEL LER SEM ERRO
         await addDoc(collection(db, "pedidos"), { 
             cliente: n, 
             endereco: e, 
             contato: c,
             pagamento: p,
-            itens: listaItensTexto, // Campo que o painel costuma ler
+            itens: listaItensStr,      // Campo que você já usava
+            descricao: listaItensStr,  // Campo que o painel costuma buscar
             total: t, 
             data: serverTimestamp() 
         });
-    } catch(err) { console.error("Erro Firebase:", err); }
+    } catch(err) { console.error(err); }
 
     setTimeout(() => {
-        let msg = `*NOVO PEDIDO - PIZZARIA ROBS*\n\n`;
-        msg += `*CLIENTE:* ${n}\n`;
-        msg += `*CONTATO:* ${c}\n`;
-        msg += `*ENDEREÇO:* ${e}\n`;
-        msg += `----------------------------\n`;
-        msg += `*ITENS:*\n${listaItensTexto}`;
-        msg += `----------------------------\n`;
-        msg += `*PAGAMENTO:* ${p}\n`;
-        msg += `*OBS:* ${o}\n\n`;
-        msg += `*TOTAL:* R$ ${t}`;
-
+        let msg = `*NOVO PEDIDO - PIZZARIA ROBS*\n\n*CLIENTE:* ${n}\n*ENDEREÇO:* ${e}\n*ITENS:*\n${listaItensStr}\n*TOTAL:* R$ ${t}`;
         window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(msg)}`);
         location.reload();
     }, 2000);
