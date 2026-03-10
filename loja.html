@@ -15,7 +15,7 @@
     <style>
         body{font-family:Arial, sans-serif;background:#f4f4f4;margin:0; overflow-x: hidden;}
         
-        /* Estilos do Relógio e Animações */
+        /* Estilos do Relógio */
         .tempo-container {
             position: absolute; top: 15px; right: 15px; background: #222; color: #fff;
             padding: 10px; border-radius: 10px; font-family: 'Courier New', monospace;
@@ -24,10 +24,6 @@
         }
         #relogio { font-size: 20px; font-weight: bold; color: #ffffff; display: block; }
         #data { font-size: 11px; color: #aaa; margin-top: 4px; display: block; text-transform: uppercase; }
-
-        .pizza-border { position: absolute; width: 30px; height: 30px; z-index: 100; pointer-events: none; }
-        @keyframes correrTopo { 0% { left: -50px; } 100% { left: 100%; } }
-        .pizza-t { top: -25px; animation: correrTopo 3s linear infinite; }
 
         .container{
             max-width:900px;margin:30px auto;background:#fff;min-height:100vh;padding:20px;
@@ -62,7 +58,7 @@
         @keyframes girarInsta { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .whatsapp-chat { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; background-color: #25d366; color: #fff; border-radius: 50px; text-align: center; font-size: 30px; box-shadow: 2px 2px 10px rgba(0,0,0,0.2); z-index: 1000; display: flex; align-items: center; justify-content: center; text-decoration: none; }
 
-        /* PAINEL DE GESTÃO - APARÊNCIA ANTERIOR RECUPERADA */
+        /* PAINEL DE GESTÃO */
         .painel-gestao { margin-top: 40px; padding: 20px; background: #fff; border: 2px dashed #e31837; border-radius: 15px; }
         .gestao-bloqueada { text-align: center; padding: 20px; }
         .gestao-conteudo { display: none; } 
@@ -88,8 +84,6 @@
         <span id="relogio">00:00:00</span>
         <span id="data">00/00/0000</span>
     </div>
-
-    <div class="pizza-border pizza-t">🍕</div>
 
     <a href="https://www.instagram.com/robs_pizzaria" target="_blank" class="insta-float">
         <div class="insta-circle"><i class="fab fa-instagram"></i></div>
@@ -281,7 +275,6 @@ window.finalizar = async function(){
         return alert("Preencha tudo e escolha pelo menos 2 itens!");
     }
 
-    // MONTAGEM COM PONTO (•) PARA O PAINEL LER CORRETAMENTE
     let listaProd = "";
     carrinho.forEach(item => {
         listaProd += `• ${item.nome}\n`;
@@ -290,7 +283,6 @@ window.finalizar = async function(){
     document.getElementById("modalSucesso").style.display = "flex";
     
     try {
-        // ENVIANDO PARA O CAMPO 'produtos' (O que faz a descrição aparecer)
         await addDoc(collection(db, "pedidos"), { 
             cliente: n, 
             endereco: e, 
@@ -318,6 +310,7 @@ carregarProdutos();
 </script>
 </body>
 </html>
+
 
 
 
