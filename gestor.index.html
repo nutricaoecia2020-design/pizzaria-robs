@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor Robs v3.2 - Pro</title>
+    <title>Gestor Robs v3.3 - Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -58,7 +58,7 @@
             <h2>Monitor de Pedidos</h2>
             <div style="background:white; padding:5px 15px; border-radius:20px; font-weight:bold; color:var(--success); border:1px solid #eee;">LOJA ABERTA</div>
         </div>
-        <div class="grid-pedidos" id="lista-pedidos">Carregando...</div>
+        <div class="grid-pedidos" id="lista-pedidos">Carregando pedidos...</div>
     </div>
 
     <div id="caixa" class="section">
@@ -91,9 +91,9 @@
         <div style="background:white; padding:25px; border-radius:12px; max-width: 500px;">
             <label>Nome do Item</label>
             <input type="text" id="p-nome" placeholder="Ex: Pizza de Mussarela">
-            <label>Preço (use ponto para centavos)</label>
+            <label>Preço</label>
             <input type="number" step="0.01" id="p-preco" placeholder="Ex: 45.90">
-            <label>Link da Imagem</label>
+            <label>URL da Imagem</label>
             <input type="text" id="p-img" placeholder="URL da foto">
             <button onclick="salvarItem()" style="width:100%; background:var(--red); color:white; border:none; padding:15px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:10px;">CADASTRAR</button>
         </div>
@@ -121,7 +121,6 @@
 
     let totalVendido = 0;
     let totalPedidos = 0;
-    let somLigado = false;
 
     function mudarTab(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -131,11 +130,9 @@
         if(id === 'estoque') carregarProdutosExclusao();
     }
 
-    // MONITOR DE PEDIDOS
     db.collection("pedidos").orderBy("data", "desc").onSnapshot(snap => {
         const container = document.getElementById("lista-pedidos");
-        container.innerHTML = snap.empty ? "<p>Nenhum pedido no momento.</p>" : "";
-        
+        container.innerHTML = snap.empty ? "<p>Aguardando pedidos...</p>" : "";
         if(!snap.empty) document.getElementById('som-pedido').play().catch(()=>{});
 
         snap.forEach(doc => {
@@ -160,30 +157,32 @@
         });
     });
 
-    // CORREÇÃO DO VALOR DO CAIXA
-    function concluirPedido(id, valor, cliente) {
+    function concluirPedido(id, valorTexto, cliente) {
         if(confirm("Finalizar pedido de " + cliente + "?")) {
-            // Converte "49,50" ou "49.50" para número real
-            let valorLimpo = parseFloat(valor.replace(',', '.'));
-            
-            totalVendido += valorLimpo;
-            totalPedidos++;
+            // Lógica de correção: remove tudo que não for número ou ponto/vírgula
+            let valorLimpo = valorTexto.toString().replace(/[^\d,.]/g, '').replace(',', '.');
+            let valorNum = parseFloat(valorLimpo);
 
-            // Atualiza UI do Caixa
-            document.getElementById('c-total').innerText = "R$ " + totalVendido.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-            document.getElementById('c-qtd').innerText = totalPedidos;
-            
-            const tabela = document.querySelector('#tabela-caixa tbody');
-            tabela.innerHTML = `<tr><td>${new Date().toLocaleTimeString()}</td><td>${cliente}</td><td>R$ ${valorLimpo.toFixed(2)}</td></tr>` + tabela.innerHTML;
+            if (!isNaN(valorNum)) {
+                totalVendido += valorNum;
+                totalPedidos++;
+
+                // Atualiza a tela de Caixa imediatamente
+                document.getElementById('c-total').innerText = "R$ " + totalVendido.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('c-qtd').innerText = totalPedidos;
+                
+                const tabela = document.querySelector('#tabela-caixa tbody');
+                tabela.innerHTML = `<tr><td style="padding:10px; border-bottom:1px solid #eee;">${new Date().toLocaleTimeString()}</td><td style="padding:10px; border-bottom:1px solid #eee;">${cliente}</td><td style="padding:10px; border-bottom:1px solid #eee;">R$ ${valorNum.toFixed(2)}</td></tr>` + tabela.innerHTML;
+            }
 
             db.collection("pedidos").doc(id).delete();
         }
     }
 
-    // FUNÇÃO PARA CARREGAR PRODUTOS E PODER EXCLUIR
     async function carregarProdutosExclusao() {
         const { data } = await _supa.from('produtos').select('*');
         const container = document.getElementById('lista-produtos-delete');
+        if(!data) return;
         container.innerHTML = data.map(p => `
             <div class="card" style="padding:10px">
                 <img src="${p.url_imagem}" style="width:100%; height:100px; object-fit:cover; border-radius:8px">
@@ -195,10 +194,9 @@
     }
 
     async function excluirDoCardapio(id) {
-        if(confirm("Tem certeza que deseja remover este produto do cardápio?")) {
-            const { error } = await _supa.from('produtos').delete().eq('id', id);
-            if(!error) carregarProdutosExclusao();
-            else alert("Erro ao excluir");
+        if(confirm("Remover do cardápio?")) {
+            await _supa.from('produtos').delete().eq('id', id);
+            carregarProdutosExclusao();
         }
     }
 
@@ -206,17 +204,12 @@
         const nome = document.getElementById('p-nome').value;
         const preco = document.getElementById('p-preco').value;
         const img = document.getElementById('p-img').value;
-        
-        if(!nome || !preco) return alert("Nome e Preço são obrigatórios!");
-
-        const { error } = await _supa.from('produtos').insert([{ nome, preco, url_imagem: img }]);
-        if(!error) {
-            alert("Produto cadastrado!");
-            document.getElementById('p-nome').value = "";
-            document.getElementById('p-preco').value = "";
-            document.getElementById('p-img').value = "";
-            mudarTab('estoque');
-        }
+        if(!nome || !preco) return alert("Preencha nome e preço!");
+        await _supa.from('produtos').insert([{ nome, preco, url_imagem: img }]);
+        alert("Cadastrado!");
+        document.getElementById('p-nome').value = "";
+        document.getElementById('p-preco').value = "";
+        document.getElementById('p-img').value = "";
     }
 </script>
 </body>
