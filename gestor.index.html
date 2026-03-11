@@ -39,7 +39,6 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
 
-        /* AJUSTE FINAL DE IMPRESSÃO */
         @media print {
             body * { visibility: hidden; }
             #lista-pedidos, #lista-pedidos .card.imprimir-agora, #lista-pedidos .card.imprimir-agora * { visibility: visible; }
@@ -62,6 +61,7 @@
     <div class="nav-item" onclick="mudarTab('caixa')"><i class="fas fa-chart-line"></i> Caixa</div>
     <div class="nav-item" onclick="mudarTab('estoque')"><i class="fas fa-list"></i> Cardápio</div>
     <div class="nav-item" onclick="mudarTab('cadastro')"><i class="fas fa-plus"></i> Novo Item</div>
+    <div class="nav-item" onclick="mudarTab('precificacao')"><i class="fas fa-calculator"></i> Precificação</div>
 </nav>
 
 <main>
@@ -110,6 +110,46 @@
             <button onclick="salvarItem()" style="width:100%; background:var(--red); color:white; border:none; padding:15px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:10px;">CADASTRAR</button>
         </div>
     </div>
+
+    <div id="precificacao" class="section">
+        <h2>Calculadora de Custos (Pizza)</h2>
+        <div style="background:white; padding:25px; border-radius:12px; max-width: 600px;">
+            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Insira o custo dos insumos para calcular o custo total de produção.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label>Massa (R$)</label>
+                    <input type="number" step="0.01" class="calc-custo" placeholder="0.00">
+                </div>
+                <div>
+                    <label>Molho (R$)</label>
+                    <input type="number" step="0.01" class="calc-custo" placeholder="0.00">
+                </div>
+                <div>
+                    <label>Queijo (R$)</label>
+                    <input type="number" step="0.01" class="calc-custo" placeholder="0.00">
+                </div>
+                <div>
+                    <label>Recheio Principal (R$)</label>
+                    <input type="number" step="0.01" class="calc-custo" placeholder="0.00">
+                </div>
+                <div>
+                    <label>Embalagem (R$)</label>
+                    <input type="number" step="0.01" class="calc-custo" placeholder="0.00">
+                </div>
+                <div>
+                    <label>Outros/Extras (R$)</label>
+                    <input type="number" step="0.01" class="calc-custo" placeholder="0.00">
+                </div>
+            </div>
+
+            <div class="stat-card" style="margin-top: 25px; border: 2px solid var(--red); background: #fff1f2;">
+                <h4 style="margin-bottom: 5px;">CUSTO TOTAL DE PRODUÇÃO</h4>
+                <p id="custo-final" style="font-size:32px; font-weight:bold; color:var(--red); margin:0;">R$ 0,00</p>
+                <button onclick="calcularPrecoFinal()" style="margin-top: 15px; width:100%; background:var(--dark); color:white; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">CALCULAR AGORA</button>
+            </div>
+        </div>
+    </div>
 </main>
 
 <audio id="som-pedido" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
@@ -139,6 +179,16 @@
         document.getElementById(id).classList.add('active');
         if(event) event.currentTarget.classList.add('active');
         if(id === 'estoque') carregarProdutosExclusao();
+    }
+
+    // Função da Nova Aba
+    function calcularPrecoFinal() {
+        let soma = 0;
+        document.querySelectorAll('.calc-custo').forEach(input => {
+            const val = parseFloat(input.value);
+            if (!isNaN(val)) soma += val;
+        });
+        document.getElementById('custo-final').innerText = "R$ " + soma.toLocaleString('pt-BR', {minimumFractionDigits: 2});
     }
 
     db.collection("pedidos").orderBy("data", "desc").onSnapshot(snap => {
