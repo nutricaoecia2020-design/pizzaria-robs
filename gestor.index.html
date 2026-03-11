@@ -3,33 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor Robs v3.0 - Professional</title>
+    <title>Gestor Robs v3.1 - Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        :root { --red: #ea1d2c; --dark: #2d2e2f; --bg: #f4f4f5; --success: #28a745; --blue: #007bff; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; color: var(--dark); }
+        :root { --red: #ea1d2c; --dark: #2d2e2f; --bg: #f4f4f5; --success: #28a745; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Menu Lateral Estilizado */
-        nav { width: 260px; background: #fff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 20px 0; z-index: 10; }
-        .nav-header { text-align: center; padding-bottom: 20px; border-bottom: 1px solid #eee; margin-bottom: 10px; }
-        .nav-item { padding: 14px 24px; cursor: pointer; color: #64748b; font-weight: 600; display: flex; align-items: center; gap: 12px; transition: 0.2s; border-left: 4px solid transparent; }
-        .nav-item:hover, .nav-item.active { background: #fff1f2; color: var(--red); border-left-color: var(--red); }
+        /* Menu Lateral */
+        nav { width: 250px; background: #fff; border-right: 1px solid #ddd; display: flex; flex-direction: column; padding: 20px 0; z-index: 10; }
+        .nav-item { padding: 15px 25px; cursor: pointer; color: #666; font-weight: 600; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .nav-item.active { background: #fff1f2; color: var(--red); border-right: 4px solid var(--red); }
         
-        /* Layout Principal */
-        main { flex: 1; overflow-y: auto; padding: 25px; position: relative; }
-        .section { display: none; max-width: 1100px; margin: 0 auto; }
-        .section.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Área Principal */
+        main { flex: 1; overflow-y: auto; padding: 25px; }
+        .section { display: none; }
+        .section.active { display: block; }
 
-        /* Top Bar Info */
-        .top-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .status-loja { display: flex; align-items: center; gap: 10px; font-weight: bold; }
-
-        /* Cards de Pedidos Estilo iFood */
-        .grid-pedidos { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
-        .card-pedido { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; transition: 0.3s; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .card-pedido:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        .p-header { padding: 12px 15px; background: #f8fafc; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        /* Cards de Pedidos */
+        .grid-pedidos { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .card-pedido { background: white; border-radius: 12px; border: 1px solid #eee; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .p-body { padding: 15px; }
-        .p-total { font-size: 20px; color: var(--red); font-weight: 800; text-align: right; margin-top: 10px; border
+        .itens-box { background: #f8fafc; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 13px; white-space: pre-wrap; }
+        
+        /* Botões */
+        .p-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; background: #fafafa; }
+        .btn { border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .btn-concluir { background: var(--success); color: white; grid-column: span 2; }
+        .btn-whats { background: #25d366; color: white; }
+        .btn-print { background: #eee; }
+
+        #aviso-som { position: fixed; top: 0; left: 250px; right: 0; background: #f59e0b; color: white; text-align: center; padding: 8px; z-index: 1000; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div id="aviso-som" onclick="this.style.display='none'">🔔 CLIQUE AQUI PARA ATIVAR O SOM</div>
+
+<nav>
+    <div style="text-align:center; padding-bottom:20px;">
+        <img src="https://static.ifood-static.com.br/image/upload/t_high/logosg0/logo_ifood.png" width="60">
+        <h3 style="font-size:14px;">GESTOR ROBS</h3>
+    </div>
+    <div class="nav-item active" onclick="mudarTab('pedidos')"><i class="fas fa-receipt"></i> Pedidos</div>
+    <div class="nav-item" onclick="mudarTab('caixa')"><i class="fas fa-chart-line"></i> Caixa</div>
+    <div class="nav-item" onclick="mudarTab('cadastro')"><i class="fas fa-plus"></i> Novo Item</div>
+</nav>
+
+<main>
+    <div id="pedidos" class="section active">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2>Monitor de Pedidos</h2>
+            <div id="status-loja-ui" style="background:white; padding:5px 15px; border-radius:20px; font-weight:bold; color:var(--success); border:1px solid #eee;">LOJA ABERTA</div>
+        </div>
+        <div class="grid-pedidos" id="lista-pedidos">
+            <p>Carregando monitor...</p>
+        </div>
+    </div>
+
+    <div id="caixa" class="section">
+        <h2>Fechamento de Caixa</h2>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+            <div style="background:white; padding:20px; border-radius:12px; text-align:center;">
+                <h4>Total Vendido</h4>
+                <p id="c-total" style="font-size:32px; font-weight:bold; color:var(--red); margin:0;">R$ 0,00</p>
+            </div>
+            <div style="background:white; padding:20px; border-radius:12px; text-align:center;">
+                <h4>Pedidos</h4>
+                <p id="c-qtd" style="font-size:32px; font-weight:bold; margin:0;">0</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="cadastro" class="section">
+        <h2>Novo Produto</h2>
+        <div style="background:white; padding:20px; border-radius:12px;">
+            <input type="text" id="p-nome" placeholder="Nome do item">
+            <input type="number" id="p-preco" placeholder="Preço (Ex: 39.90)">
+            <input type="text" id="p-img" placeholder="Link da imagem">
+            <button onclick="salvarItem()" style="width:100%; background:var(--red); color:white; border:none; padding:15px; border-radius:8px; font-weight:bold; cursor:pointer;">CADASTRAR</button>
+        </div>
+    </div>
+</main>
+
+<audio id="som-pedido" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<script>
+    // 1. CONFIGURAÇÕES
+    const firebaseConfig = {
+        apiKey: "AIzaSyAjzwX_sPyZOvZzcJc9ynBSbBN5uazaCHU",
+        authDomain: "robs-pizzariadelivery.firebaseapp.com",
+        projectId: "robs-pizzariadelivery",
+        storageBucket: "robs-pizzariadelivery.firebasestorage.app",
+        messagingSenderId: "847851003409",
+        appId: "1:847851003409:web:7f3ed9f7089d4c61861bb0"
+    };
+
+    // Inicialização segura
+    try {
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+    } catch(e) { console.error("Erro Firebase:", e); }
+
+    const _supa = supabase.createClient('https://gsvvyktjeqlmhspqzppy.supabase.co', 'sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs');
+
+    // 2. FUNÇÕES DE NAVEGAÇÃO
+    function mudarTab(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // 3. MONITOR DE PEDIDOS
+    let primeiraVez = true;
+    let totalCaixa = 0;
+    let qtdCaixa = 0;
+
+    if(db) {
+        db.collection("pedidos").orderBy("data", "desc").onSnapshot(snap => {
+            const container = document.getElementById("lista-pedidos");
+            container.innerHTML = "";
+            
+            if(!snap.empty && !primeiraVez) {
+                document.getElementById('som-pedido').play().catch(()=>{});
+            }
+            primeiraVez = false;
+
+            snap.forEach(doc => {
+                const p = doc.data();
+                const card = `
+                    <div class="card-pedido">
+                        <div class="p-body">
+                            <h3 style="margin:0;">👤 ${p.cliente}</h3>
+                            <small>📍 ${p.endereco}</small>
+                            <div class="itens-box">${p.produtos}</div>
+                            <h3 style="text-align:right; color:var(--red); margin:0;">Total: R$ ${p.total}</h3>
+                        </div>
+                        <div class="p-acoes">
+                            <button class="btn btn-whats" onclick="window.open('https://wa.me/55${p.telefone.replace(/\D/g,'')}')">ZAP</button>
+                            <button class="btn btn-print" onclick="window.print()">IMPRIMIR</button>
+                            <button class="btn btn-concluir" onclick="concluir('${doc.id}', '${p.total}')">CONCLUIR</button>
+                        </div>
+                    </div>`;
+                container.innerHTML += card;
+            });
+        });
+    }
+
+    function concluir(id, valor) {
+        if(confirm("Deseja finalizar?")) {
+            db.collection("pedidos").doc(id).delete();
+            totalCaixa += parseFloat(valor.replace(',', '.'));
+            qtdCaixa++;
+            document.getElementById('c-total').innerText = "R$ " + totalCaixa.toFixed(2);
+            document.getElementById('c-qtd').innerText = qtdCaixa;
+        }
+    }
+
+    async function salvarItem() {
+        const n = document.getElementById('p-nome').value;
+        const p = document.getElementById('p-preco').value;
+        const i = document.getElementById('p-img').value;
+        const { error } = await _supa.from('produtos').insert([{ nome: n, preco: p, url_imagem: i }]);
+        if(!error) { alert("Sucesso!"); mudarTab('pedidos'); }
+    }
+</script>
+
+</body>
+</html>
