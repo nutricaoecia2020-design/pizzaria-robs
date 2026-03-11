@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor Robs v3.4 - Pro</title>
+    <title>Gestor Robs v3.5 - Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -20,7 +20,7 @@
         .section.active { display: block; }
 
         .grid-pedidos { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-        .card { background: white; border-radius: 12px; border: 1px solid #eee; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .card { background: white; border-radius: 12px; border: 1px solid #eee; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative; }
         .p-body { padding: 15px; }
         .itens-box { background: #f8fafc; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 13px; white-space: pre-wrap; border: 1px solid #e2e8f0; }
         
@@ -38,6 +38,19 @@
         
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+
+        /* REGRAS DE IMPRESSÃO INDIVIDUAL */
+        @media print {
+            body, nav, #aviso-som, .p-acoes, .nav-item, h2, .stat-card, #status-loja-header, .btn, input { display: none !important; }
+            main { padding: 0 !important; margin: 0 !important; overflow: visible !important; }
+            .section { display: block !important; }
+            .grid-pedidos { display: block !important; }
+            .card { display: none !important; border: none !important; box-shadow: none !important; width: 100% !important; }
+            /* Apenas o card com a classe 'imprimir-agora' será exibido */
+            .card.imprimir-agora { display: block !important; margin: 0 !important; padding: 0 !important; }
+            .itens-box { border: 1px solid #000 !important; color: #000 !important; }
+            .card.imprimir-agora .p-body { padding: 0 !important; }
+        }
     </style>
 </head>
 <body>
@@ -57,7 +70,7 @@
 
 <main>
     <div id="pedidos" class="section active">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;" id="status-loja-header">
             <h2>Monitor de Pedidos</h2>
             <div style="background:white; padding:5px 15px; border-radius:20px; font-weight:bold; color:var(--success); border:1px solid #eee;">LOJA ABERTA</div>
         </div>
@@ -139,48 +152,52 @@
 
         snap.forEach(doc => {
             const p = doc.data();
-            // Extrai apenas o número do texto do total para sugerir no input
             let valorSugerido = p.total.toString().replace(/[^\d,.]/g, '').replace(',', '.');
             
+            const cardId = `card-${doc.id}`;
             container.innerHTML += `
-                <div class="card">
+                <div class="card" id="${cardId}">
                     <div class="p-body">
                         <div style="display:flex; justify-content:space-between">
                             <h3 style="margin:0">👤 ${p.cliente}</h3>
                             <small>#${doc.id.slice(-4)}</small>
                         </div>
+                        <p style="font-size:12px; color:#666">📍 ${p.endereco}</p>
                         <div class="itens-box">${p.produtos}</div>
-                        <div style="background:#fff1f2; padding:10px; border-radius:8px; border:1px solid var(--red)">
+                        <h3 style="text-align:right; color:var(--red); margin:5px 0">Total: R$ ${p.total}</h3>
+                        <div class="caixa-input-container" style="background:#fff1f2; padding:10px; border-radius:8px; border:1px solid var(--red); margin-top:10px;">
                             <label style="font-size:11px; font-weight:bold; color:var(--red)">VALOR PARA O CAIXA (R$):</label>
                             <input type="number" step="0.01" id="val-${doc.id}" value="${valorSugerido}" style="font-size:18px; font-weight:bold; color:var(--red)">
                         </div>
                     </div>
                     <div class="p-acoes">
                         <button class="btn btn-whats" onclick="window.open('https://wa.me/55${p.telefone.replace(/\D/g,'')}')">ZAP</button>
-                        <button class="btn btn-print" onclick="window.print()">IMPRIMIR</button>
+                        <button class="btn btn-print" onclick="imprimirIndividual('${cardId}')">IMPRIMIR</button>
                         <button class="btn btn-concluir" onclick="lancarNoCaixa('${doc.id}', '${p.cliente}')">CONCLUIR E LANÇAR</button>
                     </div>
                 </div>`;
         });
     });
 
+    // FUNÇÃO DE IMPRESSÃO INDIVIDUAL
+    function imprimirIndividual(id) {
+        const todosCards = document.querySelectorAll('.card');
+        todosCards.forEach(c => c.classList.remove('imprimir-agora'));
+        
+        const cardParaImprimir = document.getElementById(id);
+        cardParaImprimir.classList.add('imprimir-agora');
+        
+        window.print();
+    }
+
     function lancarNoCaixa(id, cliente) {
         const valorManual = document.getElementById(`val-${id}`).value;
         const valorNum = parseFloat(valorManual);
 
-        if (isNaN(valorNum) || valorNum <= 0) {
-            return alert("Por favor, insira um valor válido para o caixa.");
-        }
+        if (isNaN(valorNum) || valorNum <= 0) return alert("Insira um valor válido.");
 
-        if(confirm(`Lançar R$ ${valorNum.toFixed(2)} no caixa e finalizar pedido?`)) {
-            const novoLancamento = {
-                id: Date.now(),
-                hora: new Date().toLocaleTimeString(),
-                cliente: cliente,
-                valor: valorNum
-            };
-
-            historicoCaixa.push(novoLancamento);
+        if(confirm(`Lançar R$ ${valorNum.toFixed(2)} no caixa?`)) {
+            historicoCaixa.push({ id: Date.now(), hora: new Date().toLocaleTimeString(), cliente: cliente, valor: valorNum });
             atualizarTabelaCaixa();
             db.collection("pedidos").doc(id).delete();
         }
@@ -190,24 +207,16 @@
         const corpo = document.getElementById('corpo-caixa');
         let total = 0;
         corpo.innerHTML = "";
-
         historicoCaixa.forEach(item => {
             total += item.valor;
-            corpo.innerHTML += `
-                <tr>
-                    <td>${item.hora}</td>
-                    <td>${item.cliente}</td>
-                    <td style="font-weight:bold">R$ ${item.valor.toFixed(2)}</td>
-                    <td><button class="btn btn-delete" onclick="removerDoCaixa(${item.id})"><i class="fas fa-trash"></i></button></td>
-                </tr>`;
+            corpo.innerHTML += `<tr><td>${item.hora}</td><td>${item.cliente}</td><td style="font-weight:bold">R$ ${item.valor.toFixed(2)}</td><td><button class="btn btn-delete" onclick="removerDoCaixa(${item.id})"><i class="fas fa-trash"></i></button></td></tr>`;
         });
-
         document.getElementById('c-total').innerText = "R$ " + total.toLocaleString('pt-BR', {minimumFractionDigits: 2});
         document.getElementById('c-qtd').innerText = historicoCaixa.length;
     }
 
     function removerDoCaixa(id) {
-        if(confirm("Deseja apagar este registro do caixa?")) {
+        if(confirm("Remover registro?")) {
             historicoCaixa = historicoCaixa.filter(item => item.id !== id);
             atualizarTabelaCaixa();
         }
@@ -217,20 +226,11 @@
         const { data } = await _supa.from('produtos').select('*');
         const container = document.getElementById('lista-produtos-delete');
         if(!data) return;
-        container.innerHTML = data.map(p => `
-            <div class="card" style="padding:10px">
-                <img src="${p.url_imagem}" style="width:100%; height:100px; object-fit:cover; border-radius:8px">
-                <h4 style="margin:10px 0 5px">${p.nome}</h4>
-                <button class="btn btn-delete" style="width:100%" onclick="excluirDoCardapio(${p.id})"><i class="fas fa-trash"></i> EXCLUIR</button>
-            </div>
-        `).join('');
+        container.innerHTML = data.map(p => `<div class="card" style="padding:10px"><img src="${p.url_imagem}" style="width:100%; height:100px; object-fit:cover; border-radius:8px"><h4 style="margin:10px 0 5px">${p.nome}</h4><button class="btn btn-delete" style="width:100%" onclick="excluirDoCardapio(${p.id})"><i class="fas fa-trash"></i> EXCLUIR</button></div>`).join('');
     }
 
     async function excluirDoCardapio(id) {
-        if(confirm("Remover do cardápio?")) {
-            await _supa.from('produtos').delete().eq('id', id);
-            carregarProdutosExclusao();
-        }
+        if(confirm("Remover?")) { await _supa.from('produtos').delete().eq('id', id); carregarProdutosExclusao(); }
     }
 
     async function salvarItem() {
@@ -238,10 +238,8 @@
         const preco = document.getElementById('p-preco').value;
         const img = document.getElementById('p-img').value;
         await _supa.from('produtos').insert([{ nome, preco, url_imagem: img }]);
-        alert("Cadastrado!");
-        document.getElementById('p-nome').value = "";
-        document.getElementById('p-preco').value = "";
-        document.getElementById('p-img').value = "";
+        alert("Salvo!");
+        document.getElementById('p-nome').value = ""; document.getElementById('p-preco').value = ""; document.getElementById('p-img').value = "";
     }
 </script>
 </body>
