@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor Robs v3.1 - Pro</title>
+    <title>Gestor Robs v3.2 - Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -11,43 +11,44 @@
         :root { --red: #ea1d2c; --dark: #2d2e2f; --bg: #f4f4f5; --success: #28a745; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Menu Lateral */
         nav { width: 250px; background: #fff; border-right: 1px solid #ddd; display: flex; flex-direction: column; padding: 20px 0; z-index: 10; }
-        .nav-item { padding: 15px 25px; cursor: pointer; color: #666; font-weight: 600; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
-        .nav-item.active { background: #fff1f2; color: var(--red); border-right: 4px solid var(--red); }
+        .nav-item { padding: 15px 25px; cursor: pointer; color: #666; font-weight: 600; display: flex; align-items: center; gap: 12px; transition: 0.2s; border-left: 4px solid transparent; }
+        .nav-item.active { background: #fff1f2; color: var(--red); border-left-color: var(--red); }
         
-        /* Área Principal */
         main { flex: 1; overflow-y: auto; padding: 25px; }
         .section { display: none; }
         .section.active { display: block; }
 
-        /* Cards de Pedidos */
         .grid-pedidos { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-        .card-pedido { background: white; border-radius: 12px; border: 1px solid #eee; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .card { background: white; border-radius: 12px; border: 1px solid #eee; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .p-body { padding: 15px; }
-        .itens-box { background: #f8fafc; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 13px; white-space: pre-wrap; }
+        .itens-box { background: #f8fafc; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 13px; white-space: pre-wrap; border: 1px solid #e2e8f0; }
         
-        /* Botões */
         .p-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; background: #fafafa; }
-        .btn { border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
-        .btn-concluir { background: var(--success); color: white; grid-column: span 2; }
+        .btn { border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-concluir { background: var(--success); color: white; grid-column: span 2; padding: 12px; }
         .btn-whats { background: #25d366; color: white; }
         .btn-print { background: #eee; }
+        .btn-delete { background: #fee2e2; color: #ef4444; width: 100%; margin-top: 10px; }
 
-        #aviso-som { position: fixed; top: 0; left: 250px; right: 0; background: #f59e0b; color: white; text-align: center; padding: 8px; z-index: 1000; cursor: pointer; }
+        .stat-card { background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        
+        #aviso-som { position: fixed; top: 0; left: 250px; right: 0; background: #f59e0b; color: white; text-align: center; padding: 8px; z-index: 1000; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div id="aviso-som" onclick="this.style.display='none'">🔔 CLIQUE AQUI PARA ATIVAR O SOM</div>
+<div id="aviso-som" onclick="this.style.display='none'">🔔 ATIVAR SOM DE NOVOS PEDIDOS</div>
 
 <nav>
     <div style="text-align:center; padding-bottom:20px;">
         <img src="https://static.ifood-static.com.br/image/upload/t_high/logosg0/logo_ifood.png" width="60">
-        <h3 style="font-size:14px;">GESTOR ROBS</h3>
+        <h3 style="font-size:14px; margin-top:10px;">GESTOR ROBS</h3>
     </div>
     <div class="nav-item active" onclick="mudarTab('pedidos')"><i class="fas fa-receipt"></i> Pedidos</div>
     <div class="nav-item" onclick="mudarTab('caixa')"><i class="fas fa-chart-line"></i> Caixa</div>
+    <div class="nav-item" onclick="mudarTab('estoque')"><i class="fas fa-list"></i> Cardápio</div>
     <div class="nav-item" onclick="mudarTab('cadastro')"><i class="fas fa-plus"></i> Novo Item</div>
 </nav>
 
@@ -55,34 +56,46 @@
     <div id="pedidos" class="section active">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <h2>Monitor de Pedidos</h2>
-            <div id="status-loja-ui" style="background:white; padding:5px 15px; border-radius:20px; font-weight:bold; color:var(--success); border:1px solid #eee;">LOJA ABERTA</div>
+            <div style="background:white; padding:5px 15px; border-radius:20px; font-weight:bold; color:var(--success); border:1px solid #eee;">LOJA ABERTA</div>
         </div>
-        <div class="grid-pedidos" id="lista-pedidos">
-            <p>Carregando monitor...</p>
-        </div>
+        <div class="grid-pedidos" id="lista-pedidos">Carregando...</div>
     </div>
 
     <div id="caixa" class="section">
         <h2>Fechamento de Caixa</h2>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-            <div style="background:white; padding:20px; border-radius:12px; text-align:center;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom: 20px;">
+            <div class="stat-card">
                 <h4>Total Vendido</h4>
                 <p id="c-total" style="font-size:32px; font-weight:bold; color:var(--red); margin:0;">R$ 0,00</p>
             </div>
-            <div style="background:white; padding:20px; border-radius:12px; text-align:center;">
-                <h4>Pedidos</h4>
+            <div class="stat-card">
+                <h4>Qtd Pedidos</h4>
                 <p id="c-qtd" style="font-size:32px; font-weight:bold; margin:0;">0</p>
             </div>
         </div>
+        <div style="background:white; padding:15px; border-radius:12px;">
+            <table style="width:100%; border-collapse: collapse;" id="tabela-caixa">
+                <thead><tr style="text-align:left; border-bottom: 2px solid #eee;"><th>Hora</th><th>Cliente</th><th>Valor</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="estoque" class="section">
+        <h2>Gerenciar Cardápio</h2>
+        <div class="grid-pedidos" id="lista-produtos-delete">Carregando produtos...</div>
     </div>
 
     <div id="cadastro" class="section">
         <h2>Novo Produto</h2>
-        <div style="background:white; padding:20px; border-radius:12px;">
-            <input type="text" id="p-nome" placeholder="Nome do item">
-            <input type="number" id="p-preco" placeholder="Preço (Ex: 39.90)">
-            <input type="text" id="p-img" placeholder="Link da imagem">
-            <button onclick="salvarItem()" style="width:100%; background:var(--red); color:white; border:none; padding:15px; border-radius:8px; font-weight:bold; cursor:pointer;">CADASTRAR</button>
+        <div style="background:white; padding:25px; border-radius:12px; max-width: 500px;">
+            <label>Nome do Item</label>
+            <input type="text" id="p-nome" placeholder="Ex: Pizza de Mussarela">
+            <label>Preço (use ponto para centavos)</label>
+            <input type="number" step="0.01" id="p-preco" placeholder="Ex: 45.90">
+            <label>Link da Imagem</label>
+            <input type="text" id="p-img" placeholder="URL da foto">
+            <button onclick="salvarItem()" style="width:100%; background:var(--red); color:white; border:none; padding:15px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:10px;">CADASTRAR</button>
         </div>
     </div>
 </main>
@@ -93,7 +106,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <script>
-    // 1. CONFIGURAÇÕES
     const firebaseConfig = {
         apiKey: "AIzaSyAjzwX_sPyZOvZzcJc9ynBSbBN5uazaCHU",
         authDomain: "robs-pizzariadelivery.firebaseapp.com",
@@ -103,76 +115,109 @@
         appId: "1:847851003409:web:7f3ed9f7089d4c61861bb0"
     };
 
-    // Inicialização segura
-    try {
-        firebase.initializeApp(firebaseConfig);
-        var db = firebase.firestore();
-    } catch(e) { console.error("Erro Firebase:", e); }
-
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
     const _supa = supabase.createClient('https://gsvvyktjeqlmhspqzppy.supabase.co', 'sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs');
 
-    // 2. FUNÇÕES DE NAVEGAÇÃO
+    let totalVendido = 0;
+    let totalPedidos = 0;
+    let somLigado = false;
+
     function mudarTab(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         event.currentTarget.classList.add('active');
+        if(id === 'estoque') carregarProdutosExclusao();
     }
 
-    // 3. MONITOR DE PEDIDOS
-    let primeiraVez = true;
-    let totalCaixa = 0;
-    let qtdCaixa = 0;
+    // MONITOR DE PEDIDOS
+    db.collection("pedidos").orderBy("data", "desc").onSnapshot(snap => {
+        const container = document.getElementById("lista-pedidos");
+        container.innerHTML = snap.empty ? "<p>Nenhum pedido no momento.</p>" : "";
+        
+        if(!snap.empty) document.getElementById('som-pedido').play().catch(()=>{});
 
-    if(db) {
-        db.collection("pedidos").orderBy("data", "desc").onSnapshot(snap => {
-            const container = document.getElementById("lista-pedidos");
-            container.innerHTML = "";
-            
-            if(!snap.empty && !primeiraVez) {
-                document.getElementById('som-pedido').play().catch(()=>{});
-            }
-            primeiraVez = false;
-
-            snap.forEach(doc => {
-                const p = doc.data();
-                const card = `
-                    <div class="card-pedido">
-                        <div class="p-body">
-                            <h3 style="margin:0;">👤 ${p.cliente}</h3>
-                            <small>📍 ${p.endereco}</small>
-                            <div class="itens-box">${p.produtos}</div>
-                            <h3 style="text-align:right; color:var(--red); margin:0;">Total: R$ ${p.total}</h3>
+        snap.forEach(doc => {
+            const p = doc.data();
+            container.innerHTML += `
+                <div class="card">
+                    <div class="p-body">
+                        <div style="display:flex; justify-content:space-between">
+                            <h3 style="margin:0">👤 ${p.cliente}</h3>
+                            <small>#${doc.id.slice(-4)}</small>
                         </div>
-                        <div class="p-acoes">
-                            <button class="btn btn-whats" onclick="window.open('https://wa.me/55${p.telefone.replace(/\D/g,'')}')">ZAP</button>
-                            <button class="btn btn-print" onclick="window.print()">IMPRIMIR</button>
-                            <button class="btn btn-concluir" onclick="concluir('${doc.id}', '${p.total}')">CONCLUIR</button>
-                        </div>
-                    </div>`;
-                container.innerHTML += card;
-            });
+                        <p style="font-size:12px; color:#666">📍 ${p.endereco}</p>
+                        <div class="itens-box">${p.produtos}</div>
+                        <h3 style="text-align:right; color:var(--red); margin:10px 0 0">Total: R$ ${p.total}</h3>
+                    </div>
+                    <div class="p-acoes">
+                        <button class="btn btn-whats" onclick="window.open('https://wa.me/55${p.telefone.replace(/\D/g,'')}')"><i class="fab fa-whatsapp"></i> ZAP</button>
+                        <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> IMPRIMIR</button>
+                        <button class="btn btn-concluir" onclick="concluirPedido('${doc.id}', '${p.total}', '${p.cliente}')">CONCLUIR PEDIDO</button>
+                    </div>
+                </div>`;
         });
+    });
+
+    // CORREÇÃO DO VALOR DO CAIXA
+    function concluirPedido(id, valor, cliente) {
+        if(confirm("Finalizar pedido de " + cliente + "?")) {
+            // Converte "49,50" ou "49.50" para número real
+            let valorLimpo = parseFloat(valor.replace(',', '.'));
+            
+            totalVendido += valorLimpo;
+            totalPedidos++;
+
+            // Atualiza UI do Caixa
+            document.getElementById('c-total').innerText = "R$ " + totalVendido.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+            document.getElementById('c-qtd').innerText = totalPedidos;
+            
+            const tabela = document.querySelector('#tabela-caixa tbody');
+            tabela.innerHTML = `<tr><td>${new Date().toLocaleTimeString()}</td><td>${cliente}</td><td>R$ ${valorLimpo.toFixed(2)}</td></tr>` + tabela.innerHTML;
+
+            db.collection("pedidos").doc(id).delete();
+        }
     }
 
-    function concluir(id, valor) {
-        if(confirm("Deseja finalizar?")) {
-            db.collection("pedidos").doc(id).delete();
-            totalCaixa += parseFloat(valor.replace(',', '.'));
-            qtdCaixa++;
-            document.getElementById('c-total').innerText = "R$ " + totalCaixa.toFixed(2);
-            document.getElementById('c-qtd').innerText = qtdCaixa;
+    // FUNÇÃO PARA CARREGAR PRODUTOS E PODER EXCLUIR
+    async function carregarProdutosExclusao() {
+        const { data } = await _supa.from('produtos').select('*');
+        const container = document.getElementById('lista-produtos-delete');
+        container.innerHTML = data.map(p => `
+            <div class="card" style="padding:10px">
+                <img src="${p.url_imagem}" style="width:100%; height:100px; object-fit:cover; border-radius:8px">
+                <h4 style="margin:10px 0 5px">${p.nome}</h4>
+                <div style="color:var(--red); font-weight:bold">R$ ${parseFloat(p.preco).toFixed(2)}</div>
+                <button class="btn btn-delete" onclick="excluirDoCardapio(${p.id})"><i class="fas fa-trash"></i> EXCLUIR</button>
+            </div>
+        `).join('');
+    }
+
+    async function excluirDoCardapio(id) {
+        if(confirm("Tem certeza que deseja remover este produto do cardápio?")) {
+            const { error } = await _supa.from('produtos').delete().eq('id', id);
+            if(!error) carregarProdutosExclusao();
+            else alert("Erro ao excluir");
         }
     }
 
     async function salvarItem() {
-        const n = document.getElementById('p-nome').value;
-        const p = document.getElementById('p-preco').value;
-        const i = document.getElementById('p-img').value;
-        const { error } = await _supa.from('produtos').insert([{ nome: n, preco: p, url_imagem: i }]);
-        if(!error) { alert("Sucesso!"); mudarTab('pedidos'); }
+        const nome = document.getElementById('p-nome').value;
+        const preco = document.getElementById('p-preco').value;
+        const img = document.getElementById('p-img').value;
+        
+        if(!nome || !preco) return alert("Nome e Preço são obrigatórios!");
+
+        const { error } = await _supa.from('produtos').insert([{ nome, preco, url_imagem: img }]);
+        if(!error) {
+            alert("Produto cadastrado!");
+            document.getElementById('p-nome').value = "";
+            document.getElementById('p-preco').value = "";
+            document.getElementById('p-img').value = "";
+            mudarTab('estoque');
+        }
     }
 </script>
-
 </body>
 </html>
