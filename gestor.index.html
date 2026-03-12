@@ -39,6 +39,12 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
 
+        /* Estilos específicos para a tabela de precificação */
+        .tabela-precos { width: 100%; border-spacing: 0; font-size: 13px; }
+        .tabela-precos th { background: #f8fafc; padding: 10px; }
+        .tabela-precos td { padding: 5px; }
+        .tabela-precos input { margin-bottom: 0; padding: 5px; font-size: 12px; }
+
         @media print {
             body * { visibility: hidden; }
             #lista-pedidos, #lista-pedidos .card.imprimir-agora, #lista-pedidos .card.imprimir-agora * { visibility: visible; }
@@ -112,41 +118,33 @@
     </div>
 
     <div id="precificacao" class="section">
-        <h2>Calculadora de Custos (Pizza)</h2>
-        <div style="background:white; padding:25px; border-radius:12px; max-width: 600px;">
-            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Insira o custo dos insumos para calcular o custo total de produção.</p>
+        <h2>Calculadora de Custos por Pizza</h2>
+        <div style="background:white; padding:20px; border-radius:12px;">
+            <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Informe o preço pago pelo quilo/unidade (Ex: 1kg de Mussarela) e quanto usa na pizza (em gramas).</p>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div>
-                    <label>Massa (R$)</label>
-                    <input type="number" step="0.01" class="calc-custo" placeholder="0.00">
-                </div>
-                <div>
-                    <label>Molho (R$)</label>
-                    <input type="number" step="0.01" class="calc-custo" placeholder="0.00">
-                </div>
-                <div>
-                    <label>Queijo (R$)</label>
-                    <input type="number" step="0.01" class="calc-custo" placeholder="0.00">
-                </div>
-                <div>
-                    <label>Recheio Principal (R$)</label>
-                    <input type="number" step="0.01" class="calc-custo" placeholder="0.00">
-                </div>
-                <div>
-                    <label>Embalagem (R$)</label>
-                    <input type="number" step="0.01" class="calc-custo" placeholder="0.00">
-                </div>
-                <div>
-                    <label>Outros/Extras (R$)</label>
-                    <input type="number" step="0.01" class="calc-custo" placeholder="0.00">
-                </div>
+            <div style="overflow-x: auto;">
+                <table class="tabela-precos">
+                    <thead>
+                        <tr>
+                            <th>Ingrediente</th>
+                            <th>Preço Pago (R$)</th>
+                            <th>Peso/Qtd Total (g ou un)</th>
+                            <th>Uso na Pizza (g ou un)</th>
+                            <th>Custo Item</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-ingredientes">
+                        </tbody>
+                </table>
             </div>
 
             <div class="stat-card" style="margin-top: 25px; border: 2px solid var(--red); background: #fff1f2;">
-                <h4 style="margin-bottom: 5px;">CUSTO TOTAL DE PRODUÇÃO</h4>
+                <h4 style="margin-bottom: 5px;">CUSTO TOTAL DA PIZZA (INSUMOS)</h4>
                 <p id="custo-final" style="font-size:32px; font-weight:bold; color:var(--red); margin:0;">R$ 0,00</p>
-                <button onclick="calcularPrecoFinal()" style="margin-top: 15px; width:100%; background:var(--dark); color:white; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">CALCULAR AGORA</button>
+                <div style="display:flex; gap:10px; margin-top:15px;">
+                    <button onclick="calcularPrecoFinal()" style="flex:1; background:var(--dark); color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">CALCULAR CUSTO</button>
+                    <button onclick="limparCalculadora()" style="background:#eee; border:none; padding:12px; border-radius:8px; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                </div>
             </div>
         </div>
     </div>
@@ -172,6 +170,49 @@
     const _supa = supabase.createClient('https://gsvvyktjeqlmhspqzppy.supabase.co', 'sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs');
 
     let historicoCaixa = [];
+    
+    const ingredientesArr = [
+        "Farinha de Trigo", "Mussarela", "Calabresa", "Presunto", "Frango", "Catupiry", 
+        "Camarão", "Atum", "Bacon", "Palmito", "Cebola", "Tomate", "Azeitona", 
+        "Milho Verde", "Ovo", "Manjericão", "Orégano", "Embalagem/Caixa"
+    ];
+
+    function inicializarPrecificacao() {
+        const corpo = document.getElementById('lista-ingredientes');
+        corpo.innerHTML = ingredientesArr.map((ing, index) => `
+            <tr>
+                <td><strong>${ing}</strong></td>
+                <td><input type="number" step="0.01" class="p-pago" id="pago-${index}" placeholder="Ex: 35.00" oninput="calcularPrecoFinal()"></td>
+                <td><input type="number" step="1" class="p-total" id="total-${index}" placeholder="Ex: 1000" oninput="calcularPrecoFinal()"></td>
+                <td><input type="number" step="1" class="p-uso" id="uso-${index}" placeholder="Ex: 250" oninput="calcularPrecoFinal()"></td>
+                <td id="res-${index}" style="font-weight:bold; color:#666">R$ 0,00</td>
+            </tr>
+        `).join('');
+    }
+
+    function calcularPrecoFinal() {
+        let custoTotalPizza = 0;
+        ingredientesArr.forEach((_, i) => {
+            const pago = parseFloat(document.getElementById(`pago-${i}`).value) || 0;
+            const total = parseFloat(document.getElementById(`total-${index = i}`).value) || 0;
+            const uso = parseFloat(document.getElementById(`uso-${i}`).value) || 0;
+            
+            let custoItem = 0;
+            if (pago > 0 && total > 0 && uso > 0) {
+                custoItem = (pago / total) * uso;
+            }
+            
+            document.getElementById(`res-${i}`).innerText = "R$ " + custoItem.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+            custoTotalPizza += custoItem;
+        });
+        
+        document.getElementById('custo-final').innerText = "R$ " + custoTotalPizza.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+    }
+
+    function limparCalculadora() {
+        document.querySelectorAll('.precificacao input').forEach(i => i.value = "");
+        calcularPrecoFinal();
+    }
 
     function mudarTab(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -179,18 +220,10 @@
         document.getElementById(id).classList.add('active');
         if(event) event.currentTarget.classList.add('active');
         if(id === 'estoque') carregarProdutosExclusao();
+        if(id === 'precificacao') { /* Já inicializado no load */ }
     }
 
-    // Função da Nova Aba
-    function calcularPrecoFinal() {
-        let soma = 0;
-        document.querySelectorAll('.calc-custo').forEach(input => {
-            const val = parseFloat(input.value);
-            if (!isNaN(val)) soma += val;
-        });
-        document.getElementById('custo-final').innerText = "R$ " + soma.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-    }
-
+    // Listener de Pedidos Firebase
     db.collection("pedidos").orderBy("data", "desc").onSnapshot(snap => {
         const container = document.getElementById("lista-pedidos");
         container.innerHTML = snap.empty ? "<p>Aguardando pedidos...</p>" : "";
@@ -282,6 +315,9 @@
         alert("Salvo!");
         document.getElementById('p-nome').value = ""; document.getElementById('p-preco').value = ""; document.getElementById('p-img').value = "";
     }
+
+    // Inicia a tabela de precificação ao abrir
+    window.onload = inicializarPrecificacao;
 </script>
 </body>
 </html>
