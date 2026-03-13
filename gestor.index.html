@@ -51,6 +51,13 @@
         .pdv-footer { background: #eee; padding: 15px; border-radius: 0 0 12px 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .pdv-total-box { background: white; border: 2px solid var(--dark); padding: 20px; border-radius: 12px; text-align: center; }
 
+        /* ESTILO MESAS */
+        .grid-mesas { display: grid; grid-template-columns: repeat(10, 1fr); gap: 10px; margin-bottom: 20px; }
+        .mesa { padding: 15px 5px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; color: white; font-size: 12px; transition: 0.3s; border: 2px solid transparent; }
+        .mesa.livre { background: var(--success); }
+        .mesa.ocupada { background: var(--red); }
+        .mesa.selecionada { border-color: var(--blue); transform: scale(1.05); box-shadow: 0 0 10px rgba(0,68,255,0.4); }
+
         @media print {
             body * { visibility: hidden; }
             #lista-pedidos, #lista-pedidos .card.imprimir-agora, #lista-pedidos .card.imprimir-agora * { visibility: visible; }
@@ -87,10 +94,16 @@
     </div>
 
     <div id="pdv" class="section">
+        <div style="background:white; padding:15px; border-radius:12px; margin-bottom:20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <h3 style="margin-top:0; font-size:16px;"><i class="fas fa-table"></i> Mapa de Mesas</h3>
+            <div class="grid-mesas" id="container-mesas">
+                </div>
+        </div>
+
         <div class="pdv-container">
             <div>
                 <div class="pdv-header">
-                    <h2 style="margin:0; font-size: 18px;">CAIXA ABERTO</h2>
+                    <h2 style="margin:0; font-size: 18px;" id="pdv-titulo">CAIXA ABERTO</h2>
                     <span id="pdv-data-hora" style="font-family: monospace;"></span>
                 </div>
                 <div class="pdv-lista">
@@ -137,10 +150,10 @@
             </div>
         </div>
         <div style="margin-top: 30px;">
-            <h3>Vendas Realizadas Hoje (Balcão)</h3>
+            <h3>Vendas Realizadas Hoje (Balcão/Mesas)</h3>
             <div style="background:white; border-radius:12px; padding:15px; overflow-x: auto;">
                 <table style="width:100%">
-                    <thead><tr style="background:#f4f4f5"><th>Hora</th><th>Itens</th><th>Total</th><th>Pgto</th><th>Ação</th></tr></thead>
+                    <thead><tr style="background:#f4f4f5"><th>Hora</th><th>Origem</th><th>Itens</th><th>Total</th><th>Pgto</th><th>Ação</th></tr></thead>
                     <tbody id="historico-vendas-corpo"></tbody>
                 </table>
             </div>
@@ -214,7 +227,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <script>
-    // CONFIGURAÇÕES ORIGINAIS
     const firebaseConfig = {
         apiKey: "AIzaSyAjzwX_sPyZOvZzcJc9ynBSbBN5uazaCHU",
         authDomain: "robs-pizzariadelivery.firebaseapp.com",
@@ -232,19 +244,58 @@
     let itensVendaAtual = [];
     let vendasDiaPDV = JSON.parse(localStorage.getItem('vendas_dia_pdv')) || [];
     
+    // VARIÁVEIS DE MESAS
+    let mesaSelecionada = null;
+    let statusMesas = JSON.parse(localStorage.getItem('status_mesas')) || Array(20).fill({ ocupada: false, itens: [] });
+
     const ingredientesArr = ["Farinha de Trigo", "Mussarela", "Calabresa", "Presunto", "Frango", "Catupiry", "Camarão", "Atum", "Bacon", "Palmito", "Cebola", "Tomate", "Azeitona", "Milho Verde", "Ovo", "Manjericão", "Orégano", "Embalagem/Caixa"];
 
-    // FUNÇÕES DE NAVEGAÇÃO
     function mudarTab(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         if(event) event.currentTarget.classList.add('active');
         if(id === 'estoque') carregarProdutosExclusao();
-        if(id === 'pdv') { document.getElementById('pdv-busca').focus(); renderizarHistoricoPDV(); }
+        if(id === 'pdv') { 
+            document.getElementById('pdv-busca').focus(); 
+            renderizarHistoricoPDV();
+            renderizarMesas();
+        }
     }
 
-    // --- LÓGICA PDV (NOVO) ---
+    // --- LÓGICA DE MESAS ---
+    function renderizarMesas() {
+        const container = document.getElementById('container-mesas');
+        container.innerHTML = statusMesas.map((m, i) => `
+            <div class="mesa ${m.ocupada ? 'ocupada' : 'livre'} ${mesaSelecionada === i ? 'selecionada' : ''}" 
+                 onclick="selecionarMesa(${i})">
+                MESA ${i+1}<br><small>${m.ocupada ? 'OCUPADA' : 'LIVRE'}</small>
+            </div>
+        `).join('');
+    }
+
+    function selecionarMesa(index) {
+        mesaSelecionada = index;
+        const mesa = statusMesas[index];
+        
+        // Se a mesa já está ocupada, carrega os itens dela para o PDV
+        if(mesa.ocupada) {
+            itensVendaAtual = [...mesa.itens];
+            document.getElementById('pdv-titulo').innerText = `MESA ${index + 1}`;
+        } else {
+            // Se estava livre, inicia uma nova venda nela
+            statusMesas[index].ocupada = true;
+            statusMesas[index].itens = [];
+            itensVendaAtual = [];
+            document.getElementById('pdv-titulo').innerText = `MESA ${index + 1} (Nova)`;
+        }
+        
+        localStorage.setItem('status_mesas', JSON.stringify(statusMesas));
+        renderizarMesas();
+        renderizarListaPDV();
+    }
+
+    // --- LÓGICA PDV ---
     function atalhosPDV(e) {
         if (e.key === "F1") { e.preventDefault(); document.getElementById('pdv-busca').focus(); }
         if (e.key === "F2") { e.preventDefault(); finalizarVendaPDV(); }
@@ -258,7 +309,17 @@
         const { data } = await _supa.from('produtos').select('*').or(`nome.ilike.%${busca}%,id.eq.${isNaN(busca)?0:busca}`);
         if (data && data.length > 0) {
             const p = data[0];
-            itensVendaAtual.push({ nome: p.nome, preco: parseFloat(p.preco), qtd: qtd, total: p.preco * qtd });
+            const novoItem = { nome: p.nome, preco: parseFloat(p.preco), qtd: qtd, total: p.preco * qtd };
+            itensVendaAtual.push(novoItem);
+            
+            // Se houver mesa selecionada, atualiza o estado da mesa
+            if(mesaSelecionada !== null) {
+                statusMesas[mesaSelecionada].itens = [...itensVendaAtual];
+                statusMesas[mesaSelecionada].ocupada = true;
+                localStorage.setItem('status_mesas', JSON.stringify(statusMesas));
+                renderizarMesas();
+            }
+
             renderizarListaPDV();
             document.getElementById('pdv-busca').value = "";
             document.getElementById('pdv-qtd').value = "1";
@@ -276,33 +337,81 @@
         calcularTroco();
     }
 
-    function removerItemPDV(i) { itensVendaAtual.splice(i, 1); renderizarListaPDV(); }
+    function removerItemPDV(i) { 
+        itensVendaAtual.splice(i, 1); 
+        if(mesaSelecionada !== null) {
+            statusMesas[mesaSelecionada].itens = [...itensVendaAtual];
+            localStorage.setItem('status_mesas', JSON.stringify(statusMesas));
+        }
+        renderizarListaPDV(); 
+    }
 
     function calcularTroco() {
-        const total = parseFloat(document.getElementById('pdv-total-venda').innerText.replace('R$ ', '').replace('.','').replace(',','.'));
+        const totalStr = document.getElementById('pdv-total-venda').innerText.replace('R$ ', '').replace('.','').replace(',','.');
+        const total = parseFloat(totalStr);
         const pago = parseFloat(document.getElementById('pdv-valor-pago').value) || 0;
         const troco = pago - total;
-        document.getElementById('pdv-troco').innerText = "R$ " + (troco > 0 ? troco.toFixed(2) : "0,00");
+        document.getElementById('pdv-troco').innerText = "R$ " + (troco > 0 ? troco.toFixed(2).replace('.',',') : "0,00");
     }
 
     function finalizarVendaPDV() {
-        const total = parseFloat(document.getElementById('pdv-total-venda').innerText.replace('R$ ', '').replace('.','').replace(',','.'));
+        const totalStr = document.getElementById('pdv-total-venda').innerText.replace('R$ ', '').replace('.','').replace(',','.');
+        const total = parseFloat(totalStr);
         if(total <= 0) return;
-        const venda = { id: Date.now(), hora: new Date().toLocaleTimeString(), itens: itensVendaAtual.map(i => `${i.qtd}x ${i.nome}`).join(', '), total: total, forma: document.getElementById('pdv-forma-pgto').value };
+
+        const origem = mesaSelecionada !== null ? `MESA ${mesaSelecionada + 1}` : "BALCÃO";
+
+        const venda = { 
+            id: Date.now(), 
+            hora: new Date().toLocaleTimeString(), 
+            origem: origem,
+            itens: itensVendaAtual.map(i => `${i.qtd}x ${i.nome}`).join(', '), 
+            total: total, 
+            forma: document.getElementById('pdv-forma-pgto').value 
+        };
+
         vendasDiaPDV.unshift(venda);
         localStorage.setItem('vendas_dia_pdv', JSON.stringify(vendasDiaPDV));
-        historicoCaixa.push({ id: Date.now(), hora: venda.hora, cliente: "Venda Balcão", valor: total });
+        
+        historicoCaixa.push({ id: Date.now(), hora: venda.hora, cliente: origem, valor: total });
         atualizarTabelaCaixa();
-        itensVendaAtual = []; renderizarListaPDV(); renderizarHistoricoPDV();
+
+        // Se era uma mesa, libera ela
+        if(mesaSelecionada !== null) {
+            statusMesas[mesaSelecionada] = { ocupada: false, itens: [] };
+            localStorage.setItem('status_mesas', JSON.stringify(statusMesas));
+            mesaSelecionada = null;
+            document.getElementById('pdv-titulo').innerText = "CAIXA ABERTO";
+        }
+
+        itensVendaAtual = []; 
+        renderizarListaPDV(); 
+        renderizarHistoricoPDV();
+        renderizarMesas();
+        
         document.getElementById('pdv-valor-pago').value = "";
-        alert("Venda registrada!");
+        alert("Venda registrada e mesa liberada!");
     }
 
     function renderizarHistoricoPDV() {
-        document.getElementById('historico-vendas-corpo').innerHTML = vendasDiaPDV.map(v => `<tr><td>${v.hora}</td><td><small>${v.itens}</small></td><td>R$ ${v.total.toFixed(2)}</td><td>${v.forma}</td><td><button class="btn-delete" onclick="excluirVendaPDV(${v.id})"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+        document.getElementById('historico-vendas-corpo').innerHTML = vendasDiaPDV.map(v => `
+            <tr>
+                <td>${v.hora}</td>
+                <td><span style="color:var(--blue); font-weight:bold">${v.origem || 'BALCÃO'}</span></td>
+                <td><small>${v.itens}</small></td>
+                <td>R$ ${v.total.toFixed(2)}</td>
+                <td>${v.forma}</td>
+                <td><button class="btn-delete" onclick="excluirVendaPDV(${v.id})"><i class="fas fa-trash"></i></button></td>
+            </tr>`).join('');
     }
 
-    function excluirVendaPDV(id) { if(confirm("Excluir?")) { vendasDiaPDV = vendasDiaPDV.filter(v => v.id !== id); localStorage.setItem('vendas_dia_pdv', JSON.stringify(vendasDiaPDV)); renderizarHistoricoPDV(); } }
+    function excluirVendaPDV(id) { 
+        if(confirm("Excluir registro de venda?")) { 
+            vendasDiaPDV = vendasDiaPDV.filter(v => v.id !== id); 
+            localStorage.setItem('vendas_dia_pdv', JSON.stringify(vendasDiaPDV)); 
+            renderizarHistoricoPDV(); 
+        } 
+    }
 
     // --- FUNÇÕES ORIGINAIS MANUTENÇÃO ---
     function inicializarPrecificacao() {
@@ -376,7 +485,12 @@
     }
 
     setInterval(() => { const el = document.getElementById('pdv-data-hora'); if(el) el.innerText = new Date().toLocaleString(); }, 1000);
-    window.onload = () => { inicializarPrecificacao(); renderizarHistoricoPDV(); };
+    
+    window.onload = () => { 
+        inicializarPrecificacao(); 
+        renderizarHistoricoPDV(); 
+        renderizarMesas();
+    };
 </script>
 </body>
 </html>
