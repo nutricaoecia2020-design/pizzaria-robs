@@ -56,18 +56,39 @@
         .mesa.ocupada { background: var(--red); }
         .mesa.selecionada { border-color: var(--blue); transform: scale(1.05); }
 
+        /* ESTILO CUPOM TÉRMICO */
+        #cupom-fiscal { display: none; font-family: 'Courier New', Courier, monospace; width: 300px; padding: 10px; color: #000; }
+        .line { border-bottom: 1px dashed #000; margin: 5px 0; }
+        .text-center { text-align: center; }
+        .bold { font-weight: bold; }
+
         @media print {
             body * { visibility: hidden; }
-            #lista-pedidos, #lista-pedidos .card.imprimir-agora, #lista-pedidos .card.imprimir-agora * { visibility: visible; }
-            #lista-pedidos .card.imprimir-agora { position: absolute; left: 0; top: 0; width: 100%; border: none; box-shadow: none; }
-            .p-acoes, .caixa-input-container, nav, #aviso-som { display: none !important; }
-            main { padding: 0 !important; margin: 0 !important; }
+            #cupom-fiscal, #cupom-fiscal * { visibility: visible; }
+            #cupom-fiscal { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
+            #lista-pedidos, .card.imprimir-agora, .card.imprimir-agora * { visibility: visible; }
+            nav, #aviso-som, .section, main { display: none !important; }
         }
     </style>
 </head>
 <body>
 
 <div id="aviso-som" onclick="this.style.display='none'">🔔 ATIVAR SOM DE NOVOS PEDIDOS</div>
+
+<div id="cupom-fiscal">
+    <div class="text-center">
+        <h2 style="margin:0">PIZZARIA ROBS</h2>
+        <p style="font-size:12px">Endereço da Loja - Telefone<br>CNPJ: 00.000.000/0000-00</p>
+    </div>
+    <div class="line"></div>
+    <div id="cupom-detalhes"></div>
+    <div class="line"></div>
+    <div id="cupom-itens"></div>
+    <div class="line"></div>
+    <div id="cupom-totais"></div>
+    <div class="line"></div>
+    <p class="text-center" style="font-size:12px">Obrigado pela preferência!</p>
+</div>
 
 <nav>
     <div style="text-align:center; padding-bottom:20px;">
@@ -234,13 +255,9 @@
     let historicoCaixa = JSON.parse(localStorage.getItem('historico_caixa')) || [];
     let itensVendaAtual = [];
     let vendasDiaPDV = JSON.parse(localStorage.getItem('vendas_dia_pdv')) || [];
-    let mesaSelecionada = null; // null significa Balcão
+    let mesaSelecionada = null; 
     
-    // Inicialização das Mesas (Se não houver no localStorage, cria vazias)
-    let statusMesas = JSON.parse(localStorage.getItem('status_mesas'));
-    if (!statusMesas) {
-        statusMesas = Array.from({length: 20}, () => ({ itens: [] }));
-    }
+    let statusMesas = JSON.parse(localStorage.getItem('status_mesas')) || Array.from({length: 20}, () => ({ itens: [] }));
 
     const ingredientesArr = ["Farinha de Trigo", "Mussarela", "Calabresa", "Presunto", "Frango", "Catupiry", "Camarão", "Atum", "Bacon", "Palmito", "Cebola", "Tomate", "Azeitona", "Milho Verde", "Ovo", "Manjericão", "Orégano", "Embalagem/Caixa"];
 
@@ -256,23 +273,14 @@
         }
     }
 
-    // --- LÓGICA DE MESAS ---
     function renderizarMesas() {
         const container = document.getElementById('container-mesas');
         container.innerHTML = statusMesas.map((m, i) => {
             const isOcupada = m.itens.length > 0;
             const isSelecionada = mesaSelecionada === i;
-            return `
-                <div class="mesa ${isOcupada ? 'ocupada' : 'livre'} ${isSelecionada ? 'selecionada' : ''}" 
-                     onclick="selecionarMesa(${i})">
-                    MESA ${i+1}<br><small>${isOcupada ? 'OCUPADA' : 'LIVRE'}</small>
-                </div>
-            `;
+            return `<div class="mesa ${isOcupada ? 'ocupada' : 'livre'} ${isSelecionada ? 'selecionada' : ''}" onclick="selecionarMesa(${i})">MESA ${i+1}<br><small>${isOcupada ? 'OCUPADA' : 'LIVRE'}</small></div>`;
         }).join('');
-        
-        // Botão Balcão
-        const balcaoBtn = `<div class="mesa ${mesaSelecionada === null ? 'selecionada' : ''}" 
-            style="background:#666; grid-column: span 2" onclick="selecionarMesa(null)">BALCÃO</div>`;
+        const balcaoBtn = `<div class="mesa ${mesaSelecionada === null ? 'selecionada' : ''}" style="background:#666; grid-column: span 2" onclick="selecionarMesa(null)">BALCÃO</div>`;
         container.innerHTML = balcaoBtn + container.innerHTML;
     }
 
@@ -289,7 +297,6 @@
         renderizarListaPDV();
     }
 
-    // --- LÓGICA PDV ---
     function atalhosPDV(e) {
         if (e.key === "F1") { e.preventDefault(); document.getElementById('pdv-busca').focus(); }
         if (e.key === "F2") { e.preventDefault(); finalizarVendaPDV(); }
@@ -300,13 +307,10 @@
         const busca = document.getElementById('pdv-busca').value;
         const qtd = parseFloat(document.getElementById('pdv-qtd').value) || 1;
         if(!busca) return;
-        
         const { data } = await _supa.from('produtos').select('*').or(`nome.ilike.%${busca}%,id.eq.${isNaN(busca)?0:busca}`);
-        
         if (data && data.length > 0) {
             const p = data[0];
             const novoItem = { nome: p.nome, preco: parseFloat(p.preco), qtd: qtd, total: p.preco * qtd };
-            
             if (mesaSelecionada === null) {
                 itensVendaAtual.push(novoItem);
             } else {
@@ -314,7 +318,6 @@
                 localStorage.setItem('status_mesas', JSON.stringify(statusMesas));
                 renderizarMesas();
             }
-
             renderizarListaPDV();
             document.getElementById('pdv-busca').value = "";
             document.getElementById('pdv-qtd').value = "1";
@@ -324,14 +327,11 @@
     function renderizarListaPDV() {
         const corpo = document.getElementById('corpo-pdv');
         let totalGeral = 0;
-        
         const lista = (mesaSelecionada === null) ? itensVendaAtual : statusMesas[mesaSelecionada].itens;
-
         corpo.innerHTML = lista.map((item, i) => {
             totalGeral += item.total;
             return `<tr><td>${item.nome}</td><td>${item.qtd}</td><td>R$ ${item.preco.toFixed(2)}</td><td>R$ ${item.total.toFixed(2)}</td><td><button onclick="removerItemPDV(${i})" style="color:red;border:none;background:none;cursor:pointer">X</button></td></tr>`;
         }).join('');
-        
         document.getElementById('pdv-total-venda').innerText = "R$ " + totalGeral.toLocaleString('pt-BR', {minimumFractionDigits: 2});
         calcularTroco();
     }
@@ -354,66 +354,71 @@
         document.getElementById('pdv-troco').innerText = "R$ " + (troco > 0 ? troco.toFixed(2).replace('.',',') : "0,00");
     }
 
+    // --- FUNÇÃO DE IMPRESSÃO E FINALIZAÇÃO ---
     function finalizarVendaPDV() {
-        const total = parseFloat(document.getElementById('pdv-total-venda').innerText.replace('R$ ', '').replace('.','').replace(',','.'));
+        const totalText = document.getElementById('pdv-total-venda').innerText.replace('R$ ', '').replace('.','').replace(',','.');
+        const total = parseFloat(totalText);
         if(total <= 0) return;
 
-        const listaFinal = (mesaSelecionada === null) ? itensVendaAtual : statusMesas[mesaSelecionada].itens;
+        const listaFinal = (mesaSelecionada === null) ? [...itensVendaAtual] : [...statusMesas[mesaSelecionada].itens];
         const origem = (mesaSelecionada === null) ? "Balcão" : `Mesa ${mesaSelecionada + 1}`;
+        const pgto = document.getElementById('pdv-forma-pgto').value;
+        const hora = new Date().toLocaleTimeString();
+        const dataH = new Date().toLocaleDateString();
 
-        const venda = { 
-            id: Date.now(), 
-            hora: new Date().toLocaleTimeString(), 
-            origem: origem,
-            itens: listaFinal.map(i => `${i.qtd}x ${i.nome}`).join(', '), 
-            total: total, 
-            forma: document.getElementById('pdv-forma-pgto').value 
-        };
+        // Gerar Cupom para Impressão
+        document.getElementById('cupom-detalhes').innerHTML = `<p><b>PEDIDO:</b> ${origem}<br><b>DATA:</b> ${dataH} ${hora}<br><b>PGTO:</b> ${pgto}</p>`;
+        document.getElementById('cupom-itens').innerHTML = listaFinal.map(i => `<div style="display:flex; justify-content:space-between; font-size:13px"><span>${i.qtd}x ${i.nome}</span><span>R$ ${i.total.toFixed(2)}</span></div>`).join('');
+        document.getElementById('cupom-totais').innerHTML = `<h3 style="display:flex; justify-content:space-between; margin:5px 0"><span>TOTAL:</span> <span>R$ ${total.toFixed(2)}</span></h3>`;
 
+        // Salvar Histórico
+        const venda = { id: Date.now(), hora, origem, itens: listaFinal.map(i => `${i.qtd}x ${i.nome}`).join(', '), total, forma: pgto };
         vendasDiaPDV.unshift(venda);
         localStorage.setItem('vendas_dia_pdv', JSON.stringify(vendasDiaPDV));
-        
-        historicoCaixa.push({ id: Date.now(), hora: venda.hora, cliente: origem, valor: total });
+        historicoCaixa.push({ id: Date.now(), hora, cliente: origem, valor: total });
         localStorage.setItem('historico_caixa', JSON.stringify(historicoCaixa));
-        atualizarTabelaCaixa();
-
-        // Limpa a mesa ou o balcão
-        if (mesaSelecionada !== null) {
-            statusMesas[mesaSelecionada].itens = [];
-            localStorage.setItem('status_mesas', JSON.stringify(statusMesas));
-        } else {
-            itensVendaAtual = [];
-        }
-
-        renderizarMesas();
-        renderizarListaPDV();
-        renderizarHistoricoPDV();
         
-        document.getElementById('pdv-valor-pago').value = "";
-        alert("Venda Finalizada!");
+        // Acionar Impressora (PDF/Papel)
+        window.print();
+
+        // Perguntar sobre WhatsApp
+        setTimeout(() => {
+            const zap = prompt("Deseja enviar o cupom para o WhatsApp do cliente? Digite o número com DDD (ex: 79999990000) ou deixe em branco:");
+            if(zap) {
+                let textoZap = `*CUPOM PIZZARIA ROBS*%0A---------------------------%0A*PEDIDO:* ${origem}%0A*DATA:* ${dataH} ${hora}%0A---------------------------%0A`;
+                listaFinal.forEach(i => { textoZap += `${i.qtd}x ${i.nome} - R$ ${i.total.toFixed(2)}%0A`; });
+                textoZap += `---------------------------%0A*TOTAL: R$ ${total.toFixed(2)}*%0A*FORMA:* ${pgto}%0A---------------------------%0A_Obrigado!_`;
+                window.open(`https://wa.me/55${zap.replace(/\D/g,'')}?text=${textoZap}`);
+            }
+            
+            // Limpar PDV e Mesas
+            if (mesaSelecionada !== null) {
+                statusMesas[mesaSelecionada].itens = [];
+                localStorage.setItem('status_mesas', JSON.stringify(statusMesas));
+            } else {
+                itensVendaAtual = [];
+            }
+            renderizarMesas();
+            renderizarListaPDV();
+            renderizarHistoricoPDV();
+            atualizarTabelaCaixa();
+            document.getElementById('pdv-valor-pago').value = "";
+        }, 500);
     }
 
     function renderizarHistoricoPDV() {
         document.getElementById('historico-vendas-corpo').innerHTML = vendasDiaPDV.map(v => `
-            <tr>
-                <td>${v.hora}</td>
-                <td><b>${v.origem}</b></td>
-                <td><small>${v.itens}</small></td>
-                <td>R$ ${v.total.toFixed(2)}</td>
-                <td>${v.forma}</td>
-                <td><button class="btn-delete" onclick="excluirVendaPDV(${v.id})"><i class="fas fa-trash"></i></button></td>
-            </tr>`).join('');
+            <tr><td>${v.hora}</td><td><b>${v.origem}</b></td><td><small>${v.itens}</small></td><td>R$ ${v.total.toFixed(2)}</td><td>${v.forma}</td><td><button class="btn-delete" onclick="excluirVendaPDV(${v.id})"><i class="fas fa-trash"></i></button></td></tr>`).join('');
     }
 
     function excluirVendaPDV(id) { 
-        if(confirm("Excluir esta venda do registro?")) { 
+        if(confirm("Excluir esta venda?")) { 
             vendasDiaPDV = vendasDiaPDV.filter(v => v.id !== id); 
             localStorage.setItem('vendas_dia_pdv', JSON.stringify(vendasDiaPDV)); 
             renderizarHistoricoPDV(); 
         } 
     }
 
-    // --- FUNÇÕES DE CAIXA E MONITOR ---
     function atualizarTabelaCaixa() {
         let t = 0; document.getElementById('corpo-caixa').innerHTML = "";
         historicoCaixa.forEach(item => {
@@ -433,34 +438,17 @@
     db.collection("pedidos").orderBy("data", "desc").onSnapshot(snap => {
         const container = document.getElementById("lista-pedidos");
         container.innerHTML = snap.empty ? "<p>Aguardando pedidos...</p>" : "";
-        if(!snap.empty) {
-            const audio = document.getElementById('som-pedido');
-            audio.play().catch(() => {});
-        }
+        if(!snap.empty) document.getElementById('som-pedido').play().catch(() => {});
         snap.forEach(doc => {
             const p = doc.data();
             let valorSugerido = p.total.toString().replace(/[^\d,.]/g, '').replace(',', '.');
-            container.innerHTML += `
-                <div class="card" id="card-${doc.id}">
-                    <div class="p-body">
-                        <h3>👤 ${p.cliente}</h3>
-                        <p>📍 ${p.endereco}</p>
-                        <div class="itens-box">${p.produtos}</div>
-                        <h3 style="color:var(--red)">Total: R$ ${p.total}</h3>
-                        <input type="number" id="val-${doc.id}" value="${valorSugerido}">
-                    </div>
-                    <div class="p-acoes">
-                        <button class="btn btn-whats" onclick="window.open('https://wa.me/55${p.telefone?p.telefone.replace(/\D/g,''):''}')">ZAP</button>
-                        <button class="btn btn-print" onclick="imprimirIndividual('card-${doc.id}')">IMPRIMIR</button>
-                        <button class="btn btn-concluir" onclick="lancarNoCaixa('${doc.id}', '${p.cliente}')">CONCLUIR</button>
-                    </div>
-                </div>`;
+            container.innerHTML += `<div class="card" id="card-${doc.id}"><div class="p-body"><h3>👤 ${p.cliente}</h3><p>📍 ${p.endereco}</p><div class="itens-box">${p.produtos}</div><h3 style="color:var(--red)">Total: R$ ${p.total}</h3><input type="number" id="val-${doc.id}" value="${valorSugerido}"></div><div class="p-acoes"><button class="btn btn-whats" onclick="window.open('https://wa.me/55${p.telefone?p.telefone.replace(/\D/g,''):''}')">ZAP</button><button class="btn btn-print" onclick="imprimirIndividual('card-${doc.id}')">IMPRIMIR</button><button class="btn btn-concluir" onclick="lancarNoCaixa('${doc.id}', '${p.cliente}')">CONCLUIR</button></div></div>`;
         });
     });
 
     function lancarNoCaixa(id, cliente) {
         const v = parseFloat(document.getElementById(`val-${id}`).value);
-        if(confirm(`Lançar R$ ${v.toFixed(2)} no caixa?`)) {
+        if(confirm(`Lançar R$ ${v.toFixed(2)}?`)) {
             historicoCaixa.push({ id: Date.now(), hora: new Date().toLocaleTimeString(), cliente: cliente, valor: v });
             localStorage.setItem('historico_caixa', JSON.stringify(historicoCaixa));
             atualizarTabelaCaixa(); 
@@ -470,23 +458,17 @@
 
     async function carregarProdutosExclusao() {
         const { data } = await _supa.from('produtos').select('*');
-        if(data) document.getElementById('lista-produtos-delete').innerHTML = data.map(p => `
-            <div class="card" style="padding:10px">
-                <img src="${p.url_imagem}" style="width:100%;height:100px;object-fit:cover">
-                <h4>${p.nome}</h4>
-                <button class="btn btn-delete" style="width:100%" onclick="excluirDoCardapio(${p.id})">EXCLUIR</button>
-            </div>`).join('');
+        if(data) document.getElementById('lista-produtos-delete').innerHTML = data.map(p => `<div class="card" style="padding:10px"><img src="${p.url_imagem}" style="width:100%;height:100px;object-fit:cover"><h4>${p.nome}</h4><button class="btn btn-delete" style="width:100%" onclick="excluirDoCardapio(${p.id})">EXCLUIR</button></div>`).join('');
     }
 
-    async function excluirDoCardapio(id) { if(confirm("Remover do cardápio?")) { await _supa.from('produtos').delete().eq('id', id); carregarProdutosExclusao(); } }
+    async function excluirDoCardapio(id) { if(confirm("Remover?")) { await _supa.from('produtos').delete().eq('id', id); carregarProdutosExclusao(); } }
 
     async function salvarItem() {
         const nome = document.getElementById('p-nome').value;
         const preco = document.getElementById('p-preco').value;
         const img = document.getElementById('p-img').value;
         await _supa.from('produtos').insert([{ nome, preco, url_imagem: img }]);
-        alert("Item Cadastrado!"); 
-        document.getElementById('p-nome').value = ""; document.getElementById('p-preco').value = ""; document.getElementById('p-img').value = "";
+        alert("Salvo!"); document.getElementById('p-nome').value = ""; document.getElementById('p-preco').value = ""; document.getElementById('p-img').value = "";
     }
 
     function imprimirIndividual(id) {
@@ -494,7 +476,6 @@
         document.getElementById(id).classList.add('imprimir-agora'); window.print();
     }
 
-    // Inicialização precificação
     function inicializarPrecificacao() {
         const tbody = document.getElementById('lista-ingredientes');
         if(tbody) tbody.innerHTML = ingredientesArr.map((ing, i) => `<tr><td><b>${ing}</b></td><td><input type="number" id="pago-${i}" oninput="calcularPrecoFinal()"></td><td><input type="number" id="total-${i}" oninput="calcularPrecoFinal()"></td><td><input type="number" id="uso-${i}" oninput="calcularPrecoFinal()"></td><td id="res-${i}">R$ 0,00</td></tr>`).join('');
