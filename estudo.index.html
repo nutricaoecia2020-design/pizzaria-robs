@@ -3,173 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Study Dashboard</title>
+    <title>GreenStudy Analytics</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --accent: #8b5cf6;
-            --accent-glow: rgba(139, 92, 246, 0.5);
-            --text: #f8fafc;
-            --success: #10b981;
+            --bg: #06110d;
+            --card-bg: #0d1f18;
+            --primary: #10b981; /* Verde Esmeralda */
+            --primary-glow: rgba(16, 185, 129, 0.3);
+            --text: #ecfdf5;
+            --danger: #ef4444;
         }
 
         body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background: radial-gradient(circle at top right, #1e1b4b, var(--bg));
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
             color: var(--text);
             margin: 0;
             padding: 20px;
-            min-height: 100vh;
         }
 
-        .dashboard {
-            max-width: 1100px;
+        .container {
+            max-width: 1200px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 20px;
+            grid-template-columns: 1fr 400px;
+            gap: 25px;
         }
 
         .glass-card {
             background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 16px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        h1, h2 { margin-top: 0; color: var(--text); }
-
-        /* Form Estilizado */
-        .header-section {
+        .header {
             grid-column: span 2;
             text-align: center;
-            padding: 40px 0;
+            padding-bottom: 20px;
         }
 
-        .input-group {
+        h1 { color: var(--primary); font-size: 2.5rem; margin-bottom: 10px; }
+
+        /* Form */
+        .input-box {
             display: flex;
             gap: 10px;
             justify-content: center;
-            margin-top: 20px;
+            background: rgba(255,255,255,0.03);
+            padding: 20px;
+            border-radius: 12px;
         }
 
         input {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--accent);
-            padding: 12px 20px;
-            border-radius: 12px;
+            background: #06110d;
+            border: 1px solid #10b981;
+            padding: 12px;
+            border-radius: 8px;
             color: white;
             outline: none;
+            width: 200px;
         }
 
         button {
-            background: var(--accent);
-            color: white;
+            background: var(--primary);
+            color: #06110d;
             border: none;
-            padding: 12px 25px;
-            border-radius: 12px;
+            padding: 12px 20px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: bold;
             transition: 0.3s;
         }
 
-        button:hover {
-            box-shadow: 0 0 20px var(--accent-glow);
-            transform: translateY(-2px);
-        }
+        button:hover { opacity: 0.8; transform: scale(1.02); }
 
-        /* Lista de Disciplinas */
-        .subject-grid {
-            display: grid;
-            gap: 15px;
-        }
-
+        /* Lista */
         .subject-item {
-            background: rgba(255,255,255,0.03);
-            border-radius: 15px;
-            padding: 20px;
+            background: rgba(16, 185, 129, 0.05);
+            margin-bottom: 15px;
+            padding: 18px;
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 5px solid var(--accent);
+            border-left: 4px solid var(--primary);
         }
 
-        .timer-val {
-            font-size: 1.5rem;
-            font-weight: 800;
-            font-family: 'Courier New', monospace;
-            color: var(--accent);
+        .info h3 { margin: 0; color: var(--primary); }
+        .timer { font-family: monospace; font-size: 1.4rem; font-weight: bold; }
+        
+        .badge {
+            font-size: 0.7rem;
+            background: var(--primary);
+            color: var(--bg);
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
         }
 
-        /* Status de Aprendizado */
-        .learning-badge {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 20px;
-            background: var(--success);
-            margin-top: 5px;
-            display: inline-block;
-        }
+        .actions { display: flex; gap: 8px; }
+        .btn-stop { background: #f59e0b; }
+        .btn-reset { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn-del { background: var(--danger); color: white; }
 
-        .chart-container {
-            position: sticky;
-            top: 20px;
-            height: fit-content;
-        }
-
-        .btn-reset { background: #ef4444; margin-left: 5px; }
+        /* Chart */
+        canvas { max-width: 100%; }
 
         @media (max-width: 900px) {
-            .dashboard { grid-template-columns: 1fr; }
-            .header-section { grid-column: span 1; }
+            .container { grid-template-columns: 1fr; }
+            .header { grid-column: span 1; }
         }
     </style>
 </head>
 <body>
 
-<div class="dashboard">
-    <div class="header-section">
-        <h1>⚡ StudyFlow <span style="color: var(--accent);">Analytics</span></h1>
-        <div class="input-group">
-            <input type="text" id="name" placeholder="Nome da Matéria">
-            <input type="number" id="goal" placeholder="Meta (h)">
-            <button onclick="addSubject()">+ Adicionar</button>
+<div class="container">
+    <div class="header">
+        <h1>🌿 Study<span style="color:white">Green</span></h1>
+        <div class="input-box">
+            <input type="text" id="subjectName" placeholder="Disciplina (ex: Química)">
+            <input type="number" id="subjectGoal" placeholder="Meta de Horas">
+            <button onclick="addSubject()">+ Criar Disciplina</button>
         </div>
     </div>
 
-    <main class="glass-card">
-        <h2>Minhas Disciplinas</h2>
-        <div id="subjectsList" class="subject-grid">
-            </div>
-    </main>
+    <div class="glass-card">
+        <h2>Atividades de Estudo</h2>
+        <div id="list"></div>
+    </div>
 
-    <aside class="chart-container">
-        <div class="glass-card">
-            <h2>Comparativo (Horas)</h2>
-            <canvas id="studyChart"></canvas>
-            <div id="insight" style="margin-top: 20px; font-size: 0.9rem; color: #94a3b8;">
-                </div>
-        </div>
-    </aside>
+    <div class="glass-card">
+        <h2>Comparativo de Progresso</h2>
+        <canvas id="myChart"></canvas>
+        <div id="stats" style="margin-top: 20px; font-size: 0.9rem; line-height: 1.6;"></div>
+    </div>
 </div>
 
 <script>
-    let subjects = JSON.parse(localStorage.getItem('flow_studies')) || [];
-    let myChart = null;
+    let subjects = JSON.parse(localStorage.getItem('green_study_data')) || [];
+    let chart = null;
+
+    // Garante que tudo comece pausado ao dar F5
+    subjects.forEach(s => s.active = false);
 
     function save() {
-        localStorage.setItem('flow_studies', JSON.stringify(subjects));
+        localStorage.setItem('green_study_data', JSON.stringify(subjects));
         updateChart();
     }
 
     function addSubject() {
-        const name = document.getElementById('name').value;
-        const goal = document.getElementById('goal').value;
-        if(!name || !goal) return;
+        const name = document.getElementById('subjectName').value;
+        const goal = document.getElementById('subjectGoal').value;
+        if (!name || !goal) return alert("Preencha o nome e a meta!");
 
         subjects.push({
             id: Date.now(),
@@ -178,17 +166,25 @@
             seconds: 0,
             active: false
         });
-        
-        document.getElementById('name').value = '';
-        document.getElementById('goal').value = '';
+
+        document.getElementById('subjectName').value = '';
+        document.getElementById('subjectGoal').value = '';
         save();
         render();
     }
 
+    function removeSubject(id) {
+        if(confirm("Excluir definitivamente esta disciplina?")) {
+            subjects = subjects.filter(s => s.id !== id);
+            save();
+            render();
+        }
+    }
+
     function toggle(id) {
-        subjects.map(s => {
-            if(s.id === id) s.active = !s.active;
-            else s.active = false; // Pausa outras ao iniciar uma
+        subjects.forEach(s => {
+            if (s.id === id) s.active = !s.active;
+            else s.active = false; // Pausa as outras (Foco Único)
         });
         render();
     }
@@ -201,78 +197,102 @@
         render();
     }
 
-    function calculateLearning(seconds, goalHrs) {
-        const hours = seconds / 3600;
-        const percent = (hours / goalHrs) * 100;
-        if (percent < 20) return "Iniciante 🌱";
-        if (percent < 50) return "Em progresso 📚";
-        if (percent < 80) return "Consolidando 🧠";
-        return "Mestre 🏆";
-    }
-
-    function format(s) {
+    function formatTime(s) {
         const h = Math.floor(s / 3600);
         const m = Math.floor((s % 3600) / 60);
         const sec = s % 60;
         return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
     }
 
+    function getLevel(s, goal) {
+        const hrs = s / 3600;
+        const p = (hrs / goal) * 100;
+        if (p >= 100) return "Dominado 🌳";
+        if (p >= 50) return "Crescendo 🌿";
+        return "Semente 🌱";
+    }
+
     function render() {
-        const list = document.getElementById('subjectsList');
-        list.innerHTML = '';
-        
+        const listDiv = document.getElementById('list');
+        listDiv.innerHTML = '';
+
         subjects.forEach(s => {
-            const div = document.createElement('div');
-            div.className = 'subject-item';
-            div.innerHTML = `
-                <div>
-                    <div style="font-weight: bold; font-size: 1.1rem">${s.name}</div>
-                    <div class="learning-badge">${calculateLearning(s.seconds, s.goal)}</div>
+            const item = document.createElement('div');
+            item.className = 'subject-item';
+            item.innerHTML = `
+                <div class="info">
+                    <h3>${s.name} <span class="badge">${getLevel(s.seconds, s.goal)}</span></h3>
+                    <small>Meta: ${s.goal}h</small>
                 </div>
-                <div class="timer-val">${format(s.seconds)}</div>
-                <div>
-                    <button onclick="toggle(${s.id})">${s.active ? 'Pausar' : 'Focar'}</button>
-                    <button class="btn-reset" onclick="reset(${s.id})">↺</button>
+                <div class="timer">${formatTime(s.seconds)}</div>
+                <div class="actions">
+                    <button class="${s.active ? 'btn-stop' : ''}" onclick="toggle(${s.id})">
+                        ${s.active ? 'Pausar' : 'Focar'}
+                    </button>
+                    <button class="btn-reset" onclick="reset(${s.id})">Zerar</button>
+                    <button class="btn-del" onclick="removeSubject(${s.id})">✕</button>
                 </div>
             `;
-            list.appendChild(div);
+            listDiv.appendChild(item);
         });
     }
 
     function updateChart() {
-        const ctx = document.getElementById('studyChart').getContext('2d');
+        const ctx = document.getElementById('myChart').getContext('2d');
         const labels = subjects.map(s => s.name);
-        const data = subjects.map(s => (s.seconds / 3600).toFixed(2));
+        const dataSeconds = subjects.map(s => (s.seconds / 3600).toFixed(2));
+        const goals = subjects.map(s => s.goal);
 
-        if(myChart) myChart.destroy();
+        if (chart) chart.destroy();
 
-        myChart = new Chart(ctx, {
-            type: 'doughnut',
+        chart = new Chart(ctx, {
+            type: 'bar',
             data: {
                 labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: ['#8b5cf6', '#10b981', '#f59e0b', '#3b82f6', '#ec4899'],
-                    borderWidth: 0
-                }]
+                datasets: [
+                    {
+                        label: 'Horas Estudadas',
+                        data: dataSeconds,
+                        backgroundColor: '#10b981',
+                        borderRadius: 5
+                    },
+                    {
+                        label: 'Meta Prevista',
+                        data: goals,
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        borderColor: '#10b981',
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }
+                ]
             },
             options: {
-                plugins: { legend: { labels: { color: 'white' } } }
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: { labels: { color: '#ecfdf5' } }
+                },
+                scales: {
+                    x: { ticks: { color: '#ecfdf5' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { ticks: { color: '#ecfdf5' }, grid: { display: false } }
+                }
             }
         });
     }
 
+    // Loop do Cronômetro
     setInterval(() => {
-        let changed = false;
+        let activeExists = false;
         subjects.forEach(s => {
-            if(s.active) {
+            if (s.active) {
                 s.seconds++;
-                changed = true;
+                activeExists = true;
             }
         });
-        if(changed) {
+        if (activeExists) {
             render();
-            if(Math.random() > 0.8) save(); // Salva periodicamente
+            // Atualiza o gráfico a cada 10 segundos para não pesar
+            if (Date.now() % 10000 < 1000) save(); 
         }
     }, 1000);
 
