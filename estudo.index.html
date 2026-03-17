@@ -3,225 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Horas de Estudo</title>
+    <title>Master Study Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #4a90e2;
-            --secondary: #2c3e50;
-            --success: #27ae60;
-            --danger: #e74c3c;
-            --light: #f4f7f6;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent: #8b5cf6;
+            --accent-glow: rgba(139, 92, 246, 0.5);
+            --text: #f8fafc;
+            --success: #10b981;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-family: 'Inter', system-ui, sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, var(--bg));
+            color: var(--text);
+            margin: 0;
             padding: 20px;
+            min-height: 100vh;
         }
 
-        .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 800px;
-        }
-
-        h1 { color: var(--secondary); text-align: center; }
-
-        .form-group {
+        .dashboard {
+            max-width: 1100px;
+            margin: 0 auto;
             display: grid;
-            grid-template-columns: 2fr 1fr auto;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        h1, h2 { margin-top: 0; color: var(--text); }
+
+        /* Form Estilizado */
+        .header-section {
+            grid-column: span 2;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .input-group {
+            display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            justify-content: center;
+            margin-top: 20px;
         }
 
         input {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--accent);
+            padding: 12px 20px;
+            border-radius: 12px;
+            color: white;
             outline: none;
         }
 
         button {
-            cursor: pointer;
+            background: var(--accent);
+            color: white;
             border: none;
-            border-radius: 6px;
-            padding: 10px 15px;
+            padding: 12px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
             transition: 0.3s;
-            font-weight: bold;
         }
 
-        .btn-add { background: var(--primary); color: white; }
-        .btn-add:hover { background: #357abd; }
-
-        .subjects-list {
-            margin-top: 20px;
+        button:hover {
+            box-shadow: 0 0 20px var(--accent-glow);
+            transform: translateY(-2px);
         }
 
-        .subject-card {
-            background: #fff;
-            border: 1px solid #eee;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
+        /* Lista de Disciplinas */
+        .subject-grid {
             display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr auto;
-            align-items: center;
             gap: 15px;
         }
 
-        .timer-display {
-            font-family: monospace;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--secondary);
+        .subject-item {
+            background: rgba(255,255,255,0.03);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid var(--accent);
         }
 
-        .controls { display: flex; gap: 5px; }
-
-        .btn-start { background: var(--success); color: white; }
-        .btn-stop { background: #f39c12; color: white; }
-        .btn-reset { background: var(--danger); color: white; }
-
-        .progress-bar {
-            height: 8px;
-            background: #eee;
-            border-radius: 4px;
-            grid-column: span 4;
-            overflow: hidden;
-            margin-top: 10px;
+        .timer-val {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            color: var(--accent);
         }
 
-        .progress-fill {
-            height: 100%;
+        /* Status de Aprendizado */
+        .learning-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
             background: var(--success);
-            width: 0%;
-            transition: width 0.5s;
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        .chart-container {
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .btn-reset { background: #ef4444; margin-left: 5px; }
+
+        @media (max-width: 900px) {
+            .dashboard { grid-template-columns: 1fr; }
+            .header-section { grid-column: span 1; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>📚 Meus Estudos</h1>
-    
-    <div class="form-group">
-        <input type="text" id="subjectInput" placeholder="Ex: Matemática">
-        <input type="number" id="goalInput" placeholder="Meta (horas)">
-        <button class="btn-add" onclick="addSubject()">Adicionar</button>
+<div class="dashboard">
+    <div class="header-section">
+        <h1>⚡ StudyFlow <span style="color: var(--accent);">Analytics</span></h1>
+        <div class="input-group">
+            <input type="text" id="name" placeholder="Nome da Matéria">
+            <input type="number" id="goal" placeholder="Meta (h)">
+            <button onclick="addSubject()">+ Adicionar</button>
+        </div>
     </div>
 
-    <div id="subjectsContainer" class="subjects-list">
+    <main class="glass-card">
+        <h2>Minhas Disciplinas</h2>
+        <div id="subjectsList" class="subject-grid">
+            </div>
+    </main>
+
+    <aside class="chart-container">
+        <div class="glass-card">
+            <h2>Comparativo (Horas)</h2>
+            <canvas id="studyChart"></canvas>
+            <div id="insight" style="margin-top: 20px; font-size: 0.9rem; color: #94a3b8;">
+                </div>
         </div>
+    </aside>
 </div>
 
 <script>
-    let subjects = JSON.parse(localStorage.getItem('study_subjects')) || [];
+    let subjects = JSON.parse(localStorage.getItem('flow_studies')) || [];
+    let myChart = null;
 
     function save() {
-        localStorage.setItem('study_subjects', JSON.stringify(subjects));
+        localStorage.setItem('flow_studies', JSON.stringify(subjects));
+        updateChart();
     }
 
     function addSubject() {
-        const name = document.getElementById('subjectInput').value;
-        const goal = document.getElementById('goalInput').value;
+        const name = document.getElementById('name').value;
+        const goal = document.getElementById('goal').value;
+        if(!name || !goal) return;
 
-        if (!name || !goal) return alert("Preencha todos os campos!");
-
-        const subject = {
+        subjects.push({
             id: Date.now(),
             name: name,
             goal: parseFloat(goal),
-            secondsElapsed: 0,
-            isRunning: false
-        };
-
-        subjects.push(subject);
-        save();
-        render();
+            seconds: 0,
+            active: false
+        });
         
-        document.getElementById('subjectInput').value = '';
-        document.getElementById('goalInput').value = '';
-    }
-
-    function formatTime(seconds) {
-        const h = Math.floor(seconds / 3600);
-        const m = Math.floor((seconds % 3600) / 60);
-        const s = seconds % 60;
-        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    }
-
-    function toggleTimer(id) {
-        const sub = subjects.find(s => s.id === id);
-        sub.isRunning = !sub.isRunning;
+        document.getElementById('name').value = '';
+        document.getElementById('goal').value = '';
         save();
         render();
     }
 
-    function resetTimer(id) {
-        if(!confirm("Deseja zerar o progresso desta disciplina?")) return;
-        const sub = subjects.find(s => s.id === id);
-        sub.secondsElapsed = 0;
-        sub.isRunning = false;
+    function toggle(id) {
+        subjects.map(s => {
+            if(s.id === id) s.active = !s.active;
+            else s.active = false; // Pausa outras ao iniciar uma
+        });
+        render();
+    }
+
+    function reset(id) {
+        const s = subjects.find(x => x.id === id);
+        s.seconds = 0;
+        s.active = false;
         save();
         render();
     }
 
-    function deleteSubject(id) {
-        subjects = subjects.filter(s => s.id !== id);
-        save();
-        render();
+    function calculateLearning(seconds, goalHrs) {
+        const hours = seconds / 3600;
+        const percent = (hours / goalHrs) * 100;
+        if (percent < 20) return "Iniciante 🌱";
+        if (percent < 50) return "Em progresso 📚";
+        if (percent < 80) return "Consolidando 🧠";
+        return "Mestre 🏆";
     }
 
-    // Loop do Cronômetro
-    setInterval(() => {
-        subjects.forEach(sub => {
-            if (sub.isRunning) {
-                sub.secondsElapsed++;
+    function format(s) {
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        const sec = s % 60;
+        return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+    }
+
+    function render() {
+        const list = document.getElementById('subjectsList');
+        list.innerHTML = '';
+        
+        subjects.forEach(s => {
+            const div = document.createElement('div');
+            div.className = 'subject-item';
+            div.innerHTML = `
+                <div>
+                    <div style="font-weight: bold; font-size: 1.1rem">${s.name}</div>
+                    <div class="learning-badge">${calculateLearning(s.seconds, s.goal)}</div>
+                </div>
+                <div class="timer-val">${format(s.seconds)}</div>
+                <div>
+                    <button onclick="toggle(${s.id})">${s.active ? 'Pausar' : 'Focar'}</button>
+                    <button class="btn-reset" onclick="reset(${s.id})">↺</button>
+                </div>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function updateChart() {
+        const ctx = document.getElementById('studyChart').getContext('2d');
+        const labels = subjects.map(s => s.name);
+        const data = subjects.map(s => (s.seconds / 3600).toFixed(2));
+
+        if(myChart) myChart.destroy();
+
+        myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: ['#8b5cf6', '#10b981', '#f59e0b', '#3b82f6', '#ec4899'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                plugins: { legend: { labels: { color: 'white' } } }
             }
         });
-        if (subjects.some(s => s.isRunning)) {
-            save();
+    }
+
+    setInterval(() => {
+        let changed = false;
+        subjects.forEach(s => {
+            if(s.active) {
+                s.seconds++;
+                changed = true;
+            }
+        });
+        if(changed) {
             render();
+            if(Math.random() > 0.8) save(); // Salva periodicamente
         }
     }, 1000);
 
-    function render() {
-        const container = document.getElementById('subjectsContainer');
-        container.innerHTML = '';
-
-        subjects.forEach(sub => {
-            const progress = Math.min((sub.secondsElapsed / (sub.goal * 3600)) * 100, 100).toFixed(1);
-            
-            const card = document.createElement('div');
-            card.className = 'subject-card';
-            card.innerHTML = `
-                <div>
-                    <strong>${sub.name}</strong><br>
-                    <small>Meta: ${sub.goal}h</small>
-                </div>
-                <div class="timer-display">${formatTime(sub.secondsElapsed)}</div>
-                <div class="controls">
-                    <button class="${sub.isRunning ? 'btn-stop' : 'btn-start'}" onclick="toggleTimer(${sub.id})">
-                        ${sub.isRunning ? 'Pausar' : 'Iniciar'}
-                    </button>
-                    <button class="btn-reset" onclick="resetTimer(${sub.id})">Zerar</button>
-                </div>
-                <button onclick="deleteSubject(${sub.id})" style="background:none; color:grey; font-size:12px">Remover</button>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${progress}%"></div>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-    }
-
     render();
+    updateChart();
 </script>
 
 </body>
