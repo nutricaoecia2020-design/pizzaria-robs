@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor Robs v4.0 - Premium</title>
+    <title>Gestor Robs v4.0 - Full</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
@@ -14,8 +16,6 @@
             --accent: #00c0ef;
             --bg-body: #f4f6f9;
             --white: #ffffff;
-            --text-main: #333;
-            /* Cores dos Cards da Imagem */
             --c-green: #00a65a;
             --c-orange: #f39c12;
             --c-red: #dd4b39;
@@ -24,218 +24,321 @@
             --c-blue: #0073b7;
         }
 
-        body { font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif; background: var(--bg-body); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
-        /* BARRA LATERAL */
-        nav { width: 230px; background: var(--sidebar-bg); color: #b8c7ce; display: flex; flex-direction: column; transition: 0.3s; }
-        .nav-header { padding: 20px; background: #1a2226; text-align: center; color: white; font-weight: bold; font-size: 18px; border-bottom: 1px solid #444; }
-        .nav-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-left: 3px solid transparent; transition: 0.2s; }
-        .nav-item:hover { background: var(--sidebar-hover); color: white; }
-        .nav-item.active { color: white; background: var(--sidebar-hover); border-left-color: var(--accent); }
+        /* NAVEGAÇÃO */
+        nav { width: 230px; background: var(--sidebar-bg); color: #b8c7ce; display: flex; flex-direction: column; }
+        .nav-header { padding: 20px; background: #1a2226; text-align: center; color: white; font-weight: bold; border-bottom: 1px solid #444; }
+        .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; border-left: 3px solid transparent; }
+        .nav-item:hover, .nav-item.active { background: var(--sidebar-hover); color: white; border-left-color: var(--accent); }
 
-        /* ÁREA PRINCIPAL */
+        /* MAIN AREA */
         main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
         .top-bar { background: var(--white); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
         .content { padding: 20px; }
 
-        /* DASHBOARD METRICS (Como na Imagem) */
+        /* DASHBOARD METRICS */
         .dash-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .stat-box { color: white; padding: 20px; border-radius: 4px; position: relative; overflow: hidden; }
+        .stat-box { color: white; padding: 20px; border-radius: 4px; position: relative; }
         .stat-box h3 { margin: 0; font-size: 24px; }
-        .stat-box p { margin: 5px 0 0; font-size: 13px; opacity: 0.9; }
-        .stat-box i { position: absolute; right: 10px; top: 10px; font-size: 40px; opacity: 0.2; }
+        .stat-box p { margin: 5px 0 0; font-size: 12px; }
 
         /* SEÇÕES */
-        .section { display: none; animation: fadeIn 0.3s; }
+        .section { display: none; }
         .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* TABELAS E CARDS */
+        /* COMPONENTES */
         .panel { background: var(--white); border-top: 3px solid #d2d6de; border-radius: 3px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .panel-header { padding: 10px 15px; border-bottom: 1px solid #f4f4f4; font-weight: bold; }
+        .panel-header { padding: 10px 15px; border-bottom: 1px solid #f4f4f4; font-weight: bold; display: flex; justify-content: space-between; }
         .panel-body { padding: 15px; }
 
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; background: #f9f9f9; padding: 10px; font-size: 13px; border-bottom: 2px solid #eee; }
+        th { text-align: left; background: #f9f9f9; padding: 10px; border-bottom: 2px solid #eee; font-size: 12px; }
         td { padding: 10px; border-bottom: 1px solid #f4f4f4; font-size: 13px; }
 
-        /* PDV ESPECÍFICO */
-        .pdv-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-        .grid-mesas { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 8px; margin-bottom: 15px; }
-        .mesa { padding: 10px 5px; border-radius: 4px; text-align: center; cursor: pointer; color: white; font-size: 10px; font-weight: bold; }
+        /* PDV E MESAS */
+        .pdv-container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        .grid-mesas { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin-bottom: 15px; }
+        .mesa { padding: 10px 2px; border-radius: 4px; text-align: center; cursor: pointer; color: white; font-size: 10px; font-weight: bold; }
         .mesa.livre { background: var(--c-green); }
         .mesa.ocupada { background: var(--c-red); }
-        .mesa.selecionada { outline: 3px solid var(--accent); }
+        .mesa.selecionada { outline: 3px solid var(--accent); transform: scale(1.05); }
 
-        /* BOTÕES */
-        .btn { border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer; font-weight: 600; text-transform: uppercase; font-size: 11px; }
-        .btn-success { background: var(--c-green); color: white; }
-        .btn-danger { background: var(--c-red); color: white; }
-        .btn-primary { background: var(--c-blue); color: white; }
+        .btn { border: none; padding: 10px; border-radius: 3px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-success { background: var(--c-green); }
+        .btn-danger { background: var(--c-red); }
+        .btn-primary { background: var(--c-blue); }
 
-        input, select { padding: 8px; border: 1px solid #ccc; border-radius: 2px; width: 100%; box-sizing: border-box; }
+        /* PRINT STYLE */
+        #cupom-fiscal { display: none; font-family: monospace; width: 300px; padding: 10px; }
+        @media print {
+            body * { visibility: hidden; }
+            #cupom-fiscal, #cupom-fiscal * { visibility: visible; }
+            #cupom-fiscal { display: block !important; position: absolute; left: 0; top: 0; }
+        }
     </style>
 </head>
 <body>
 
+<div id="cupom-fiscal">
+    <div style="text-align:center">
+        <h2>PIZZARIA ROBS</h2>
+        <p id="cupom-data"></p>
+        <hr>
+    </div>
+    <div id="cupom-lista"></div>
+    <hr>
+    <div id="cupom-total"></div>
+</div>
+
 <nav>
     <div class="nav-header">GESTOR ROBS</div>
-    <div class="nav-item active" onclick="mudarTab('home', this)"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
-    <div class="nav-item" onclick="mudarTab('pedidos', this)"><i class="fas fa-shopping-cart"></i> Pedidos</div>
+    <div class="nav-item active" onclick="mudarTab('home', this)"><i class="fas fa-chart-pie"></i> Dashboard</div>
+    <div class="nav-item" onclick="mudarTab('monitor', this)"><i class="fas fa-shopping-basket"></i> Monitor Pedidos</div>
     <div class="nav-item" onclick="mudarTab('pdv', this)"><i class="fas fa-cash-register"></i> Frente de Caixa</div>
-    <div class="nav-item" onclick="mudarTab('caixa', this)"><i class="fas fa-university"></i> Financeiro</div>
-    <div class="nav-item" onclick="mudarTab('estoque', this)"><i class="fas fa-boxes"></i> Produtos</div>
-    <div class="nav-item" onclick="mudarTab('precificacao', this)"><i class="fas fa-calculator"></i> Custos</div>
+    <div class="nav-item" onclick="mudarTab('estoque', this)"><i class="fas fa-pizza-slice"></i> Cardápio</div>
+    <div class="nav-item" onclick="mudarTab('custos', this)"><i class="fas fa-calculator"></i> Precificação</div>
 </nav>
 
 <main>
     <div class="top-bar">
-        <h2 id="page-title" style="margin:0; font-size: 18px;">Dashboard Principal</h2>
-        <div id="relogio" style="font-weight: bold; color: #666;"></div>
+        <h2 id="view-title">Dashboard</h2>
+        <div id="relogio" style="font-weight: bold;"></div>
     </div>
 
     <div class="content">
         <div class="dash-row">
             <div class="stat-box" style="background: var(--c-green);">
-                <h3 id="stat-pedidos">0</h3>
-                <p>PEDIDOS CONCLUÍDOS</p>
-                <i class="fas fa-check-circle"></i>
+                <h3 id="dash-vendas-hoje">R$ 0,00</h3>
+                <p>TOTAL VENDIDO HOJE</p>
             </div>
             <div class="stat-box" style="background: var(--c-orange);">
-                <h3 id="stat-pendentes">0</h3>
-                <p>PEDIDOS EM ABERTO</p>
-                <i class="fas fa-clock"></i>
-            </div>
-            <div class="stat-box" style="background: var(--c-red);">
-                <h3 id="stat-cancelados">0</h3>
-                <p>CANCELAMENTOS</p>
-                <i class="fas fa-times-circle"></i>
-            </div>
-            <div class="stat-box" style="background: var(--c-pink);">
-                <h3 id="stat-faturamento">R$ 0,00</h3>
-                <p>TOTAL VENDIDO HOJE</p>
-                <i class="fas fa-dollar-sign"></i>
-            </div>
-            <div class="stat-box" style="background: var(--c-gray);">
-                <h3 id="stat-ticket">R$ 0,00</h3>
-                <p>TICKET MÉDIO</p>
-                <i class="fas fa-chart-line"></i>
+                <h3 id="dash-pedidos-count">0</h3>
+                <p>PEDIDOS NO MONITOR</p>
             </div>
             <div class="stat-box" style="background: var(--c-blue);">
-                <h3 id="stat-mesas">0</h3>
+                <h3 id="dash-mesas-ocupadas">0</h3>
                 <p>MESAS OCUPADAS</p>
-                <i class="fas fa-utensils"></i>
             </div>
         </div>
 
-        <div id="home" class="section active">
-            <div class="panel">
-                <div class="panel-header">Últimas Atividades</div>
-                <div class="panel-body">
-                    <table>
-                        <thead>
-                            <tr><th>ID</th><th>Data/Hora</th><th>Cliente/Mesa</th><th>Total</th><th>Status</th></tr>
-                        </thead>
-                        <tbody id="resumo-atividades">
-                            </tbody>
-                    </table>
-                </div>
+        <div id="monitor" class="section">
+            <div id="lista-monitor" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+                Carregando pedidos do Firebase...
             </div>
         </div>
 
         <div id="pdv" class="section">
-            <div class="pdv-layout">
+            <div class="pdv-container">
                 <div>
                     <div class="panel">
-                        <div class="panel-header">Mapa de Mesas</div>
+                        <div class="panel-header">Mesas</div>
                         <div class="panel-body">
                             <div class="grid-mesas" id="grid-mesas"></div>
                         </div>
                     </div>
                     <div class="panel">
-                        <div class="panel-header" id="pdv-destino">Venda: Balcão</div>
+                        <div class="panel-header">Venda Ativa: <span id="label-destino">Balcão</span></div>
                         <div class="panel-body">
                             <div style="display:flex; gap:10px; margin-bottom:15px;">
-                                <input type="text" id="busca-prod" placeholder="F1 - Nome ou Código">
-                                <input type="number" id="qtd-prod" value="1" style="width:80px">
-                                <button class="btn btn-primary" onclick="adicionarItemPDV()">INSERIR</button>
+                                <input type="text" id="pdv-busca" placeholder="Produto...">
+                                <input type="number" id="pdv-qtd" value="1" style="width:70px">
+                                <button class="btn btn-primary" onclick="adicionarItemPDV()">ADD</button>
                             </div>
-                            <table style="background: #fdfdfd;">
-                                <thead><tr><th>Item</th><th>Qtd</th><th>Unit</th><th>Total</th><th>#</th></tr></thead>
-                                <tbody id="lista-venda-ativa"></tbody>
+                            <table>
+                                <thead><tr><th>Item</th><th>Qtd</th><th>Total</th><th>#</th></tr></thead>
+                                <tbody id="corpo-pdv"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
                 <div class="panel" style="background: #222d32; color: white;">
                     <div class="panel-body">
-                        <p style="margin:0; opacity:0.7">TOTAL DA VENDA</p>
-                        <h1 id="total-pdv" style="font-size: 48px; margin: 10px 0; color: var(--accent);">R$ 0,00</h1>
-                        <hr style="opacity:0.2">
-                        <label><small>FORMA DE PAGAMENTO</small></label>
-                        <select id="forma-pgto" style="margin-bottom:15px; background:#333; color:white; border:none;">
-                            <option>Dinheiro</option>
-                            <option>Cartão Crédito</option>
-                            <option>Cartão Débito</option>
-                            <option>PIX</option>
+                        <small>TOTAL A PAGAR</small>
+                        <h1 id="pdv-total-display" style="color: var(--accent); margin: 10px 0;">R$ 0,00</h1>
+                        <hr style="opacity:0.1">
+                        <select id="pdv-forma" style="margin-top:10px; background:#333; color:white; border:none; padding:10px; width:100%">
+                            <option>Dinheiro</option><option>Cartão</option><option>PIX</option>
                         </select>
-                        <button class="btn btn-success" style="width:100%; padding:20px; font-size:16px;" onclick="finalizarVenda()">FECHAR PEDIDO (F2)</button>
+                        <button class="btn btn-success" style="width:100%; margin-top:20px; padding:15px" onclick="finalizarVendaPDV()">FECHAR VENDA (F2)</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="pedidos" class="section">
-             <div class="panel"><div class="panel-header">Monitoramento em Tempo Real</div><div class="panel-body" id="container-pedidos-ifood">Carregando...</div></div>
+        <div id="estoque" class="section">
+            <div class="panel">
+                <div class="panel-header">Novo Produto</div>
+                <div class="panel-body">
+                    <input type="text" id="prod-nome" placeholder="Nome" style="margin-bottom:10px">
+                    <input type="number" id="prod-preco" placeholder="Preço" style="margin-bottom:10px">
+                    <button class="btn btn-primary" onclick="cadastrarProduto()">SALVAR</button>
+                </div>
+            </div>
         </div>
-        
-        <div id="caixa" class="section">
-             <div class="panel"><div class="panel-header">Fluxo de Caixa</div><div class="panel-body" id="historico-financeiro"></div></div>
-        </div>
-
     </div>
 </main>
 
+<audio id="som-alerta" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
+
 <script>
-    // Lógica de navegação
-    function mudarTab(tabId, el) {
+    // CONFIGURAÇÕES
+    const firebaseConfig = {
+        apiKey: "AIzaSyAjzwX_sPyZOvZzcJc9ynBSbBN5uazaCHU",
+        authDomain: "robs-pizzariadelivery.firebaseapp.com",
+        projectId: "robs-pizzariadelivery",
+        storageBucket: "robs-pizzariadelivery.firebasestorage.app",
+        messagingSenderId: "847851003409",
+        appId: "1:847851003409:web:7f3ed9f7089d4c61861bb0"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const _supa = supabase.createClient('https://gsvvyktjeqlmhspqzppy.supabase.co', 'sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs');
+
+    // ESTADO DO APP
+    let mesaAtiva = null; 
+    let statusMesas = JSON.parse(localStorage.getItem('status_mesas')) || Array.from({length: 20}, () => ({ itens: [] }));
+    let vendaBalcao = [];
+    let vendasHoje = JSON.parse(localStorage.getItem('vendas_hoje')) || [];
+
+    // NAVEGAÇÃO
+    function mudarTab(id, el) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        
-        document.getElementById(tabId).classList.add('active');
+        document.getElementById(id).classList.add('active');
         el.classList.add('active');
-        document.getElementById('page-title').innerText = el.innerText.trim();
-        
-        if(tabId === 'pdv') renderizarMesas();
+        document.getElementById('view-title').innerText = el.innerText;
     }
 
-    // Relógio em tempo real
-    setInterval(() => {
-        document.getElementById('relogio').innerText = new Date().toLocaleString('pt-BR');
-    }, 1000);
+    // MONITOR FIREBASE (REALTIME)
+    db.collection("pedidos").orderBy("data", "desc").onSnapshot(snap => {
+        const container = document.getElementById("lista-monitor");
+        container.innerHTML = "";
+        document.getElementById('dash-pedidos-count').innerText = snap.size;
+        
+        if(!snap.empty) document.getElementById('som-alerta').play().catch(()=>{});
 
-    // Simulação de renderização de mesas
+        snap.forEach(doc => {
+            const p = doc.data();
+            container.innerHTML += `
+                <div class="panel" style="border-top-color: var(--c-red)">
+                    <div class="panel-body">
+                        <b>👤 ${p.cliente}</b><br>
+                        <small>📍 ${p.endereco}</small>
+                        <div style="background:#f9f9f9; padding:10px; margin:10px 0; font-size:12px">${p.produtos}</div>
+                        <h4 style="color:var(--c-red)">R$ ${p.total}</h4>
+                        <div style="display:flex; gap:5px">
+                            <button class="btn btn-primary" onclick="window.open('https://wa.me/55${p.telefone}')">ZAP</button>
+                            <button class="btn btn-success" style="flex:1" onclick="concluirPedidoMonitor('${doc.id}', ${parseFloat(p.total)})">CONCLUIR</button>
+                        </div>
+                    </div>
+                </div>`;
+        });
+    });
+
+    // PDV LOGICA
     function renderizarMesas() {
-        const grid = document.getElementById('grid-mesas');
-        grid.innerHTML = "";
-        for(let i=1; i<=20; i++) {
-            const status = Math.random() > 0.8 ? 'ocupada' : 'livre';
-            grid.innerHTML += `<div class="mesa ${status}" onclick="selecionarMesa(${i})">${i}</div>`;
+        const container = document.getElementById('grid-mesas');
+        container.innerHTML = `<div class="mesa" style="background:#666; grid-column: span 2" onclick="selecionarMesa(null)">BALCÃO</div>`;
+        let ocupadas = 0;
+        statusMesas.forEach((m, i) => {
+            const isOcupada = m.itens.length > 0;
+            if(isOcupada) ocupadas++;
+            container.innerHTML += `<div class="mesa ${isOcupada ? 'ocupada' : 'livre'} ${mesaAtiva === i ? 'selecionada' : ''}" onclick="selecionarMesa(${i})">${i+1}</div>`;
+        });
+        document.getElementById('dash-mesas-ocupadas').innerText = ocupadas;
+    }
+
+    function selecionarMesa(idx) {
+        mesaAtiva = idx;
+        document.getElementById('label-destino').innerText = idx === null ? "Balcão" : "Mesa " + (idx + 1);
+        renderizarMesas();
+        renderizarListaPDV();
+    }
+
+    async function adicionarItemPDV() {
+        const busca = document.getElementById('pdv-busca').value;
+        const qtd = parseFloat(document.getElementById('pdv-qtd').value) || 1;
+        if(!busca) return;
+
+        const { data } = await _supa.from('produtos').select('*').ilike('nome', `%${busca}%`);
+        if(data && data[0]) {
+            const p = data[0];
+            const item = { nome: p.nome, preco: p.preco, qtd, total: p.preco * qtd };
+            
+            if(mesaAtiva === null) vendaBalcao.push(item);
+            else statusMesas[mesaAtiva].itens.push(item);
+            
+            salvarLocal();
+            renderizarListaPDV();
+            renderizarMesas();
+            document.getElementById('pdv-busca').value = "";
         }
     }
 
-    function selecionarMesa(n) {
-        document.querySelectorAll('.mesa').forEach(m => m.classList.remove('selecionada'));
-        event.currentTarget.classList.add('selecionada');
-        document.getElementById('pdv-destino').innerText = "Venda: Mesa " + n;
+    function renderizarListaPDV() {
+        const lista = mesaAtiva === null ? vendaBalcao : statusMesas[mesaAtiva].itens;
+        const corpo = document.getElementById('corpo-pdv');
+        corpo.innerHTML = "";
+        let total = 0;
+        lista.forEach((item, i) => {
+            total += item.total;
+            corpo.innerHTML += `<tr><td>${item.nome}</td><td>${item.qtd}</td><td>R$ ${item.total.toFixed(2)}</td><td onclick="removerItem(${i})" style="color:red; cursor:pointer">X</td></tr>`;
+        });
+        document.getElementById('pdv-total-display').innerText = "R$ " + total.toFixed(2);
     }
 
-    // Inicialização
-    window.onload = () => {
-        renderizarMesas();
-        // Aqui você integraria suas funções de Firebase/Supabase existentes
-    };
-</script>
+    function finalizarVendaPDV() {
+        const lista = mesaAtiva === null ? vendaBalcao : statusMesas[mesaAtiva].itens;
+        if(lista.length === 0) return;
 
+        const total = lista.reduce((a, b) => a + b.total, 0);
+        const destino = mesaAtiva === null ? "Balcão" : "Mesa " + (mesaAtiva + 1);
+        
+        // Impressão
+        document.getElementById('cupom-data').innerText = new Date().toLocaleString();
+        document.getElementById('cupom-lista').innerHTML = lista.map(i => `<div>${i.qtd}x ${i.nome} - R$ ${i.total.toFixed(2)}</div>`).join('');
+        document.getElementById('cupom-total').innerHTML = `<h3>TOTAL: R$ ${total.toFixed(2)}</h3>`;
+        window.print();
+
+        // Salvar e Limpar
+        vendasHoje.push({ total, data: new Date().toISOString() });
+        localStorage.setItem('vendas_hoje', JSON.stringify(vendasHoje));
+        
+        if(mesaAtiva === null) vendaBalcao = [];
+        else statusMesas[mesaAtiva].itens = [];
+        
+        salvarLocal();
+        selecionarMesa(null);
+        atualizarDashboard();
+    }
+
+    function concluirPedidoMonitor(id, valor) {
+        if(confirm("Lançar venda e remover do monitor?")) {
+            vendasHoje.push({ total: valor, data: new Date().toISOString() });
+            localStorage.setItem('vendas_hoje', JSON.stringify(vendasHoje));
+            db.collection("pedidos").doc(id).delete();
+            atualizarDashboard();
+        }
+    }
+
+    function salvarLocal() { localStorage.setItem('status_mesas', JSON.stringify(statusMesas)); }
+
+    function atualizarDashboard() {
+        const total = vendasHoje.reduce((a, b) => a + b.total, 0);
+        document.getElementById('dash-vendas-hoje').innerText = "R$ " + total.toLocaleString('pt-BR', {minimumFractionDigits:2});
+    }
+
+    // SUPABASE CADASTRO
+    async function cadastrarProduto() {
+        const nome = document.getElementById('prod-nome').value;
+        const preco = document.getElementById('prod-preco').value;
+        await _supa.from('produtos').insert([{ nome, preco }]);
+        alert("Cadastrado!");
+    }
+
+    setInterval(() => { document.getElementById('relogio').innerText = new Date().toLocaleString(); }, 1000);
+    window.onload = () => { renderizarMesas(); atualizarDashboard(); };
+</script>
 </body>
 </html>
