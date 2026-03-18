@@ -3,42 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atendimento VIP Particular</title>
+    <title>Atendimento Particular</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root { --primary: #6366f1; --danger: #ef4444; --bg: #0f172a; --surface: #1e293b; }
-        
-        /* Layout Geral - Impede rolagem (scroll) */
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        
-        /* Setup Screen */
         #setup-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; }
         .card { background: var(--surface); padding: 2rem; border-radius: 1rem; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 100%; max-width: 400px; box-sizing: border-box;}
         input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
         .btn-main { width: 100%; padding: 12px; border-radius: 8px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; }
-
-        /* Video Interface - Garante espaço para os botões */
         #call-interface { display: none; flex-direction: column; height: 100%; }
-        
-        /* Grid de Vídeo - Ajuste para não roubar toda a altura */
         .video-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; background: #000; overflow: hidden; justify-content: center; align-content: center;}
         @media (max-width: 768px) { .video-grid { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr;} }
-        
-        /* Container de Vídeo - Fixa aspecto 16:9 e limita tamanho */
         .video-box { position: relative; background: #111; border-radius: 10px; overflow: hidden; aspect-ratio: 16 / 9; max-height: 90%; display: flex; align-self: center; justify-self: center;}
-        @media (max-width: 768px) { .video-box { max-height: calc(50% - 20px); } }
-
         video { width: 100%; height: 100%; object-fit: cover; }
         .local-video { transform: scaleX(-1); border: 2px solid var(--primary); }
-
-        /* Controls - Fixos e visíveis */
         .controls { background: var(--surface); padding: 15px; display: flex; justify-content: center; align-items: center; gap: 20px; border-top: 1px solid #333; }
-        
-        .btn-circle { width: 50px; height: 50px; border-radius: 50%; border: none; background: #334155; color: white; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .btn-circle:hover { background: #444; }
+        .btn-circle { width: 50px; height: 50px; border-radius: 50%; border: none; background: #334155; color: white; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .btn-circle.off { background: var(--danger); }
-        .btn-circle.off:hover { background: #d32f2f; }
-        
         .copy-link { color: #818cf8; cursor: pointer; font-size: 0.9rem; text-decoration: underline; margin-left: 10px; }
     </style>
 </head>
@@ -64,25 +46,23 @@
                 <div id="remote-label" style="position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.6); padding:2px 8px; border-radius:4px; font-size:12px;">Aguardando convidado...</div>
             </div>
         </div>
-
         <div class="controls">
-            <button class="btn-circle" id="btn-audio" onclick="toggleAudio()" title="Mutar/Desmutar Microfone">🎤</button>
-            <button class="btn-circle" id="btn-video" onclick="toggleVideo()" title="Ligar/Desligar Câmera">📹</button>
-            <button class="btn-circle off" onclick="location.href=location.pathname" title="Encerrar Chamada">📞</button>
-            <span class="copy-link" onclick="copyRoomLink()">Copiar link de convite</span>
+            <button class="btn-circle" id="btn-audio" onclick="toggleAudio()">🎤</button>
+            <button class="btn-circle" id="btn-video" onclick="toggleVideo()">📹</button>
+            <button class="btn-circle off" onclick="location.href=location.pathname">📞</button>
+            <span class="copy-link" onclick="copyRoomLink()">Copiar link</span>
         </div>
     </div>
 
     <script>
-        let peer, localStream, currentCall;
+        let peer, localStream;
         const urlParams = new URLSearchParams(window.location.search);
         const roomParam = urlParams.get('room');
 
-        // Auto-entrada se houver ?room na URL
         window.onload = () => {
             if (roomParam) {
                 document.getElementById('room-input').value = roomParam;
-                document.getElementById('info-text').innerText = "Conectando à chamada...";
+                document.getElementById('info-text').innerText = "Conectando ao atendimento...";
                 setTimeout(startCall, 1000);
             }
         };
@@ -95,92 +75,77 @@
             document.getElementById('call-interface').style.display = 'flex';
 
             try {
-                // Captura Áudio e Vídeo
                 localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 document.getElementById('local-video').srcObject = localStream;
 
-                // Lógica de Conexão Distinta
                 if (roomParam) {
-                    // CONVIDADO: ID aleatório e liga para o dono da sala
+                    // LÓGICA CONVIDADO: Gera ID aleatório sempre
                     peer = new Peer(); 
                     peer.on('open', (id) => {
-                        console.log("Convidado ativo. ID: " + id);
-                        const call = peer.call('vcall-' + roomId, localStream);
-                        handleCall(call);
+                        console.log("Convidado online. Ligando para vcall-" + roomId);
+                        // Tenta ligar. Se falhar, tenta de novo em 3 segundos (caso o dono ainda não tenha entrado)
+                        const makeCall = () => {
+                            const call = peer.call('vcall-' + roomId, localStream);
+                            if (call) handleCall(call);
+                        };
+                        makeCall();
                     });
                 } else {
-                    // DONO DA SALA: ID fixo baseado no nome da sala
+                    // LÓGICA DONO: ID Fixo
                     peer = new Peer('vcall-' + roomId);
-                    peer.on('open', (id) => {
-                        console.log("Dono da sala aguardando conexões: " + id);
-                    });
+                    peer.on('open', (id) => console.log("Dono aguardando em: " + id));
                 }
 
-                // Lógica comum para receber chamadas (essencial para o dono da sala)
                 peer.on('call', (call) => {
                     call.answer(localStream);
                     handleCall(call);
                 });
 
                 peer.on('error', (err) => {
-                    console.error("Erro no Peer:", err.type);
-                    if(err.type === 'unavailable-id') {
-                        alert("Esta sala já está em uso por outra pessoa. Tente outro nome.");
+                    console.error("Erro PeerJS:", err.type);
+                    if (err.type === 'peer-allowed-error' || err.type === 'unavailable-id') {
+                        alert("Erro: Esta sala já tem um atendente ativo.");
                         location.reload();
                     }
                 });
 
             } catch (err) {
-                alert("Erro de mídia: " + err.message + "\nPor favor, garanta que deu permissão de câmera/microfone.");
-                location.reload();
+                alert("Erro de câmera: " + err.message);
             }
         }
 
         function handleCall(call) {
-            currentCall = call;
             call.on('stream', (remoteStream) => {
                 const remoteVid = document.getElementById('remote-video');
-                // Evita reconectar o mesmo stream se ele já estiver lá
-                if (remoteVid.srcObject !== remoteStream) {
-                    remoteVid.srcObject = remoteStream;
-                    document.getElementById('remote-label').innerText = "Cliente Conectado";
-                    console.log("Stream remoto conectado com sucesso.");
-                }
+                remoteVid.srcObject = remoteStream;
+                document.getElementById('remote-label').innerText = "Conectado";
             });
         }
 
-        // --- UTILITÁRIOS ---
-
         function copyRoomLink() {
             const room = document.getElementById('room-input').value;
-            // Gera link limpo e correto para o GitHub Pages
             const url = window.location.origin + window.location.pathname + '?room=' + encodeURIComponent(room);
-            
-            // Método de cópia mais compatível
             const el = document.createElement('textarea');
             el.value = url;
             document.body.appendChild(el);
             el.select();
             document.execCommand('copy');
             document.body.removeChild(el);
-            
-            alert("Link de convite copiado!");
+            alert("Link copiado!");
         }
 
         function toggleAudio() {
-            if (!localStream) return;
-            const track = localStream.getAudioTracks()[0];
-            track.enabled = !track.enabled;
-            document.getElementById('btn-audio').innerText = track.enabled ? '🎤' : '🔇';
-            document.getElementById('btn-audio').classList.toggle('off', !track.enabled);
+            const tr = localStream.getAudioTracks()[0];
+            tr.enabled = !tr.enabled;
+            document.getElementById('btn-audio').innerText = tr.enabled ? '🎤' : '🔇';
+            document.getElementById('btn-audio').classList.toggle('off', !tr.enabled);
         }
 
         function toggleVideo() {
-            if (!localStream) return;
-            const track = localStream.getVideoTracks()[0];
-            track.enabled = !track.enabled;
-            document.getElementById('btn-video').innerText = track.enabled ? '📹' : '🚫';
-            document.getElementById('btn-video').classList.toggle('off', !track.enabled);
+            const tr = localStream.getVideoTracks()[0];
+            tr.enabled = !tr.enabled;
+            document.getElementById('btn-video').innerText = tr.enabled ? '📹' : '🚫';
+            document.getElementById('btn-video').classList.toggle('off', !tr.enabled);
         }
     </script>
 </body>
