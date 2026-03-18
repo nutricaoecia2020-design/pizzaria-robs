@@ -3,66 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Videochamada Particular</title>
+    <title>Atendimento Particular VIP</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; text-align: center; margin: 0; padding: 20px; }
-        .video-container { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
-        video { width: 45%; max-width: 400px; background: #000; border-radius: 10px; border: 2px solid #333; }
-        .controls { margin-top: 20px; background: #222; padding: 20px; border-radius: 10px; }
-        input { padding: 10px; border-radius: 5px; border: none; width: 200px; }
-        button { padding: 10px 20px; border-radius: 5px; border: none; cursor: pointer; background: #4f46e5; color: white; font-weight: bold; }
-        .btn-copy { background: #22c55e; margin-top: 10px; }
-        #status { color: #aaa; margin-top: 10px; }
+        :root {
+            --primary: #6366f1;
+            --danger: #ef4444;
+            --bg: #0f172a;
+            --surface: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Tela de Entrada */
+        #setup-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .card {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        .btn-main {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Interface de Vídeo */
+        #call-interface {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .video-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 10px;
+            background: #000;
+        }
+
+        @media (max-width: 768px) {
+            .video-grid { grid-template-columns: 1fr; }
+        }
+
+        .video-box {
+            position: relative;
+            background: #111;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .local-video { transform: scaleX(-1); border: 2px solid var(--primary); }
+
+        .controls {
+            background: var(--surface);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: #334155;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .btn-circle.off { background: var(--danger); }
+
+        .copy-link {
+            color: #818cf8;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: underline;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
 
-    <h2>Atendimento por Vídeo</h2>
-    <div id="secure-warning" style="display:none; color: gold; padding: 10px;">
-        ⚠️ Atenção: Use <b>HTTPS</b> ou <b>Localhost</b> para a câmera funcionar.
+    <div id="setup-container">
+        <div class="card">
+            <h2>Vídeo Atendimento</h2>
+            <p id="info-text">Digite o nome da sala para começar</p>
+            <input type="text" id="room-input" placeholder="Ex: sala-do-joao">
+            <button class="btn-main" onclick="startCall()">Entrar na Sala</button>
+        </div>
     </div>
 
-    <div class="video-container">
-        <video id="local-video" autoplay muted playsinline style="transform: scaleX(-1);"></video>
-        <video id="remote-video" autoplay playsinline></video>
-    </div>
+    <div id="call-interface">
+        <div class="video-grid">
+            <div class="video-box">
+                <video id="local-video" class="local-video" autoplay muted playsinline></video>
+                <div style="position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.5); padding:2px 8px; border-radius:4px; font-size:12px;">Você</div>
+            </div>
+            <div class="video-box">
+                <video id="remote-video" autoplay playsinline></video>
+                <div id="remote-label" style="position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.5); padding:2px 8px; border-radius:4px; font-size:12px;">Aguardando convidado...</div>
+            </div>
+        </div>
 
-    <div class="controls">
-        <input type="text" id="room-input" placeholder="Nome da sala">
-        <button onclick="startCall()">Entrar / Iniciar</button>
-        <br>
-        <button class="btn-copy" onclick="copyRoomLink()">Copiar Link de Convite</button>
-        <p id="status">Aguardando ação...</p>
+        <div class="controls">
+            <button class="btn-circle" id="btn-audio" onclick="toggleAudio()">🎤</button>
+            <button class="btn-circle" id="btn-video" onclick="toggleVideo()">📹</button>
+            <button class="btn-circle off" onclick="window.location.href=window.location.pathname">📞</button>
+            <span class="copy-link" onclick="copyRoomLink()">Copiar link para convidar</span>
+        </div>
     </div>
 
     <script>
-        let localStream;
-        let peer;
+        let peer, localStream;
 
-        // Verifica se é ambiente seguro
-        if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-            document.getElementById('secure-warning').style.display = 'block';
+        // --- LÓGICA DE AUTO-ENTRADA ---
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomParam = urlParams.get('room');
+            
+            if (roomParam) {
+                document.getElementById('room-input').value = roomParam;
+                document.getElementById('info-text').innerText = "Entrando na sala automaticamente...";
+                setTimeout(() => { startCall(); }, 1500);
+            }
         }
 
         async function startCall() {
-            const roomId = document.getElementById('room-input').value.toLowerCase().trim();
-            if (!roomId) return alert("Digite um nome para a sala");
+            const roomId = document.getElementById('room-input').value.trim().toLowerCase();
+            if (!roomId) return alert("Por favor, escolha um nome para a sala.");
+
+            document.getElementById('setup-container').style.display = 'none';
+            document.getElementById('call-interface').style.display = 'flex';
 
             try {
-                // Tenta pegar câmera e áudio
+                // Captura Áudio e Vídeo
                 localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 document.getElementById('local-video').srcObject = localStream;
-                document.getElementById('status').innerText = "Câmera ativa. Conectando...";
 
-                // Inicializa PeerJS
-                peer = new Peer('room-' + roomId);
+                // Conecta ao PeerJS usando o nome da sala
+                // O prefixo 'vcall-' ajuda a evitar conflitos de nomes comuns
+                peer = new Peer('vcall-' + roomId);
 
                 peer.on('open', (id) => {
-                    document.getElementById('status').innerText = "Na sala: " + roomId;
-                    // Tenta ligar para quem já estiver lá
-                    const call = peer.call('room-' + roomId, localStream);
-                    if(call) handleCall(call);
+                    console.log('ID da sala aberto:', id);
+                    // Tenta ligar para o dono da sala (caso você seja o convidado)
+                    const call = peer.call('vcall-' + roomId, localStream);
+                    if (call) handleCall(call);
                 });
 
                 peer.on('call', (call) => {
@@ -70,47 +205,50 @@
                     handleCall(call);
                 });
 
-                peer.on('error', (err) => {
-                    if(err.type === 'unavailable-id') {
-                        // Se você não for o "dono" da sala, apenas espere ou tente ligar
-                        console.log("Sala já tem um dono, aguardando conexão...");
-                    }
-                });
-
             } catch (err) {
-                console.error(err);
-                alert("ERRO DE MÍDIA: Verifique se deu permissão à câmera e se está usando HTTPS.");
+                alert("Erro ao acessar câmera/microfone: " + err.message);
+                location.reload();
             }
         }
 
         function handleCall(call) {
             call.on('stream', (remoteStream) => {
-                document.getElementById('remote-video').srcObject = remoteStream;
-                document.getElementById('status').innerText = "Conectado com outra pessoa!";
+                const remoteVid = document.getElementById('remote-video');
+                remoteVid.srcObject = remoteStream;
+                document.getElementById('remote-label').innerText = "Conectado";
             });
         }
 
+        // --- UTILITÁRIOS ---
+
         function copyRoomLink() {
             const roomName = document.getElementById('room-input').value;
-            if(!roomName) return alert("Digite o nome da sala primeiro");
+            if(!roomName) return alert("Entre em uma sala primeiro.");
             
-            const url = window.location.origin + window.location.pathname + '?room=' + roomName;
+            const url = window.location.origin + window.location.pathname + '?room=' + encodeURIComponent(roomName);
             
-            // Método de cópia compatível com mais ambientes
-            const el = document.createElement('textarea');
-            el.value = url;
-            document.body.appendChild(el);
-            el.select();
+            const temp = document.createElement('input');
+            document.body.appendChild(temp);
+            temp.value = url;
+            temp.select();
             document.execCommand('copy');
-            document.body.removeChild(el);
+            document.body.removeChild(temp);
             
-            alert("Link copiado: " + url);
+            alert("Link de convite copiado!");
         }
 
-        // Auto-carregar se vier link com ?room=
-        const urlParams = new URLSearchParams(window.location.search);
-        if(urlParams.get('room')) {
-            document.getElementById('room-input').value = urlParams.get('room');
+        function toggleAudio() {
+            const enabled = localStream.getAudioTracks()[0].enabled;
+            localStream.getAudioTracks()[0].enabled = !enabled;
+            document.getElementById('btn-audio').innerText = enabled ? '🔇' : '🎤';
+            document.getElementById('btn-audio').classList.toggle('off');
+        }
+
+        function toggleVideo() {
+            const enabled = localStream.getVideoTracks()[0].enabled;
+            localStream.getVideoTracks()[0].enabled = !enabled;
+            document.getElementById('btn-video').innerText = enabled ? '🚫' : '📹';
+            document.getElementById('btn-video').classList.toggle('off');
         }
     </script>
 </body>
