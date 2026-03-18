@@ -3,132 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atendimento Particular VIP</title>
+    <title>Atendimento VIP Particular</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        :root {
-            --primary: #6366f1;
-            --danger: #ef4444;
-            --bg: #0f172a;
-            --surface: #1e293b;
-        }
+        :root { --primary: #6366f1; --danger: #ef4444; --bg: #0f172a; --surface: #1e293b; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        /* Setup Screen */
+        #setup-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+        .card { background: var(--surface); padding: 2rem; border-radius: 1rem; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 90%; max-width: 400px; }
+        input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        .btn-main { width: 100%; padding: 12px; border-radius: 8px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: white;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Tela de Entrada */
-        #setup-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-        }
-
-        .card {
-            background: var(--surface);
-            padding: 2rem;
-            border-radius: 1rem;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            width: 90%;
-            max-width: 400px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 15px 0;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: white;
-            box-sizing: border-box;
-        }
-
-        .btn-main {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            background: var(--primary);
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* Interface de Vídeo */
-        #call-interface {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .video-grid {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            padding: 10px;
-            background: #000;
-        }
-
-        @media (max-width: 768px) {
-            .video-grid { grid-template-columns: 1fr; }
-        }
-
-        .video-box {
-            position: relative;
-            background: #111;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
+        /* Video Interface */
+        #call-interface { display: none; flex-direction: column; height: 100%; }
+        .video-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; background: #000; }
+        @media (max-width: 768px) { .video-grid { grid-template-columns: 1fr; } }
+        .video-box { position: relative; background: #111; border-radius: 10px; overflow: hidden; }
+        video { width: 100%; height: 100%; object-fit: cover; }
         .local-video { transform: scaleX(-1); border: 2px solid var(--primary); }
 
-        .controls {
-            background: var(--surface);
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .btn-circle {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: none;
-            background: #334155;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-
+        /* Controls */
+        .controls { background: var(--surface); padding: 15px; display: flex; justify-content: center; align-items: center; gap: 15px; }
+        .btn-circle { width: 50px; height: 50px; border-radius: 50%; border: none; background: #334155; color: white; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .btn-circle.off { background: var(--danger); }
-
-        .copy-link {
-            color: #818cf8;
-            cursor: pointer;
-            font-size: 0.9rem;
-            text-decoration: underline;
-            margin-left: 10px;
-        }
+        .copy-link { color: #818cf8; cursor: pointer; font-size: 0.9rem; text-decoration: underline; margin-left: 10px; }
     </style>
 </head>
 <body>
@@ -136,8 +35,8 @@
     <div id="setup-container">
         <div class="card">
             <h2>Vídeo Atendimento</h2>
-            <p id="info-text">Digite o nome da sala para começar</p>
-            <input type="text" id="room-input" placeholder="Ex: sala-do-joao">
+            <p id="info-text">Inicie uma sala ou use o link de convite</p>
+            <input type="text" id="room-input" placeholder="Ex: paulo">
             <button class="btn-main" onclick="startCall()">Entrar na Sala</button>
         </div>
     </div>
@@ -146,109 +45,112 @@
         <div class="video-grid">
             <div class="video-box">
                 <video id="local-video" class="local-video" autoplay muted playsinline></video>
-                <div style="position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.5); padding:2px 8px; border-radius:4px; font-size:12px;">Você</div>
+                <div style="position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.6); padding:2px 8px; border-radius:4px; font-size:12px;">Você</div>
             </div>
             <div class="video-box">
                 <video id="remote-video" autoplay playsinline></video>
-                <div id="remote-label" style="position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.5); padding:2px 8px; border-radius:4px; font-size:12px;">Aguardando convidado...</div>
+                <div id="remote-label" style="position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.6); padding:2px 8px; border-radius:4px; font-size:12px;">Aguardando convidado...</div>
             </div>
         </div>
 
         <div class="controls">
             <button class="btn-circle" id="btn-audio" onclick="toggleAudio()">🎤</button>
             <button class="btn-circle" id="btn-video" onclick="toggleVideo()">📹</button>
-            <button class="btn-circle off" onclick="window.location.href=window.location.pathname">📞</button>
-            <span class="copy-link" onclick="copyRoomLink()">Copiar link para convidar</span>
+            <button class="btn-circle off" onclick="location.href=location.pathname">📞</button>
+            <span class="copy-link" onclick="copyRoomLink()">Copiar link de convite</span>
         </div>
     </div>
 
     <script>
-        let peer, localStream;
+        let peer, localStream, currentCall;
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomParam = urlParams.get('room');
 
-        // --- LÓGICA DE AUTO-ENTRADA ---
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const roomParam = urlParams.get('room');
-            
+        // Auto-entrada se houver ?room na URL
+        window.onload = () => {
             if (roomParam) {
                 document.getElementById('room-input').value = roomParam;
-                document.getElementById('info-text').innerText = "Entrando na sala automaticamente...";
-                setTimeout(() => { startCall(); }, 1500);
+                document.getElementById('info-text').innerText = "Conectando à chamada...";
+                setTimeout(startCall, 1000);
             }
-        }
+        };
 
         async function startCall() {
             const roomId = document.getElementById('room-input').value.trim().toLowerCase();
-            if (!roomId) return alert("Por favor, escolha um nome para a sala.");
+            if (!roomId) return alert("Digite o nome da sala.");
 
             document.getElementById('setup-container').style.display = 'none';
             document.getElementById('call-interface').style.display = 'flex';
 
             try {
-                // Captura Áudio e Vídeo
                 localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 document.getElementById('local-video').srcObject = localStream;
 
-                // Conecta ao PeerJS usando o nome da sala
-                // O prefixo 'vcall-' ajuda a evitar conflitos de nomes comuns
-                peer = new Peer('vcall-' + roomId);
+                // Lógica de Conexão Distinta
+                if (roomParam) {
+                    // CONVIDADO: ID aleatório para não conflitar, e liga para o dono
+                    peer = new Peer(); 
+                    peer.on('open', (id) => {
+                        console.log("Convidado ativo. Ligando para: vcall-" + roomId);
+                        const call = peer.call('vcall-' + roomId, localStream);
+                        handleCall(call);
+                    });
+                } else {
+                    // DONO DA SALA: ID fixo baseado no nome da sala
+                    peer = new Peer('vcall-' + roomId);
+                    peer.on('open', (id) => {
+                        console.log("Aguardando conexões na sala: " + id);
+                    });
+                }
 
-                peer.on('open', (id) => {
-                    console.log('ID da sala aberto:', id);
-                    // Tenta ligar para o dono da sala (caso você seja o convidado)
-                    const call = peer.call('vcall-' + roomId, localStream);
-                    if (call) handleCall(call);
-                });
-
+                // Ambos devem estar prontos para receber a conexão
                 peer.on('call', (call) => {
                     call.answer(localStream);
                     handleCall(call);
                 });
 
+                peer.on('error', (err) => {
+                    console.error("Erro no Peer:", err.type);
+                    if(err.type === 'unavailable-id') alert("Esta sala já está em uso. Tente outro nome.");
+                });
+
             } catch (err) {
-                alert("Erro ao acessar câmera/microfone: " + err.message);
+                alert("Erro de mídia: " + err.message);
                 location.reload();
             }
         }
 
         function handleCall(call) {
+            currentCall = call;
             call.on('stream', (remoteStream) => {
                 const remoteVid = document.getElementById('remote-video');
                 remoteVid.srcObject = remoteStream;
-                document.getElementById('remote-label').innerText = "Conectado";
+                document.getElementById('remote-label').innerText = "Cliente Conectado";
             });
         }
 
-        // --- UTILITÁRIOS ---
-
         function copyRoomLink() {
-            const roomName = document.getElementById('room-input').value;
-            if(!roomName) return alert("Entre em uma sala primeiro.");
-            
-            const url = window.location.origin + window.location.pathname + '?room=' + encodeURIComponent(roomName);
-            
-            const temp = document.createElement('input');
-            document.body.appendChild(temp);
-            temp.value = url;
-            temp.select();
+            const room = document.getElementById('room-input').value;
+            const url = window.location.origin + window.location.pathname + '?room=' + encodeURIComponent(room);
+            const el = document.createElement('textarea');
+            el.value = url;
+            document.body.appendChild(el);
+            el.select();
             document.execCommand('copy');
-            document.body.removeChild(temp);
-            
-            alert("Link de convite copiado!");
+            document.body.removeChild(el);
+            alert("Link copiado! Envie para o cliente.");
         }
 
         function toggleAudio() {
-            const enabled = localStream.getAudioTracks()[0].enabled;
-            localStream.getAudioTracks()[0].enabled = !enabled;
-            document.getElementById('btn-audio').innerText = enabled ? '🔇' : '🎤';
-            document.getElementById('btn-audio').classList.toggle('off');
+            const enabled = localStream.getAudioTracks()[0].enabled = !localStream.getAudioTracks()[0].enabled;
+            document.getElementById('btn-audio').innerText = enabled ? '🎤' : '🔇';
+            document.getElementById('btn-audio').classList.toggle('off', !enabled);
         }
 
         function toggleVideo() {
-            const enabled = localStream.getVideoTracks()[0].enabled;
-            localStream.getVideoTracks()[0].enabled = !enabled;
-            document.getElementById('btn-video').innerText = enabled ? '🚫' : '📹';
-            document.getElementById('btn-video').classList.toggle('off');
+            const enabled = localStream.getVideoTracks()[0].enabled = !localStream.getVideoTracks()[0].enabled;
+            document.getElementById('btn-video').innerText = enabled ? '📹' : '🚫';
+            document.getElementById('btn-video').classList.toggle('off', !enabled);
         }
     </script>
 </body>
