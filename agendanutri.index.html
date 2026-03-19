@@ -3,220 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clínica Roberto Vasconcelos | Nutrição & Nefrologia</title>
+    <title>Sistema Roberto Vasconcelos | Nutrição & Nefrologia</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .clinical-header { background: linear-gradient(135deg, #059669 0%, #064e3b 100%); }
-        .glass-card { background: rgba(255, 255, 255, 1); border: 1px solid #e2e8f0; }
-        .input-clinical { border: 2px solid #f1f5f9; transition: all 0.3s; background: #f8fafc; }
-        .input-clinical:focus { border-color: #10b981; background: #fff; outline: none; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1); }
-        .admin-table th { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; padding: 12px; border-bottom: 2px solid #f1f5f9; }
-        .admin-table td { padding: 12px; vertical-align: top; border-bottom: 1px solid #f1f5f9; }
-        /* Estilos adicionais para o gerenciamento */
-        .card-gestao { background: #fff; border: 1px solid #e2e8f0; border-radius: 1.5rem; padding: 1.5rem; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #eff6ff; color: #1e293b; }
+        .clinical-header { background: linear-gradient(135deg, #047857 0%, #064e3b 100%); }
+        .glass-card { background: white; border: 2px solid #e2e8f0; border-radius: 2rem; }
+        .input-clinical { border: 2px solid #cbd5e1; transition: all 0.3s; background: #fff; }
+        .input-clinical:focus { border-color: #059669; box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1); outline: none; }
+        
+        /* Dashboard Admin - Cores Fortes */
+        .admin-bg { background-color: #0f172a; } /* Azul Marinho Profundo */
+        .card-stats { background: #fff; border-left: 6px solid #10b981; transition: transform 0.2s; }
+        .card-stats:hover { transform: translateY(-5px); }
+        .btn-delete { color: #ef4444; cursor: pointer; transition: 0.2s; }
+        .btn-delete:hover { color: #b91c1c; transform: scale(1.2); }
     </style>
 </head>
 <body class="antialiased">
 
-    <header class="clinical-header text-white pt-12 pb-28 px-4 shadow-2xl">
-        <div class="max-w-6xl mx-auto text-center">
-            <div class="flex items-center justify-center gap-4 mb-3">
-                <i class="fas fa-apple-alt text-4xl text-emerald-300 drop-shadow-md"></i>
-                <h1 class="text-3xl md:text-5xl font-bold tracking-tight uppercase">ROBERTO <span class="font-light">VASCONCELOS</span></h1>
+    <header class="clinical-header text-white pt-16 pb-32 px-4 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
+        <div class="max-w-6xl mx-auto text-center relative z-10">
+            <div class="flex items-center justify-center gap-4 mb-4">
+                <div class="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
+                    <i class="fas fa-apple-alt text-4xl text-emerald-300"></i>
+                </div>
+                <h1 class="text-4xl md:text-6xl font-black tracking-tighter uppercase">ROBERTO <span class="text-emerald-400">VASCONCELOS</span></h1>
             </div>
-            <p class="text-emerald-100/80 text-sm md:text-lg font-medium tracking-[0.2em] uppercase italic">
-                Nutricionista Clínico & Nefrologia
-            </p>
+            <p class="text-emerald-100/90 text-sm md:text-xl font-bold tracking-[0.3em] uppercase">Nutricionista Clínico & Nefrologia</p>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 -mt-20 mb-20">
-        <div class="glass-card rounded-[2.5rem] shadow-2xl p-6 md:p-12 relative z-10">
-            <div class="mb-10 flex items-center gap-4">
-                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-xl shadow-inner">
-                    <i class="fas fa-user-md"></i>
-                </div>
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-800">Anamnese & Agendamento</h2>
-                    <p class="text-slate-400 text-sm italic">Preencha todos os campos para uma avaliação precisa.</p>
+    <main class="max-w-7xl mx-auto px-4 -mt-24 mb-20">
+        
+        <div class="glass-card shadow-2xl p-6 md:p-12 relative z-20 mb-12">
+            <div class="mb-10 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-emerald-600 text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-3xl font-black text-slate-800 tracking-tight">Agende sua Consulta</h2>
+                        <p class="text-emerald-600 font-bold text-sm">Preencha os dados abaixo para confirmar.</p>
+                    </div>
                 </div>
             </div>
 
             <form id="formAgendamento" class="space-y-8">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="md:col-span-2">
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Nome Completo</label>
-                        <input type="text" id="nome" required class="input-clinical w-full p-4 rounded-2xl" placeholder="Nome do paciente">
+                        <label class="block text-xs font-black text-slate-500 uppercase mb-2">Nome Completo</label>
+                        <input type="text" id="nome" required class="input-clinical w-full p-4 rounded-2xl font-semibold" placeholder="Digite o nome completo">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">WhatsApp</label>
-                        <input type="tel" id="whatsapp" required class="input-clinical w-full p-4 rounded-2xl" placeholder="(79) 90000-0000">
+                        <label class="block text-xs font-black text-slate-500 uppercase mb-2">WhatsApp (com DDD)</label>
+                        <input type="tel" id="whatsapp" required class="input-clinical w-full p-4 rounded-2xl font-semibold" placeholder="(79) 90000-0000">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Data Nascimento</label>
-                        <input type="date" id="nascimento" required class="input-clinical w-full p-4 rounded-2xl text-slate-500">
+                        <label class="block text-xs font-black text-slate-500 uppercase mb-2">Nascimento</label>
+                        <input type="date" id="nascimento" required class="input-clinical w-full p-4 rounded-2xl font-semibold text-slate-600">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Cartão CASSI</label>
-                        <input type="text" id="cassie" required class="input-clinical w-full p-4 rounded-2xl" placeholder="Nº do beneficiário">
+                        <label class="block text-xs font-black text-slate-500 uppercase mb-2">Cartão CASSI</label>
+                        <input type="text" id="cassie" required class="input-clinical w-full p-4 rounded-2xl font-semibold" placeholder="Nº Beneficiário">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Data da Consulta</label>
-                        <input type="date" id="dataConsulta" required class="input-clinical w-full p-4 rounded-2xl text-slate-500" onchange="popularHorarios()">
+                        <label class="block text-xs font-black text-slate-500 uppercase mb-2">Data Consulta</label>
+                        <input type="date" id="dataConsulta" required class="input-clinical w-full p-4 rounded-2xl font-semibold" onchange="popularHorarios()">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Horário</label>
-                        <select id="diaHora" required class="input-clinical w-full p-4 rounded-2xl appearance-none cursor-pointer">
-                            <option value="">Selecione a data...</option>
+                        <label class="block text-xs font-black text-slate-500 uppercase mb-2">Horário</label>
+                        <select id="diaHora" required class="input-clinical w-full p-4 rounded-2xl font-bold cursor-pointer appearance-none">
+                            <option value="">Escolha a data...</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="bg-emerald-50/50 p-6 rounded-3xl border border-emerald-100 grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                <div class="bg-slate-50 p-8 rounded-[2rem] border-2 border-dashed border-emerald-200 grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
                     <div>
-                        <label class="block text-[10px] font-black text-emerald-700 uppercase mb-2 ml-1">Peso (kg)</label>
-                        <input type="number" step="0.1" id="peso" required class="input-clinical w-full p-4 rounded-2xl" placeholder="Ex: 80.0" oninput="calcularIMC()">
+                        <label class="block text-xs font-black text-emerald-800 uppercase mb-2">Peso Atual (kg)</label>
+                        <input type="number" step="0.1" id="peso" required class="input-clinical w-full p-4 rounded-2xl font-bold" placeholder="00.0" oninput="calcularIMC()">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-emerald-700 uppercase mb-2 ml-1">Altura (m)</label>
-                        <input type="number" step="0.01" id="altura" required class="input-clinical w-full p-4 rounded-2xl" placeholder="Ex: 1.75" oninput="calcularIMC()">
+                        <label class="block text-xs font-black text-emerald-800 uppercase mb-2">Altura (m)</label>
+                        <input type="number" step="0.01" id="altura" required class="input-clinical w-full p-4 rounded-2xl font-bold" placeholder="1.00" oninput="calcularIMC()">
                     </div>
-                    <div class="bg-white p-4 rounded-2xl border-2 border-emerald-200 flex flex-col justify-center min-h-[60px]">
-                        <span id="resultadoIMC" class="text-sm font-bold text-slate-400">IMC: --</span>
-                        <span id="classificacaoIMC" class="text-[10px] uppercase font-black text-slate-300">Aguardando dados...</span>
+                    <div class="bg-emerald-600 p-5 rounded-2xl shadow-lg flex flex-col justify-center text-white">
+                        <span id="resultadoIMC" class="text-xl font-black">IMC: --</span>
+                        <span id="classificacaoIMC" class="text-xs font-bold uppercase opacity-80 italic">Aguardando dados...</span>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="space-y-4">
-                        <label class="block text-[10px] font-black text-slate-500 uppercase">Já consultou nutricionista antes?</label>
-                        <div class="flex gap-6">
-                            <label class="flex items-center gap-2 cursor-pointer font-bold text-sm"><input type="radio" name="jaPassou" value="Sim" class="w-4 h-4 accent-emerald-600"> Sim</label>
-                            <label class="flex items-center gap-2 cursor-pointer font-bold text-sm"><input type="radio" name="jaPassou" value="Não" checked class="w-4 h-4 accent-emerald-600"> Não</label>
-                        </div>
-                        <textarea id="motivo" required class="input-clinical w-full p-4 rounded-2xl h-24" placeholder="Qual o motivo da consulta hoje?"></textarea>
+                        <label class="block text-xs font-black text-slate-600 uppercase">Motivo da consulta / Anamnese</label>
+                        <textarea id="motivo" required class="input-clinical w-full p-4 rounded-2xl h-32 font-medium" placeholder="Descreva brevemente sua queixa ou objetivo..."></textarea>
                     </div>
                     <div class="space-y-4">
-                        <label class="block text-[10px] font-black text-slate-500 uppercase">Medicações ou Suplementos em uso?</label>
-                        <textarea id="medicacao" class="input-clinical w-full p-4 rounded-2xl h-44" placeholder="Liste medicamentos, dosagens e suplementos..."></textarea>
+                        <label class="block text-xs font-black text-slate-600 uppercase">Medicações ou Suplementos</label>
+                        <textarea id="medicacao" class="input-clinical w-full p-4 rounded-2xl h-32 font-medium" placeholder="Ex: Vitaminas, remédios para pressão..."></textarea>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                    <div class="flex items-center justify-between bg-slate-50 p-5 rounded-2xl border-2 border-slate-100">
-                        <span class="text-xs font-black text-slate-500 uppercase">Pratica Atividade Física?</span>
-                        <div class="flex gap-4">
-                            <label class="flex items-center gap-2 text-sm font-bold"><input type="radio" name="atvFisica" value="Sim" class="accent-emerald-600"> Sim</label>
-                            <label class="flex items-center gap-2 text-sm font-bold"><input type="radio" name="atvFisica" value="Não" checked class="accent-emerald-600"> Não</label>
-                        </div>
+                <div class="bg-blue-600 p-6 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="text-white">
+                        <h4 class="font-black uppercase text-sm flex items-center gap-2"><i class="fas fa-cloud-upload-alt"></i> Anexar Exames Recentes</h4>
+                        <p class="text-xs text-blue-100">Somente arquivos PDF são aceitos.</p>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="text" id="freqAtv" class="input-clinical w-full p-4 rounded-2xl text-xs font-bold" placeholder="Frequência (Ex: 3x na semana)">
-                        <input type="text" id="horarioAtv" class="input-clinical w-full p-4 rounded-2xl text-xs font-bold" placeholder="Horário (Ex: 06:00)">
-                    </div>
+                    <input type="file" id="exames" accept="application/pdf" class="text-sm text-blue-100 file:bg-white file:text-blue-600 file:px-6 file:py-2 file:rounded-xl file:border-0 file:font-black cursor-pointer">
                 </div>
 
-                <div class="bg-blue-50/50 p-6 rounded-3xl border border-blue-200">
-                    <label class="flex items-center gap-2 text-blue-700 font-black mb-3 text-[10px] uppercase">
-                        <i class="fas fa-file-medical"></i> Upload de Exames Recentes (PDF)
-                    </label>
-                    <input type="file" id="exames" accept="application/pdf" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-6 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-emerald-600 file:text-white cursor-pointer">
-                </div>
-
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-5 rounded-2xl shadow-xl hover:scale-[1.01] transition-all flex items-center justify-center gap-4 text-lg">
-                    CONFIRMAR AGENDAMENTO <i class="fab fa-whatsapp text-2xl"></i>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-6 rounded-3xl shadow-2xl hover:scale-[1.02] transition-all flex items-center justify-center gap-4 text-2xl uppercase tracking-widest">
+                    Confirmar e Enviar <i class="fab fa-whatsapp"></i>
                 </button>
             </form>
         </div>
 
-        <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-center">
-                <i class="fas fa-video text-emerald-500 text-xl mb-2"></i>
-                <p class="text-xs font-black text-slate-700 uppercase tracking-tighter">Consulta Online via Google Meet</p>
-            </div>
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-center">
-                <i class="fas fa-hourglass-half text-emerald-500 text-xl mb-2"></i>
-                <p class="text-xs font-black text-slate-700 uppercase tracking-tighter">Duração estimada: 40 minutos</p>
-            </div>
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-center">
-                <i class="fas fa-calendar-alt text-emerald-500 text-xl mb-2"></i>
-                <p class="text-xs font-black text-slate-700 uppercase tracking-tighter">Segunda, Terça e Quinta: 20h - 22h</p>
-            </div>
+        <div class="text-center py-10">
+            <button onclick="acessarAdmin()" class="bg-slate-800 text-white px-8 py-3 rounded-full font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl">
+                <i class="fas fa-lock mr-2"></i> Painel de Gestão Clínica
+            </button>
         </div>
 
-        <div class="mt-20 border-t pt-10 text-center">
-            <button onclick="acessarAdmin()" class="text-slate-300 text-[10px] font-black uppercase hover:text-emerald-600 tracking-widest transition-colors">Acesso Restrito - Roberto Vasconcelos</button>
-            
-            <div id="painelAdmin" class="hidden mt-8 bg-white rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden text-left">
-                <div class="bg-slate-900 p-6 flex justify-between items-center text-white">
-                    <h3 class="font-black text-xs uppercase tracking-widest flex items-center gap-2">
-                        <i class="fas fa-database text-emerald-400"></i> Gestão de Prontuários & Calendário
-                    </h3>
-                    <div class="flex gap-2">
-                        <button onclick="bloquearData()" class="bg-amber-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase">Bloquear Data</button>
-                        <button onclick="location.reload()" class="bg-red-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase">Sair</button>
+        <div id="painelAdmin" class="hidden">
+            <div class="admin-bg rounded-[3rem] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden border-4 border-slate-700 mb-20">
+                
+                <div class="p-8 bg-slate-900 flex flex-col md:flex-row justify-between items-center border-b border-slate-700 gap-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
+                            <i class="fas fa-chart-pie text-xl"></i>
+                        </div>
+                        <h3 class="text-white font-black text-xl uppercase tracking-tighter">Dashboard <span class="text-emerald-500 font-light">Administrativo</span></h3>
+                    </div>
+                    <div class="flex gap-4">
+                        <button onclick="bloquearData()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-6 py-3 rounded-2xl font-black text-[10px] uppercase transition-all shadow-lg shadow-amber-500/20">Bloquear Agenda</button>
+                        <button onclick="location.reload()" class="bg-red-500 hover:bg-red-400 text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase transition-all shadow-lg shadow-red-500/20">Sair com Segurança</button>
                     </div>
                 </div>
 
-                <div id="listaBloqueios" class="p-4 bg-slate-50 border-bottom text-[10px] flex flex-wrap gap-2"></div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full admin-table">
-                        <thead class="bg-slate-50">
-                            <tr>
-                                <th>Data/Horário</th>
-                                <th>Dados Pessoais</th>
-                                <th>Biometria/IMC</th>
-                                <th>Anamnese/Motivo</th>
-                                <th>Atividade Física</th>
-                                <th class="text-center">PDF</th>
-                                <th class="text-center">Remover</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpoAdmin" class="text-[11px] text-slate-600"></tbody>
-                    </table>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 p-8 bg-slate-800/50">
+                    <div class="card-stats p-6 rounded-3xl border-emerald-500">
+                        <p class="text-[10px] font-black text-slate-400 uppercase">Total de Pacientes</p>
+                        <h4 id="stat_pacientes" class="text-3xl font-black text-slate-800">0</h4>
+                    </div>
+                    <div class="card-stats p-6 rounded-3xl border-blue-500">
+                        <p class="text-[10px] font-black text-slate-400 uppercase">Receita Bruta</p>
+                        <h4 id="stat_receita" class="text-3xl font-black text-blue-600">R$ 0,00</h4>
+                    </div>
+                    <div class="card-stats p-6 rounded-3xl border-red-500">
+                        <p class="text-[10px] font-black text-slate-400 uppercase">Despesas Ativas</p>
+                        <h4 id="stat_despesas" class="text-3xl font-black text-red-600">R$ 0,00</h4>
+                    </div>
+                    <div class="card-stats p-6 rounded-3xl border-amber-500">
+                        <p class="text-[10px] font-black text-slate-400 uppercase">Saldo Líquido</p>
+                        <h4 id="stat_saldo" class="text-3xl font-black text-slate-800">R$ 0,00</h4>
+                    </div>
                 </div>
 
-                <div class="p-8 bg-slate-50 border-t-4 border-emerald-500">
-                    <h2 class="text-xl font-black text-slate-800 uppercase mb-6 flex items-center gap-2">
-                        <i class="fas fa-chart-line text-emerald-600"></i> Gerenciamento de Clínica
-                    </h2>
+                <div class="p-8 grid grid-cols-1 lg:grid-cols-2 gap-10 bg-white">
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="card-gestao shadow-sm">
-                            <h4 class="text-[10px] font-black text-emerald-600 uppercase mb-4">Cadastro Rápido</h4>
-                            <input type="text" id="gest_nome" class="input-clinical w-full p-3 rounded-xl mb-3 text-xs" placeholder="Nome Completo">
-                            <input type="date" id="gest_nasc" class="input-clinical w-full p-3 rounded-xl mb-3 text-xs" title="Aniversário">
-                            <button onclick="salvarGeral('cliente')" class="w-full bg-emerald-600 text-white font-black py-3 rounded-xl text-[10px] uppercase">Salvar Cliente</button>
+                    <div class="space-y-8">
+                        <div class="bg-slate-50 p-8 rounded-[2rem] border-2 border-slate-200">
+                            <h4 class="font-black text-slate-800 uppercase text-sm mb-6 flex items-center gap-2">
+                                <i class="fas fa-plus-circle text-emerald-600"></i> Lançar Novo Valor
+                            </h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="col-span-2">
+                                    <input type="text" id="gest_desc" class="input-clinical w-full p-4 rounded-2xl font-bold" placeholder="Descrição (Ex: Consulta João, Aluguel...)">
+                                </div>
+                                <input type="number" id="gest_valor" class="input-clinical w-full p-4 rounded-2xl font-bold" placeholder="Valor R$">
+                                <select id="gest_tipo" class="input-clinical w-full p-4 rounded-2xl font-bold">
+                                    <option value="receita">Entrada (Receita)</option>
+                                    <option value="despesa">Saída (Despesa)</option>
+                                </select>
+                                <button onclick="salvarFinanceiro()" class="col-span-2 bg-slate-900 text-white font-black py-4 rounded-2xl uppercase tracking-widest hover:bg-emerald-600 transition-all">Registrar no Caixa</button>
+                            </div>
                         </div>
 
-                        <div class="card-gestao shadow-sm">
-                            <h4 class="text-[10px] font-black text-blue-600 uppercase mb-4">Contas a Receber</h4>
-                            <input type="number" id="gest_receber_valor" class="input-clinical w-full p-3 rounded-xl mb-3 text-xs" placeholder="Valor da Consulta R$">
-                            <select id="gest_receber_forma" class="input-clinical w-full p-3 rounded-xl mb-3 text-xs">
-                                <option value="Pix">Pix</option>
-                                <option value="Cartão">Cartão</option>
-                                <option value="Dinheiro">Dinheiro</option>
-                            </select>
-                            <button onclick="salvarGeral('receber')" class="w-full bg-blue-600 text-white font-black py-3 rounded-xl text-[10px] uppercase">Lançar Receita</button>
-                        </div>
-
-                        <div class="card-gestao shadow-sm">
-                            <h4 class="text-[10px] font-black text-red-600 uppercase mb-4">Contas a Pagar</h4>
-                            <input type="text" id="gest_pagar_desc" class="input-clinical w-full p-3 rounded-xl mb-3 text-xs" placeholder="Descrição da Conta">
-                            <input type="number" id="gest_pagar_valor" class="input-clinical w-full p-3 rounded-xl mb-3 text-xs" placeholder="Valor R$">
-                            <button onclick="salvarGeral('pagar')" class="w-full bg-slate-800 text-white font-black py-3 rounded-xl text-[10px] uppercase">Lançar Despesa</button>
+                        <div class="bg-white rounded-[2rem] border-2 border-slate-100 overflow-hidden shadow-sm">
+                            <div class="p-4 bg-slate-800 text-white text-[10px] font-black uppercase">Histórico de Movimentações</div>
+                            <div class="max-h-60 overflow-y-auto" id="listaFinanceiro">
+                                </div>
                         </div>
                     </div>
 
-                    <div id="resumoFinanceiro" class="mt-8 p-4 bg-white rounded-2xl border border-slate-200 flex justify-around items-center">
+                    <div class="bg-white rounded-[2rem] border-2 border-slate-100 overflow-hidden shadow-sm">
+                        <div class="p-4 bg-emerald-600 text-white text-[10px] font-black uppercase flex justify-between">
+                            <span>Próximos Agendamentos</span>
+                            <span id="listaBloqueios" class="text-emerald-100 italic"></span>
                         </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-50 border-b">
+                                    <tr>
+                                        <th class="p-4 font-black">PACIENTE</th>
+                                        <th class="p-4 font-black">DATA/HORA</th>
+                                        <th class="p-4 font-black text-center">PDF</th>
+                                        <th class="p-4 font-black text-center">AÇÃO</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="corpoAdmin">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -226,15 +222,14 @@
         const ZAP_DESTINO = "5579991063656";
         const SENHA_ADMIN = "253641";
         const horariosBase = ["20:00", "20:40", "21:20"];
-        const diasPermitidos = [1, 2, 4]; // Segunda(1), Terça(2), Quinta(4)
+        const diasPermitidos = [1, 2, 4];
 
+        // Bancos de Dados
         let db = JSON.parse(localStorage.getItem('nutri_roberto_v7')) || [];
         let bloqueios = JSON.parse(localStorage.getItem('nutri_bloqueios')) || [];
-        
-        // Novos bancos de dados para gestão
-        let gestao_financeira = JSON.parse(localStorage.getItem('nutri_financeiro')) || { receitas: [], despesas: [] };
-        let gestao_clientes = JSON.parse(localStorage.getItem('nutri_clientes_internos')) || [];
+        let financeiro = JSON.parse(localStorage.getItem('nutri_caixa')) || [];
 
+        // --- FUNÇÕES DE INTERFACE (IMC E HORÁRIOS) ---
         function calcularIMC() {
             const p = parseFloat(document.getElementById('peso').value);
             const a = parseFloat(document.getElementById('altura').value);
@@ -244,16 +239,8 @@
             if (p > 0 && a > 0) {
                 const imc = (p / (a * a)).toFixed(1);
                 res.innerText = `IMC: ${imc}`;
-                res.classList.replace('text-slate-400', 'text-emerald-600');
-                
-                let cat = "";
-                if (imc < 18.5) cat = "Baixo Peso";
-                else if (imc < 25) cat = "Peso Normal";
-                else if (imc < 30) cat = "Sobrepeso";
-                else cat = "Obesidade";
-                
+                let cat = imc < 18.5 ? "Baixo Peso" : imc < 25 ? "Normal" : imc < 30 ? "Sobrepeso" : "Obesidade";
                 classif.innerText = cat;
-                classif.className = "text-[10px] uppercase font-black text-emerald-500";
                 return { valor: imc, categoria: cat };
             }
             return null;
@@ -263,35 +250,21 @@
             const dataInput = document.getElementById('dataConsulta').value;
             const sel = document.getElementById('diaHora');
             sel.innerHTML = '<option value="">Selecione o horário...</option>';
-
             if(!dataInput) return;
-
-            const dataObj = new Date(dataInput + 'T00:00:00');
-            const diaSemana = dataObj.getDay();
-
-            if(!diasPermitidos.includes(diaSemana)) {
-                alert("Atendimento apenas em Segundas, Terças e Quintas.");
+            const diaSemana = new Date(dataInput + 'T00:00:00').getDay();
+            if(!diasPermitidos.includes(diaSemana) || bloqueios.includes(dataInput)) {
+                alert("Data indisponível!");
                 document.getElementById('dataConsulta').value = "";
                 return;
             }
-
-            if(bloqueios.includes(dataInput)) {
-                alert("Esta data está indisponível para novos agendamentos.");
-                document.getElementById('dataConsulta').value = "";
-                return;
-            }
-
             horariosBase.forEach(h => {
-                const agendado = db.find(a => a.dataConsulta === dataInput && a.horario === h);
-                if(!agendado) {
-                    const opt = document.createElement('option');
-                    opt.value = h;
-                    opt.textContent = h;
-                    sel.appendChild(opt);
+                if(!db.find(a => a.dataConsulta === dataInput && a.horario === h)) {
+                    const opt = document.createElement('option'); opt.value = h; opt.textContent = h; sel.appendChild(opt);
                 }
             });
         }
 
+        // --- SALVAR AGENDAMENTO ---
         document.getElementById('formAgendamento').onsubmit = async function(e) {
             e.preventDefault();
             const imcData = calcularIMC();
@@ -310,22 +283,17 @@
                 altura: document.getElementById('altura').value,
                 imc: imcData ? imcData.valor : '--',
                 classif: imcData ? imcData.categoria : '--',
-                jaPassou: document.querySelector('input[name="jaPassou"]:checked').value,
                 motivo: document.getElementById('motivo').value,
                 medicacao: document.getElementById('medicacao').value,
-                atvFisica: document.querySelector('input[name="atvFisica"]:checked').value,
-                freqAtv: document.getElementById('freqAtv').value || 'N/A',
-                horarioAtv: document.getElementById('horarioAtv').value || 'N/A',
                 pdf: pdfBase64
             };
 
             db.push(novo);
             localStorage.setItem('nutri_roberto_v7', JSON.stringify(db));
-
-            const msgZap = `🍏 *AGENDAMENTO CLÍNICO*\n\n👤 *Paciente:* ${novo.nome}\n📅 *Data:* ${novo.dataConsulta.split('-').reverse().join('/')}\n⏰ *Horário:* ${novo.horario}\n⚖️ *IMC:* ${novo.imc}\n💊 *Medicações:* ${novo.medicacao.substring(0,50)}...`;
-            window.open(`https://wa.me/${ZAP_DESTINO}?text=${encodeURIComponent(msgZap)}`);
             
-            alert("Sucesso! Agendamento enviado.");
+            const msgZap = `🍏 *NOVO AGENDAMENTO*\n👤 ${novo.nome}\n📅 ${novo.dataConsulta}\n⏰ ${novo.horario}\n⚖️ IMC: ${novo.imc}`;
+            window.open(`https://wa.me/${ZAP_DESTINO}?text=${encodeURIComponent(msgZap)}`);
+            alert("Agendado com sucesso!");
             location.reload();
         };
 
@@ -334,129 +302,95 @@
             reader.onload = () => res(reader.result);
         });
 
+        // --- GESTÃO FINANCEIRA ---
+        function salvarFinanceiro() {
+            const desc = document.getElementById('gest_desc').value;
+            const valor = parseFloat(document.getElementById('gest_valor').value);
+            const tipo = document.getElementById('gest_tipo').value;
+
+            if(!desc || !valor) return alert("Preencha os campos!");
+
+            financeiro.push({ id: Date.now(), desc, valor, tipo, data: new Date().toLocaleDateString() });
+            localStorage.setItem('nutri_caixa', JSON.stringify(financeiro));
+            
+            document.getElementById('gest_desc').value = "";
+            document.getElementById('gest_valor').value = "";
+            renderTudoAdmin();
+        }
+
+        function apagarValor(id) {
+            if(confirm("Deseja apagar este registro permanentemente?")) {
+                financeiro = financeiro.filter(f => f.id !== id);
+                localStorage.setItem('nutri_caixa', JSON.stringify(financeiro));
+                renderTudoAdmin();
+            }
+        }
+
+        // --- DASHBOARD ADMIN ---
         function acessarAdmin() {
             if(prompt("Senha Administrativa:") === SENHA_ADMIN) {
                 document.getElementById('painelAdmin').classList.remove('hidden');
-                renderAdmin();
-                renderBloqueios();
-                atualizarResumoFinanceiro();
+                renderTudoAdmin();
             }
         }
 
-        // --- FUNÇÕES DE GESTÃO ADICIONADAS ---
-        function salvarGeral(tipo) {
-            if(tipo === 'cliente') {
-                const nome = document.getElementById('gest_nome').value;
-                const nasc = document.getElementById('gest_nasc').value;
-                if(!nome) return alert("Insira o nome");
-                gestao_clientes.push({nome, nasc, id: Date.now()});
-                localStorage.setItem('nutri_clientes_internos', JSON.stringify(gestao_clientes));
-                alert("Paciente salvo internamente!");
-            } else if (tipo === 'receber') {
-                const valor = parseFloat(document.getElementById('gest_receber_valor').value);
-                const forma = document.getElementById('gest_receber_forma').value;
-                if(!valor) return alert("Insira o valor");
-                gestao_financeira.receitas.push({valor, forma, data: new Date()});
-                localStorage.setItem('nutri_financeiro', JSON.stringify(gestao_financeira));
-                alert("Receita lançada!");
-            } else if (tipo === 'pagar') {
-                const desc = document.getElementById('gest_pagar_desc').value;
-                const valor = parseFloat(document.getElementById('gest_pagar_valor').value);
-                if(!valor || !desc) return alert("Preencha os campos");
-                gestao_financeira.despesas.push({desc, valor, data: new Date()});
-                localStorage.setItem('nutri_financeiro', JSON.stringify(gestao_financeira));
-                alert("Despesa lançada!");
-            }
-            atualizarResumoFinanceiro();
-        }
+        function renderTudoAdmin() {
+            // Stats
+            const totalR = financeiro.filter(f => f.tipo === 'receita').reduce((a, b) => a + b.valor, 0);
+            const totalD = financeiro.filter(f => f.tipo === 'despesa').reduce((a, b) => a + b.valor, 0);
+            
+            document.getElementById('stat_pacientes').innerText = db.length;
+            document.getElementById('stat_receita').innerText = `R$ ${totalR.toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
+            document.getElementById('stat_despesas').innerText = `R$ ${totalD.toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
+            document.getElementById('stat_saldo').innerText = `R$ ${(totalR - totalD).toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
 
-        function atualizarResumoFinanceiro() {
-            const totalR = gestao_financeira.receitas.reduce((acc, curr) => acc + curr.valor, 0);
-            const totalD = gestao_financeira.despesas.reduce((acc, curr) => acc + curr.valor, 0);
-            const saldo = totalR - totalD;
-
-            document.getElementById('resumoFinanceiro').innerHTML = `
-                <div class="text-center"><p class="text-[9px] uppercase font-black text-slate-400">Total Recebido</p><p class="text-emerald-600 font-black">R$ ${totalR.toFixed(2)}</p></div>
-                <div class="text-center"><p class="text-[9px] uppercase font-black text-slate-400">Total Despesas</p><p class="text-red-600 font-black">R$ ${totalD.toFixed(2)}</p></div>
-                <div class="text-center"><p class="text-[9px] uppercase font-black text-slate-400">Saldo Clínica</p><p class="text-slate-800 font-black">R$ ${saldo.toFixed(2)}</p></div>
-            `;
-        }
-        // --- FIM DAS FUNÇÕES ADICIONADAS ---
-
-        function bloquearData() {
-            const data = prompt("Digite a data para bloquear (AAAA-MM-DD):");
-            if(data && !bloqueios.includes(data)) {
-                bloqueios.push(data);
-                localStorage.setItem('nutri_bloqueios', JSON.stringify(bloqueios));
-                renderBloqueios();
-            }
-        }
-
-        function removerBloqueio(data) {
-            bloqueios = bloqueios.filter(d => d !== data);
-            localStorage.setItem('nutri_bloqueios', JSON.stringify(bloqueios));
-            renderBloqueios();
-        }
-
-        function renderBloqueios() {
-            const div = document.getElementById('listaBloqueios');
-            div.innerHTML = '<strong>DATAS BLOQUEADAS:</strong>';
-            bloqueios.forEach(d => {
-                div.innerHTML += `
-                    <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded-md flex items-center gap-2">
-                        ${d.split('-').reverse().join('/')} 
-                        <i class="fas fa-times cursor-pointer hover:text-red-600" onclick="removerBloqueio('${d}')"></i>
-                    </span>`;
+            // Lista Financeira
+            const listaF = document.getElementById('listaFinanceiro');
+            listaF.innerHTML = financeiro.length ? "" : "<p class='p-10 text-center text-slate-400'>Nenhum lançamento.</p>";
+            financeiro.slice().reverse().forEach(f => {
+                listaF.innerHTML += `
+                    <div class="flex justify-between items-center p-4 border-b hover:bg-slate-50">
+                        <div>
+                            <p class="font-bold text-slate-800 text-xs">${f.desc}</p>
+                            <p class="text-[10px] text-slate-400 font-bold">${f.data} | <span class="${f.tipo === 'receita' ? 'text-emerald-500' : 'text-red-500'} uppercase">${f.tipo}</span></p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="font-black text-sm ${f.tipo === 'receita' ? 'text-emerald-600' : 'text-red-600'}">R$ ${f.valor.toFixed(2)}</span>
+                            <i class="fas fa-trash-alt btn-delete" onclick="apagarValor(${f.id})"></i>
+                        </div>
+                    </div>
+                `;
             });
-        }
 
-        function renderAdmin() {
+            // Tabela Agendamentos
             const corpo = document.getElementById('corpoAdmin');
-            corpo.innerHTML = db.length === 0 ? '<tr><td colspan="7" class="p-10 text-center text-slate-300 italic uppercase font-bold">Nenhum agendamento ativo</td></tr>' : '';
-            db.sort((a,b) => new Date(a.dataConsulta + 'T' + a.horario) - new Date(b.dataConsulta + 'T' + b.horario));
-            db.forEach(a => {
+            corpo.innerHTML = "";
+            db.sort((a,b) => new Date(a.dataConsulta) - new Date(b.dataConsulta)).forEach(a => {
                 corpo.innerHTML += `
-                    <tr class="hover:bg-emerald-50/50 transition-colors">
-                        <td class="font-black text-emerald-600">
-                            <div class="text-[12px]">${a.dataConsulta.split('-').reverse().join('/')}</div>
-                            <div class="text-[14px]">${a.horario}</div>
-                        </td>
-                        <td>
-                            <div class="font-black text-slate-800 uppercase">${a.nome}</div>
-                            <div class="text-blue-500 font-bold">${a.whatsapp}</div>
-                        </td>
-                        <td><div class="font-bold">Peso: ${a.peso}kg | IMC: ${a.imc}</div></td>
-                        <td><div class="truncate w-40 italic">${a.motivo}</div></td>
-                        <td>${a.atvFisica}</td>
-                        <td class="text-center">
-                            ${a.pdf ? `<button onclick="verPDF('${a.id}')" class="bg-red-50 text-red-600 px-3 py-1 rounded-lg border border-red-200 font-black">ABRIR</button>` : '<span class="text-slate-300">N/A</span>'}
-                        </td>
-                        <td class="text-center">
-                            <button onclick="excluir(${a.id})" class="text-slate-300 hover:text-red-600"><i class="fas fa-trash-alt text-lg"></i></button>
-                        </td>
+                    <tr class="border-b hover:bg-emerald-50">
+                        <td class="p-4 font-bold uppercase">${a.nome}</td>
+                        <td class="p-4 text-emerald-600 font-black">${a.dataConsulta.split('-').reverse().join('/')}<br>${a.horario}</td>
+                        <td class="p-4 text-center">${a.pdf ? `<button onclick="window.open().document.write('<iframe src=\\'${a.pdf}\\' style=\\'width:100%;height:100vh;\\' frameborder=\\'0\\'></iframe>')" class="text-blue-600 underline">Abrir</button>` : '--'}</td>
+                        <td class="p-4 text-center"><button onclick="excluirAgendamento(${a.id})" class="text-red-500"><i class="fas fa-trash"></i></button></td>
                     </tr>
                 `;
             });
         }
 
-        window.verPDF = (id) => {
-            const reg = db.find(x => x.id == id);
-            const win = window.open();
-            win.document.write(`<iframe src="${reg.pdf}" frameborder="0" style="width:100%; height:100vh;"></iframe>`);
-        };
-
-        function excluir(id) {
-            if(confirm("Deseja apagar este prontuário?")) {
-                db = db.filter(x => x.id !== id);
+        function excluirAgendamento(id) {
+            if(confirm("Excluir este agendamento?")) {
+                db = db.filter(d => d.id !== id);
                 localStorage.setItem('nutri_roberto_v7', JSON.stringify(db));
-                renderAdmin();
+                renderTudoAdmin();
             }
         }
 
-        window.onload = () => {
-            const hoje = new Date().toISOString().split('T')[0];
-            document.getElementById('dataConsulta').setAttribute('min', hoje);
-        };
+        function bloquearData() {
+            const d = prompt("Data para bloquear (AAAA-MM-DD):");
+            if(d) { bloqueios.push(d); localStorage.setItem('nutri_bloqueios', JSON.stringify(bloqueios)); alert("Data Bloqueada!"); }
+        }
+
+        window.onload = () => { document.getElementById('dataConsulta').setAttribute('min', new Date().toISOString().split('T')[0]); };
     </script>
 </body>
 </html>
