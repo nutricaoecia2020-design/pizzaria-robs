@@ -6,22 +6,30 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pizzaria Robs - Pedidos & Gestão</title>
+    <title>Pizzaria Robs</title>
 
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
         body{font-family:Arial, sans-serif;background:#f4f4f4;margin:0; overflow-x: hidden;}
+        
+        /* Estilos do Relógio */
         .tempo-container {
             position: absolute; top: 15px; right: 15px; background: #222; color: #fff;
             padding: 10px; border-radius: 10px; font-family: 'Courier New', monospace;
             text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 2px solid #e31837; z-index: 101;
+            min-width: 110px;
         }
+        #relogio { font-size: 20px; font-weight: bold; color: #ffffff; display: block; }
+        #data { font-size: 11px; color: #aaa; margin-top: 4px; display: block; text-transform: uppercase; }
+
         .container{
             max-width:900px;margin:30px auto;background:#fff;min-height:100vh;padding:20px;
             border: 8px solid #e31837; box-shadow:0 0 15px rgba(0,0,0,0.08); position: relative;
         }
+
         .topo-info{text-align:center;font-size:14px;color:#555;margin-bottom:10px; padding-top: 20px;}
         .status-btn{display:inline-block;padding:8px 15px;border-radius:20px;color:#fff;font-weight:bold;margin-top:8px;}
         .aberto{background:#28a745;animation:piscando 1s infinite;}
@@ -29,6 +37,8 @@
         @keyframes piscando{0%{opacity:1;}50%{opacity:0.4;}100%{opacity:1;}}
         
         h2, h3{color:#e31837;margin:15px 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 5px;}
+        .aviso{background:#fff3cd;color:#856404;padding:10px;border-radius:8px;margin:15px 0;font-weight:bold;text-align:center;border:1px solid #ffeeba;}
+        
         #produtos{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
         .produto{background:#fff;padding:12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 3px 8px rgba(0,0,0,0.05); border: 1px solid #eee;}
         img{width:70px;height:70px;object-fit:cover;border-radius:10px;}
@@ -36,25 +46,42 @@
         button{padding:8px 12px;border:none;border-radius:8px;cursor:pointer;font-weight:bold; transition: 0.2s;}
         .add{background:#28a745;color:#fff;}
         .rem{background:#dc3545;color:#fff;}
-        .final{background:#e31837;color:#fff;width:100%;padding:14px;margin-top:20px;font-size:16px;}
+        .final{background:#e31837;color:#fff;width:100%;padding:14px;margin-top:20px;font-weight:bold;font-size:16px;}
 
         input,select,textarea{width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;}
         .total-box{font-size:18px;font-weight:bold;color:#e31837;margin-top:10px; text-align: right;}
 
-        /* Painel Lojista Otimizado */
-        .painel-gestao { margin-top: 50px; padding: 20px; background: #fff; border: 2px dashed #e31837; border-radius: 15px; }
-        .tabela-pedidos-wrapper { overflow-x: auto; margin-top: 15px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th, td { border: 1px solid #eee; padding: 10px; text-align: left; }
-        th { background: #f8f8f8; color: #e31837; }
-        
-        .btn-acao { padding: 6px 10px; margin: 2px; font-size: 11px; color: white; border-radius: 5px; }
-        .btn-prep { background: #f39c12; }
-        .btn-rota { background: #007bff; }
-        .btn-fim { background: #28a745; }
-        .btn-del { background: #ff4444; }
-
+        /* Ícones Flutuantes */
+        .insta-float { position: fixed; bottom: 20px; right: 20px; z-index: 1000; text-align: center; text-decoration: none; }
+        .insta-circle { width: 60px; height: 60px; background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); animation: girarInsta 8s linear infinite; }
+        .insta-label { display: block; font-size: 9px; font-weight: bold; color: #e31837; margin-top: 5px; background: white; padding: 2px 5px; border-radius: 10px; }
+        @keyframes girarInsta { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .whatsapp-chat { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; background-color: #25d366; color: #fff; border-radius: 50px; text-align: center; font-size: 30px; box-shadow: 2px 2px 10px rgba(0,0,0,0.2); z-index: 1000; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+
+        /* PAINEL DE GESTÃO */
+        .painel-gestao { margin-top: 40px; padding: 20px; background: #fff; border: 2px dashed #e31837; border-radius: 15px; }
+        .gestao-bloqueada { text-align: center; padding: 20px; }
+        .gestao-conteudo { display: none; } 
+        .status-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; background: #fdfdfd; padding: 10px; border-radius: 10px; border: 1px solid #eee; }
+        .bola { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; }
+        .vermelha { background: #dc3545; }
+        .azul { background: #007bff; }
+        .verde { background: #28a745; }
+        .btn-status { background: #333; color: white; padding: 8px 15px; border-radius: 6px; font-size: 12px; }
+
+        /* TABELA DE PEDIDOS */
+        .tabela-pedidos-wrapper { overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 600px; }
+        table th, table td { border: 1px solid #eee; padding: 10px; text-align: left; }
+        table th { background: #f8f8f8; color: #e31837; }
+        .btn-acao { padding: 5px 8px; font-size: 10px; margin: 2px; border-radius: 4px; }
+        .btn-del { background: #ff4444; color: white; }
+        .btn-entregar { background: #25d366; color: white; }
+        .btn-fim { background: #555; color: white; }
+
+        /* Modal Sucesso */
+        .modal-sucesso { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 20px; text-align: center; max-width: 300px; }
 
         @media(max-width:600px){ #produtos{grid-template-columns:1fr;} }
     </style>
@@ -64,66 +91,120 @@
 
 <div class="container">
     <div class="tempo-container">
-        <span id="relogio" style="font-size: 20px; font-weight: bold; display: block;">00:00:00</span>
-        <span id="data" style="font-size: 11px; color: #aaa; text-transform: uppercase;">00/00/0000</span>
+        <span id="relogio">00:00:00</span>
+        <span id="data">00/00/0000</span>
     </div>
 
-    <a href="https://wa.me/5579999769581" class="whatsapp-chat" target="_blank"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://www.instagram.com/robs_pizzaria" target="_blank" class="insta-float">
+        <div class="insta-circle"><i class="fab fa-instagram"></i></div>
+        <span class="insta-label">@robs_pizzaria</span>
+    </a>
+    <a href="https://wa.me/5579999769581" class="whatsapp-chat" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
     <div class="topo-info">
-        📞 (79) 99976-9581 | 📍 Luzia - Aracaju <br>
+        📞 (79) 99976-9581 <br>
+        📍 Delivery Bairro Luzia - Aracaju - SE <br>
         <div id="statusLoja" class="status-btn"></div>
     </div>
 
-    <h2>🍕 Cardápio Robs</h2>
+    <h2>🍕 Pizzaria Robs</h2>
+    <div class="aviso">⚠️ Para fechar o pedido é obrigatório escolher pelo menos 2 itens.</div>
     <div id="produtos">Carregando cardápio...</div>
 
-    <h3>🛒 Seu Carrinho</h3>
+    <h3>🛒 Carrinho</h3>
     <div id="carrinho"></div>
     <div class="total-box">Total: R$ <span id="total">0.00</span></div>
 
-    <h3>📍 Dados para Entrega</h3>
+    <h3>📍 Dados do Cliente</h3>
     <input id="nome" placeholder="Seu Nome">
-    <input id="endereco" placeholder="Endereço Completo">
-    <input id="contato" placeholder="WhatsApp (Ex: 79999999999)">
-    <select id="pagamento"><option>Dinheiro</option><option>Pix</option><option>Cartão</option></select>
-    <textarea id="obs" placeholder="Observações..."></textarea>
-    <button class="final" onclick="window.finalizar()">Enviar Pedido</button>
+    <input id="endereco" placeholder="Endereço de Entrega">
+    <input id="contato" placeholder="Telefone de Contato (Ex: 79999999999)">
+
+    <select id="pagamento" onchange="window.renderCarrinho()">
+        <option value="Dinheiro">Dinheiro</option>
+        <option value="Pix">Pix</option>
+        <option value="Cartão">Cartão</option>
+    </select>
+
+    <textarea id="obs" placeholder="Alguma observação?"></textarea>
+
+    <div id="pixArea" class="pix-area" style="display:none; text-align: center; background: #f9f9f9; padding: 15px; border-radius: 10px; margin-top: 10px;">
+        <h3>Pagamento via Pix</h3>
+        <p>Chave: <b>rcsv74@gmail.com</b></p>
+        <button style="background:#007bff;color:white;padding:5px 10px;border-radius:5px;" onclick="window.copiarPix()">Copiar Chave Pix</button>
+    </div>
+
+    <button class="final" id="btnPedido" onclick="window.finalizar()">Enviar Pedido via WhatsApp</button>
 
     <div class="painel-gestao">
-        <h3><i class="fas fa-tools"></i> Painel do Lojista</h3>
-        <div id="loginGestao">
-            <input type="password" id="senhaMestra" placeholder="Senha Administrativa" style="width: 200px;">
-            <button onclick="window.acessarGestao()" style="background:#333; color:white;">Entrar</button>
+        <h3 style="margin-top:0; font-size: 16px;"><i class="fas fa-tools"></i> Painel do Lojista</h3>
+        
+        <div id="gestaoLogin" class="gestao-bloqueada">
+            <input type="password" id="senhaMestra" placeholder="Chave" style="width: 140px; display: inline-block;">
+            <button class="btn-status" onclick="acessarGestao()" style="background: #e31837; height: 40px;">Entrar</button>
         </div>
 
-        <div id="conteudoGestao" style="display:none;">
+        <div id="gestaoConteudo" class="gestao-conteudo">
+            <h4>Envio Rápido de Status</h4>
+            <div class="status-row">
+                <div class="bola vermelha"></div>
+                <input type="text" id="status_tel_prep" placeholder="Zap Cliente">
+                <button class="btn-status" onclick="enviarStatusManual('prep')">Prep.</button>
+            </div>
+            <div class="status-row">
+                <div class="bola azul"></div>
+                <input type="text" id="status_tel_pronto" placeholder="Zap Cliente">
+                <button class="btn-status" onclick="enviarStatusManual('pronto')">Pronto</button>
+            </div>
+            <div class="status-row">
+                <div class="bola verde"></div>
+                <input type="text" id="status_tel_entrega" placeholder="Zap Cliente">
+                <button class="btn-status" onclick="enviarStatusManual('entrega')">Saída</button>
+            </div>
+
+            <hr>
+            <h4>📋 Pedidos do Dia</h4>
             <div class="tabela-pedidos-wrapper">
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>Nº</th>
                             <th>Cliente</th>
-                            <th>Status</th>
-                            <th>Ações de Rastreio</th>
+                            <th>Itens</th>
+                            <th>Total</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="listaPedidosAdm"></tbody>
+                    <tbody id="corpoTabelaPedidos">
+                        </tbody>
                 </table>
             </div>
-            <button onclick="location.reload()" style="margin-top:10px; font-size:10px; border:none; background:none; text-decoration:underline; cursor:pointer;">Sair do Painel</button>
+
+            <button onclick="location.reload()" style="font-size: 10px; background: none; color: #999; border: none; cursor: pointer; text-decoration: underline; margin-top: 20px;">Bloquear Painel</button>
         </div>
+    </div>
+</div>
+
+<div id="modalSucesso" class="modal-sucesso">
+    <div class="modal-content">
+        <div style="font-size: 50px;">✅</div>
+        <h2>Pedido Enviado!</h2>
+        <p>Abrindo o WhatsApp...</p>
     </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE", // <--- COLOQUE SUA CHAVE AQUI
+    apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE", 
     authDomain: "robs-pizzariadelivery.firebaseapp.com",
     projectId: "robs-pizzariadelivery",
+    storageBucket: "robs-pizzariadelivery.appspot.com",
+    messagingSenderId: "338805720977",
     appId: "1:338805720977:web:8666359590892994406a48"
 };
 
@@ -137,107 +218,181 @@ const _supabase=supabase.createClient(supabaseUrl,supabaseKey);
 let carrinho=[];
 let produtosDoBanco=[];
 
-// --- CARDÁPIO ---
+function atualizarTempo() {
+    const agora = new Date();
+    document.getElementById('relogio').textContent = agora.toLocaleTimeString('pt-BR');
+    document.getElementById('data').textContent = agora.toLocaleDateString('pt-BR');
+}
+setInterval(atualizarTempo, 1000);
+atualizarTempo();
+
+// ACESSO GESTÃO
+window.acessarGestao = function() {
+    if(document.getElementById("senhaMestra").value === "253641") {
+        document.getElementById("gestaoLogin").style.display = "none";
+        document.getElementById("gestaoConteudo").style.display = "block";
+        ouvirPedidos();
+    } else { alert("Chave incorreta!"); }
+}
+
+// CARREGAR PEDIDOS EM TEMPO REAL
+function ouvirPedidos() {
+    const q = query(collection(db, "pedidos"), orderBy("data", "desc"));
+    onSnapshot(q, (snapshot) => {
+        const tabela = document.getElementById("corpoTabelaPedidos");
+        tabela.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+            const p = docSnap.data();
+            const id = docSnap.id.substring(0, 5).toUpperCase();
+            const statusStyle = p.status === 'Entregue' ? 'text-decoration: line-through; color: gray;' : '';
+            
+            tabela.innerHTML += `
+                <tr style="${statusStyle}">
+                    <td><b>#${id}</b></td>
+                    <td>${p.cliente}<br><small>${p.telefone}</small></td>
+                    <td>${p.produtos}</td>
+                    <td>R$ ${p.total}</td>
+                    <td>
+                        <button class="btn-acao btn-entregar" onclick="iniciarEntrega('${p.telefone}', '${p.cliente}')"><i class="fas fa-motorcycle"></i></button>
+                        <button class="btn-acao btn-fim" onclick="finalizarPedido('${docSnap.id}')"><i class="fas fa-check"></i></button>
+                        <button class="btn-acao btn-del" onclick="apagarPedido('${docSnap.id}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+}
+
+// FUNÇÕES DA TABELA
+window.apagarPedido = async (id) => {
+    if(confirm("Deseja apagar esse pedido permanentemente?")) {
+        await deleteDoc(doc(db, "pedidos", id));
+    }
+}
+
+window.iniciarEntrega = (tel, nome) => {
+    let num = tel.replace(/\D/g, '');
+    if(!num.startsWith('55')) num = '55' + num;
+    const msg = `Olá ${nome}, seu pedido da Pizzaria Robs saiu para entrega! 🚀🍕`;
+    window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+window.finalizarPedido = async (id) => {
+    const pass = prompt("Digite a senha para concluir (Senha padrão: 1234):");
+    if(pass === "1234") {
+        await updateDoc(doc(db, "pedidos", id), { status: 'Entregue' });
+        alert("Pedido concluído!");
+    } else {
+        alert("Senha incorreta.");
+    }
+}
+
+window.enviarStatusManual = function(tipo) {
+    let tel = ""; let msg = "";
+    if(tipo === 'prep') {
+        tel = document.getElementById("status_tel_prep").value;
+        msg = "Pizzaria Robs: Seu pedido já está em preparação na cozinha! 🍕";
+    } else if(tipo === 'pronto') {
+        tel = document.getElementById("status_tel_pronto").value;
+        msg = "Pizzaria Robs: Seu pedido está PRONTO e aguardando o entregador! 🍕✅";
+    } else if(tipo === 'entrega') {
+        tel = document.getElementById("status_tel_entrega").value;
+        msg = "Pizzaria Robs: Seu pedido saiu para entrega agora! 🚀🍕";
+    }
+    
+    if(!tel) return alert("Digite o Zap!");
+    let num = tel.replace(/\D/g, '');
+    if(!num.startsWith('55')) num = '55' + num;
+    window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function verificarHorario(){
+    let agora=new Date(); let dia=agora.getDay(); let hora=agora.getHours();
+    let aberto = ((dia>=3 && dia<=6) || dia==0) && (hora>=18 && hora<23);
+    let status=document.getElementById("statusLoja");
+    if(status){
+        status.innerHTML = aberto ? "🟢 LOJA ABERTA" : "🔴 FECHADO - Agendamento";
+        status.className = aberto ? "status-btn aberto" : "status-btn fechado";
+    }
+}
+verificarHorario();
+
+window.add = (i) => { carrinho.push(produtosDoBanco[i]); window.renderCarrinho(); }
+window.remover = (i) => { carrinho.splice(i,1); window.renderCarrinho(); }
+window.copiarPix = () => { navigator.clipboard.writeText("rcsv74@gmail.com"); alert("Pix copiado!"); }
+
 async function carregarProdutos(){
-    const{data}=await _supabase.from('produtos').select('*');
-    produtosDoBanco=data;
+    const{data:produtos,error}=await _supabase.from('produtos').select('*');
+    if(error) return;
+    produtosDoBanco=produtos;
     let lista=document.getElementById("produtos");
     lista.innerHTML="";
-    data.forEach((p,index)=>{
+    produtos.forEach((p,index)=>{
         lista.innerHTML+=`<div class="produto">
-            <div style="display:flex;align-items:center;gap:10px">
+            <div style="display:flex;align-items:center;gap:12px">
                 <img src="${p.url_imagem||'https://via.placeholder.com/70'}">
                 <div><b>${p.nome}</b><br>R$ ${parseFloat(p.preco).toFixed(2)}</div>
             </div>
-            <button class="add" onclick="window.add(${index})">Add</button>
+            <button class="add" onclick="window.add(${index})">Adicionar</button>
         </div>`;
     });
 }
 
-window.add = (i) => { carrinho.push(produtosDoBanco[i]); window.renderCarrinho(); }
-window.remover = (i) => { carrinho.splice(i,1); window.renderCarrinho(); }
-
-window.renderCarrinho = () => {
+window.renderCarrinho = function(){
     let area=document.getElementById("carrinho"); area.innerHTML=""; let total=0;
     carrinho.forEach((p,i)=>{ total+=parseFloat(p.preco);
-        area.innerHTML+=`<div class="produto" style="margin-bottom:5px;"><span>${p.nome}</span><button class="rem" onclick="window.remover(${i})">X</button></div>`;
+        area.innerHTML+=`<div class="produto" style="background:#f9f9f9; margin-bottom:5px;">
+            <span>${p.nome}</span><button class="rem" onclick="window.remover(${i})">X</button>
+        </div>`;
     });
     document.getElementById("total").innerText=total.toFixed(2);
+    document.getElementById("pixArea").style.display = (document.getElementById("pagamento").value === "Pix" && total > 0) ? "block" : "none";
 }
 
-window.finalizar = async () => {
-    let n=document.getElementById("nome").value, e=document.getElementById("endereco").value, c=document.getElementById("contato").value;
-    if(!n || !e || !c || carrinho.length < 2) return alert("Preencha tudo (mínimo 2 itens)!");
+window.finalizar = async function(){
+    let n = document.getElementById("nome").value;
+    let e = document.getElementById("endereco").value;
+    let c = document.getElementById("contato").value;
+    let p = document.getElementById("pagamento").value;
+    let o = document.getElementById("obs").value || "Nenhuma";
+    let t = document.getElementById("total").innerText;
 
-    let itens = carrinho.map(i => "• " + i.nome).join("\n");
-    let total = document.getElementById("total").innerText;
+    if(!n || !e || !c || carrinho.length < 2) {
+        return alert("Preencha tudo e escolha pelo menos 2 itens!");
+    }
+
+    let listaProd = "";
+    carrinho.forEach(item => {
+        listaProd += `• ${item.nome}\n`;
+    });
+
+    document.getElementById("modalSucesso").style.display = "flex";
     
     try {
-        await addDoc(collection(db, "pedidos"), {
-            cliente: n, endereco: e, telefone: c, produtos: itens, total: total, status: "Pendente", data: serverTimestamp()
+        await addDoc(collection(db, "pedidos"), { 
+            cliente: n, 
+            endereco: e, 
+            telefone: c,
+            pagamento: p,
+            produtos: listaProd, 
+            total: t, 
+            observacao: o,
+            status: 'Pendente',
+            data: serverTimestamp() 
         });
-        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent("Novo Pedido Robs!\n"+itens+"\nTotal: R$ "+total)}`);
-        alert("Pedido Enviado!");
-        location.reload();
-    } catch(err){ alert("Erro ao salvar!"); }
-}
 
-// --- GESTÃO E RASTREIO ---
-window.acessarGestao = () => {
-    if(document.getElementById("senhaMestra").value === "253641") {
-        document.getElementById("loginGestao").style.display = "none";
-        document.getElementById("conteudoGestao").style.display = "block";
-        ouvirPedidos();
-    } else alert("Senha incorreta!");
-}
+        setTimeout(() => {
+            let msg = `*Pizzaria Robs*\n\n${listaProd}\n*Total:* R$ ${t}\n*Pagamento:* ${p}\n*Cliente:* ${n}\n*Endereço:* ${e}\n*Obs:* ${o}`;
+            window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(msg)}`);
+            location.reload();
+        }, 2000);
 
-function ouvirPedidos() {
-    const q = query(collection(db, "pedidos"), orderBy("data", "desc"));
-    onSnapshot(q, (snapshot) => {
-        const lista = document.getElementById("listaPedidosAdm");
-        lista.innerHTML = "";
-        snapshot.forEach((docSnap) => {
-            const p = docSnap.data();
-            const id = docSnap.id;
-            lista.innerHTML += `
-                <tr>
-                    <td>#${id.substring(0,4).toUpperCase()}</td>
-                    <td>${p.cliente}</td>
-                    <td><b>${p.status}</b></td>
-                    <td>
-                        <button class="btn-acao btn-prep" onclick="window.atualizarStatus('${id}', 'Preparando', '${p.telefone}')">Cozinha</button>
-                        <button class="btn-acao btn-rota" onclick="window.atualizarStatus('${id}', 'Rota', '${p.telefone}')">Saída</button>
-                        <button class="btn-acao btn-fim" onclick="window.atualizarStatus('${id}', 'Entregue', '${p.telefone}')">Fim</button>
-                        <button class="btn-acao btn-del" onclick="window.deletarPedido('${id}')">X</button>
-                    </td>
-                </tr>`;
-        });
-    });
-}
-
-window.atualizarStatus = async (id, novoStatus, tel) => {
-    await updateDoc(doc(db, "pedidos", id), { status: novoStatus });
-    
-    if(novoStatus !== 'Entregue') {
-        const linkRastreio = window.location.origin + "/rastreio.html?id=" + id;
-        const msg = novoStatus === 'Preparando' ? "Seu pedido está na cozinha!" : "Seu pedido saiu para entrega! 🚀";
-        
-        let num = tel.replace(/\D/g, '');
-        if(!num.startsWith('55')) num = '55' + num;
-        window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg + "\nAcompanhe aqui: " + linkRastreio)}`, '_blank');
-    } else {
-        alert("Pedido finalizado com sucesso!");
+    } catch(err) { 
+        document.getElementById("modalSucesso").style.display = "none";
+        alert("Erro ao salvar pedido!");
     }
 }
 
-window.deletarPedido = async (id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, "pedidos", id)); }
-
-function relogio(){
-    const d=new Date();
-    document.getElementById('relogio').innerText=d.toLocaleTimeString();
-    document.getElementById('data').innerText=d.toLocaleDateString();
-}
-setInterval(relogio,1000);
 carregarProdutos();
 </script>
 </body>
