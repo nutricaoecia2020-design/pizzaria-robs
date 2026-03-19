@@ -19,7 +19,6 @@
             --text: #ffffff;
             --text-dim: #a0a0a0;
             --success: #28a745;
-            --click-flash: #ffd700; /* Cor do flash ao clicar */
         }
 
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
@@ -79,13 +78,13 @@
             padding: 12px; border-radius: 10px; margin-bottom: 12px; outline: none;
         }
 
-        .btn { border: none; border-radius: 10px; cursor: pointer; font-weight: 600; padding: 12px; transition: background 0.2s, transform 0.1s; width: 100%; }
-        .btn:active { transform: scale(0.95); }
+        .btn { border: none; border-radius: 10px; cursor: pointer; font-weight: 600; padding: 12px; transition: 0.2s; width: 100%; }
         .btn-add { background: var(--primary); color: white; }
         
-        /* Classe de Animação */
-        .btn-flash-success { background: var(--success) !important; }
+        /* Efeito de Flash */
+        .btn-flash { background: #28a745 !important; transform: scale(0.95); }
 
+        /* PAINEL DE GESTÃO */
         .painel-gestao { margin-top: 50px; padding: 25px; background: #1a1a1a; border: 2px dashed var(--primary); border-radius: 20px; }
         .status-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; background: #222; padding: 10px; border-radius: 12px; }
         .bola { width: 15px; height: 15px; border-radius: 50%; }
@@ -97,6 +96,7 @@
 
         .btn-acao { padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer; margin-right: 5px; color: white; }
         .btn-entregar { background: #25d366; } .btn-fim { background: #666; } .btn-del { background: #ff4444; }
+        .btn-status { background: #333; color: white; padding: 8px; font-size: 11px; cursor: pointer; border-radius: 5px; border:none; }
 
         .float-btns { position: fixed; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 99; }
         .circle-btn { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 24px; }
@@ -154,8 +154,37 @@
             <input type="password" id="senhaMestra" placeholder="Senha" style="max-width: 150px; display: inline-block;">
             <button class="btn btn-add" style="width: auto; padding: 10px 20px;" onclick="acessarGestao()">Entrar</button>
         </div>
+
         <div id="gestaoConteudo" style="display:none;">
-            <div id="corpoTabelaPedidos"></div>
+            <h4>Atualização Rápida de Status</h4>
+            <div class="status-row">
+                <div class="bola vermelha"></div>
+                <input type="text" id="status_tel_prep" placeholder="WhatsApp Cliente" style="margin:0; flex:1">
+                <button class="btn-status" onclick="enviarStatusManual('prep')">Em Preparo</button>
+            </div>
+            <div class="status-row">
+                <div class="bola azul"></div>
+                <input type="text" id="status_tel_pronto" placeholder="WhatsApp Cliente" style="margin:0; flex:1">
+                <button class="btn-status" onclick="enviarStatusManual('pronto')">Pronto</button>
+            </div>
+            <div class="status-row">
+                <div class="bola verde"></div>
+                <input type="text" id="status_tel_entrega" placeholder="WhatsApp Cliente" style="margin:0; flex:1">
+                <button class="btn-status" onclick="enviarStatusManual('entrega')">Saiu Entrega</button>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+            
+            <h4>📋 Pedidos em Tempo Real</h4>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Cliente</th><th>Produtos</th><th>Total</th><th>Ações</th></tr>
+                    </thead>
+                    <tbody id="corpoTabelaPedidos"></tbody>
+                </table>
+            </div>
+            <button onclick="location.reload()" style="background:none; border:none; color:#555; cursor:pointer; margin-top:20px;">Sair do Painel</button>
         </div>
     </div>
 </div>
@@ -198,24 +227,19 @@ const _supabase = supabase.createClient('https://gsvvyktjeqlmhspqzppy.supabase.c
 let carrinho = [];
 let produtosDoBanco = [];
 
-// --- FUNÇÃO DE FEEDBACK (SOM E COR) ---
-function dispararFeedback(elemento) {
-    // 1. Som (Beep rápido)
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioCtx.createOscillator();
-    const gainNode = audioCtx.createGain();
-    oscillator.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Frequência do beep
-    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    oscillator.start();
-    oscillator.stop(audioCtx.currentTime + 0.1);
-
-    // 2. Cor (Piscar verde)
-    if(elemento) {
-        elemento.classList.add('btn-flash-success');
-        setTimeout(() => elemento.classList.remove('btn-flash-success'), 300);
+// --- FUNÇÃO FEEDBACK (SOM + COR) ---
+function feedback(el) {
+    // Som
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.frequency.value = 800; g.gain.value = 0.1;
+    osc.start(); osc.stop(ctx.currentTime + 0.1);
+    // Cor
+    if(el) {
+        el.classList.add('btn-flash');
+        setTimeout(() => el.classList.remove('btn-flash'), 250);
     }
 }
 
@@ -229,6 +253,63 @@ function atualizarTempo() {
     document.getElementById('data').textContent = agora.toLocaleDateString('pt-BR');
 }
 setInterval(atualizarTempo, 1000);
+
+// GESTÃO
+window.acessarGestao = function() {
+    if(document.getElementById("senhaMestra").value === "253641") {
+        document.getElementById("gestaoLogin").style.display = "none";
+        document.getElementById("gestaoConteudo").style.display = "block";
+        ouvirPedidos();
+    } else { alert("Chave incorreta!"); }
+}
+
+function ouvirPedidos() {
+    const q = query(collection(db, "pedidos"), orderBy("data", "desc"));
+    onSnapshot(q, (snapshot) => {
+        const tabela = document.getElementById("corpoTabelaPedidos");
+        tabela.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+            const p = docSnap.data();
+            const id = docSnap.id.substring(0, 5).toUpperCase();
+            const statusStyle = p.status === 'Entregue' ? 'text-decoration: line-through; color: gray;' : '';
+            
+            tabela.innerHTML += `
+                <tr style="${statusStyle}">
+                    <td><b>#${id}</b></td>
+                    <td>${p.cliente}<br><small>${p.telefone}</small></td>
+                    <td>${p.produtos}</td>
+                    <td>R$ ${p.total}</td>
+                    <td>
+                        <button class="btn-acao btn-entregar" onclick="window.iniciarEntrega('${p.telefone}', '${p.cliente}')"><i class="fas fa-motorcycle"></i></button>
+                        <button class="btn-acao btn-fim" onclick="window.finalizarPedidoBanco('${docSnap.id}')"><i class="fas fa-check"></i></button>
+                        <button class="btn-acao btn-del" onclick="window.apagarPedido('${docSnap.id}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+}
+
+window.apagarPedido = async (id) => { if(confirm("Apagar pedido?")) await deleteDoc(doc(db, "pedidos", id)); }
+window.finalizarPedidoBanco = async (id) => {
+    const pass = prompt("Senha (1234):");
+    if(pass === "1234") await updateDoc(doc(db, "pedidos", id), { status: 'Entregue' });
+}
+
+window.iniciarEntrega = (tel, nome) => {
+    let num = tel.replace(/\D/g, '');
+    if(!num.startsWith('55')) num = '55' + num;
+    window.open(`https://wa.me/${num}?text=${encodeURIComponent('Olá '+nome+', seu pedido saiu para entrega! 🚀')}`);
+}
+
+window.enviarStatusManual = (tipo) => {
+    let input = tipo === 'prep' ? 'status_tel_prep' : tipo === 'pronto' ? 'status_tel_pronto' : 'status_tel_entrega';
+    let tel = document.getElementById(input).value;
+    let msgs = { prep: 'Seu pedido está em preparação! 🍕', pronto: 'Seu pedido está pronto! ✅', entrega: 'Pedido a caminho! 🚀' };
+    if(!tel) return alert("Digite o Zap!");
+    let num = tel.replace(/\D/g, ''); if(!num.startsWith('55')) num = '55' + num;
+    window.open(`https://wa.me/${num}?text=${encodeURIComponent('Pizzaria Robs: ' + msgs[tipo])}`);
+}
 
 // CARDÁPIO E COMPRAS
 async function carregarProdutos(){
@@ -250,15 +331,12 @@ async function carregarProdutos(){
 }
 
 window.add = (i) => { 
-    dispararFeedback(document.getElementById(`btn-add-${i}`));
+    feedback(document.getElementById(`btn-add-${i}`));
     carrinho.push(produtosDoBanco[i]); 
     window.renderCarrinho(); 
 }
 
-window.remover = (i) => { 
-    carrinho.splice(i,1); 
-    window.renderCarrinho(); 
-}
+window.remover = (i) => { carrinho.splice(i,1); window.renderCarrinho(); }
 
 window.renderCarrinho = function(){
     let area = document.getElementById("carrinhoItens"); area.innerHTML = ""; let total = 0;
@@ -275,7 +353,7 @@ window.renderCarrinho = function(){
 
 window.finalizar = async function(){
     const btn = document.getElementById("btnFinalizar");
-    dispararFeedback(btn);
+    feedback(btn);
 
     let n = document.getElementById("nome").value;
     let e = document.getElementById("endereco").value;
@@ -283,7 +361,7 @@ window.finalizar = async function(){
     let p = document.getElementById("pagamento").value;
     let t = document.getElementById("total").innerText;
     
-    if(!n || !e || !c || carrinho.length < 1) return alert("Preencha tudo e adicione itens!");
+    if(!n || !e || !c || carrinho.length < 2) return alert("Preencha tudo e escolha pelo menos 2 itens!");
 
     let listaProd = ""; carrinho.forEach(item => { listaProd += `• ${item.nome}\n`; });
     try {
@@ -309,7 +387,6 @@ carregarProdutos();
 </script>
 </body>
 </html>
-
 
 
 
