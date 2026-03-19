@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rastreio - Pizzaria Robs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card { background: #fff; width: 90%; max-width: 400px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 8px solid #e31837; text-align: center; }
+        h2 { color: #e31837; margin-bottom: 5px; }
+        .pedido-id { font-size: 12px; color: #888; margin-bottom: 20px; }
+        
+        /* Linha do Tempo (Steppers) */
+        .rastreio-container { position: relative; margin: 30px 0; padding-left: 40px; text-align: left; }
+        .passo { position: relative; margin-bottom: 30px; color: #ccc; transition: 0.3s; }
+        .passo.ativo { color: #222; font-weight: bold; }
+        .passo i { position: absolute; left: -35px; width: 25px; height: 25px; background: #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; z-index: 2; }
+        .passo.ativo i { background: #e31837; box-shadow: 0 0 10px rgba(227, 24, 55, 0.4); }
+        .passo::after { content: ''; position: absolute; left: -23px; top: 25px; width: 2px; height: 30px; background: #ddd; z-index: 1; }
+        .passo:last-child::after { display: none; }
+        .passo.concluido i { background: #28a745; }
+        .passo.concluido::after { background: #28a745; }
+
+        .btn-voltar { display: inline-block; margin-top: 20px; text-decoration: none; color: #e31837; font-weight: bold; font-size: 14px; }
+        .loading { font-style: italic; color: #888; }
+    </style>
+</head>
+<body>
+
+<div class="card" id="app">
+    <div id="loader">
+        <i class="fas fa-pizza-slice fa-spin" style="font-size: 40px; color: #e31837;"></i>
+        <p class="loading">Localizando seu pedido...</p>
+    </div>
+
+    <div id="conteudo" style="display:none;">
+        <h2>Acompanhe seu Pedido</h2>
+        <div class="pedido-id">ID: <span id="display-id">#0000</span></div>
+
+        <div class="rastreio-container">
+            <div id="step-pendente" class="passo">
+                <i class="fas fa-clock"></i> Recebido
+            </div>
+            <div id="step-preparando" class="passo">
+                <i class="fas fa-fire-burner"></i> Na Cozinha
+            </div>
+            <div id="step-rota" class="passo">
+                <i class="fas fa-motorcycle"></i> Saiu para Entrega
+            </div>
+            <div id="step-entregue" class="passo">
+                <i class="fas fa-check-double"></i> Entregue
+            </div>
+        </div>
+
+        <p id="msg-status" style="font-size: 14px; color: #555; background: #fff3cd; padding: 10px; border-radius: 10px;"></p>
+        
+        <a href="index.html" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar para Loja</a>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE", // <--- USE A MESMA CHAVE DA SUA LOJA
+    authDomain: "robs-pizzariadelivery.firebaseapp.com",
+    projectId: "robs-pizzariadelivery",
+    appId: "1:338805720977:web:8666359590892994406a48"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Pegar o ID da URL (?id=xxxxxxx)
+const urlParams = new URLSearchParams(window.location.search);
+const pedidoId = urlParams.get('id');
+
+if (!pedidoId) {
+    document.body.innerHTML = "<h1>Pedido não encontrado.</h1>";
+} else {
+    // Escutar mudanças no Firebase em tempo real
+    onSnapshot(doc(db, "pedidos", pedidoId), (docSnap) => {
+        if (docSnap.exists()) {
+            const p = docSnap.data();
+            atualizarInterface(p.status, pedidoId);
+        } else {
+            alert("Pedido não localizado.");
+        }
+    });
+}
+
+function atualizarInterface(status, id) {
+    document.getElementById("loader").style.display = "none";
+    document.getElementById("conteudo").style.display = "block";
+    document.getElementById("display-id").innerText = "#" + id.substring(0, 6).toUpperCase();
+
+    const steps = {
+        'Pendente': ['step-pendente'],
+        'Preparando': ['step-pendente', 'step-preparando'],
+        'Rota': ['step-pendente', 'step-preparando', 'step-rota'],
+        'Entregue': ['step-pendente', 'step-preparando', 'step-rota', 'step-entregue']
+    };
+
+    const mensagens = {
+        'Pendente': "Estamos conferindo seu pedido...",
+        'Preparando': "O pizzaiolo já está preparando sua pizza! 🍕",
+        'Rota': "O entregador já saiu. Fique atento ao portão! 🚀",
+        'Entregue': "Pedido entregue. Bom apetite! ❤️"
+    };
+
+    // Resetar estilos
+    document.querySelectorAll('.passo').forEach(el => {
+        el.classList.remove('ativo', 'concluido');
+    });
+
+    // Aplicar status atual
+    const ativos = steps[status] || [];
+    ativos.forEach((stepId, index) => {
+        const el = document.getElementById(stepId);
+        if (index === ativos.length - 1) {
+            el.classList.add('ativo');
+        } else {
+            el.classList.add('concluido');
+        }
+    });
+
+    document.getElementById("msg-status").innerText = mensagens[status] || "";
+}
+</script>
+
+</body>
+</html>
