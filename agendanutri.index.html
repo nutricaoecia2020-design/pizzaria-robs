@@ -3,224 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Nutricionista - Gestão de Clínica</title>
+    <title>Sistema Integrado - Nutrição e Cia</title>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #27ae60;
-            --bg-light: #f4f7f6;
-            --text-dark: #333;
+            --primary: #2c3e50;
+            --accent: #27ae60;
+            --bg: #f0f2f5;
             --white: #ffffff;
+            --danger: #e74c3c;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-light);
-            margin: 0;
-            padding: 20px;
-            color: var(--text-dark);
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; color: #333; }
+
+        /* --- TELA DE LOGIN --- */
+        #login-screen {
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; background: var(--primary);
+        }
+        .login-box {
+            background: var(--white); padding: 40px; border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center; width: 320px;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        /* --- PAINEL GERAL --- */
+        #main-panel { display: none; padding: 20px; }
+
+        .header-nav {
+            background: var(--white); padding: 15px 25px; border-radius: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 25px;
         }
 
-        /* Seção já existente (Exemplo) */
-        .secao-existente {
-            background: var(--white);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-left: 5px solid var(--secondary-color);
+        /* --- SEÇÕES --- */
+        .section-card {
+            background: var(--white); padding: 25px; border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 25px;
         }
 
-        /* Novo Gerenciamento de Clínica */
         .grid-gestao {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;
         }
 
-        .card {
-            background: var(--white);
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        h2, h3 { color: var(--primary); margin-top: 0; display: flex; align-items: center; gap: 10px; }
+        .accent-text { color: var(--accent); }
+
+        /* --- FORMULÁRIOS E UI --- */
+        input, select, textarea { 
+            width: 100%; padding: 12px; margin: 8px 0; 
+            border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; 
         }
 
-        h2 {
-            color: var(--primary-color);
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-            margin-top: 0;
+        .btn { 
+            background: var(--accent); color: white; border: none; padding: 12px 20px; 
+            border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s;
         }
+        .btn:hover { opacity: 0.9; }
+        .btn-logout { background: var(--danger); width: auto; }
 
-        h3 { color: var(--secondary-color); }
+        /* --- TABELAS --- */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
 
-        .form-group {
-            margin-bottom: 15px;
+        /* --- CALENDÁRIO CUSTOMIZADO (CLIENTE) --- */
+        .calendario-container {
+            max-width: 400px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd;
         }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .btn {
-            background-color: var(--secondary-color);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-
-        .btn:hover { background-color: #219150; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th, td {
-            text-align: left;
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-        }
-
-        th { background-color: #f8f9fa; }
-
-        .status-pendente { color: #e67e22; font-weight: bold; }
-        .status-pago { color: #27ae60; font-weight: bold; }
-
+        .dia-indisponivel { color: #ccc; cursor: not-allowed; }
+        .dia-disponivel { color: var(--accent); font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    
-    <div class="secao-existente">
-        <h2>Seu Agendamento Atual</h2>
-        <p>O seu link de agendamento externo e as funções anteriores permanecem aqui.</p>
+    <div id="login-screen">
+        <div class="login-box">
+            <h2 style="justify-content: center;">🔒 Acesso Restrito</h2>
+            <p>Painel do Nutricionista</p>
+            <input type="password" id="senha" placeholder="Digite sua senha">
+            <button class="btn" onclick="verificarSenha()">Entrar</button>
+            <p id="erro" style="color: var(--danger); display: none; margin-top: 15px;">Senha incorreta!</p>
         </div>
-
-    <hr style="margin: 40px 0; border: 0; border-top: 2px dashed #ccc;">
-
-    <h1 style="text-align: center; color: var(--primary-color);">Sistema de Gestão Clínica</h1>
-
-    <div class="grid-gestao">
-        
-        <div class="card">
-            <h3>👤 Cadastro de Paciente</h3>
-            <form id="form-paciente">
-                <div class="form-group">
-                    <label>Nome Completo</label>
-                    <input type="text" placeholder="Nome do paciente">
-                </div>
-                <div class="form-group">
-                    <label>Data de Aniversário</label>
-                    <input type="date">
-                </div>
-                <div class="form-group">
-                    <label>Telefone / WhatsApp</label>
-                    <input type="tel" placeholder="(00) 00000-0000">
-                </div>
-                <button type="button" class="btn">Salvar Cadastro</button>
-            </form>
-        </div>
-
-        <div class="card">
-            <h3>📅 Agenda de Compromissos</h3>
-            <form>
-                <div class="form-group">
-                    <label>Evento/Consulta</label>
-                    <input type="text" placeholder="Ex: Reunião ou Paciente X">
-                </div>
-                <div class="form-group">
-                    <label>Data e Hora</label>
-                    <input type="datetime-local">
-                </div>
-                <button type="button" class="btn">Agendar</button>
-            </form>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Compromisso</th>
-                        <th>Data</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Consulta Maria Silva</td>
-                        <td>23/03 - 14:00</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="card">
-            <h3>💰 Contas a Receber</h3>
-            <form>
-                <div class="form-group">
-                    <label>Valor da Consulta (R$)</label>
-                    <input type="number" step="0.01" placeholder="250.00">
-                </div>
-                <div class="form-group">
-                    <label>Forma de Pagamento</label>
-                    <select>
-                        <option>Pix</option>
-                        <option>Cartão de Crédito</option>
-                        <option>Dinheiro</option>
-                        <option>Convênio</option>
-                    </select>
-                </div>
-                <button type="button" class="btn">Lançar Recebimento</button>
-            </form>
-            <table>
-                <tr>
-                    <td>João Souza</td>
-                    <td class="status-pago">R$ 200,00</td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="card">
-            <h3>📉 Contas a Pagar (Despesas)</h3>
-            <form>
-                <div class="form-group">
-                    <label>Descrição da Conta</label>
-                    <input type="text" placeholder="Ex: Aluguel, Luz, Software">
-                </div>
-                <div class="form-group">
-                    <label>Vencimento</label>
-                    <input type="date">
-                </div>
-                <button type="button" class="btn" style="background-color: #e74c3c;">Lançar Despesa</button>
-            </form>
-            <table>
-                <tr>
-                    <td>Aluguel Sala</td>
-                    <td class="status-pendente">R$ 1.200,00</td>
-                </tr>
-            </table>
-        </div>
-
     </div>
-</div>
 
+    <div id="main-panel">
+        
+        <div class="header-nav">
+            <h2>Gerenciador Nutri & Cia</h2>
+            <button class="btn btn-logout" onclick="logout()">Sair do Sistema</button>
+        </div>
+
+        <div class="section-card">
+            <h3 class="accent-text">📅 Visualização do Agendamento (Cliente)</h3>
+            <p>Este calendário permite apenas: <strong>Segundas, Terças e Quintas</strong>.</p>
+            
+            <div class="calendario-container">
+                <label>Selecione uma Data Disponível:</label>
+                <input type="date" id="dataAgendamento" onchange="validarData(this)">
+                <small id="msgData" style="display:block; margin-top:5px;"></small>
+            </div>
+            <br>
+            <p>Link para o cliente: <code>https://nutricaoecia2020-design.github.io/agendanuti.index.html</code></p>
+        </div>
+
+        <hr style="border: 0; border-top: 2px dashed #ccc; margin: 40px 0;">
+
+        <h2 style="text-align: center; margin-bottom: 30px;">⚙️ Gestão Interna da Clínica</h2>
+        
+        <div class="grid-gestao">
+            
+            <div class="section-card">
+                <h3>👤 Cadastro de Paciente</h3>
+                <input type="text" placeholder="Nome do Paciente">
+                <input type="date" title="Data de Aniversário">
+                <input type="tel" placeholder="WhatsApp (00) 00000-0000">
+                <button class="btn">Cadastrar Novo</button>
+            </div>
+
+            <div class="section-card">
+                <h3>📝 Compromissos Internos</h3>
+                <input type="text" placeholder="Descrição do evento">
+                <input type="datetime-local">
+                <button class="btn">Adicionar à Agenda</button>
+                <table>
+                    <tr><td>Reunião Clínica</td><td>20/03 - 09:00</td></tr>
+                </table>
+            </div>
+
+            <div class="section-card">
+                <h3>💰 Contas a Receber</h3>
+                <input type="number" placeholder="Valor da Consulta R$">
+                <select>
+                    <option>Pix</option>
+                    <option>Cartão de Crédito</option>
+                    <option>Dinheiro</option>
+                </select>
+                <button class="btn">Registrar Pagamento</button>
+                <table>
+                    <tr><td>Paciente Exemplo</td><td class="accent-text">R$ 250,00</td></tr>
+                </table>
+            </div>
+
+            <div class="section-card">
+                <h3>📉 Contas a Pagar</h3>
+                <input type="text" placeholder="Conta (Luz, Aluguel...)">
+                <input type="number" placeholder="Valor R$">
+                <button class="btn" style="background: var(--primary);">Lançar Despesa</button>
+                <table>
+                    <tr><td>Software Mensal</td><td style="color:var(--danger)">R$ 90,00</td></tr>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURAÇÕES
+        const SENHA_CORRETA = "1234"; // Altere sua senha aqui
+
+        // LOGICA DE ACESSO
+        function verificarSenha() {
+            const senhaDigitada = document.getElementById('senha').value;
+            const erro = document.getElementById('erro');
+            
+            if(senhaDigitada === SENHA_CORRETA) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-panel').style.display = 'block';
+            } else {
+                erro.style.display = 'block';
+            }
+        }
+
+        function logout() {
+            window.location.reload();
+        }
+
+        // LÓGICA DO CALENDÁRIO (Seg, Ter, Qui)
+        function validarData(input) {
+            const data = new Date(input.value + 'T00:00:00');
+            const diaSemana = data.getDay(); // 0:Dom, 1:Seg, 2:Ter, 3:Qua, 4:Qui, 5:Sex, 6:Sab
+            const msg = document.getElementById('msgData');
+
+            // Dias permitidos: 1 (Segunda), 2 (Terça), 4 (Quinta)
+            const diasPermitidos = [1, 2, 4];
+
+            if (!diasPermitidos.includes(diaSemana)) {
+                msg.innerHTML = "❌ Data indisponível. Escolha Segunda, Terça ou Quinta.";
+                msg.style.color = "red";
+                input.value = "";
+            } else {
+                msg.innerHTML = "✅ Data disponível para agendamento!";
+                msg.style.color = "green";
+            }
+        }
+    </script>
 </body>
 </html>
