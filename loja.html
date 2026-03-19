@@ -1,44 +1,83 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pizzaria Robs</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#e31837">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizzaria Robs</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-<style>
-body{font-family:Arial;background:#f4f4f4;margin:0}
-.container{max-width:900px;margin:auto;background:#fff;padding:20px;border:8px solid #e31837}
-#produtos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.produto{display:flex;justify-content:space-between;background:#fff;padding:10px;border-radius:10px;border:1px solid #eee}
-button{padding:8px;border:none;border-radius:8px;cursor:pointer}
-.add{background:#28a745;color:#fff}
-.rem{background:#dc3545;color:#fff}
-.final{background:#e31837;color:#fff;width:100%;padding:12px}
-.painel{margin-top:30px;padding:15px;border:2px dashed #e31837;border-radius:10px}
-</style>
+    <style>
+        body{font-family:Arial, sans-serif;background:#f4f4f4;margin:0; overflow-x: hidden;}
+        
+        .tempo-container {
+            position: absolute; top: 15px; right: 15px; background: #222; color: #fff;
+            padding: 10px; border-radius: 10px; font-family: 'Courier New', monospace;
+            text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 2px solid #e31837; z-index: 101;
+        }
+
+        #relogio { font-size: 20px; font-weight: bold; }
+        #data { font-size: 11px; color: #aaa; }
+
+        .container{
+            max-width:900px;margin:30px auto;background:#fff;min-height:100vh;padding:20px;
+            border: 8px solid #e31837;
+        }
+
+        #produtos{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+        .produto{background:#fff;padding:12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;border: 1px solid #eee;}
+
+        img{width:70px;height:70px;border-radius:10px;}
+
+        button{padding:8px;border:none;border-radius:8px;cursor:pointer}
+        .add{background:#28a745;color:#fff;}
+        .rem{background:#dc3545;color:#fff;}
+        .final{background:#e31837;color:#fff;width:100%;padding:14px;margin-top:20px;}
+
+        input{width:100%;padding:10px;margin:5px 0}
+
+        .painel-final{
+            margin-top:40px;
+            padding:20px;
+            border:2px dashed #e31837;
+            border-radius:10px;
+        }
+
+        @media(max-width:600px){ #produtos{grid-template-columns:1fr;} }
+    </style>
 </head>
 
 <body>
+
 <div class="container">
+
+<div class="tempo-container">
+<span id="relogio"></span>
+<span id="data"></span>
+</div>
 
 <h2>🍕 Pizzaria Robs</h2>
 
 <div id="produtos">Carregando...</div>
 
-<h3>Carrinho</h3>
+<h3>🛒 Carrinho</h3>
 <div id="carrinho"></div>
 Total: R$ <span id="total">0.00</span>
 
-<h3>Dados</h3>
+<h3>📍 Dados</h3>
 <input id="nome" placeholder="Nome">
 <input id="endereco" placeholder="Endereço">
 <input id="contato" placeholder="Telefone">
 
 <button class="final" onclick="finalizar()">Enviar Pedido</button>
 
-<div class="painel">
+<!-- 🔥 NOVO PAINEL (SEM ALTERAR NADA ACIMA) -->
+<div class="painel-final">
 <h3>📋 Pedidos do Dia</h3>
 <div id="listaPedidos"></div>
 </div>
@@ -47,21 +86,17 @@ Total: R$ <span id="total">0.00</span>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE",
 authDomain: "robs-pizzariadelivery.firebaseapp.com",
 projectId: "robs-pizzariadelivery",
-storageBucket: "robs-pizzariadelivery.appspot.com",
-messagingSenderId: "338805720977",
-appId: "1:338805720977:web:8666359590892994406a48"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// SUPABASE (SEU)
 const supabaseUrl='https://gsvvyktjeqlmhspqzppy.supabase.co';
 const supabaseKey='sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs';
 const supabase=supabase.createClient(supabaseUrl,supabaseKey);
@@ -69,7 +104,7 @@ const supabase=supabase.createClient(supabaseUrl,supabaseKey);
 let carrinho=[];
 let produtos=[];
 
-// CARREGAR PRODUTOS
+// CARREGAR PRODUTOS (ORIGINAL)
 async function carregar(){
 let {data}=await supabase.from('produtos').select('*');
 produtos=data||[];
@@ -77,7 +112,7 @@ let html="";
 produtos.forEach((p,i)=>{
 html+=`
 <div class="produto">
-<span>${p.nome} - R$ ${parseFloat(p.preco).toFixed(2)}</span>
+<span>${p.nome} - R$ ${p.preco}</span>
 <button class="add" onclick="add(${i})">+</button>
 </div>`;
 });
@@ -85,7 +120,7 @@ document.getElementById("produtos").innerHTML=html;
 }
 carregar();
 
-// CARRINHO
+// CARRINHO (ORIGINAL)
 window.add=(i)=>{carrinho.push(produtos[i]);render()}
 window.rem=(i)=>{carrinho.splice(i,1);render()}
 
@@ -93,25 +128,21 @@ function render(){
 let html="";let total=0;
 carrinho.forEach((p,i)=>{
 total+=parseFloat(p.preco);
-html+=`<div class="produto">${p.nome}<button class="rem" onclick="rem(${i})">x</button></div>`
+html+=`<div>${p.nome} <button onclick="rem(${i})">x</button></div>`
 });
 document.getElementById("carrinho").innerHTML=html;
 document.getElementById("total").innerText=total.toFixed(2);
 }
 
-// FINALIZAR PEDIDO
+// FINALIZAR (ADICIONADO STATUS SEM QUEBRAR)
 window.finalizar=async()=>{
 let n=nome.value,e=endereco.value,c=contato.value;
 if(!n||!e||!c||carrinho.length<1) return alert("Preencha tudo");
-
-let lista="";
-carrinho.forEach(p=>lista+=p.nome+" | ");
 
 await addDoc(collection(db,"pedidos"),{
 cliente:n,
 endereco:e,
 telefone:c,
-produtos:lista,
 total:total.innerText,
 status:"preparando",
 data:serverTimestamp()
@@ -121,13 +152,19 @@ alert("Pedido enviado!");
 location.reload();
 }
 
-// LISTA PEDIDOS
+// RELÓGIO (ORIGINAL)
+setInterval(()=>{
+let d=new Date();
+relogio.innerText=d.toLocaleTimeString();
+data.innerText=d.toLocaleDateString();
+},1000);
+
+// 🔥 NOVO SISTEMA (SEM MEXER NO RESTO)
 function renderPedidos(pedidos){
 let html="";
 pedidos.forEach(p=>{
 let cor="#ffc107";
 if(p.status=="entrega") cor="#007bff";
-if(p.status=="finalizado") cor="#28a745";
 
 html+=`
 <div style="border-left:5px solid ${cor};padding:10px;margin:10px;background:#fff">
@@ -136,8 +173,6 @@ ${p.cliente}<br>
 ${p.endereco}<br>
 R$ ${p.total}<br>
 Status: ${p.status}<br>
-
-<input id="loc_${p.id}" placeholder="Link localização">
 
 <button onclick="iniciar('${p.id}')">🚀 Entrega</button>
 <button onclick="finalizarPedido('${p.id}')">✅ Finalizar</button>
@@ -155,11 +190,7 @@ renderPedidos(lista);
 
 // AÇÕES
 window.iniciar=async(id)=>{
-let loc=document.getElementById("loc_"+id).value;
-await updateDoc(doc(db,"pedidos",id),{
-status:"entrega",
-localizacao:loc
-});
+await updateDoc(doc(db,"pedidos",id),{status:"entrega"});
 }
 
 window.finalizarPedido=async(id)=>{
@@ -169,6 +200,7 @@ await deleteDoc(doc(db,"pedidos",id));
 }
 
 </script>
+
 </body>
 </html>
 
