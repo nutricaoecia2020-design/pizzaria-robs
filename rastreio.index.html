@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rastreio de Pedido - Pizzaria Robs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card { background: white; width: 90%; max-width: 400px; padding: 30px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 8px solid #e31837; text-align: center; }
+        .logo { color: #e31837; font-size: 26px; font-weight: bold; margin-bottom: 5px; }
+        .pedido-id { font-size: 12px; color: #888; margin-bottom: 25px; background: #eee; display: inline-block; padding: 3px 10px; border-radius: 10px; }
+        
+        /* Barra de Progresso Vertical */
+        .stepper { position: relative; display: flex; flex-direction: column; gap: 35px; text-align: left; padding-left: 45px; margin: 25px 0; }
+        .step { position: relative; color: #ccc; font-weight: 600; transition: 0.4s; }
+        .step i { position: absolute; left: -42px; width: 32px; height: 32px; background: #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; z-index: 2; }
+        .line { position: absolute; left: 16px; top: 0; bottom: 0; width: 2px; background: #eee; z-index: 1; }
+        
+        /* Cores dos Status */
+        .step.active { color: #e31837; }
+        .step.active i { background: #e31837; box-shadow: 0 0 10px rgba(227, 24, 55, 0.4); animation: pulse 1.5s infinite; }
+        .step.done { color: #28a745; }
+        .step.done i { background: #28a745; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        
+        .status-msg { background: #fff5f6; padding: 15px; border-radius: 15px; font-size: 14px; color: #444; border: 1px dashed #e31837; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="logo">🍕 Pizzaria Robs</div>
+    <h2 id="clienteNome">Buscando pedido...</h2>
+    <div class="pedido-id" id="exibirId">#------</div>
+
+    <div class="stepper">
+        <div class="line"></div>
+        <div id="st-Pendente" class="step"><i class="fas fa-receipt"></i> Pedido Recebido</div>
+        <div id="st-Preparando" class="step"><i class="fas fa-fire"></i> Na Cozinha</div>
+        <div id="st-Rota" class="step"><i class="fas fa-motorcycle"></i> Saiu para Entrega</div>
+        <div id="st-Entregue" class="step"><i class="fas fa-check-double"></i> Entregue</div>
+    </div>
+
+    <div class="status-msg" id="msgTexto">Aguardando conexão com a pizzaria...</div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // ATENÇÃO: Use a MESMA configuração do seu index.html
+    const firebaseConfig = {
+        apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE",
+        authDomain: "robs-pizzariadelivery.firebaseapp.com",
+        projectId: "robs-pizzariadelivery",
+        appId: "1:338805720977:web:8666359590892994406a48"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Captura o ID que vem na URL (ex: rastreio.html?id=ABC123)
+    const urlParams = new URLSearchParams(window.location.search);
+    const idPedido = urlParams.get('id');
+
+    if (idPedido) {
+        document.getElementById('exibirId').innerText = "#" + idPedido.substring(0, 6).toUpperCase();
+        
+        // Monitora o pedido no Firebase em tempo real
+        onSnapshot(doc(db, "pedidos", idPedido), (docSnap) => {
+            if (docSnap.exists()) {
+                const dados = docSnap.data();
+                atualizarTela(dados.status, dados.cliente);
+            } else {
+                document.getElementById('clienteNome').innerText = "Pedido não encontrado";
+            }
+        });
+    }
+
+    function atualizarTela(status, nome) {
+        document.getElementById('clienteNome').innerText = "Olá, " + nome + "!";
+        
+        const etapas = ["Pendente", "Preparando", "Rota", "Entregue"];
+        const indiceAtual = etapas.indexOf(status);
+
+        etapas.forEach((etapa, i) => {
+            const el = document.getElementById("st-" + etapa);
+            el.className = "step"; // Limpa classes
+            if (i < indiceAtual) el.classList.add("done");
+            if (i === indiceAtual) el.classList.add("active");
+        });
+
+        const frases = {
+            "Pendente": "Recebemos seu pedido! Logo ele irá para o forno.",
+            "Preparando": "Sua pizza está sendo montada com todo carinho.",
+            "Rota": "🚀 O motoboy já saiu! Fique atento ao portão.",
+            "Entregue": "Pedido entregue. Bom apetite! 🍕❤️"
+        };
+        document.getElementById('msgTexto').innerText = frases[status] || "Acompanhe seu status aqui.";
+    }
+</script>
+</body>
+</html>
