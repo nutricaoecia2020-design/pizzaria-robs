@@ -37,6 +37,7 @@
             border-radius: 16px;
             padding: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 25px;
         }
 
         .header {
@@ -55,6 +56,7 @@
             background: rgba(255,255,255,0.03);
             padding: 20px;
             border-radius: 12px;
+            flex-wrap: wrap;
         }
 
         input {
@@ -81,7 +83,7 @@
         button:hover { opacity: 0.8; transform: scale(1.02); }
 
         /* Lista */
-        .subject-item {
+        .subject-item, .appointment-item {
             background: rgba(16, 185, 129, 0.05);
             margin-bottom: 15px;
             padding: 18px;
@@ -112,9 +114,18 @@
         /* Chart */
         canvas { max-width: 100%; }
 
+        /* Agenda Section */
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .appointment-list {
+            margin-top: 20px;
+        }
+
         @media (max-width: 900px) {
             .container { grid-template-columns: 1fr; }
-            .header { grid-column: span 1; }
+            .header, .full-width { grid-column: span 1; }
         }
     </style>
 </head>
@@ -140,10 +151,24 @@
         <canvas id="myChart"></canvas>
         <div id="stats" style="margin-top: 20px; font-size: 0.9rem; line-height: 1.6;"></div>
     </div>
+
+    <div class="glass-card full-width">
+        <h2>📅 Agenda de Compromissos</h2>
+        <div class="input-box">
+            <input type="text" id="eventTitle" placeholder="Título do Compromisso">
+            <input type="date" id="eventDate">
+            <input type="time" id="eventTime">
+            <button onclick="addAppointment()">Agendar Compromisso</button>
+        </div>
+        
+        <div id="appointment-list" class="appointment-list">
+            </div>
+    </div>
 </div>
 
 <script>
     let subjects = JSON.parse(localStorage.getItem('green_study_data')) || [];
+    let appointments = JSON.parse(localStorage.getItem('green_study_appointments')) || [];
     let chart = null;
 
     // Garante que tudo comece pausado ao dar F5
@@ -152,6 +177,11 @@
     function save() {
         localStorage.setItem('green_study_data', JSON.stringify(subjects));
         updateChart();
+    }
+
+    function saveAppointments() {
+        localStorage.setItem('green_study_appointments', JSON.stringify(appointments));
+        renderAppointments();
     }
 
     function addSubject() {
@@ -238,7 +268,9 @@
     }
 
     function updateChart() {
-        const ctx = document.getElementById('myChart').getContext('2d');
+        const canvas = document.getElementById('myChart');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
         const labels = subjects.map(s => s.name);
         const dataSeconds = subjects.map(s => (s.seconds / 3600).toFixed(2));
         const goals = subjects.map(s => s.goal);
@@ -280,6 +312,61 @@
         });
     }
 
+    // --- Lógica da Agenda ---
+
+    function addAppointment() {
+        const title = document.getElementById('eventTitle').value;
+        const date = document.getElementById('eventDate').value;
+        const time = document.getElementById('eventTime').value;
+
+        if (!title || !date || !time) return alert("Preencha todos os campos do compromisso!");
+
+        appointments.push({
+            id: Date.now(),
+            title,
+            date,
+            time
+        });
+
+        // Limpar campos
+        document.getElementById('eventTitle').value = '';
+        document.getElementById('eventDate').value = '';
+        document.getElementById('eventTime').value = '';
+
+        saveAppointments();
+    }
+
+    function removeAppointment(id) {
+        appointments = appointments.filter(a => a.id !== id);
+        saveAppointments();
+    }
+
+    function renderAppointments() {
+        const apptList = document.getElementById('appointment-list');
+        apptList.innerHTML = '';
+
+        // Ordenar por data e hora
+        const sorted = [...appointments].sort((a, b) => {
+            return new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`);
+        });
+
+        sorted.forEach(a => {
+            const dateFmt = a.date.split('-').reverse().join('/');
+            const item = document.createElement('div');
+            item.className = 'appointment-item';
+            item.innerHTML = `
+                <div class="info">
+                    <h3>${a.title}</h3>
+                    <small>📅 ${dateFmt} às ${a.time}h</small>
+                </div>
+                <div class="actions">
+                    <button class="btn-del" onclick="removeAppointment(${a.id})">Apagar</button>
+                </div>
+            `;
+            apptList.appendChild(item);
+        });
+    }
+
     // Loop do Cronômetro
     setInterval(() => {
         let activeExists = false;
@@ -291,12 +378,13 @@
         });
         if (activeExists) {
             render();
-            // Atualiza o gráfico a cada 10 segundos para não pesar
             if (Date.now() % 10000 < 1000) save(); 
         }
     }, 1000);
 
+    // Inicialização
     render();
+    renderAppointments();
     updateChart();
 </script>
 
