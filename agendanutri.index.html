@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento - Roberto Vasconcelos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .bg-nutri { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+
+    <header class="bg-nutri text-white py-8 shadow-lg text-center">
+        <h1 class="text-3xl font-bold tracking-tight">ROBERTO VASCONCELOS</h1>
+        <p class="text-emerald-100 uppercase tracking-widest text-sm">Nutricionista</p>
+        <div class="mt-4 flex justify-center gap-4 text-sm">
+            <span><i class="fas fa-video mr-2"></i>Avaliação Online</span>
+            <span><i class="fas fa-clock mr-2"></i>40 Minutos</span>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-4 -mt-6">
+        <div class="glass rounded-2xl shadow-xl p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-6 text-gray-800 border-b pb-2">Novo Agendamento</h2>
+            
+            <form id="formAgendamento" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-4">
+                    <input type="text" id="nome" placeholder="Nome Completo" required class="w-full p-3 rounded-lg border focus:ring-2 focus:ring-emerald-500 outline-none">
+                    <input type="date" id="nascimento" required class="w-full p-3 rounded-lg border focus:ring-2 focus:ring-emerald-500 outline-none">
+                    <input type="tel" id="whatsapp" placeholder="WhatsApp (DDD + Número)" required class="w-full p-3 rounded-lg border focus:ring-2 focus:ring-emerald-500 outline-none">
+                    <input type="text" id="cassie" placeholder="Número Cartão CASSI" required class="w-full p-3 rounded-lg border focus:ring-2 focus:ring-emerald-500 outline-none">
+                    
+                    <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                        <span class="text-gray-600">É menor de idade?</span>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="menor" value="Sim" class="text-emerald-600"> <span class="ml-2">Sim</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="menor" value="Não" checked class="text-emerald-600"> <span class="ml-2">Não</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <select id="diaHora" required class="w-full p-3 rounded-lg border focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <option value="">Selecione o Horário (Seg, Ter, Qui)</option>
+                        </select>
+
+                    <div class="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center">
+                        <label class="block text-gray-600 mb-2">Exames Bioquímicos (PDF)</label>
+                        <input type="file" id="exames" accept="application/pdf" class="text-sm text-gray-500">
+                    </div>
+
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl transition-all shadow-md">
+                        CONCLUIR AGENDAMENTO <i class="fab fa-whatsapp ml-2"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="mt-20 border-t pt-10">
+            <div id="loginAdmin" class="text-center">
+                <button onclick="document.getElementById('senhaArea').classList.toggle('hidden')" class="text-gray-400 hover:text-emerald-600 text-sm underline">Acesso Restrito ao Profissional</button>
+                <div id="senhaArea" class="hidden mt-4 max-w-xs mx-auto">
+                    <input type="password" id="senhaInput" placeholder="Digite sua senha" class="p-2 border rounded">
+                    <button onclick="verificarSenha()" class="bg-gray-800 text-white p-2 rounded ml-2">Entrar</button>
+                </div>
+            </div>
+
+            <div id="painelAdmin" class="hidden glass rounded-xl p-6 shadow-inner">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-700">Gestão de Agenda</h3>
+                    <button onclick="logout()" class="text-red-500 text-xs uppercase font-bold">Sair</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 text-xs uppercase text-gray-500">
+                            <tr>
+                                <th class="p-3">Horário</th>
+                                <th class="p-3">Paciente</th>
+                                <th class="p-3">Contato</th>
+                                <th class="p-3">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaAgendamentos" class="text-sm">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const WHATSAPP_NUM = "55799999978280";
+        const SENHA_MESTRA = "253641";
+        
+        // Configuração de horários
+        const horariosBase = ["20:00", "20:40", "21:20"];
+        const diasSemana = ["Segunda-feira", "Terça-feira", "Quinta-feira"];
+
+        let agendamentos = JSON.parse(localStorage.getItem('nutri_agendamentos')) || [];
+
+        function inicializarAgenda() {
+            const select = document.getElementById('diaHora');
+            select.innerHTML = '<option value="">Selecione o Horário</option>';
+            
+            diasSemana.forEach(dia => {
+                horariosBase.forEach(hora => {
+                    const idHora = `${dia} - ${hora}`;
+                    const estaOcupado = agendamentos.find(a => a.horario === idHora);
+                    
+                    if (!estaOcupado) {
+                        const opt = document.createElement('option');
+                        opt.value = idHora;
+                        opt.textContent = idHora;
+                        select.appendChild(opt);
+                    }
+                });
+            });
+        }
+
+        // Form Submit
+        document.getElementById('formAgendamento').onsubmit = function(e) {
+            e.preventDefault();
+            
+            const novo = {
+                id: Date.now(),
+                nome: document.getElementById('nome').value,
+                nascimento: document.getElementById('nascimento').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                cassie: document.getElementById('cassie').value,
+                menor: document.querySelector('input[name="menor"]:checked').value,
+                horario: document.getElementById('diaHora').value,
+                temExame: document.getElementById('exames').files.length > 0 ? "Sim (PDF Anexo)" : "Não"
+            };
+
+            // Salvar e Bloquear
+            agendamentos.push(novo);
+            localStorage.setItem('nutri_agendamentos', JSON.stringify(agendamentos));
+
+            // Mensagem WhatsApp
+            const texto = `📌 *NOVO AGENDAMENTO*\n\n👤 *Paciente:* ${novo.nome}\n📅 *Data Nasc:* ${novo.nascimento}\n📞 *Contato:* ${novo.whatsapp}\n💳 *CASSI:* ${novo.cassie}\n🔞 *Menor:* ${novo.menor}\n⏰ *Horário:* ${novo.horario}\n📄 *Exames:* ${novo.temExame}`;
+            
+            window.open(`https://api.whatsapp.com/send?phone=${WHATSAPP_NUM}&text=${encodeURIComponent(texto)}`);
+            
+            alert("Agendamento realizado! Seus dados foram enviados ao nutricionista.");
+            location.reload();
+        };
+
+        // Admin Logic
+        function verificarSenha() {
+            if(document.getElementById('senhaInput').value === SENHA_MESTRA) {
+                document.getElementById('loginAdmin').classList.add('hidden');
+                document.getElementById('painelAdmin').classList.remove('hidden');
+                renderizarAdmin();
+            } else {
+                alert("Senha incorreta");
+            }
+        }
+
+        function renderizarAdmin() {
+            const lista = document.getElementById('listaAgendamentos');
+            lista.innerHTML = "";
+            
+            agendamentos.forEach(a => {
+                lista.innerHTML += `
+                    <tr class="border-b">
+                        <td class="p-3 font-medium text-emerald-700">${a.horario}</td>
+                        <td class="p-3">${a.nome}</td>
+                        <td class="p-3">${a.whatsapp}</td>
+                        <td class="p-3">
+                            <button onclick="cancelar(${a.id})" class="text-red-500 hover:bg-red-50 p-2 rounded">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function cancelar(id) {
+            if(confirm("Deseja cancelar este agendamento? O horário ficará livre novamente.")) {
+                agendamentos = agendamentos.filter(a => a.id !== id);
+                localStorage.setItem('nutri_agendamentos', JSON.stringify(agendamentos));
+                renderizarAdmin();
+                inicializarAgenda();
+            }
+        }
+
+        function logout() {
+            location.reload();
+        }
+
+        window.onload = inicializarAgenda;
+    </script>
+</body>
+</html>
