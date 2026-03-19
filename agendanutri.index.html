@@ -15,11 +15,15 @@
         .input-clinical:focus { border-color: #059669; box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1); outline: none; }
         
         /* Dashboard Admin - Cores Fortes */
-        .admin-bg { background-color: #0f172a; } /* Azul Marinho Profundo */
+        .admin-bg { background-color: #0f172a; }
         .card-stats { background: #fff; border-left: 6px solid #10b981; transition: transform 0.2s; }
         .card-stats:hover { transform: translateY(-5px); }
         .btn-delete { color: #ef4444; cursor: pointer; transition: 0.2s; }
         .btn-delete:hover { color: #b91c1c; transform: scale(1.2); }
+
+        /* Estilo para Dados Miniaturizados */
+        .mini-data { font-size: 0.65rem; line-height: 1rem; color: #64748b; }
+        .label-mini { font-weight: 800; color: #0f172a; text-transform: uppercase; margin-right: 2px; }
     </style>
 </head>
 <body class="antialiased">
@@ -166,49 +170,46 @@
                     </div>
                 </div>
 
-                <div class="p-8 grid grid-cols-1 lg:grid-cols-2 gap-10 bg-white">
+                <div class="p-8 grid grid-cols-1 lg:grid-cols-1 gap-10 bg-white">
                     
-                    <div class="space-y-8">
-                        <div class="bg-slate-50 p-8 rounded-[2rem] border-2 border-slate-200">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-slate-50 p-8 rounded-[2rem] border-2 border-slate-200 h-fit">
                             <h4 class="font-black text-slate-800 uppercase text-sm mb-6 flex items-center gap-2">
-                                <i class="fas fa-plus-circle text-emerald-600"></i> Lançar Novo Valor
+                                <i class="fas fa-plus-circle text-emerald-600"></i> Novo Valor
                             </h4>
                             <div class="grid grid-cols-2 gap-4">
-                                <div class="col-span-2">
-                                    <input type="text" id="gest_desc" class="input-clinical w-full p-4 rounded-2xl font-bold" placeholder="Descrição (Ex: Consulta João, Aluguel...)">
-                                </div>
-                                <input type="number" id="gest_valor" class="input-clinical w-full p-4 rounded-2xl font-bold" placeholder="Valor R$">
-                                <select id="gest_tipo" class="input-clinical w-full p-4 rounded-2xl font-bold">
-                                    <option value="receita">Entrada (Receita)</option>
-                                    <option value="despesa">Saída (Despesa)</option>
+                                <input type="text" id="gest_desc" class="input-clinical col-span-2 p-4 rounded-2xl font-bold" placeholder="Descrição">
+                                <input type="number" id="gest_valor" class="input-clinical p-4 rounded-2xl font-bold" placeholder="Valor R$">
+                                <select id="gest_tipo" class="input-clinical p-4 rounded-2xl font-bold">
+                                    <option value="receita">Receita</option>
+                                    <option value="despesa">Despesa</option>
                                 </select>
-                                <button onclick="salvarFinanceiro()" class="col-span-2 bg-slate-900 text-white font-black py-4 rounded-2xl uppercase tracking-widest hover:bg-emerald-600 transition-all">Registrar no Caixa</button>
+                                <button onclick="salvarFinanceiro()" class="col-span-2 bg-slate-900 text-white font-black py-4 rounded-2xl uppercase hover:bg-emerald-600 transition-all">Registrar</button>
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-[2rem] border-2 border-slate-100 overflow-hidden shadow-sm">
-                            <div class="p-4 bg-slate-800 text-white text-[10px] font-black uppercase">Histórico de Movimentações</div>
-                            <div class="max-h-60 overflow-y-auto" id="listaFinanceiro">
-                                </div>
+                        <div class="bg-white rounded-[2rem] border-2 border-slate-100 overflow-hidden shadow-sm h-fit">
+                            <div class="p-4 bg-slate-800 text-white text-[10px] font-black uppercase">Últimas Movimentações</div>
+                            <div class="max-h-60 overflow-y-auto" id="listaFinanceiro"></div>
                         </div>
                     </div>
 
                     <div class="bg-white rounded-[2rem] border-2 border-slate-100 overflow-hidden shadow-sm">
                         <div class="p-4 bg-emerald-600 text-white text-[10px] font-black uppercase flex justify-between">
-                            <span>Próximos Agendamentos</span>
-                            <span id="listaBloqueios" class="text-emerald-100 italic"></span>
+                            <span>Próximos Agendamentos (Dados Completos)</span>
+                            <span id="total_lista" class="italic"></span>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left text-xs">
+                            <table class="w-full text-left">
                                 <thead class="bg-slate-50 border-b">
-                                    <tr>
-                                        <th class="p-4 font-black">PACIENTE</th>
-                                        <th class="p-4 font-black">DATA/HORA</th>
-                                        <th class="p-4 font-black text-center">PDF</th>
-                                        <th class="p-4 font-black text-center">AÇÃO</th>
+                                    <tr class="text-[10px] font-black uppercase text-slate-500">
+                                        <th class="p-4">Paciente & Dados Clínicos</th>
+                                        <th class="p-4 w-32">Data/Hora</th>
+                                        <th class="p-4 text-center">PDF</th>
+                                        <th class="p-4 text-center">Ação</th>
                                     </tr>
                                 </thead>
-                                <tbody id="corpoAdmin">
+                                <tbody id="corpoAdmin" class="divide-y divide-slate-100">
                                     </tbody>
                             </table>
                         </div>
@@ -224,18 +225,15 @@
         const horariosBase = ["20:00", "20:40", "21:20"];
         const diasPermitidos = [1, 2, 4];
 
-        // Bancos de Dados
-        let db = JSON.parse(localStorage.getItem('nutri_roberto_v7')) || [];
+        let db = JSON.parse(localStorage.getItem('nutri_roberto_v8')) || [];
         let bloqueios = JSON.parse(localStorage.getItem('nutri_bloqueios')) || [];
         let financeiro = JSON.parse(localStorage.getItem('nutri_caixa')) || [];
 
-        // --- FUNÇÕES DE INTERFACE (IMC E HORÁRIOS) ---
         function calcularIMC() {
             const p = parseFloat(document.getElementById('peso').value);
             const a = parseFloat(document.getElementById('altura').value);
             const res = document.getElementById('resultadoIMC');
             const classif = document.getElementById('classificacaoIMC');
-
             if (p > 0 && a > 0) {
                 const imc = (p / (a * a)).toFixed(1);
                 res.innerText = `IMC: ${imc}`;
@@ -264,7 +262,6 @@
             });
         }
 
-        // --- SALVAR AGENDAMENTO ---
         document.getElementById('formAgendamento').onsubmit = async function(e) {
             e.preventDefault();
             const imcData = calcularIMC();
@@ -289,10 +286,7 @@
             };
 
             db.push(novo);
-            localStorage.setItem('nutri_roberto_v7', JSON.stringify(db));
-            
-            const msgZap = `🍏 *NOVO AGENDAMENTO*\n👤 ${novo.nome}\n📅 ${novo.dataConsulta}\n⏰ ${novo.horario}\n⚖️ IMC: ${novo.imc}`;
-            window.open(`https://wa.me/${ZAP_DESTINO}?text=${encodeURIComponent(msgZap)}`);
+            localStorage.setItem('nutri_roberto_v8', JSON.stringify(db));
             alert("Agendado com sucesso!");
             location.reload();
         };
@@ -302,31 +296,6 @@
             reader.onload = () => res(reader.result);
         });
 
-        // --- GESTÃO FINANCEIRA ---
-        function salvarFinanceiro() {
-            const desc = document.getElementById('gest_desc').value;
-            const valor = parseFloat(document.getElementById('gest_valor').value);
-            const tipo = document.getElementById('gest_tipo').value;
-
-            if(!desc || !valor) return alert("Preencha os campos!");
-
-            financeiro.push({ id: Date.now(), desc, valor, tipo, data: new Date().toLocaleDateString() });
-            localStorage.setItem('nutri_caixa', JSON.stringify(financeiro));
-            
-            document.getElementById('gest_desc').value = "";
-            document.getElementById('gest_valor').value = "";
-            renderTudoAdmin();
-        }
-
-        function apagarValor(id) {
-            if(confirm("Deseja apagar este registro permanentemente?")) {
-                financeiro = financeiro.filter(f => f.id !== id);
-                localStorage.setItem('nutri_caixa', JSON.stringify(financeiro));
-                renderTudoAdmin();
-            }
-        }
-
-        // --- DASHBOARD ADMIN ---
         function acessarAdmin() {
             if(prompt("Senha Administrativa:") === SENHA_ADMIN) {
                 document.getElementById('painelAdmin').classList.remove('hidden');
@@ -335,60 +304,80 @@
         }
 
         function renderTudoAdmin() {
-            // Stats
             const totalR = financeiro.filter(f => f.tipo === 'receita').reduce((a, b) => a + b.valor, 0);
             const totalD = financeiro.filter(f => f.tipo === 'despesa').reduce((a, b) => a + b.valor, 0);
             
             document.getElementById('stat_pacientes').innerText = db.length;
-            document.getElementById('stat_receita').innerText = `R$ ${totalR.toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
-            document.getElementById('stat_despesas').innerText = `R$ ${totalD.toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
-            document.getElementById('stat_saldo').innerText = `R$ ${(totalR - totalD).toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
+            document.getElementById('stat_receita').innerText = `R$ ${totalR.toFixed(2)}`;
+            document.getElementById('stat_despesas').innerText = `R$ ${totalD.toFixed(2)}`;
+            document.getElementById('stat_saldo').innerText = `R$ ${(totalR - totalD).toFixed(2)}`;
 
-            // Lista Financeira
-            const listaF = document.getElementById('listaFinanceiro');
-            listaF.innerHTML = financeiro.length ? "" : "<p class='p-10 text-center text-slate-400'>Nenhum lançamento.</p>";
-            financeiro.slice().reverse().forEach(f => {
-                listaF.innerHTML += `
-                    <div class="flex justify-between items-center p-4 border-b hover:bg-slate-50">
-                        <div>
-                            <p class="font-bold text-slate-800 text-xs">${f.desc}</p>
-                            <p class="text-[10px] text-slate-400 font-bold">${f.data} | <span class="${f.tipo === 'receita' ? 'text-emerald-500' : 'text-red-500'} uppercase">${f.tipo}</span></p>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="font-black text-sm ${f.tipo === 'receita' ? 'text-emerald-600' : 'text-red-600'}">R$ ${f.valor.toFixed(2)}</span>
-                            <i class="fas fa-trash-alt btn-delete" onclick="apagarValor(${f.id})"></i>
-                        </div>
-                    </div>
-                `;
-            });
-
-            // Tabela Agendamentos
             const corpo = document.getElementById('corpoAdmin');
             corpo.innerHTML = "";
             db.sort((a,b) => new Date(a.dataConsulta) - new Date(b.dataConsulta)).forEach(a => {
                 corpo.innerHTML += `
-                    <tr class="border-b hover:bg-emerald-50">
-                        <td class="p-4 font-bold uppercase">${a.nome}</td>
-                        <td class="p-4 text-emerald-600 font-black">${a.dataConsulta.split('-').reverse().join('/')}<br>${a.horario}</td>
-                        <td class="p-4 text-center">${a.pdf ? `<button onclick="window.open().document.write('<iframe src=\\'${a.pdf}\\' style=\\'width:100%;height:100vh;\\' frameborder=\\'0\\'></iframe>')" class="text-blue-600 underline">Abrir</button>` : '--'}</td>
-                        <td class="p-4 text-center"><button onclick="excluirAgendamento(${a.id})" class="text-red-500"><i class="fas fa-trash"></i></button></td>
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-4">
+                            <div class="font-black text-slate-800 text-sm uppercase mb-1">${a.nome}</div>
+                            <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+                                <div class="mini-data"><span class="label-mini">Zap:</span>${a.whatsapp}</div>
+                                <div class="mini-data"><span class="label-mini">Nasc:</span>${a.nascimento.split('-').reverse().join('/')}</div>
+                                <div class="mini-data"><span class="label-mini">Convênio:</span>${a.cassie}</div>
+                                <div class="mini-data"><span class="label-mini">Físico:</span>${a.peso}kg / ${a.altura}m (IMC: ${a.imc})</div>
+                                <div class="mini-data col-span-2 italic text-emerald-700 font-semibold"><span class="label-mini">Motivo:</span>${a.motivo}</div>
+                                <div class="mini-data col-span-2 text-red-600"><span class="label-mini">Meds:</span>${a.medicacao || 'Nenhuma'}</div>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <div class="bg-emerald-100 text-emerald-800 p-2 rounded-xl text-center">
+                                <p class="font-black text-xs">${a.dataConsulta.split('-').reverse().join('/')}</p>
+                                <p class="text-[10px] font-bold uppercase">${a.horario}</p>
+                            </div>
+                        </td>
+                        <td class="p-4 text-center">
+                            ${a.pdf ? `<button onclick="abrirPDF('${a.pdf}')" class="text-blue-600 hover:scale-110 transition-transform"><i class="fas fa-file-pdf text-xl"></i></button>` : '<span class="text-slate-300">--</span>'}
+                        </td>
+                        <td class="p-4 text-center">
+                            <button onclick="excluirAgendamento(${a.id})" class="btn-delete"><i class="fas fa-trash"></i></button>
+                        </td>
                     </tr>
+                `;
+            });
+            renderFinanceiro();
+        }
+
+        function abrirPDF(base64) {
+            const win = window.open();
+            win.document.write(`<iframe src="${base64}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100vh;" allowfullscreen></iframe>`);
+        }
+
+        function renderFinanceiro() {
+            const listaF = document.getElementById('listaFinanceiro');
+            listaF.innerHTML = financeiro.length ? "" : "<p class='p-10 text-center text-slate-400'>Vazio.</p>";
+            financeiro.slice().reverse().forEach(f => {
+                listaF.innerHTML += `
+                    <div class="flex justify-between items-center p-4 border-b">
+                        <div><p class="font-bold text-xs">${f.desc}</p><p class="text-[9px] uppercase font-black ${f.tipo === 'receita' ? 'text-emerald-500' : 'text-red-500'}">${f.tipo}</p></div>
+                        <div class="flex items-center gap-3"><span class="font-black text-sm">R$ ${f.valor.toFixed(2)}</span><i class="fas fa-trash-alt btn-delete text-xs" onclick="apagarValor(${f.id})"></i></div>
+                    </div>
                 `;
             });
         }
 
-        function excluirAgendamento(id) {
-            if(confirm("Excluir este agendamento?")) {
-                db = db.filter(d => d.id !== id);
-                localStorage.setItem('nutri_roberto_v7', JSON.stringify(db));
-                renderTudoAdmin();
-            }
+        function salvarFinanceiro() {
+            const desc = document.getElementById('gest_desc').value;
+            const valor = parseFloat(document.getElementById('gest_valor').value);
+            const tipo = document.getElementById('gest_tipo').value;
+            if(!desc || !valor) return alert("Dados incompletos!");
+            financeiro.push({ id: Date.now(), desc, valor, tipo, data: new Date().toLocaleDateString() });
+            localStorage.setItem('nutri_caixa', JSON.stringify(financeiro));
+            document.getElementById('gest_desc').value = ""; document.getElementById('gest_valor').value = "";
+            renderTudoAdmin();
         }
 
-        function bloquearData() {
-            const d = prompt("Data para bloquear (AAAA-MM-DD):");
-            if(d) { bloqueios.push(d); localStorage.setItem('nutri_bloqueios', JSON.stringify(bloqueios)); alert("Data Bloqueada!"); }
-        }
+        function apagarValor(id) { if(confirm("Apagar registro?")) { financeiro = financeiro.filter(f => f.id !== id); localStorage.setItem('nutri_caixa', JSON.stringify(financeiro)); renderTudoAdmin(); } }
+        function excluirAgendamento(id) { if(confirm("Excluir paciente?")) { db = db.filter(d => d.id !== id); localStorage.setItem('nutri_roberto_v8', JSON.stringify(db)); renderTudoAdmin(); } }
+        function bloquearData() { const d = prompt("Bloquear data (AAAA-MM-DD):"); if(d) { bloqueios.push(d); localStorage.setItem('nutri_bloqueios', JSON.stringify(bloqueios)); alert("Bloqueado!"); } }
 
         window.onload = () => { document.getElementById('dataConsulta').setAttribute('min', new Date().toISOString().split('T')[0]); };
     </script>
