@@ -9,236 +9,216 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .hero-bg { background: radial-gradient(circle at top right, #0f172a, #1e3a8a); }
-        .card-shadow { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); }
-        .input-focus:focus { border-color: #3b82f6; ring: 4px rgba(59, 130, 246, 0.1); outline: none; }
-        .btn-gradient { background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); }
+        .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); }
+        .glass-panel { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); }
+        .input-style { border: 1.5px solid #e2e8f0; transition: all 0.2s; }
+        .input-style:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); outline: none; }
     </style>
 </head>
 <body class="antialiased">
 
-    <header class="hero-bg text-white pt-16 pb-32 px-4 text-center">
-        <div class="max-w-4xl mx-auto">
-            <span class="text-blue-400 font-bold tracking-[0.3em] text-[10px] uppercase">Atendimento Especializado</span>
-            <h1 class="text-3xl md:text-5xl font-extralight mt-2 tracking-tight">
+    <header class="hero-gradient text-white pt-12 pb-28 px-4">
+        <div class="max-w-5xl mx-auto text-center">
+            <h1 class="text-3xl md:text-5xl font-extralight tracking-tight text-white">
                 ROBERTO <span class="font-bold">VASCONCELOS</span>
             </h1>
-            <p class="text-blue-100/60 mt-2 text-sm md:text-lg font-light tracking-wide">
-                Nutricionista Clínico & <span class="text-blue-300 font-medium italic">Nefrologia</span>
+            <p class="text-blue-300 mt-2 text-lg font-medium tracking-widest uppercase text-xs md:text-sm">
+                Nutricionista Clínico & <span class="text-white italic">Nefrologia</span>
             </p>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 -mt-20">
-        <div class="bg-white rounded-[2rem] card-shadow p-8 md:p-12 border border-slate-100 relative z-10">
-            <div class="flex items-center gap-4 mb-10">
-                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Reserva de Horário</h2>
-                    <p class="text-slate-400 text-sm">Preencha os dados para bloquear sua agenda</p>
-                </div>
+    <main class="max-w-5xl mx-auto px-4 -mt-16 mb-20">
+        <div class="glass-panel rounded-[2.5rem] shadow-2xl p-6 md:p-12 border border-white">
+            <div class="mb-10 text-center">
+                <h2 class="text-2xl font-bold text-slate-800">Reserva de Consulta Online</h2>
+                <div class="h-1 w-20 bg-blue-600 mx-auto mt-2 rounded-full"></div>
             </div>
 
-            <form id="formAgendamento" class="space-y-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Nome Completo</label>
-                        <input type="text" id="nome" required class="w-full p-4 rounded-xl bg-slate-50 border border-slate-200 input-focus transition-all" placeholder="Nome do paciente">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Data de Nascimento</label>
-                        <input type="date" id="nascimento" required class="w-full p-4 rounded-xl bg-slate-50 border border-slate-200 input-focus transition-all">
-                    </div>
+            <form id="formAgendamento" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <input type="text" id="nome" required class="input-style w-full p-4 rounded-2xl bg-white" placeholder="Nome Completo">
+                    <input type="date" id="nascimento" required class="input-style w-full p-4 rounded-2xl bg-white text-slate-500">
+                    <input type="tel" id="whatsapp" required class="input-style w-full p-4 rounded-2xl bg-white" placeholder="WhatsApp (DDD + Número)">
+                    <input type="text" id="cassie" required class="input-style w-full p-4 rounded-2xl bg-white" placeholder="Número do Cartão CASSI">
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">WhatsApp</label>
-                        <input type="tel" id="whatsapp" required class="w-full p-4 rounded-xl bg-slate-50 border border-slate-200 input-focus transition-all" placeholder="(79) 90000-0000">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Cartão CASSI</label>
-                        <input type="text" id="cassie" required class="w-full p-4 rounded-xl bg-slate-50 border border-slate-200 input-focus transition-all" placeholder="Número do beneficiário">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Horário Disponível</label>
-                        <select id="diaHora" required class="w-full p-4 rounded-xl bg-slate-50 border border-slate-200 input-focus transition-all appearance-none cursor-pointer">
-                            <option value="">Selecione o momento</option>
-                        </select>
-                    </div>
-                    <div class="bg-slate-50 rounded-xl p-4 border border-dashed flex items-center justify-between">
-                        <span class="text-xs font-bold text-slate-500 uppercase">Menor de Idade?</span>
-                        <div class="flex gap-6">
-                            <label class="flex items-center gap-2 cursor-pointer font-medium text-sm"><input type="radio" name="menor" value="Sim" class="w-4 h-4 accent-blue-600"> Sim</label>
-                            <label class="flex items-center gap-2 cursor-pointer font-medium text-sm"><input type="radio" name="menor" value="Não" checked class="w-4 h-4 accent-blue-600"> Não</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <select id="diaHora" required class="input-style w-full p-4 rounded-2xl bg-white appearance-none cursor-pointer">
+                        <option value="">Selecione o Horário</option>
+                    </select>
+                    <div class="flex items-center justify-between px-6 py-4 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+                        <span class="text-sm font-semibold text-slate-500">Menor de idade?</span>
+                        <div class="flex gap-4">
+                            <label class="flex items-center gap-2 cursor-pointer text-sm"><input type="radio" name="menor" value="Sim" class="w-4 h-4 accent-blue-600"> Sim</label>
+                            <label class="flex items-center gap-2 cursor-pointer text-sm"><input type="radio" name="menor" value="Não" checked class="w-4 h-4 accent-blue-600"> Não</label>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-blue-50/50 rounded-2xl p-6 border border-blue-100">
-                    <div class="flex items-center gap-3 mb-4">
-                        <i class="fas fa-file-medical text-blue-600"></i>
-                        <span class="text-sm font-bold text-blue-900 uppercase">Exames Bioquímicos</span>
-                    </div>
-                    <input type="file" id="exames" accept="application/pdf" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-6 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 transition-all cursor-pointer">
+                <div class="bg-blue-50 p-6 rounded-3xl border border-blue-100 group">
+                    <label class="block text-blue-800 font-bold mb-3 text-sm flex items-center gap-2">
+                        <i class="fas fa-file-pdf"></i> Anexar Exames Bioquímicos (PDF)
+                    </label>
+                    <input type="file" id="exames" accept="application/pdf" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-6 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+                    <p class="text-[10px] text-blue-400 mt-2">*Arquivos muito grandes podem não ser salvos no painel.</p>
                 </div>
 
-                <button type="submit" class="w-full btn-gradient text-white font-bold py-5 rounded-2xl shadow-xl shadow-blue-200 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 text-lg">
-                    CONFIRMAR AGENDAMENTO <i class="fab fa-whatsapp text-2xl"></i>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-5 rounded-2xl transition-all shadow-xl flex items-center justify-center gap-3 text-lg">
+                    CONCLUIR AGENDAMENTO <i class="fab fa-whatsapp"></i>
                 </button>
             </form>
         </div>
 
-        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 flex flex-col items-center text-center">
-                <i class="fas fa-hourglass-half text-blue-500 mb-3 text-xl"></i>
-                <h4 class="font-bold text-slate-700 text-sm">Duração</h4>
-                <p class="text-slate-500 text-sm">40 min</p>
+        <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white/50 p-4 rounded-2xl flex items-center gap-3 border border-slate-200">
+                <i class="fas fa-video text-blue-600"></i>
+                <span class="text-sm text-slate-600">Videochamada via Link</span>
             </div>
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 flex flex-col items-center text-center">
-                <i class="fas fa-video text-blue-500 mb-3 text-xl"></i>
-                <h4 class="font-bold text-slate-700 text-sm">Tipo</h4>
-                <p class="text-blue-600 font-semibold text-sm">Videochamada</p>
+            <div class="bg-white/50 p-4 rounded-2xl flex items-center gap-3 border border-slate-200">
+                <i class="fas fa-stopwatch text-blue-600"></i>
+                <span class="text-sm text-slate-600">Duração: 40 minutos</span>
             </div>
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 flex flex-col items-center text-center">
-                <i class="fas fa-calendar-alt text-blue-500 mb-3 text-xl"></i>
-                <h4 class="font-bold text-slate-700 text-sm">Dias</h4>
-                <p class="text-slate-500 text-[11px] leading-tight">Seg, Ter, Qui<br>20h às 22h</p>
+            <div class="bg-white/50 p-4 rounded-2xl flex items-center gap-3 border border-slate-200">
+                <i class="fas fa-calendar-check text-blue-600"></i>
+                <span class="text-sm text-slate-600">Seg, Ter, Qui | 20h - 22h</span>
             </div>
         </div>
 
-        <footer class="mt-20 py-10 border-t border-slate-200">
-            <div id="loginAdmin" class="text-center">
-                <button onclick="acessarAdmin()" class="text-slate-400 hover:text-blue-600 text-[10px] font-bold uppercase tracking-widest transition-colors">Acesso Restrito - Roberto Vasconcelos</button>
-            </div>
-
-            <div id="painelAdmin" class="hidden bg-white rounded-3xl shadow-2xl overflow-hidden mt-8 border border-slate-200">
-                <div class="bg-slate-900 p-6 flex justify-between items-center text-white">
-                    <h3 class="font-bold uppercase tracking-widest text-sm">Controle de Agendamentos (Nefrologia)</h3>
-                    <button onclick="location.reload()" class="text-xs bg-red-600 px-4 py-2 rounded-lg font-bold">SAIR</button>
+        <div class="mt-20 border-t pt-10 text-center">
+            <button onclick="abrirAdmin()" class="text-slate-400 text-[10px] font-bold uppercase tracking-widest hover:text-blue-600">Acesso Restrito</button>
+            
+            <div id="painelAdmin" class="hidden mt-8 bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden text-left">
+                <div class="bg-slate-900 p-6 flex justify-between items-center">
+                    <h3 class="text-white font-bold text-sm uppercase">Lista de Agendamentos</h3>
+                    <button onclick="location.reload()" class="bg-red-500 text-white text-[10px] px-3 py-1 rounded-lg">SAIR</button>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead class="bg-slate-50 border-b">
-                            <tr class="text-slate-500 text-[10px] uppercase font-black tracking-tighter">
-                                <th class="p-5 text-left">Horário</th>
-                                <th class="p-5 text-left">Paciente</th>
-                                <th class="p-5 text-left">Bioquímicos</th>
-                                <th class="p-5 text-center">Ação</th>
+                            <tr class="text-slate-400 text-[10px] uppercase">
+                                <th class="p-5 text-left font-black">Horário</th>
+                                <th class="p-5 text-left font-black">Paciente</th>
+                                <th class="p-5 text-left font-black">Exames</th>
+                                <th class="p-5 text-center font-black">Ação</th>
                             </tr>
                         </thead>
-                        <tbody id="listaAgendamentos" class="divide-y divide-slate-100"></tbody>
+                        <tbody id="corpoTabela" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
-        </footer>
+        </div>
     </main>
 
     <script>
         const WHATSAPP_NUM = "55799999978280";
-        const SENHA_MESTRA = "253641";
-        const horariosBase = ["20:00", "20:40", "21:20"];
-        const diasSemana = ["Segunda", "Terça", "Quinta"];
+        const SENHA_ADMIN = "253641";
+        const horarios = ["20:00", "20:40", "21:20"];
+        const dias = ["Segunda-feira", "Terça-feira", "Quinta-feira"];
 
-        let agendamentos = JSON.parse(localStorage.getItem('nutri_nefro_v4')) || [];
+        let db = JSON.parse(localStorage.getItem('agendamentos_v5')) || [];
 
-        function renderizarHorarios() {
+        function init() {
             const select = document.getElementById('diaHora');
-            select.innerHTML = '<option value="">Escolha seu horário</option>';
-            diasSemana.forEach(dia => {
-                const group = document.createElement('optgroup');
-                group.label = dia;
-                horariosBase.forEach(hora => {
-                    const idHora = `${dia} - ${hora}`;
-                    if (!agendamentos.find(a => a.horario === idHora)) {
+            select.innerHTML = '<option value="">Selecione o Horário</option>';
+            dias.forEach(d => {
+                horarios.forEach(h => {
+                    const id = `${d} - ${h}`;
+                    if(!db.find(a => a.horario === id)) {
                         const opt = document.createElement('option');
-                        opt.value = idHora; opt.textContent = idHora;
-                        group.appendChild(opt);
+                        opt.value = id; opt.textContent = id; select.appendChild(opt);
                     }
                 });
-                select.appendChild(group);
             });
         }
 
         document.getElementById('formAgendamento').onsubmit = async function(e) {
             e.preventDefault();
             const file = document.getElementById('exames').files[0];
-            const pdfBase64 = file ? await toBase64(file) : null;
-            
+            let pdfData = null;
+
+            // Tratamento de Erro do PDF: Limita o tamanho para evitar travamento
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) { // 2MB
+                    alert("O PDF é muito grande para salvar no painel, mas o agendamento será feito!");
+                } else {
+                    pdfData = await new Promise(res => {
+                        const r = new FileReader();
+                        r.onload = () => res(r.result);
+                        r.readAsDataURL(file);
+                    });
+                }
+            }
+
             const novo = {
                 id: Date.now(),
                 nome: document.getElementById('nome').value,
-                nascimento: document.getElementById('nascimento').value,
                 whatsapp: document.getElementById('whatsapp').value,
                 cassie: document.getElementById('cassie').value,
-                menor: document.querySelector('input[name="menor"]:checked').value,
                 horario: document.getElementById('diaHora').value,
-                pdf: pdfBase64
+                pdf: pdfData
             };
 
-            agendamentos.push(novo);
-            localStorage.setItem('nutri_nefro_v4', JSON.stringify(agendamentos));
+            db.push(novo);
+            localStorage.setItem('agendamentos_v5', JSON.stringify(db));
 
-            const msg = `🔬 *AGENDAMENTO NEFROLOGIA*\n\n👤 *Paciente:* ${novo.nome}\n⏰ *Horário:* ${novo.horario}\n💳 *CASSI:* ${novo.cassie}\n📎 *PDF:* ${novo.pdf ? 'Anexado' : 'Não enviado'}`;
-            window.open(`https://api.whatsapp.com/send?phone=${WHATSAPP_NUM}&text=${encodeURIComponent(msg)}`);
+            const textoZap = `🦷 *NOVO AGENDAMENTO*\n👤 *Paciente:* ${novo.nome}\n⏰ *Horário:* ${novo.horario}\n📑 *Exames:* ${novo.pdf ? 'Anexado' : 'Não enviado'}`;
+            window.open(`https://api.whatsapp.com/send?phone=${WHATSAPP_NUM}&text=${encodeURIComponent(textoZap)}`);
             
-            alert("Agendamento concluído com sucesso!");
+            alert("Agendamento Enviado!");
             location.reload();
         };
 
-        const toBase64 = file => new Promise((res, rej) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => res(reader.result);
-            reader.onerror = e => rej(e);
-        });
-
-        function acessarAdmin() {
-            if (prompt("Senha de acesso:") === SENHA_MESTRA) {
-                document.getElementById('loginAdmin').classList.add('hidden');
+        function abrirAdmin() {
+            if(prompt("Senha:") === SENHA_ADMIN) {
                 document.getElementById('painelAdmin').classList.remove('hidden');
-                renderizarPainel();
+                renderAdmin();
             }
         }
 
-        function renderizarPainel() {
-            const lista = document.getElementById('listaAgendamentos');
-            lista.innerHTML = agendamentos.length === 0 ? '<tr><td colspan="4" class="p-10 text-center text-slate-300 italic">Nenhuma reserva encontrada.</td></tr>' : "";
-            
-            agendamentos.forEach(a => {
+        function renderAdmin() {
+            const lista = document.getElementById('corpoTabela');
+            lista.innerHTML = db.length === 0 ? '<tr><td colspan="4" class="p-10 text-center text-slate-400">Nenhum registro.</td></tr>' : '';
+            db.forEach(a => {
                 lista.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition-colors">
+                    <tr class="hover:bg-slate-50 transition-all">
                         <td class="p-5 font-bold text-blue-700">${a.horario}</td>
                         <td class="p-5">
-                            <div class="font-bold text-slate-800">${a.nome}</div>
-                            <div class="text-[10px] text-slate-400 uppercase tracking-tighter">Zap: ${a.whatsapp}</div>
+                            <div class="font-bold">${a.nome}</div>
+                            <div class="text-[10px] text-slate-400">ZAP: ${a.whatsapp}</div>
                         </td>
                         <td class="p-5">
-                            ${a.pdf ? `<a href="${a.pdf}" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 px-3 py-1 rounded-full text-[10px] font-bold border border-red-100 hover:bg-red-600 hover:text-white transition-all"><i class="fas fa-file-pdf"></i> VER PDF</a>` : '<span class="text-slate-300 text-[10px]">SEM ARQUIVO</span>'}
+                            ${a.pdf ? `<button onclick="verPDF('${a.id}')" class="bg-red-50 text-red-600 px-3 py-1 rounded-full text-[10px] font-bold border border-red-100 hover:bg-red-600 hover:text-white">ABRIR PDF</button>` : '--'}
                         </td>
                         <td class="p-5 text-center">
-                            <button onclick="remover(${a.id})" class="text-slate-300 hover:text-red-500 transition-colors"><i class="fas fa-trash-alt"></i></button>
+                            <button onclick="excluir(${a.id})" class="text-slate-300 hover:text-red-500"><i class="fas fa-trash-alt"></i></button>
                         </td>
                     </tr>
                 `;
             });
         }
 
-        function remover(id) {
-            if(confirm("Confirmar cancelamento e liberar horário?")) {
-                agendamentos = agendamentos.filter(a => a.id !== id);
-                localStorage.setItem('nutri_nefro_v4', JSON.stringify(agendamentos));
-                renderizarPainel();
-                renderizarHorarios();
+        // FUNÇÃO CORRIGIDA PARA ABRIR O PDF
+        window.verPDF = function(id) {
+            const registro = db.find(a => a.id == id);
+            if (registro && registro.pdf) {
+                const win = window.open();
+                win.document.write('<iframe src="' + registro.pdf + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
+            } else {
+                alert("Arquivo não disponível.");
+            }
+        };
+
+        function excluir(id) {
+            if(confirm("Liberar este horário?")) {
+                db = db.filter(a => a.id !== id);
+                localStorage.setItem('agendamentos_v5', JSON.stringify(db));
+                renderAdmin();
+                init();
             }
         }
 
-        window.onload = renderizarHorarios;
+        window.onload = init;
     </script>
 </body>
 </html>
