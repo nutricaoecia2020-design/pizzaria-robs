@@ -69,6 +69,16 @@
         .verde { background: #28a745; }
         .btn-status { background: #333; color: white; padding: 8px 15px; border-radius: 6px; font-size: 12px; }
 
+        /* TABELA DE PEDIDOS */
+        .tabela-pedidos-wrapper { overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 600px; }
+        table th, table td { border: 1px solid #eee; padding: 10px; text-align: left; }
+        table th { background: #f8f8f8; color: #e31837; }
+        .btn-acao { padding: 5px 8px; font-size: 10px; margin: 2px; border-radius: 4px; }
+        .btn-del { background: #ff4444; color: white; }
+        .btn-entregar { background: #25d366; color: white; }
+        .btn-fim { background: #555; color: white; }
+
         /* Modal Sucesso */
         .modal-sucesso { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 20px; text-align: center; max-width: 300px; }
@@ -110,7 +120,7 @@
     <h3>📍 Dados do Cliente</h3>
     <input id="nome" placeholder="Seu Nome">
     <input id="endereco" placeholder="Endereço de Entrega">
-    <input id="contato" placeholder="Telefone de Contato">
+    <input id="contato" placeholder="Telefone de Contato (Ex: 79999999999)">
 
     <select id="pagamento" onchange="window.renderCarrinho()">
         <option value="Dinheiro">Dinheiro</option>
@@ -130,11 +140,14 @@
 
     <div class="painel-gestao">
         <h3 style="margin-top:0; font-size: 16px;"><i class="fas fa-tools"></i> Painel do Lojista</h3>
+        
         <div id="gestaoLogin" class="gestao-bloqueada">
             <input type="password" id="senhaMestra" placeholder="Chave" style="width: 140px; display: inline-block;">
             <button class="btn-status" onclick="acessarGestao()" style="background: #e31837; height: 40px;">Entrar</button>
         </div>
+
         <div id="gestaoConteudo" class="gestao-conteudo">
+            <h4>Envio Rápido de Status</h4>
             <div class="status-row">
                 <div class="bola vermelha"></div>
                 <input type="text" id="status_tel_prep" placeholder="Zap Cliente">
@@ -150,7 +163,26 @@
                 <input type="text" id="status_tel_entrega" placeholder="Zap Cliente">
                 <button class="btn-status" onclick="enviarStatusManual('entrega')">Saída</button>
             </div>
-            <button onclick="location.reload()" style="font-size: 10px; background: none; color: #999; border: none; cursor: pointer; text-decoration: underline;">Bloquear Painel</button>
+
+            <hr>
+            <h4>📋 Pedidos do Dia</h4>
+            <div class="tabela-pedidos-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nº</th>
+                            <th>Cliente</th>
+                            <th>Itens</th>
+                            <th>Total</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabelaPedidos">
+                        </tbody>
+                </table>
+            </div>
+
+            <button onclick="location.reload()" style="font-size: 10px; background: none; color: #999; border: none; cursor: pointer; text-decoration: underline; margin-top: 20px;">Bloquear Painel</button>
         </div>
     </div>
 </div>
@@ -165,7 +197,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE", 
@@ -194,11 +226,65 @@ function atualizarTempo() {
 setInterval(atualizarTempo, 1000);
 atualizarTempo();
 
+// ACESSO GESTÃO
 window.acessarGestao = function() {
     if(document.getElementById("senhaMestra").value === "253641") {
         document.getElementById("gestaoLogin").style.display = "none";
         document.getElementById("gestaoConteudo").style.display = "block";
+        ouvirPedidos();
     } else { alert("Chave incorreta!"); }
+}
+
+// CARREGAR PEDIDOS EM TEMPO REAL
+function ouvirPedidos() {
+    const q = query(collection(db, "pedidos"), orderBy("data", "desc"));
+    onSnapshot(q, (snapshot) => {
+        const tabela = document.getElementById("corpoTabelaPedidos");
+        tabela.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+            const p = docSnap.data();
+            const id = docSnap.id.substring(0, 5).toUpperCase();
+            const statusStyle = p.status === 'Entregue' ? 'text-decoration: line-through; color: gray;' : '';
+            
+            tabela.innerHTML += `
+                <tr style="${statusStyle}">
+                    <td><b>#${id}</b></td>
+                    <td>${p.cliente}<br><small>${p.telefone}</small></td>
+                    <td>${p.produtos}</td>
+                    <td>R$ ${p.total}</td>
+                    <td>
+                        <button class="btn-acao btn-entregar" onclick="iniciarEntrega('${p.telefone}', '${p.cliente}')"><i class="fas fa-motorcycle"></i></button>
+                        <button class="btn-acao btn-fim" onclick="finalizarPedido('${docSnap.id}')"><i class="fas fa-check"></i></button>
+                        <button class="btn-acao btn-del" onclick="apagarPedido('${docSnap.id}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+}
+
+// FUNÇÕES DA TABELA
+window.apagarPedido = async (id) => {
+    if(confirm("Deseja apagar esse pedido permanentemente?")) {
+        await deleteDoc(doc(db, "pedidos", id));
+    }
+}
+
+window.iniciarEntrega = (tel, nome) => {
+    let num = tel.replace(/\D/g, '');
+    if(!num.startsWith('55')) num = '55' + num;
+    const msg = `Olá ${nome}, seu pedido da Pizzaria Robs saiu para entrega! 🚀🍕`;
+    window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+window.finalizarPedido = async (id) => {
+    const pass = prompt("Digite a senha para concluir (Senha padrão: 1234):");
+    if(pass === "1234") {
+        await updateDoc(doc(db, "pedidos", id), { status: 'Entregue' });
+        alert("Pedido concluído!");
+    } else {
+        alert("Senha incorreta.");
+    }
 }
 
 window.enviarStatusManual = function(tipo) {
@@ -291,6 +377,7 @@ window.finalizar = async function(){
             produtos: listaProd, 
             total: t, 
             observacao: o,
+            status: 'Pendente',
             data: serverTimestamp() 
         });
 
