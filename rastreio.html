@@ -1,105 +1,246 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#e31837">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rastreio de Pedido - Pizzaria Robs</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .card { background: white; width: 90%; max-width: 400px; padding: 30px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 8px solid #e31837; text-align: center; }
-        .logo { color: #e31837; font-size: 26px; font-weight: bold; margin-bottom: 5px; }
-        .pedido-id { font-size: 12px; color: #888; margin-bottom: 25px; background: #eee; display: inline-block; padding: 3px 10px; border-radius: 10px; }
-        
-        /* Barra de Progresso Vertical */
-        .stepper { position: relative; display: flex; flex-direction: column; gap: 35px; text-align: left; padding-left: 45px; margin: 25px 0; }
-        .step { position: relative; color: #ccc; font-weight: 600; transition: 0.4s; }
-        .step i { position: absolute; left: -42px; width: 32px; height: 32px; background: #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; z-index: 2; }
-        .line { position: absolute; left: 16px; top: 0; bottom: 0; width: 2px; background: #eee; z-index: 1; }
-        
-        /* Cores dos Status */
-        .step.active { color: #e31837; }
-        .step.active i { background: #e31837; box-shadow: 0 0 10px rgba(227, 24, 55, 0.4); animation: pulse 1.5s infinite; }
-        .step.done { color: #28a745; }
-        .step.done i { background: #28a745; }
+    <title>Pizzaria Robs - Pedidos & Gestão</title>
 
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body{font-family:Arial, sans-serif;background:#f4f4f4;margin:0; overflow-x: hidden;}
+        .tempo-container {
+            position: absolute; top: 15px; right: 15px; background: #222; color: #fff;
+            padding: 10px; border-radius: 10px; font-family: 'Courier New', monospace;
+            text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 2px solid #e31837; z-index: 101;
+        }
+        .container{
+            max-width:900px;margin:30px auto;background:#fff;min-height:100vh;padding:20px;
+            border: 8px solid #e31837; box-shadow:0 0 15px rgba(0,0,0,0.08); position: relative;
+        }
+        .topo-info{text-align:center;font-size:14px;color:#555;margin-bottom:10px; padding-top: 20px;}
+        .status-btn{display:inline-block;padding:8px 15px;border-radius:20px;color:#fff;font-weight:bold;margin-top:8px;}
+        .aberto{background:#28a745;animation:piscando 1s infinite;}
+        .fechado{background:#6c757d;}
+        @keyframes piscando{0%{opacity:1;}50%{opacity:0.4;}100%{opacity:1;}}
         
-        .status-msg { background: #fff5f6; padding: 15px; border-radius: 15px; font-size: 14px; color: #444; border: 1px dashed #e31837; margin-top: 15px; }
+        h2, h3{color:#e31837;margin:15px 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 5px;}
+        #produtos{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+        .produto{background:#fff;padding:12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 3px 8px rgba(0,0,0,0.05); border: 1px solid #eee;}
+        img{width:70px;height:70px;object-fit:cover;border-radius:10px;}
+        
+        button{padding:8px 12px;border:none;border-radius:8px;cursor:pointer;font-weight:bold; transition: 0.2s;}
+        .add{background:#28a745;color:#fff;}
+        .rem{background:#dc3545;color:#fff;}
+        .final{background:#e31837;color:#fff;width:100%;padding:14px;margin-top:20px;font-size:16px;}
+
+        input,select,textarea{width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;}
+        .total-box{font-size:18px;font-weight:bold;color:#e31837;margin-top:10px; text-align: right;}
+
+        .painel-gestao { margin-top: 50px; padding: 20px; background: #fff; border: 2px dashed #e31837; border-radius: 15px; }
+        .tabela-pedidos-wrapper { overflow-x: auto; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { border: 1px solid #eee; padding: 10px; text-align: left; }
+        th { background: #f8f8f8; color: #e31837; }
+        
+        .btn-acao { padding: 6px 10px; margin: 2px; font-size: 11px; color: white; border-radius: 5px; }
+        .btn-prep { background: #f39c12; }
+        .btn-rota { background: #007bff; }
+        .btn-fim { background: #28a745; }
+        .btn-del { background: #ff4444; }
+
+        .whatsapp-chat { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; background-color: #25d366; color: #fff; border-radius: 50px; text-align: center; font-size: 30px; box-shadow: 2px 2px 10px rgba(0,0,0,0.2); z-index: 1000; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+
+        @media(max-width:600px){ #produtos{grid-template-columns:1fr;} }
     </style>
 </head>
+
 <body>
 
-<div class="card">
-    <div class="logo">🍕 Pizzaria Robs</div>
-    <h2 id="clienteNome">Buscando pedido...</h2>
-    <div class="pedido-id" id="exibirId">#------</div>
-
-    <div class="stepper">
-        <div class="line"></div>
-        <div id="st-Pendente" class="step"><i class="fas fa-receipt"></i> Pedido Recebido</div>
-        <div id="st-Preparando" class="step"><i class="fas fa-fire"></i> Na Cozinha</div>
-        <div id="st-Rota" class="step"><i class="fas fa-motorcycle"></i> Saiu para Entrega</div>
-        <div id="st-Entregue" class="step"><i class="fas fa-check-double"></i> Entregue</div>
+<div class="container">
+    <div class="tempo-container">
+        <span id="relogio" style="font-size: 20px; font-weight: bold; display: block;">00:00:00</span>
+        <span id="data" style="font-size: 11px; color: #aaa; text-transform: uppercase;">00/00/0000</span>
     </div>
 
-    <div class="status-msg" id="msgTexto">Aguardando conexão com a pizzaria...</div>
+    <a href="https://wa.me/5579999769581" class="whatsapp-chat" target="_blank"><i class="fab fa-whatsapp"></i></a>
+
+    <div class="topo-info">
+        📞 (79) 99976-9581 | 📍 Luzia - Aracaju <br>
+        <div id="statusLoja" class="status-btn"></div>
+    </div>
+
+    <h2>🍕 Cardápio Robs</h2>
+    <div id="produtos">Carregando cardápio...</div>
+
+    <h3>🛒 Seu Carrinho</h3>
+    <div id="carrinho"></div>
+    <div class="total-box">Total: R$ <span id="total">0.00</span></div>
+
+    <h3>📍 Dados para Entrega</h3>
+    <input id="nome" placeholder="Seu Nome">
+    <input id="endereco" placeholder="Endereço Completo">
+    <input id="contato" placeholder="WhatsApp (Ex: 79999999999)">
+    <select id="pagamento"><option>Dinheiro</option><option>Pix</option><option>Cartão</option></select>
+    <textarea id="obs" placeholder="Observações..."></textarea>
+    <button class="final" onclick="window.finalizar()">Enviar Pedido</button>
+
+    <div class="painel-gestao">
+        <h3><i class="fas fa-tools"></i> Painel do Lojista</h3>
+        <div id="loginGestao">
+            <input type="password" id="senhaMestra" placeholder="Senha Administrativa" style="width: 200px;">
+            <button onclick="window.acessarGestao()" style="background:#333; color:white;">Entrar</button>
+        </div>
+
+        <div id="conteudoGestao" style="display:none;">
+            <div class="tabela-pedidos-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Status</th>
+                            <th>Ações de Rastreio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaPedidosAdm"></tbody>
+                </table>
+            </div>
+            <button onclick="location.reload()" style="margin-top:10px; font-size:10px; border:none; background:none; text-decoration:underline; cursor:pointer;">Sair do Painel</button>
+        </div>
+    </div>
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // ATENÇÃO: Use a MESMA configuração do seu index.html
-    const firebaseConfig = {
-        apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE",
-        authDomain: "robs-pizzariadelivery.firebaseapp.com",
-        projectId: "robs-pizzariadelivery",
-        appId: "1:338805720977:web:8666359590892994406a48"
-    };
+const firebaseConfig = {
+    apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE", // COLOQUE SUA CHAVE AQUI
+    authDomain: "robs-pizzariadelivery.firebaseapp.com",
+    projectId: "robs-pizzariadelivery",
+    appId: "1:338805720977:web:8666359590892994406a48"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    // Captura o ID que vem na URL (ex: rastreio.html?id=ABC123)
-    const urlParams = new URLSearchParams(window.location.search);
-    const idPedido = urlParams.get('id');
+const supabaseUrl='https://gsvvyktjeqlmhspqzppy.supabase.co';
+const supabaseKey='sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs';
+const _supabase=supabase.createClient(supabaseUrl,supabaseKey);
 
-    if (idPedido) {
-        document.getElementById('exibirId').innerText = "#" + idPedido.substring(0, 6).toUpperCase();
-        
-        // Monitora o pedido no Firebase em tempo real
-        onSnapshot(doc(db, "pedidos", idPedido), (docSnap) => {
-            if (docSnap.exists()) {
-                const dados = docSnap.data();
-                atualizarTela(dados.status, dados.cliente);
-            } else {
-                document.getElementById('clienteNome').innerText = "Pedido não encontrado";
-            }
+let carrinho=[];
+let produtosDoBanco=[];
+
+async function carregarProdutos(){
+    const{data}=await _supabase.from('produtos').select('*');
+    produtosDoBanco=data;
+    let lista=document.getElementById("produtos");
+    lista.innerHTML="";
+    data.forEach((p,index)=>{
+        lista.innerHTML+=`<div class="produto">
+            <div style="display:flex;align-items:center;gap:10px">
+                <img src="${p.url_imagem||'https://via.placeholder.com/70'}">
+                <div><b>${p.nome}</b><br>R$ ${parseFloat(p.preco).toFixed(2)}</div>
+            </div>
+            <button class="add" onclick="window.add(${index})">Add</button>
+        </div>`;
+    });
+}
+
+window.add = (i) => { carrinho.push(produtosDoBanco[i]); window.renderCarrinho(); }
+window.remover = (i) => { carrinho.splice(i,1); window.renderCarrinho(); }
+
+window.renderCarrinho = () => {
+    let area=document.getElementById("carrinho"); area.innerHTML=""; let total=0;
+    carrinho.forEach((p,i)=>{ total+=parseFloat(p.preco);
+        area.innerHTML+=`<div class="produto" style="margin-bottom:5px;"><span>${p.nome}</span><button class="rem" onclick="window.remover(${i})">X</button></div>`;
+    });
+    document.getElementById("total").innerText=total.toFixed(2);
+}
+
+window.finalizar = async () => {
+    let n=document.getElementById("nome").value, e=document.getElementById("endereco").value, c=document.getElementById("contato").value;
+    if(!n || !e || !c || carrinho.length < 2) return alert("Preencha tudo (mínimo 2 itens)!");
+
+    let itens = carrinho.map(i => "• " + i.nome).join("\n");
+    let total = document.getElementById("total").innerText;
+    
+    try {
+        await addDoc(collection(db, "pedidos"), {
+            cliente: n, endereco: e, telefone: c, produtos: itens, total: total, status: "Pendente", data: serverTimestamp()
         });
-    }
+        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent("Novo Pedido Robs!\n"+itens+"\nTotal: R$ "+total)}`);
+        alert("Pedido Enviado!");
+        location.reload();
+    } catch(err){ alert("Erro ao salvar!"); }
+}
 
-    function atualizarTela(status, nome) {
-        document.getElementById('clienteNome').innerText = "Olá, " + nome + "!";
-        
-        const etapas = ["Pendente", "Preparando", "Rota", "Entregue"];
-        const indiceAtual = etapas.indexOf(status);
+window.acessarGestao = () => {
+    if(document.getElementById("senhaMestra").value === "253641") {
+        document.getElementById("loginGestao").style.display = "none";
+        document.getElementById("conteudoGestao").style.display = "block";
+        ouvirPedidos();
+    } else alert("Senha incorreta!");
+}
 
-        etapas.forEach((etapa, i) => {
-            const el = document.getElementById("st-" + etapa);
-            el.className = "step"; // Limpa classes
-            if (i < indiceAtual) el.classList.add("done");
-            if (i === indiceAtual) el.classList.add("active");
+function ouvirPedidos() {
+    const q = query(collection(db, "pedidos"), orderBy("data", "desc"));
+    onSnapshot(q, (snapshot) => {
+        const lista = document.getElementById("listaPedidosAdm");
+        lista.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+            const p = docSnap.data();
+            const id = docSnap.id;
+            lista.innerHTML += `
+                <tr>
+                    <td>#${id.substring(0,4).toUpperCase()}</td>
+                    <td>${p.cliente}</td>
+                    <td><b>${p.status}</b></td>
+                    <td>
+                        <button class="btn-acao btn-prep" onclick="window.atualizarStatus('${id}', 'Preparando', '${p.telefone}')">Cozinha</button>
+                        <button class="btn-acao btn-rota" onclick="window.atualizarStatus('${id}', 'Rota', '${p.telefone}')">Saída</button>
+                        <button class="btn-acao btn-fim" onclick="window.atualizarStatus('${id}', 'Entregue', '${p.telefone}')">Fim</button>
+                        <button class="btn-acao btn-del" onclick="window.deletarPedido('${id}')">X</button>
+                    </td>
+                </tr>`;
         });
+    });
+}
 
-        const frases = {
-            "Pendente": "Recebemos seu pedido! Logo ele irá para o forno.",
-            "Preparando": "Sua pizza está sendo montada com todo carinho.",
-            "Rota": "🚀 O motoboy já saiu! Fique atento ao portão.",
-            "Entregue": "Pedido entregue. Bom apetite! 🍕❤️"
-        };
-        document.getElementById('msgTexto').innerText = frases[status] || "Acompanhe seu status aqui.";
+// ESTA É A FUNÇÃO COM A MUDANÇA DO LINK DE RASTREIO
+window.atualizarStatus = async (id, novoStatus, tel) => {
+    await updateDoc(doc(db, "pedidos", id), { status: novoStatus });
+    
+    if(novoStatus !== 'Entregue') {
+        // LINK CORRIGIDO PARA A PASTA DO SEU GITHUB
+        const linkRastreio = "https://nutricaoecia2020-design.github.io/pizzaria-rouba/rastreio.html?id=" + id;
+        
+        let msg = "";
+        if(novoStatus === 'Preparando') msg = "Seu pedido Robs já está sendo preparado!";
+        if(novoStatus === 'Rota') msg = "Seu pedido Robs saiu para entrega! 🚀";
+        
+        let num = tel.replace(/\D/g, '');
+        if(!num.startsWith('55')) num = '55' + num;
+        window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg + "\nAcompanhe aqui: " + linkRastreio)}`, '_blank');
+    } else {
+        alert("Status atualizado!");
     }
+}
+
+window.deletarPedido = async (id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, "pedidos", id)); }
+
+function relogio(){
+    const d=new Date();
+    document.getElementById('relogio').innerText=d.toLocaleTimeString();
+    document.getElementById('data').innerText=d.toLocaleDateString();
+}
+setInterval(relogio,1000);
+carregarProdutos();
 </script>
 </body>
 </html>
