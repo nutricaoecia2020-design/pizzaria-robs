@@ -55,7 +55,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Data Nascimento</label>
                         <input type="date" id="nascimento" required class="input-clinical w-full p-4 rounded-2xl text-slate-500">
@@ -65,9 +65,13 @@
                         <input type="text" id="cassie" required class="input-clinical w-full p-4 rounded-2xl" placeholder="Nº do beneficiário">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Horário Consulta</label>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Data da Consulta</label>
+                        <input type="date" id="dataConsulta" required class="input-clinical w-full p-4 rounded-2xl text-slate-500" onchange="popularHorarios()">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Horário</label>
                         <select id="diaHora" required class="input-clinical w-full p-4 rounded-2xl appearance-none cursor-pointer">
-                            <option value="">Selecione...</option>
+                            <option value="">Selecione a data...</option>
                         </select>
                     </div>
                 </div>
@@ -150,15 +154,21 @@
             <div id="painelAdmin" class="hidden mt-8 bg-white rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden text-left">
                 <div class="bg-slate-900 p-6 flex justify-between items-center text-white">
                     <h3 class="font-black text-xs uppercase tracking-widest flex items-center gap-2">
-                        <i class="fas fa-database text-emerald-400"></i> Gestão de Prontuários (Nefrologia)
+                        <i class="fas fa-database text-emerald-400"></i> Gestão de Prontuários & Calendário
                     </h3>
-                    <button onclick="location.reload()" class="bg-red-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase">Sair do Painel</button>
+                    <div class="flex gap-2">
+                        <button onclick="bloquearData()" class="bg-amber-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase">Bloquear Data</button>
+                        <button onclick="location.reload()" class="bg-red-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase">Sair</button>
+                    </div>
                 </div>
+
+                <div id="listaBloqueios" class="p-4 bg-slate-50 border-bottom text-[10px] flex flex-wrap gap-2"></div>
+
                 <div class="overflow-x-auto">
                     <table class="w-full admin-table">
                         <thead class="bg-slate-50">
                             <tr>
-                                <th>Horário</th>
+                                <th>Data/Horário</th>
                                 <th>Dados Pessoais</th>
                                 <th>Biometria/IMC</th>
                                 <th>Anamnese/Motivo</th>
@@ -177,10 +187,11 @@
     <script>
         const ZAP_DESTINO = "5579991063656";
         const SENHA_ADMIN = "253641";
-        const horarios = ["20:00", "20:40", "21:20"];
-        const dias = ["Segunda", "Terça", "Quinta"];
+        const horariosBase = ["20:00", "20:40", "21:20"];
+        const diasPermitidos = [1, 2, 4]; // Segunda(1), Terça(2), Quinta(4)
 
         let db = JSON.parse(localStorage.getItem('nutri_roberto_v7')) || [];
+        let bloqueios = JSON.parse(localStorage.getItem('nutri_bloqueios')) || [];
 
         function calcularIMC() {
             const p = parseFloat(document.getElementById('peso').value);
@@ -207,19 +218,42 @@
         }
 
         function popularHorarios() {
+            const dataInput = document.getElementById('dataConsulta').value;
             const sel = document.getElementById('diaHora');
-            sel.innerHTML = '<option value="">Selecione...</option>';
-            dias.forEach(d => {
-                const group = document.createElement('optgroup'); group.label = d;
-                horarios.forEach(h => {
-                    const id = `${d} - ${h}`;
-                    if(!db.find(a => a.horario === id)) {
-                        const opt = document.createElement('option');
-                        opt.value = id; opt.textContent = id; group.appendChild(opt);
-                    }
-                });
-                sel.appendChild(group);
+            sel.innerHTML = '<option value="">Selecione o horário...</option>';
+
+            if(!dataInput) return;
+
+            const dataObj = new Date(dataInput + 'T00:00:00');
+            const diaSemana = dataObj.getDay();
+
+            // Valida se o dia da semana é permitido
+            if(!diasPermitidos.includes(diaSemana)) {
+                alert("Atendimento apenas em Segundas, Terças e Quintas.");
+                document.getElementById('dataConsulta').value = "";
+                return;
+            }
+
+            // Valida se a data está bloqueada
+            if(bloqueios.includes(dataInput)) {
+                alert("Esta data está indisponível para novos agendamentos.");
+                document.getElementById('dataConsulta').value = "";
+                return;
+            }
+
+            horariosBase.forEach(h => {
+                const agendado = db.find(a => a.dataConsulta === dataInput && a.horario === h);
+                if(!agendado) {
+                    const opt = document.createElement('option');
+                    opt.value = h;
+                    opt.textContent = h;
+                    sel.appendChild(opt);
+                }
             });
+
+            if(sel.options.length === 1) {
+                alert("Não há horários disponíveis para esta data.");
+            }
         }
 
         document.getElementById('formAgendamento').onsubmit = async function(e) {
@@ -234,6 +268,7 @@
                 whatsapp: document.getElementById('whatsapp').value,
                 nascimento: document.getElementById('nascimento').value,
                 cassie: document.getElementById('cassie').value,
+                dataConsulta: document.getElementById('dataConsulta').value,
                 horario: document.getElementById('diaHora').value,
                 peso: document.getElementById('peso').value,
                 altura: document.getElementById('altura').value,
@@ -251,7 +286,7 @@
             db.push(novo);
             localStorage.setItem('nutri_roberto_v7', JSON.stringify(db));
 
-            const msgZap = `🍏 *AGENDAMENTO CLÍNICO*\n\n👤 *Paciente:* ${novo.nome}\n⚖️ *IMC:* ${novo.imc} (${novo.classif})\n⏰ *Horário:* ${novo.horario}\n💊 *Medicações:* ${novo.medicacao.substring(0,50)}...`;
+            const msgZap = `🍏 *AGENDAMENTO CLÍNICO*\n\n👤 *Paciente:* ${novo.nome}\n📅 *Data:* ${novo.dataConsulta.split('-').reverse().join('/')}\n⏰ *Horário:* ${novo.horario}\n⚖️ *IMC:* ${novo.imc}\n💊 *Medicações:* ${novo.medicacao.substring(0,50)}...`;
             window.open(`https://wa.me/${ZAP_DESTINO}?text=${encodeURIComponent(msgZap)}`);
             
             alert("Sucesso! Agendamento enviado.");
@@ -267,17 +302,51 @@
             if(prompt("Senha Administrativa:") === SENHA_ADMIN) {
                 document.getElementById('painelAdmin').classList.remove('hidden');
                 renderAdmin();
+                renderBloqueios();
             }
+        }
+
+        function bloquearData() {
+            const data = prompt("Digite a data para bloquear (AAAA-MM-DD):");
+            if(data && !bloqueios.includes(data)) {
+                bloqueios.push(data);
+                localStorage.setItem('nutri_bloqueios', JSON.stringify(bloqueios));
+                renderBloqueios();
+            }
+        }
+
+        function removerBloqueio(data) {
+            bloqueios = bloqueios.filter(d => d !== data);
+            localStorage.setItem('nutri_bloqueios', JSON.stringify(bloqueios));
+            renderBloqueios();
+        }
+
+        function renderBloqueios() {
+            const div = document.getElementById('listaBloqueios');
+            div.innerHTML = '<strong>DATAS BLOQUEADAS:</strong>';
+            bloqueios.forEach(d => {
+                div.innerHTML += `
+                    <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded-md flex items-center gap-2">
+                        ${d.split('-').reverse().join('/')} 
+                        <i class="fas fa-times cursor-pointer hover:text-red-600" onclick="removerBloqueio('${d}')"></i>
+                    </span>`;
+            });
         }
 
         function renderAdmin() {
             const corpo = document.getElementById('corpoAdmin');
             corpo.innerHTML = db.length === 0 ? '<tr><td colspan="7" class="p-10 text-center text-slate-300 italic uppercase font-bold">Nenhum agendamento ativo</td></tr>' : '';
             
+            // Ordenar por data
+            db.sort((a,b) => new Date(a.dataConsulta + 'T' + a.horario) - new Date(b.dataConsulta + 'T' + b.horario));
+
             db.forEach(a => {
                 corpo.innerHTML += `
                     <tr class="hover:bg-emerald-50/50 transition-colors">
-                        <td class="font-black text-emerald-600">${a.horario}</td>
+                        <td class="font-black text-emerald-600">
+                            <div class="text-[12px]">${a.dataConsulta.split('-').reverse().join('/')}</div>
+                            <div class="text-[14px]">${a.horario}</div>
+                        </td>
                         <td>
                             <div class="font-black text-slate-800 uppercase">${a.nome}</div>
                             <div class="text-blue-500 font-bold">${a.whatsapp}</div>
@@ -288,7 +357,7 @@
                             <div class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md inline-block font-black mt-1">IMC: ${a.imc} (${a.classif})</div>
                         </td>
                         <td>
-                            <div class="font-bold text-slate-700">MOTIVO: <span class="font-normal italic">${a.motivo}</span></div>
+                            <div class="font-bold text-slate-700 truncate w-40">MOTIVO: <span class="font-normal italic">${a.motivo}</span></div>
                             <div class="text-red-500 font-bold mt-1 uppercase text-[9px]">Uso: ${a.medicacao}</div>
                             <div class="text-[9px] text-slate-400">Consultou antes? ${a.jaPassou}</div>
                         </td>
@@ -318,11 +387,14 @@
                 db = db.filter(x => x.id !== id);
                 localStorage.setItem('nutri_roberto_v7', JSON.stringify(db));
                 renderAdmin();
-                popularHorarios();
             }
         }
 
-        window.onload = popularHorarios;
+        // Configura data mínima como "hoje"
+        window.onload = () => {
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('dataConsulta').setAttribute('min', hoje);
+        };
     </script>
 </body>
 </html>
