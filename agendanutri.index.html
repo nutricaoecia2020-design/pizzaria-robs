@@ -13,19 +13,13 @@
         .glass-card { background: white; border: 2px solid #e2e8f0; border-radius: 2rem; }
         .input-clinical { border: 2px solid #cbd5e1; transition: all 0.3s; background: #fff; }
         .input-clinical:focus { border-color: #059669; box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1); outline: none; }
-        
-        /* Dashboard Admin - Cores Fortes */
         .admin-bg { background-color: #0f172a; }
         .card-stats { background: #fff; border-left: 6px solid #10b981; transition: transform 0.2s; }
         .card-stats:hover { transform: translateY(-5px); }
         .btn-delete { color: #ef4444; cursor: pointer; transition: 0.2s; }
         .btn-delete:hover { color: #b91c1c; transform: scale(1.2); }
-
-        /* Estilo para Dados Miniaturizados */
         .mini-data { font-size: 0.65rem; line-height: 1rem; color: #64748b; }
         .label-mini { font-weight: 800; color: #0f172a; text-transform: uppercase; margin-right: 2px; }
-
-        /* Estilo da Foto de Perfil */
         #profilePreview { object-fit: cover; border: 4px solid white; }
     </style>
 </head>
@@ -45,7 +39,6 @@
     </header>
 
     <main class="max-w-7xl mx-auto px-4 -mt-24 mb-20">
-        
         <div class="glass-card shadow-2xl p-6 mb-8 flex flex-col md:flex-row items-center gap-8 bg-white/90 backdrop-blur-lg border-emerald-100">
             <div class="relative group">
                 <img id="profilePreview" src="https://via.placeholder.com/150" alt="Foto Profissional" class="w-40 h-40 rounded-3xl shadow-xl">
@@ -102,7 +95,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-black text-slate-500 uppercase mb-2">Data Consulta</label>
-                        <input type="date" id="dataConsulta" required class="input-clinical w-full p-4 rounded-2xl font-semibold" onchange="popularHorarios()">
+                        <input type="date" id="dataConsulta" required class="input-clinical w-full p-4 rounded-2xl font-semibold">
                     </div>
                     <div>
                         <label class="block text-xs font-black text-slate-500 uppercase mb-2">Horário</label>
@@ -115,13 +108,13 @@
                 <div class="bg-slate-50 p-8 rounded-[2rem] border-2 border-dashed border-emerald-200 grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
                     <div>
                         <label class="block text-xs font-black text-emerald-800 uppercase mb-2">Peso Atual (kg)</label>
-                        <input type="number" step="0.1" id="peso" required class="input-clinical w-full p-4 rounded-2xl font-bold" placeholder="00.0" oninput="calcularIMC()">
+                        <input type="number" step="0.1" id="peso" required class="input-clinical w-full p-4 rounded-2xl font-bold" placeholder="00.0">
                     </div>
                     <div>
                         <label class="block text-xs font-black text-emerald-800 uppercase mb-2">Altura (m)</label>
-                        <input type="number" step="0.01" id="altura" required class="input-clinical w-full p-4 rounded-2xl font-bold" placeholder="1.00" oninput="calcularIMC()">
+                        <input type="number" step="0.01" id="altura" required class="input-clinical w-full p-4 rounded-2xl font-bold" placeholder="1.00">
                     </div>
-                    <div class="bg-emerald-600 p-5 rounded-2xl shadow-lg flex flex-col justify-center text-white">
+                    <div class="bg-emerald-600 p-5 rounded-2xl shadow-lg flex flex-col justify-center text-white text-center">
                         <span id="resultadoIMC" class="text-xl font-black">IMC: --</span>
                         <span id="classificacaoIMC" class="text-xs font-bold uppercase opacity-80 italic">Aguardando dados...</span>
                     </div>
@@ -130,11 +123,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="space-y-4">
                         <label class="block text-xs font-black text-slate-600 uppercase">Motivo da consulta / Anamnese</label>
-                        <textarea id="motivo" required class="input-clinical w-full p-4 rounded-2xl h-32 font-medium" placeholder="Descreva brevemente sua queixa ou objetivo..."></textarea>
+                        <textarea id="motivo" required class="input-clinical w-full p-4 rounded-2xl h-32 font-medium" placeholder="Descreva brevemente..."></textarea>
                     </div>
                     <div class="space-y-4">
                         <label class="block text-xs font-black text-slate-600 uppercase">Medicações ou Suplementos</label>
-                        <textarea id="medicacao" class="input-clinical w-full p-4 rounded-2xl h-32 font-medium" placeholder="Ex: Vitaminas, remédios para pressão..."></textarea>
+                        <textarea id="medicacao" class="input-clinical w-full p-4 rounded-2xl h-32 font-medium" placeholder="Ex: Vitaminas..."></textarea>
                     </div>
                 </div>
 
@@ -146,7 +139,7 @@
                     <input type="file" id="exames" accept="application/pdf" class="text-sm text-blue-100 file:bg-white file:text-blue-600 file:px-6 file:py-2 file:rounded-xl file:border-0 file:font-black cursor-pointer">
                 </div>
 
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-6 rounded-3xl shadow-2xl hover:scale-[1.02] transition-all flex items-center justify-center gap-4 text-2xl uppercase tracking-widest">
+                <button type="submit" id="btnAgendar" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-6 rounded-3xl shadow-2xl hover:scale-[1.02] transition-all flex items-center justify-center gap-4 text-2xl uppercase tracking-widest">
                     Confirmar e Enviar <i class="fab fa-whatsapp"></i>
                 </button>
             </form>
@@ -160,7 +153,6 @@
 
         <div id="painelAdmin" class="hidden">
             <div class="admin-bg rounded-[3rem] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden border-4 border-slate-700 mb-20">
-                
                 <div class="p-8 bg-slate-900 flex flex-col md:flex-row justify-between items-center border-b border-slate-700 gap-6">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
@@ -194,7 +186,6 @@
                 </div>
 
                 <div class="p-8 grid grid-cols-1 lg:grid-cols-1 gap-10 bg-white">
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="bg-slate-50 p-8 rounded-[2rem] border-2 border-slate-200 h-fit">
                             <h4 class="font-black text-slate-800 uppercase text-sm mb-6 flex items-center gap-2">
@@ -208,20 +199,19 @@
                                     <option value="receita">Receita (+)</option>
                                     <option value="despesa">Despesa (-)</option>
                                 </select>
-                                <button onclick="salvarFinanceiro()" class="col-span-2 bg-slate-900 text-white font-black py-4 rounded-2xl uppercase hover:bg-emerald-600 transition-all">Registrar</button>
+                                <button id="btnRegistrarFinanceiro" class="col-span-2 bg-slate-900 text-white font-black py-4 rounded-2xl uppercase hover:bg-emerald-600 transition-all">Registrar</button>
                             </div>
 
                             <h4 class="font-black text-slate-800 uppercase text-sm mt-10 mb-6 flex items-center gap-2 border-t pt-6">
                                 <i class="fas fa-user-edit text-blue-600"></i> Editar Perfil Profissional
                             </h4>
                             <div class="grid grid-cols-1 gap-4">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase">Foto (Quadrada Recomendada)</label>
                                 <input type="file" id="input_foto" accept="image/*" class="text-xs">
                                 <input type="text" id="input_nome_prof" class="input-clinical p-3 rounded-xl text-sm" placeholder="Nome Profissional">
                                 <input type="text" id="input_crn" class="input-clinical p-3 rounded-xl text-sm" placeholder="CRN / Estado">
                                 <input type="text" id="input_especialidade" class="input-clinical p-3 rounded-xl text-sm" placeholder="Especialidade">
                                 <input type="text" id="input_endereco" class="input-clinical p-3 rounded-xl text-sm" placeholder="Endereço/Cidade">
-                                <button onclick="salvarPerfil()" class="bg-blue-600 text-white font-black py-3 rounded-xl uppercase text-xs hover:bg-blue-500">Atualizar Perfil</button>
+                                <button id="btnSalvarPerfil" class="bg-blue-600 text-white font-black py-3 rounded-xl uppercase text-xs hover:bg-blue-500">Atualizar Perfil</button>
                             </div>
                         </div>
 
@@ -233,8 +223,7 @@
 
                     <div class="bg-white rounded-[2rem] border-2 border-slate-100 overflow-hidden shadow-sm">
                         <div class="p-4 bg-emerald-600 text-white text-[10px] font-black uppercase flex justify-between">
-                            <span>Próximos Agendamentos (Dados Completos)</span>
-                            <span id="total_lista" class="italic"></span>
+                            <span>Próximos Agendamentos (Sincronizado via Firebase)</span>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
@@ -246,8 +235,7 @@
                                         <th class="p-4 text-center">Ação</th>
                                     </tr>
                                 </thead>
-                                <tbody id="corpoAdmin" class="divide-y divide-slate-100">
-                                    </tbody>
+                                <tbody id="corpoAdmin" class="divide-y divide-slate-100"></tbody>
                             </table>
                         </div>
                     </div>
@@ -256,52 +244,36 @@
         </div>
     </main>
 
-    <script>
-        const ZAP_DESTINO = "5579991063656";
-        const SENHA_ADMIN = "253641";
-        const horariosBase = ["20:00", "20:40", "21:20"];
-        const diasPermitidos = [1, 2, 4];
+    <script type="module">
+        // --- CONFIGURAÇÃO FIREBASE ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        let db = JSON.parse(localStorage.getItem('nutri_roberto_v8')) || [];
-        let bloqueios = JSON.parse(localStorage.getItem('nutri_bloqueios')) || [];
-        let financeiro = JSON.parse(localStorage.getItem('nutri_caixa')) || [];
-        let perfil = JSON.parse(localStorage.getItem('nutri_perfil')) || {
-            nome: "Dr. Roberto Vasconcelos",
-            crn: "CRN: 0000 / Sergipe",
-            especialidade: "Especialista em Nefrologia",
-            endereco: "Aracaju, SE",
-            foto: "https://via.placeholder.com/150"
+        const firebaseConfig = {
+            apiKey: "AIzaSyCv9PoYyDOM8bSSPbGB9kjP9rAzkCBylpE",
+            authDomain: "agendamentonutri-446cc.firebaseapp.com",
+            projectId: "agendamentonutri-446cc",
+            storageBucket: "agendamentonutri-446cc.firebasestorage.app",
+            messagingSenderId: "729656642200",
+            appId: "1:729656642200:web:aa42f41078637376e5deed",
+            databaseURL: "https://agendamentonutri-446cc-default-rtdb.firebaseio.com"
         };
 
-        // Função para carregar dados do perfil
-        function carregarPerfil() {
-            document.getElementById('display_nome_prof').innerText = perfil.nome;
-            document.getElementById('display_crn').innerText = perfil.crn;
-            document.getElementById('display_especialidade').innerText = perfil.especialidade;
-            document.getElementById('display_endereco').innerText = perfil.endereco;
-            document.getElementById('profilePreview').src = perfil.foto;
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-            // Preencher campos no admin também
-            document.getElementById('input_nome_prof').value = perfil.nome;
-            document.getElementById('input_crn').value = perfil.crn;
-            document.getElementById('input_especialidade').value = perfil.especialidade;
-            document.getElementById('input_endereco').value = perfil.endereco;
-        }
+        // --- VARIÁVEIS DE CONTROLE ---
+        const SENHA_ADMIN = "253641";
+        const horariosBase = ["20:00", "20:40", "21:20"];
+        const diasPermitidos = [1, 2, 4]; // Segunda, Terça, Quinta
 
-        async function salvarPerfil() {
-            const file = document.getElementById('input_foto').files[0];
-            if(file) perfil.foto = await toBase64(file);
-            
-            perfil.nome = document.getElementById('input_nome_prof').value;
-            perfil.crn = document.getElementById('input_crn').value;
-            perfil.especialidade = document.getElementById('input_especialidade').value;
-            perfil.endereco = document.getElementById('input_endereco').value;
+        // --- FUNÇÕES DE AUXÍLIO ---
+        const toBase64 = file => new Promise((res) => {
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = () => res(reader.result);
+        });
 
-            localStorage.setItem('nutri_perfil', JSON.stringify(perfil));
-            alert("Perfil Atualizado!");
-            carregarPerfil();
-        }
-
+        // --- CÁLCULO DE IMC ---
         function calcularIMC() {
             const p = parseFloat(document.getElementById('peso').value);
             const a = parseFloat(document.getElementById('altura').value);
@@ -316,33 +288,49 @@
             }
             return null;
         }
+        document.getElementById('peso').addEventListener('input', calcularIMC);
+        document.getElementById('altura').addEventListener('input', calcularIMC);
 
-        function popularHorarios() {
-            const dataInput = document.getElementById('dataConsulta').value;
+        // --- LÓGICA DE DATAS E HORÁRIOS ---
+        const dataInput = document.getElementById('dataConsulta');
+        dataInput.addEventListener('change', () => {
             const sel = document.getElementById('diaHora');
             sel.innerHTML = '<option value="">Selecione o horário...</option>';
-            if(!dataInput) return;
-            const diaSemana = new Date(dataInput + 'T00:00:00').getDay();
-            if(!diasPermitidos.includes(diaSemana) || bloqueios.includes(dataInput)) {
-                alert("Data indisponível!");
-                document.getElementById('dataConsulta').value = "";
-                return;
-            }
-            horariosBase.forEach(h => {
-                if(!db.find(a => a.dataConsulta === dataInput && a.horario === h)) {
-                    const opt = document.createElement('option'); opt.value = h; opt.textContent = h; sel.appendChild(opt);
-                }
-            });
-        }
+            const valorData = dataInput.value;
+            if(!valorData) return;
 
-        document.getElementById('formAgendamento').onsubmit = async function(e) {
+            const dataObj = new Date(valorData + 'T00:00:00');
+            const diaSemana = dataObj.getDay();
+
+            // Verifica bloqueios e dias da semana
+            onValue(ref(db, 'bloqueios'), (snap) => {
+                const listB = snap.val() || [];
+                if(!diasPermitidos.includes(diaSemana) || Object.values(listB).includes(valorData)) {
+                    alert("Data indisponível!");
+                    dataInput.value = "";
+                } else {
+                    // Popular horários que não estão ocupados
+                    onValue(ref(db, 'agendamentos'), (snapA) => {
+                        const agendados = snapA.val() || {};
+                        horariosBase.forEach(h => {
+                            const ocupado = Object.values(agendados).some(a => a.dataConsulta === valorData && a.horario === h);
+                            if(!ocupado) {
+                                const opt = document.createElement('option'); opt.value = h; opt.textContent = h; sel.appendChild(opt);
+                            }
+                        });
+                    });
+                }
+            }, { onlyOnce: true });
+        });
+
+        // --- SALVAR AGENDAMENTO ---
+        document.getElementById('formAgendamento').onsubmit = async (e) => {
             e.preventDefault();
             const imcData = calcularIMC();
             const file = document.getElementById('exames').files[0];
             const pdfBase64 = file ? await toBase64(file) : null;
 
             const novo = {
-                id: Date.now(),
                 nome: document.getElementById('nome').value,
                 whatsapp: document.getElementById('whatsapp').value,
                 nascimento: document.getElementById('nascimento').value,
@@ -355,127 +343,129 @@
                 classif: imcData ? imcData.categoria : '--',
                 motivo: document.getElementById('motivo').value,
                 medicacao: document.getElementById('medicacao').value,
-                pdf: pdfBase64
+                pdf: pdfBase64,
+                timestamp: Date.now()
             };
 
-            db.push(novo);
-            localStorage.setItem('nutri_roberto_v8', JSON.stringify(db));
-            alert("Agendado com sucesso!");
-            location.reload();
+            push(ref(db, 'agendamentos'), novo).then(() => {
+                alert("✅ Agendamento Sincronizado!");
+                location.reload();
+            });
         };
 
-        const toBase64 = file => new Promise((res) => {
-            const reader = new FileReader(); reader.readAsDataURL(file);
-            reader.onload = () => res(reader.result);
-        });
-
-        function acessarAdmin() {
+        // --- PAINEL ADMIN ---
+        window.acessarAdmin = () => {
             if(prompt("Senha Administrativa:") === SENHA_ADMIN) {
                 document.getElementById('painelAdmin').classList.remove('hidden');
-                renderTudoAdmin();
+                document.getElementById('painelAdmin').scrollIntoView({behavior: 'smooth'});
             }
-        }
+        };
 
-        function renderTudoAdmin() {
-            const totalR = financeiro.filter(f => f.tipo === 'receita').reduce((a, b) => a + b.valor, 0);
-            const totalD = financeiro.filter(f => f.tipo === 'despesa').reduce((a, b) => a + b.valor, 0);
-            
-            document.getElementById('stat_pacientes').innerText = db.length;
-            document.getElementById('stat_receita').innerText = `R$ ${totalR.toFixed(2)}`;
-            document.getElementById('stat_despesas').innerText = `R$ ${totalD.toFixed(2)}`;
-            document.getElementById('stat_saldo').innerText = `R$ ${(totalR - totalD).toFixed(2)}`;
-
+        // --- SYNC REALTIME (ADMIN) ---
+        onValue(ref(db, 'agendamentos'), (snap) => {
             const corpo = document.getElementById('corpoAdmin');
+            const data = snap.val();
             corpo.innerHTML = "";
-            db.sort((a,b) => new Date(a.dataConsulta) - new Date(b.dataConsulta)).forEach(a => {
-                corpo.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition-colors">
-                        <td class="p-4">
-                            <div class="font-black text-slate-800 text-sm uppercase mb-1">${a.nome}</div>
-                            <div class="grid grid-cols-2 gap-x-4 gap-y-1">
-                                <div class="mini-data"><span class="label-mini">Zap:</span>${a.whatsapp}</div>
-                                <div class="mini-data"><span class="label-mini">Nasc:</span>${a.nascimento.split('-').reverse().join('/')}</div>
-                                <div class="mini-data"><span class="label-mini">Convênio:</span>${a.cassie}</div>
-                                <div class="mini-data"><span class="label-mini">Físico:</span>${a.peso}kg / ${a.altura}m (IMC: ${a.imc})</div>
-                                <div class="mini-data col-span-2 italic text-emerald-700 font-semibold"><span class="label-mini">Motivo:</span>${a.motivo}</div>
-                                <div class="mini-data col-span-2 text-red-600"><span class="label-mini">Meds:</span>${a.medicacao || 'Nenhuma'}</div>
-                            </div>
-                        </td>
-                        <td class="p-4">
-                            <div class="bg-emerald-100 text-emerald-800 p-2 rounded-xl text-center">
-                                <p class="font-black text-xs">${a.dataConsulta.split('-').reverse().join('/')}</p>
-                                <p class="text-[10px] font-bold uppercase">${a.horario}</p>
-                            </div>
-                        </td>
-                        <td class="p-4 text-center">
-                            ${a.pdf ? `<button onclick="abrirPDF('${a.pdf}')" class="text-blue-600 hover:scale-110 transition-transform"><i class="fas fa-file-pdf text-xl"></i></button>` : '<span class="text-slate-300">--</span>'}
-                        </td>
-                        <td class="p-4 text-center">
-                            <button onclick="excluirAgendamento(${a.id})" class="btn-delete"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
-            renderFinanceiro();
-        }
+            let count = 0;
+            if(data) {
+                Object.keys(data).forEach(id => {
+                    const a = data[id];
+                    count++;
+                    corpo.innerHTML += `
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="p-4">
+                                <div class="font-black text-slate-800 text-sm uppercase mb-1">${a.nome}</div>
+                                <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+                                    <div class="mini-data"><span class="label-mini">Zap:</span>${a.whatsapp}</div>
+                                    <div class="mini-data"><span class="label-mini">Nasc:</span>${a.nascimento}</div>
+                                    <div class="mini-data"><span class="label-mini">IMC:</span>${a.imc} (${a.classif})</div>
+                                    <div class="mini-data col-span-2 italic text-emerald-700 font-semibold">${a.motivo}</div>
+                                </div>
+                            </td>
+                            <td class="p-4 text-center">
+                                <div class="bg-emerald-100 text-emerald-800 p-2 rounded-xl">
+                                    <p class="font-black text-xs">${a.dataConsulta}</p>
+                                    <p class="text-[10px] font-bold uppercase">${a.horario}</p>
+                                </div>
+                            </td>
+                            <td class="p-4 text-center">
+                                ${a.pdf ? `<button onclick="window.open().document.write('<iframe src=\\\'${a.pdf}\\\' style=\\\'width:100%; height:100vh; border:none;\\\'></iframe>')" class="text-blue-600"><i class="fas fa-file-pdf text-xl"></i></button>` : '--'}
+                            </td>
+                            <td class="p-4 text-center">
+                                <button onclick="window.removerItem('agendamentos/${id}')" class="text-red-500"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>`;
+                });
+            }
+            document.getElementById('stat_pacientes').innerText = count;
+        });
 
-        function abrirPDF(base64) {
-            const win = window.open();
-            win.document.write(`<iframe src="${base64}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100vh;" allowfullscreen></iframe>`);
-        }
+        // Financeiro Realtime
+        onValue(ref(db, 'financeiro'), (snap) => {
+            const listF = snap.val();
+            const container = document.getElementById('listaFinanceiro');
+            container.innerHTML = "";
+            let r = 0, d = 0;
+            if(listF) {
+                Object.keys(listF).forEach(id => {
+                    const f = listF[id];
+                    if(f.tipo === 'receita') r += parseFloat(f.valor); else d += parseFloat(f.valor);
+                    container.innerHTML += `
+                        <div class="flex justify-between items-center p-4 border-b">
+                            <div><p class="font-bold text-xs">${f.desc}</p><span class="text-[9px] uppercase font-black ${f.tipo === 'receita' ? 'text-emerald-500' : 'text-red-500'}">${f.tipo}</span></div>
+                            <div class="flex items-center gap-3"><span class="font-black">R$ ${parseFloat(f.valor).toFixed(2)}</span><i class="fas fa-trash btn-delete text-xs" onclick="window.removerItem('financeiro/${id}')"></i></div>
+                        </div>`;
+                });
+            }
+            document.getElementById('stat_receita').innerText = `R$ ${r.toFixed(2)}`;
+            document.getElementById('stat_despesas').innerText = `R$ ${d.toFixed(2)}`;
+            document.getElementById('stat_saldo').innerText = `R$ ${(r-d).toFixed(2)}`;
+        });
 
-        function renderFinanceiro() {
-            const listaF = document.getElementById('listaFinanceiro');
-            listaF.innerHTML = financeiro.length ? "" : "<p class='p-10 text-center text-slate-400'>Vazio.</p>";
-            financeiro.slice().sort((a,b) => new Date(b.dataLanca) - new Date(a.dataLanca)).forEach(f => {
-                listaF.innerHTML += `
-                    <div class="flex justify-between items-center p-4 border-b hover:bg-slate-50 transition-all">
-                        <div>
-                            <p class="font-bold text-xs">${f.desc}</p>
-                            <div class="flex gap-2 items-center">
-                                <p class="text-[9px] uppercase font-black ${f.tipo === 'receita' ? 'text-emerald-500' : 'text-red-500'}">${f.tipo}</p>
-                                <span class="text-[9px] text-slate-400 font-bold">${f.dataLanca ? f.dataLanca.split('-').reverse().join('/') : '--/--/--'}</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3"><span class="font-black text-sm">R$ ${f.valor.toFixed(2)}</span><i class="fas fa-trash-alt btn-delete text-xs" onclick="apagarValor(${f.id})"></i></div>
-                    </div>
-                `;
-            });
-        }
+        // Perfil Realtime
+        onValue(ref(db, 'perfil'), (snap) => {
+            const p = snap.val();
+            if(p) {
+                document.getElementById('display_nome_prof').innerText = p.nome;
+                document.getElementById('display_crn').innerText = p.crn;
+                document.getElementById('display_especialidade').innerText = p.especialidade;
+                document.getElementById('display_endereco').innerText = p.endereco;
+                document.getElementById('profilePreview').src = p.foto;
+            }
+        });
 
-        function salvarFinanceiro() {
+        // --- ACTIONS ---
+        window.removerItem = (path) => { if(confirm("Deseja apagar?")) remove(ref(db, path)); };
+
+        document.getElementById('btnRegistrarFinanceiro').onclick = () => {
             const desc = document.getElementById('gest_desc').value;
-            const valor = parseFloat(document.getElementById('gest_valor').value);
+            const valor = document.getElementById('gest_valor').value;
             const tipo = document.getElementById('gest_tipo').value;
             const dataLanca = document.getElementById('gest_data').value;
-            
-            if(!desc || !valor || !dataLanca) return alert("Preencha todos os campos, inclusive a data!");
-            
-            financeiro.push({ 
-                id: Date.now(), 
-                desc, 
-                valor, 
-                tipo, 
-                dataLanca,
-                dataSistema: new Date().toLocaleDateString() 
-            });
-            
-            localStorage.setItem('nutri_caixa', JSON.stringify(financeiro));
-            document.getElementById('gest_desc').value = ""; 
-            document.getElementById('gest_valor').value = "";
-            document.getElementById('gest_data').value = "";
-            renderTudoAdmin();
-        }
+            if(desc && valor) push(ref(db, 'financeiro'), { desc, valor, tipo, dataLanca });
+        };
 
-        function apagarValor(id) { if(confirm("Apagar registro?")) { financeiro = financeiro.filter(f => f.id !== id); localStorage.setItem('nutri_caixa', JSON.stringify(financeiro)); renderTudoAdmin(); } }
-        function excluirAgendamento(id) { if(confirm("Excluir paciente?")) { db = db.filter(d => d.id !== id); localStorage.setItem('nutri_roberto_v8', JSON.stringify(db)); renderTudoAdmin(); } }
-        function bloquearData() { const d = prompt("Bloquear data (AAAA-MM-DD):"); if(d) { bloqueios.push(d); localStorage.setItem('nutri_bloqueios', JSON.stringify(bloqueios)); alert("Bloqueado!"); } }
+        document.getElementById('btnSalvarPerfil').onclick = async () => {
+            const file = document.getElementById('input_foto').files[0];
+            const pData = {
+                nome: document.getElementById('input_nome_prof').value,
+                crn: document.getElementById('input_crn').value,
+                especialidade: document.getElementById('input_especialidade').value,
+                endereco: document.getElementById('input_endereco').value
+            };
+            if(file) pData.foto = await toBase64(file);
+            set(ref(db, 'perfil'), pData).then(() => alert("Perfil Sincronizado!"));
+        };
 
-        window.onload = () => { 
+        window.bloquearData = () => {
+            const d = prompt("Bloquear data (AAAA-MM-DD):");
+            if(d) push(ref(db, 'bloqueios'), d);
+        };
+
+        window.onload = () => {
             const hoje = new Date().toISOString().split('T')[0];
-            document.getElementById('dataConsulta').setAttribute('min', hoje); 
+            document.getElementById('dataConsulta').setAttribute('min', hoje);
             document.getElementById('gest_data').value = hoje;
-            carregarPerfil(); // Inicializa o perfil
         };
     </script>
 </body>
