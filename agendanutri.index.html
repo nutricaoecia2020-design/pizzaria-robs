@@ -24,6 +24,9 @@
         /* Estilo para Dados Miniaturizados */
         .mini-data { font-size: 0.65rem; line-height: 1rem; color: #64748b; }
         .label-mini { font-weight: 800; color: #0f172a; text-transform: uppercase; margin-right: 2px; }
+
+        /* Estilo da Foto de Perfil */
+        #profilePreview { object-fit: cover; border: 4px solid white; }
     </style>
 </head>
 <body class="antialiased">
@@ -42,6 +45,26 @@
     </header>
 
     <main class="max-w-7xl mx-auto px-4 -mt-24 mb-20">
+        
+        <div class="glass-card shadow-2xl p-6 mb-8 flex flex-col md:flex-row items-center gap-8 bg-white/90 backdrop-blur-lg border-emerald-100">
+            <div class="relative group">
+                <img id="profilePreview" src="https://via.placeholder.com/150" alt="Foto Profissional" class="w-40 h-40 rounded-3xl shadow-xl">
+            </div>
+            <div class="flex-1 text-center md:text-left">
+                <h3 class="text-2xl font-black text-slate-800 uppercase" id="display_nome_prof">Dr. Roberto Vasconcelos</h3>
+                <p class="text-emerald-600 font-extrabold text-sm mb-4 uppercase tracking-widest" id="display_crn">CRN: 0000 / Sergipe</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm font-bold text-slate-600">
+                    <div class="flex items-center justify-center md:justify-start gap-2">
+                        <i class="fas fa-graduation-cap text-emerald-500"></i>
+                        <span id="display_especialidade">Especialista em Nefrologia</span>
+                    </div>
+                    <div class="flex items-center justify-center md:justify-start gap-2">
+                        <i class="fas fa-map-marker-alt text-emerald-500"></i>
+                        <span id="display_endereco">Aracaju, SE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <div class="glass-card shadow-2xl p-6 md:p-12 relative z-20 mb-12">
             <div class="mb-10 flex items-center justify-between">
@@ -187,6 +210,19 @@
                                 </select>
                                 <button onclick="salvarFinanceiro()" class="col-span-2 bg-slate-900 text-white font-black py-4 rounded-2xl uppercase hover:bg-emerald-600 transition-all">Registrar</button>
                             </div>
+
+                            <h4 class="font-black text-slate-800 uppercase text-sm mt-10 mb-6 flex items-center gap-2 border-t pt-6">
+                                <i class="fas fa-user-edit text-blue-600"></i> Editar Perfil Profissional
+                            </h4>
+                            <div class="grid grid-cols-1 gap-4">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase">Foto (Quadrada Recomendada)</label>
+                                <input type="file" id="input_foto" accept="image/*" class="text-xs">
+                                <input type="text" id="input_nome_prof" class="input-clinical p-3 rounded-xl text-sm" placeholder="Nome Profissional">
+                                <input type="text" id="input_crn" class="input-clinical p-3 rounded-xl text-sm" placeholder="CRN / Estado">
+                                <input type="text" id="input_especialidade" class="input-clinical p-3 rounded-xl text-sm" placeholder="Especialidade">
+                                <input type="text" id="input_endereco" class="input-clinical p-3 rounded-xl text-sm" placeholder="Endereço/Cidade">
+                                <button onclick="salvarPerfil()" class="bg-blue-600 text-white font-black py-3 rounded-xl uppercase text-xs hover:bg-blue-500">Atualizar Perfil</button>
+                            </div>
                         </div>
 
                         <div class="bg-white rounded-[2rem] border-2 border-slate-100 overflow-hidden shadow-sm h-fit">
@@ -229,6 +265,42 @@
         let db = JSON.parse(localStorage.getItem('nutri_roberto_v8')) || [];
         let bloqueios = JSON.parse(localStorage.getItem('nutri_bloqueios')) || [];
         let financeiro = JSON.parse(localStorage.getItem('nutri_caixa')) || [];
+        let perfil = JSON.parse(localStorage.getItem('nutri_perfil')) || {
+            nome: "Dr. Roberto Vasconcelos",
+            crn: "CRN: 0000 / Sergipe",
+            especialidade: "Especialista em Nefrologia",
+            endereco: "Aracaju, SE",
+            foto: "https://via.placeholder.com/150"
+        };
+
+        // Função para carregar dados do perfil
+        function carregarPerfil() {
+            document.getElementById('display_nome_prof').innerText = perfil.nome;
+            document.getElementById('display_crn').innerText = perfil.crn;
+            document.getElementById('display_especialidade').innerText = perfil.especialidade;
+            document.getElementById('display_endereco').innerText = perfil.endereco;
+            document.getElementById('profilePreview').src = perfil.foto;
+
+            // Preencher campos no admin também
+            document.getElementById('input_nome_prof').value = perfil.nome;
+            document.getElementById('input_crn').value = perfil.crn;
+            document.getElementById('input_especialidade').value = perfil.especialidade;
+            document.getElementById('input_endereco').value = perfil.endereco;
+        }
+
+        async function salvarPerfil() {
+            const file = document.getElementById('input_foto').files[0];
+            if(file) perfil.foto = await toBase64(file);
+            
+            perfil.nome = document.getElementById('input_nome_prof').value;
+            perfil.crn = document.getElementById('input_crn').value;
+            perfil.especialidade = document.getElementById('input_especialidade').value;
+            perfil.endereco = document.getElementById('input_endereco').value;
+
+            localStorage.setItem('nutri_perfil', JSON.stringify(perfil));
+            alert("Perfil Atualizado!");
+            carregarPerfil();
+        }
 
         function calcularIMC() {
             const p = parseFloat(document.getElementById('peso').value);
@@ -403,6 +475,7 @@
             const hoje = new Date().toISOString().split('T')[0];
             document.getElementById('dataConsulta').setAttribute('min', hoje); 
             document.getElementById('gest_data').value = hoje;
+            carregarPerfil(); // Inicializa o perfil
         };
     </script>
 </body>
