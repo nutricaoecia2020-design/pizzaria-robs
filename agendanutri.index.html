@@ -8,212 +8,149 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #eff6ff; color: #1e293b; }
-        .clinical-header { background: linear-gradient(135deg, #047857 0%, #064e3b 100%); }
-        .glass-card { background: white; border: 2px solid #e2e8f0; border-radius: 2rem; }
-        .input-clinical { border: 2px solid #cbd5e1; transition: all 0.3s; background: #fff; }
-        .input-clinical:focus { border-color: #059669; box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1); outline: none; }
+        /* Design Cores Vibrantes - Neon Medical */
+        :root {
+            --neon-green: #00ff88;
+            --deep-blue: #0f172a;
+            --electric-blue: #2563eb;
+            --vibrant-orange: #f59e0b;
+        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f8; color: #1e293b; }
         
-        /* Dashboard Admin - Cores Fortes */
-        .admin-bg { background-color: #0f172a; }
-        .card-stats { background: #fff; border-left: 6px solid #10b981; transition: transform 0.2s; }
-        .card-stats:hover { transform: translateY(-5px); }
-        .btn-delete { color: #ef4444; cursor: pointer; transition: 0.2s; }
-        .btn-delete:hover { color: #b91c1c; transform: scale(1.2); }
-
-        /* Estilo para Dados Miniaturizados */
-        .mini-data { font-size: 0.65rem; line-height: 1rem; color: #64748b; }
-        .label-mini { font-weight: 800; color: #0f172a; text-transform: uppercase; margin-right: 2px; }
+        .clinical-header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .glass-card { background: white; border: 2px solid #e2e8f0; border-radius: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
+        
+        /* Dashboard Admin - Estilo Vibrante */
+        .admin-bg { background-color: #0f172a; } 
+        .card-stats { background: white; border-top: 6px solid; border-radius: 1.5rem; transition: transform 0.2s; }
+        .input-clinical { border: 2px solid #e2e8f0; border-radius: 1rem; padding: 0.75rem 1rem; font-weight: 600; width: 100%; transition: all 0.3s; }
+        .input-clinical:focus { border-color: #10b981; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1); outline: none; }
+        
+        .mini-data { font-size: 0.7rem; line-height: 1.1rem; color: #475569; }
+        .label-mini { font-weight: 800; color: #0f172a; text-transform: uppercase; margin-right: 3px; }
+        
+        /* Botões Vibrantes */
+        .btn-vibrante { background: linear-gradient(to right, #10b981, #3b82f6); color: white; font-weight: 800; border-radius: 1rem; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-vibrante:hover { transform: scale(1.02); filter: brightness(1.1); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4); }
     </style>
 </head>
 <body class="antialiased">
 
     <header class="clinical-header text-white pt-16 pb-32 px-4 shadow-2xl relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
         <div class="max-w-6xl mx-auto text-center relative z-10">
-            <div class="flex items-center justify-center gap-4 mb-4">
-                <div class="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
-                    <i class="fas fa-apple-alt text-4xl text-emerald-300"></i>
-                </div>
-                <h1 class="text-4xl md:text-6xl font-black tracking-tighter uppercase">ROBERTO <span class="text-emerald-400">VASCONCELOS</span></h1>
-            </div>
-            <p class="text-emerald-100/90 text-sm md:text-xl font-bold tracking-[0.3em] uppercase">Nutricionista Clínico & Nefrologia</p>
+            <h1 class="text-4xl md:text-6xl font-black tracking-tighter uppercase">ROBERTO <span class="text-emerald-300">VASCONCELOS</span></h1>
+            <p class="text-emerald-100/90 text-sm md:text-xl font-bold tracking-[0.3em] uppercase mt-2">Nutricionista Clínico & Nefrologia</p>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 -mt-24 mb-20">
+    <main class="max-w-7xl mx-auto px-4 -mt-20 mb-20">
         
-        <div class="glass-card shadow-2xl p-6 md:p-12 relative z-20 mb-12">
-            <div class="mb-10 flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-emerald-600 text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-3xl font-black text-slate-800 tracking-tight">Agende sua Consulta</h2>
-                        <p class="text-emerald-600 font-bold text-sm">Preencha os dados abaixo para confirmar.</p>
-                    </div>
+        <div class="glass-card p-6 md:p-12 mb-12">
+            <h2 class="text-2xl font-black text-slate-800 mb-8 border-l-8 border-emerald-500 pl-4 uppercase">Agende sua Consulta</h2>
+            <form id="formAgendamento" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input type="text" id="nome" required class="input-clinical md:col-span-2" placeholder="Nome Completo">
+                    <input type="tel" id="whatsapp" required class="input-clinical" placeholder="WhatsApp">
                 </div>
-            </div>
-
-            <form id="formAgendamento" class="space-y-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-black text-slate-500 uppercase mb-2">Nome Completo</label>
-                        <input type="text" id="nome" required class="input-clinical w-full p-4 rounded-2xl font-semibold" placeholder="Digite o nome completo">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black text-slate-500 uppercase mb-2">WhatsApp (com DDD)</label>
-                        <input type="tel" id="whatsapp" required class="input-clinical w-full p-4 rounded-2xl font-semibold" placeholder="(79) 90000-0000">
-                    </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="date" id="nascimento" required class="input-clinical">
+                    <input type="text" id="cassie" required class="input-clinical" placeholder="Cartão CASSI">
+                    <input type="date" id="dataConsulta" required class="input-clinical" onchange="popularHorarios()">
+                    <select id="diaHora" required class="input-clinical"><option value="">Horário</option></select>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div>
-                        <label class="block text-xs font-black text-slate-500 uppercase mb-2">Nascimento</label>
-                        <input type="date" id="nascimento" required class="input-clinical w-full p-4 rounded-2xl font-semibold text-slate-600">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black text-slate-500 uppercase mb-2">Cartão CASSI</label>
-                        <input type="text" id="cassie" required class="input-clinical w-full p-4 rounded-2xl font-semibold" placeholder="Nº Beneficiário">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black text-slate-500 uppercase mb-2">Data Consulta</label>
-                        <input type="date" id="dataConsulta" required class="input-clinical w-full p-4 rounded-2xl font-semibold" onchange="popularHorarios()">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black text-slate-500 uppercase mb-2">Horário</label>
-                        <select id="diaHora" required class="input-clinical w-full p-4 rounded-2xl font-bold cursor-pointer appearance-none">
-                            <option value="">Escolha a data...</option>
-                        </select>
-                    </div>
+                <div class="bg-emerald-50 p-6 rounded-3xl grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                    <input type="number" step="0.1" id="peso" required class="input-clinical" placeholder="Peso (kg)" oninput="calcularIMC()">
+                    <input type="number" step="0.01" id="altura" required class="input-clinical" placeholder="Altura (m)" oninput="calcularIMC()">
+                    <div class="bg-emerald-600 text-white p-4 rounded-2xl text-center font-black" id="boxIMC"> IMC: -- </div>
                 </div>
-
-                <div class="bg-slate-50 p-8 rounded-[2rem] border-2 border-dashed border-emerald-200 grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
-                    <div>
-                        <label class="block text-xs font-black text-emerald-800 uppercase mb-2">Peso Atual (kg)</label>
-                        <input type="number" step="0.1" id="peso" required class="input-clinical w-full p-4 rounded-2xl font-bold" placeholder="00.0" oninput="calcularIMC()">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black text-emerald-800 uppercase mb-2">Altura (m)</label>
-                        <input type="number" step="0.01" id="altura" required class="input-clinical w-full p-4 rounded-2xl font-bold" placeholder="1.00" oninput="calcularIMC()">
-                    </div>
-                    <div class="bg-emerald-600 p-5 rounded-2xl shadow-lg flex flex-col justify-center text-white">
-                        <span id="resultadoIMC" class="text-xl font-black">IMC: --</span>
-                        <span id="classificacaoIMC" class="text-xs font-bold uppercase opacity-80 italic">Aguardando dados...</span>
-                    </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <textarea id="motivo" required class="input-clinical h-24" placeholder="Motivo da consulta"></textarea>
+                    <textarea id="medicacao" class="input-clinical h-24" placeholder="Medicações em uso"></textarea>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="space-y-4">
-                        <label class="block text-xs font-black text-slate-600 uppercase">Motivo da consulta / Anamnese</label>
-                        <textarea id="motivo" required class="input-clinical w-full p-4 rounded-2xl h-32 font-medium" placeholder="Descreva brevemente sua queixa ou objetivo..."></textarea>
-                    </div>
-                    <div class="space-y-4">
-                        <label class="block text-xs font-black text-slate-600 uppercase">Medicações ou Suplementos</label>
-                        <textarea id="medicacao" class="input-clinical w-full p-4 rounded-2xl h-32 font-medium" placeholder="Ex: Vitaminas, remédios para pressão..."></textarea>
-                    </div>
+                <div class="bg-slate-100 p-4 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4">
+                    <span class="font-bold text-xs uppercase text-slate-500">Anexar PDF de Exames:</span>
+                    <input type="file" id="exames" accept="application/pdf" class="text-sm">
                 </div>
-
-                <div class="bg-blue-600 p-6 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div class="text-white">
-                        <h4 class="font-black uppercase text-sm flex items-center gap-2"><i class="fas fa-cloud-upload-alt"></i> Anexar Exames Recentes</h4>
-                        <p class="text-xs text-blue-100">Somente arquivos PDF são aceitos.</p>
-                    </div>
-                    <input type="file" id="exames" accept="application/pdf" class="text-sm text-blue-100 file:bg-white file:text-blue-600 file:px-6 file:py-2 file:rounded-xl file:border-0 file:font-black cursor-pointer">
-                </div>
-
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-6 rounded-3xl shadow-2xl hover:scale-[1.02] transition-all flex items-center justify-center gap-4 text-2xl uppercase tracking-widest">
-                    Confirmar e Enviar <i class="fab fa-whatsapp"></i>
-                </button>
+                <button type="submit" class="w-full btn-vibrante py-5 text-xl">Confirmar Agendamento <i class="fab fa-whatsapp ml-2"></i></button>
             </form>
         </div>
 
-        <div class="text-center py-10">
-            <button onclick="acessarAdmin()" class="bg-slate-800 text-white px-8 py-3 rounded-full font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl">
-                <i class="fas fa-lock mr-2"></i> Painel de Gestão Clínica
+        <div class="text-center mb-10">
+            <button onclick="acessarAdmin()" class="bg-slate-800 text-white px-8 py-3 rounded-full font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all">
+                <i class="fas fa-lock mr-2"></i> Painel Administrativo
             </button>
         </div>
 
         <div id="painelAdmin" class="hidden">
-            <div class="admin-bg rounded-[3rem] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden border-4 border-slate-700 mb-20">
+            <div class="admin-bg rounded-[3rem] shadow-2xl overflow-hidden border-4 border-slate-800">
                 
-                <div class="p-8 bg-slate-900 flex flex-col md:flex-row justify-between items-center border-b border-slate-700 gap-6">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
-                            <i class="fas fa-chart-pie text-xl"></i>
-                        </div>
-                        <h3 class="text-white font-black text-xl uppercase tracking-tighter">Dashboard <span class="text-emerald-500 font-light">Administrativo</span></h3>
-                    </div>
-                    <div class="flex gap-4">
-                        <button onclick="bloquearData()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-6 py-3 rounded-2xl font-black text-[10px] uppercase transition-all shadow-lg shadow-amber-500/20">Bloquear Agenda</button>
-                        <button onclick="location.reload()" class="bg-red-500 hover:bg-red-400 text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase transition-all shadow-lg shadow-red-500/20">Sair com Segurança</button>
+                <div class="p-8 bg-slate-900/50 flex flex-col md:flex-row justify-between items-center border-b border-slate-800 gap-4">
+                    <h3 class="text-white font-black text-2xl uppercase italic">Dashboard <span class="text-emerald-400">Vibrante</span></h3>
+                    <div class="flex gap-2">
+                        <button onclick="bloquearData()" class="bg-orange-500 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase">Bloquear Data</button>
+                        <button onclick="location.reload()" class="bg-red-500 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase">Sair</button>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 p-8 bg-slate-800/50">
-                    <div class="card-stats p-6 rounded-3xl border-emerald-500">
-                        <p class="text-[10px] font-black text-slate-400 uppercase">Total de Pacientes</p>
-                        <h4 id="stat_pacientes" class="text-3xl font-black text-slate-800">0</h4>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-8">
+                    <div class="card-stats p-6 border-emerald-400">
+                        <p class="text-[10px] font-black text-slate-400 uppercase">Pacientes</p>
+                        <h4 id="stat_pacientes" class="text-3xl font-black text-emerald-600">0</h4>
                     </div>
-                    <div class="card-stats p-6 rounded-3xl border-blue-500">
-                        <p class="text-[10px] font-black text-slate-400 uppercase">Receita Bruta</p>
+                    <div class="card-stats p-6 border-blue-400">
+                        <p class="text-[10px] font-black text-slate-400 uppercase">Receita</p>
                         <h4 id="stat_receita" class="text-3xl font-black text-blue-600">R$ 0,00</h4>
                     </div>
-                    <div class="card-stats p-6 rounded-3xl border-red-500">
-                        <p class="text-[10px] font-black text-slate-400 uppercase">Despesas Ativas</p>
+                    <div class="card-stats p-6 border-red-400">
+                        <p class="text-[10px] font-black text-slate-400 uppercase">Despesas</p>
                         <h4 id="stat_despesas" class="text-3xl font-black text-red-600">R$ 0,00</h4>
                     </div>
-                    <div class="card-stats p-6 rounded-3xl border-amber-500">
-                        <p class="text-[10px] font-black text-slate-400 uppercase">Saldo Líquido</p>
+                    <div class="card-stats p-6 border-amber-400">
+                        <p class="text-[10px] font-black text-slate-400 uppercase">Líquido</p>
                         <h4 id="stat_saldo" class="text-3xl font-black text-slate-800">R$ 0,00</h4>
                     </div>
                 </div>
 
-                <div class="p-8 grid grid-cols-1 lg:grid-cols-1 gap-10 bg-white">
+                <div class="p-8 grid grid-cols-1 lg:grid-cols-1 gap-8 bg-white">
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="bg-slate-50 p-8 rounded-[2rem] border-2 border-slate-200 h-fit">
-                            <h4 class="font-black text-slate-800 uppercase text-sm mb-6 flex items-center gap-2">
-                                <i class="fas fa-plus-circle text-emerald-600"></i> Novo Valor
-                            </h4>
-                            <div class="grid grid-cols-2 gap-4">
-                                <input type="text" id="gest_desc" class="input-clinical col-span-2 p-4 rounded-2xl font-bold" placeholder="Descrição">
-                                <input type="number" id="gest_valor" class="input-clinical p-4 rounded-2xl font-bold" placeholder="Valor R$">
-                                <select id="gest_tipo" class="input-clinical p-4 rounded-2xl font-bold">
-                                    <option value="receita">Receita</option>
-                                    <option value="despesa">Despesa</option>
+                        <div class="bg-slate-50 p-6 rounded-[2rem] border-2 border-slate-200">
+                            <h4 class="font-black uppercase text-sm mb-4 text-emerald-600"><i class="fas fa-plus-circle"></i> Novo Lançamento</h4>
+                            <div class="grid grid-cols-1 gap-3">
+                                <input type="text" id="gest_desc" class="input-clinical" placeholder="Descrição (Ex: Consulta João)">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <input type="number" id="gest_valor" class="input-clinical" placeholder="Valor R$">
+                                    <input type="date" id="gest_data" class="input-clinical"> </div>
+                                <select id="gest_tipo" class="input-clinical">
+                                    <option value="receita">Entrada (Receita)</option>
+                                    <option value="despesa">Saída (Despesa)</option>
                                 </select>
-                                <button onclick="salvarFinanceiro()" class="col-span-2 bg-slate-900 text-white font-black py-4 rounded-2xl uppercase hover:bg-emerald-600 transition-all">Registrar</button>
+                                <button onclick="salvarFinanceiro()" class="btn-vibrante py-4">Registrar no Caixa</button>
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-[2rem] border-2 border-slate-100 overflow-hidden shadow-sm h-fit">
-                            <div class="p-4 bg-slate-800 text-white text-[10px] font-black uppercase">Últimas Movimentações</div>
+                        <div class="bg-white rounded-[2rem] border-2 border-slate-100 overflow-hidden shadow-sm">
+                            <div class="p-4 bg-slate-900 text-white text-[10px] font-black uppercase">Movimentações Recentes</div>
                             <div class="max-h-60 overflow-y-auto" id="listaFinanceiro"></div>
                         </div>
                     </div>
 
                     <div class="bg-white rounded-[2rem] border-2 border-slate-100 overflow-hidden shadow-sm">
-                        <div class="p-4 bg-emerald-600 text-white text-[10px] font-black uppercase flex justify-between">
-                            <span>Próximos Agendamentos (Dados Completos)</span>
-                            <span id="total_lista" class="italic"></span>
-                        </div>
+                        <div class="p-4 bg-emerald-600 text-white text-[10px] font-black uppercase">Dados dos Próximos Pacientes</div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
-                                <thead class="bg-slate-50 border-b">
-                                    <tr class="text-[10px] font-black uppercase text-slate-500">
-                                        <th class="p-4">Paciente & Dados Clínicos</th>
-                                        <th class="p-4 w-32">Data/Hora</th>
-                                        <th class="p-4 text-center">PDF</th>
-                                        <th class="p-4 text-center">Ação</th>
+                                <thead class="bg-slate-50 border-b text-[10px] font-black uppercase text-slate-500">
+                                    <tr>
+                                        <th class="p-4">Paciente & Ficha Clínica</th>
+                                        <th class="p-4 w-32">Consulta</th>
+                                        <th class="p-4 text-center">Ações</th>
                                     </tr>
                                 </thead>
-                                <tbody id="corpoAdmin" class="divide-y divide-slate-100">
-                                    </tbody>
+                                <tbody id="corpoAdmin" class="divide-y divide-slate-100"></tbody>
                             </table>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -225,50 +162,49 @@
         const horariosBase = ["20:00", "20:40", "21:20"];
         const diasPermitidos = [1, 2, 4];
 
-        let db = JSON.parse(localStorage.getItem('nutri_roberto_v8')) || [];
-        let bloqueios = JSON.parse(localStorage.getItem('nutri_bloqueios')) || [];
-        let financeiro = JSON.parse(localStorage.getItem('nutri_caixa')) || [];
+        let db = JSON.parse(localStorage.getItem('nutri_v9_data')) || [];
+        let financeiro = JSON.parse(localStorage.getItem('nutri_v9_fin')) || [];
+        let bloqueios = JSON.parse(localStorage.getItem('nutri_v9_bloq')) || [];
 
+        // IMC
         function calcularIMC() {
             const p = parseFloat(document.getElementById('peso').value);
             const a = parseFloat(document.getElementById('altura').value);
-            const res = document.getElementById('resultadoIMC');
-            const classif = document.getElementById('classificacaoIMC');
-            if (p > 0 && a > 0) {
-                const imc = (p / (a * a)).toFixed(1);
-                res.innerText = `IMC: ${imc}`;
-                let cat = imc < 18.5 ? "Baixo Peso" : imc < 25 ? "Normal" : imc < 30 ? "Sobrepeso" : "Obesidade";
-                classif.innerText = cat;
-                return { valor: imc, categoria: cat };
+            if(p > 0 && a > 0) {
+                const imc = (p / (a*a)).toFixed(1);
+                document.getElementById('boxIMC').innerText = `IMC: ${imc}`;
+                return imc;
             }
-            return null;
+            return '--';
         }
 
+        // Horários
         function popularHorarios() {
-            const dataInput = document.getElementById('dataConsulta').value;
+            const data = document.getElementById('dataConsulta').value;
             const sel = document.getElementById('diaHora');
-            sel.innerHTML = '<option value="">Selecione o horário...</option>';
-            if(!dataInput) return;
-            const diaSemana = new Date(dataInput + 'T00:00:00').getDay();
-            if(!diasPermitidos.includes(diaSemana) || bloqueios.includes(dataInput)) {
-                alert("Data indisponível!");
+            sel.innerHTML = '<option value="">Horário</option>';
+            if(!data) return;
+            const diaS = new Date(data + 'T00:00:00').getDay();
+            if(!diasPermitidos.includes(diaS) || bloqueios.includes(data)) {
+                alert("Data Indisponível!");
                 document.getElementById('dataConsulta').value = "";
                 return;
             }
             horariosBase.forEach(h => {
-                if(!db.find(a => a.dataConsulta === dataInput && a.horario === h)) {
-                    const opt = document.createElement('option'); opt.value = h; opt.textContent = h; sel.appendChild(opt);
+                if(!db.find(x => x.dataConsulta === data && x.horario === h)) {
+                    let o = document.createElement('option'); o.value = h; o.text = h; sel.add(o);
                 }
             });
         }
 
+        // Salvar Agendamento
         document.getElementById('formAgendamento').onsubmit = async function(e) {
             e.preventDefault();
-            const imcData = calcularIMC();
+            const imcVal = calcularIMC();
             const file = document.getElementById('exames').files[0];
-            const pdfBase64 = file ? await toBase64(file) : null;
+            const pdf = file ? await toBase64(file) : null;
 
-            const novo = {
+            const registro = {
                 id: Date.now(),
                 nome: document.getElementById('nome').value,
                 whatsapp: document.getElementById('whatsapp').value,
@@ -278,108 +214,112 @@
                 horario: document.getElementById('diaHora').value,
                 peso: document.getElementById('peso').value,
                 altura: document.getElementById('altura').value,
-                imc: imcData ? imcData.valor : '--',
-                classif: imcData ? imcData.categoria : '--',
+                imc: imcVal,
                 motivo: document.getElementById('motivo').value,
                 medicacao: document.getElementById('medicacao').value,
-                pdf: pdfBase64
+                pdf: pdf
             };
 
-            db.push(novo);
-            localStorage.setItem('nutri_roberto_v8', JSON.stringify(db));
-            alert("Agendado com sucesso!");
+            db.push(registro);
+            localStorage.setItem('nutri_v9_data', JSON.stringify(db));
+            alert("Sucesso! Roberto Vasconcelos receberá seu contato.");
+            window.open(`https://wa.me/${ZAP_DESTINO}?text=Olá! Novo Agendamento: ${registro.nome} para dia ${registro.dataConsulta}`);
             location.reload();
         };
 
-        const toBase64 = file => new Promise((res) => {
-            const reader = new FileReader(); reader.readAsDataURL(file);
-            reader.onload = () => res(reader.result);
-        });
+        const toBase64 = f => new Promise(r => { let rd = new FileReader(); rd.readAsDataURL(f); rd.onload = () => r(rd.result); });
 
+        // Admin
         function acessarAdmin() {
-            if(prompt("Senha Administrativa:") === SENHA_ADMIN) {
+            if(prompt("Senha:") === SENHA_ADMIN) {
                 document.getElementById('painelAdmin').classList.remove('hidden');
-                renderTudoAdmin();
+                document.getElementById('gest_data').value = new Date().toISOString().split('T')[0];
+                renderTudo();
             }
         }
 
-        function renderTudoAdmin() {
-            const totalR = financeiro.filter(f => f.tipo === 'receita').reduce((a, b) => a + b.valor, 0);
-            const totalD = financeiro.filter(f => f.tipo === 'despesa').reduce((a, b) => a + b.valor, 0);
-            
-            document.getElementById('stat_pacientes').innerText = db.length;
-            document.getElementById('stat_receita').innerText = `R$ ${totalR.toFixed(2)}`;
-            document.getElementById('stat_despesas').innerText = `R$ ${totalD.toFixed(2)}`;
-            document.getElementById('stat_saldo').innerText = `R$ ${(totalR - totalD).toFixed(2)}`;
+        function salvarFinanceiro() {
+            const f = {
+                id: Date.now(),
+                desc: document.getElementById('gest_desc').value,
+                valor: parseFloat(document.getElementById('gest_valor').value),
+                data: document.getElementById('gest_data').value, // SALVANDO A DATA SELECIONADA
+                tipo: document.getElementById('gest_tipo').value
+            };
+            if(!f.desc || !f.valor || !f.data) return alert("Preencha tudo!");
+            financeiro.push(f);
+            localStorage.setItem('nutri_v9_fin', JSON.stringify(financeiro));
+            renderTudo();
+        }
 
+        function renderTudo() {
+            // Totais
+            const rec = financeiro.filter(x => x.tipo === 'receita').reduce((a,b) => a + b.valor, 0);
+            const des = financeiro.filter(x => x.tipo === 'despesa').reduce((a,b) => a + b.valor, 0);
+            document.getElementById('stat_pacientes').innerText = db.length;
+            document.getElementById('stat_receita').innerText = `R$ ${rec.toFixed(2)}`;
+            document.getElementById('stat_despesas').innerText = `R$ ${des.toFixed(2)}`;
+            document.getElementById('stat_saldo').innerText = `R$ ${(rec-des).toFixed(2)}`;
+
+            // Tabela Pacientes Detalhada
             const corpo = document.getElementById('corpoAdmin');
             corpo.innerHTML = "";
-            db.sort((a,b) => new Date(a.dataConsulta) - new Date(b.dataConsulta)).forEach(a => {
+            db.sort((a,b) => new Date(a.dataConsulta) - new Date(b.dataConsulta)).forEach(p => {
                 corpo.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition-colors">
+                    <tr class="hover:bg-emerald-50 transition-colors">
                         <td class="p-4">
-                            <div class="font-black text-slate-800 text-sm uppercase mb-1">${a.nome}</div>
+                            <div class="font-black text-slate-900 uppercase text-sm mb-1">${p.nome}</div>
                             <div class="grid grid-cols-2 gap-x-4 gap-y-1">
-                                <div class="mini-data"><span class="label-mini">Zap:</span>${a.whatsapp}</div>
-                                <div class="mini-data"><span class="label-mini">Nasc:</span>${a.nascimento.split('-').reverse().join('/')}</div>
-                                <div class="mini-data"><span class="label-mini">Convênio:</span>${a.cassie}</div>
-                                <div class="mini-data"><span class="label-mini">Físico:</span>${a.peso}kg / ${a.altura}m (IMC: ${a.imc})</div>
-                                <div class="mini-data col-span-2 italic text-emerald-700 font-semibold"><span class="label-mini">Motivo:</span>${a.motivo}</div>
-                                <div class="mini-data col-span-2 text-red-600"><span class="label-mini">Meds:</span>${a.medicacao || 'Nenhuma'}</div>
+                                <div class="mini-data"><span class="label-mini">Zap:</span>${p.whatsapp}</div>
+                                <div class="mini-data"><span class="label-mini">Convênio:</span>${p.cassie}</div>
+                                <div class="mini-data"><span class="label-mini">Físico:</span>${p.peso}kg / ${p.altura}m (IMC: ${p.imc})</div>
+                                <div class="mini-data"><span class="label-mini">Nasc:</span>${p.nascimento.split('-').reverse().join('/')}</div>
+                                <div class="mini-data col-span-2 text-emerald-700 font-bold"><span class="label-mini text-slate-900">Motivo:</span>${p.motivo}</div>
+                                <div class="mini-data col-span-2 text-red-500 font-bold"><span class="label-mini text-slate-900">Meds:</span>${p.medicacao || 'Nenhuma'}</div>
                             </div>
                         </td>
                         <td class="p-4">
-                            <div class="bg-emerald-100 text-emerald-800 p-2 rounded-xl text-center">
-                                <p class="font-black text-xs">${a.dataConsulta.split('-').reverse().join('/')}</p>
-                                <p class="text-[10px] font-bold uppercase">${a.horario}</p>
+                            <div class="bg-slate-900 text-white p-2 rounded-xl text-center">
+                                <p class="font-black text-[10px]">${p.dataConsulta.split('-').reverse().join('/')}</p>
+                                <p class="text-[9px] text-emerald-400 font-black uppercase">${p.horario}</p>
                             </div>
                         </td>
-                        <td class="p-4 text-center">
-                            ${a.pdf ? `<button onclick="abrirPDF('${a.pdf}')" class="text-blue-600 hover:scale-110 transition-transform"><i class="fas fa-file-pdf text-xl"></i></button>` : '<span class="text-slate-300">--</span>'}
-                        </td>
-                        <td class="p-4 text-center">
-                            <button onclick="excluirAgendamento(${a.id})" class="btn-delete"><i class="fas fa-trash"></i></button>
+                        <td class="p-4 text-center flex justify-center gap-3">
+                            ${p.pdf ? `<button onclick="abrirPDF('${p.pdf}')" class="text-blue-600 text-xl"><i class="fas fa-file-pdf"></i></button>` : ''}
+                            <button onclick="excluirPaciente(${p.id})" class="text-red-500 text-xl"><i class="fas fa-trash-alt"></i></button>
                         </td>
                     </tr>
                 `;
             });
-            renderFinanceiro();
-        }
 
-        function abrirPDF(base64) {
-            const win = window.open();
-            win.document.write(`<iframe src="${base64}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100vh;" allowfullscreen></iframe>`);
-        }
-
-        function renderFinanceiro() {
+            // Lista Financeira com Data
             const listaF = document.getElementById('listaFinanceiro');
-            listaF.innerHTML = financeiro.length ? "" : "<p class='p-10 text-center text-slate-400'>Vazio.</p>";
+            listaF.innerHTML = "";
             financeiro.slice().reverse().forEach(f => {
                 listaF.innerHTML += `
-                    <div class="flex justify-between items-center p-4 border-b">
-                        <div><p class="font-bold text-xs">${f.desc}</p><p class="text-[9px] uppercase font-black ${f.tipo === 'receita' ? 'text-emerald-500' : 'text-red-500'}">${f.tipo}</p></div>
-                        <div class="flex items-center gap-3"><span class="font-black text-sm">R$ ${f.valor.toFixed(2)}</span><i class="fas fa-trash-alt btn-delete text-xs" onclick="apagarValor(${f.id})"></i></div>
+                    <div class="flex justify-between items-center p-4 border-b hover:bg-slate-50">
+                        <div>
+                            <p class="font-bold text-xs uppercase">${f.desc}</p>
+                            <p class="text-[9px] font-black text-slate-400 italic">${f.data.split('-').reverse().join('/')} | ${f.tipo}</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="font-black ${f.tipo === 'receita' ? 'text-emerald-600' : 'text-red-500'}">R$ ${f.valor.toFixed(2)}</span>
+                            <button onclick="apagarFin(${f.id})" class="text-red-400 hover:text-red-600"><i class="fas fa-times-circle"></i></button>
+                        </div>
                     </div>
                 `;
             });
         }
 
-        function salvarFinanceiro() {
-            const desc = document.getElementById('gest_desc').value;
-            const valor = parseFloat(document.getElementById('gest_valor').value);
-            const tipo = document.getElementById('gest_tipo').value;
-            if(!desc || !valor) return alert("Dados incompletos!");
-            financeiro.push({ id: Date.now(), desc, valor, tipo, data: new Date().toLocaleDateString() });
-            localStorage.setItem('nutri_caixa', JSON.stringify(financeiro));
-            document.getElementById('gest_desc').value = ""; document.getElementById('gest_valor').value = "";
-            renderTudoAdmin();
-        }
+        function abrirPDF(b64) { let w = window.open(); w.document.write(`<iframe src="${b64}" frameborder="0" style="width:100%; height:100vh;"></iframe>`); }
+        function apagarFin(id) { if(confirm("Apagar?")) { financeiro = financeiro.filter(x => x.id !== id); localStorage.setItem('nutri_v9_fin', JSON.stringify(financeiro)); renderTudo(); } }
+        function excluirPaciente(id) { if(confirm("Excluir?")) { db = db.filter(x => x.id !== id); localStorage.setItem('nutri_v9_data', JSON.stringify(db)); renderTudo(); } }
+        function bloquearData() { const d = prompt("Data (AAAA-MM-DD):"); if(d) { bloqueios.push(d); localStorage.setItem('nutri_v9_bloq', JSON.stringify(bloqueios)); alert("Bloqueada!"); } }
 
-        function apagarValor(id) { if(confirm("Apagar registro?")) { financeiro = financeiro.filter(f => f.id !== id); localStorage.setItem('nutri_caixa', JSON.stringify(financeiro)); renderTudoAdmin(); } }
-        function excluirAgendamento(id) { if(confirm("Excluir paciente?")) { db = db.filter(d => d.id !== id); localStorage.setItem('nutri_roberto_v8', JSON.stringify(db)); renderTudoAdmin(); } }
-        function bloquearData() { const d = prompt("Bloquear data (AAAA-MM-DD):"); if(d) { bloqueios.push(d); localStorage.setItem('nutri_bloqueios', JSON.stringify(bloqueios)); alert("Bloqueado!"); } }
-
-        window.onload = () => { document.getElementById('dataConsulta').setAttribute('min', new Date().toISOString().split('T')[0]); };
+        window.onload = () => { 
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('dataConsulta').setAttribute('min', hoje); 
+        };
     </script>
 </body>
 </html>
