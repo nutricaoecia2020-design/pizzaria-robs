@@ -1,109 +1,253 @@
-<section class="mb-10">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold text-gray-800">O que você quer hoje?</h2>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Local | Peça Agora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .category-card:hover { transform: translateY(-5px); transition: 0.3s; }
+        /* Esconde a barra de rolagem mas mantém a funcionalidade */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-2xl font-bold text-red-600 tracking-tighter">MEU<span class="text-gray-800">DELIVERY</span></h1>
+                    <div class="hidden md:flex items-center text-sm text-gray-500 bg-gray-100 p-2 rounded-lg">
+                        <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>
+                        <span>Entregar em: <strong>Rua das Flores, 123</strong></span>
+                    </div>
+                </div>
+                
+                <div class="flex-1 max-w-md mx-8 hidden md:block">
+                    <div class="relative">
+                        <input type="text" placeholder="Buscar lojas ou pratos..." class="w-full bg-gray-100 border-none rounded-full py-2 pl-10 focus:ring-2 focus:ring-red-500">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <button class="text-gray-600 font-medium">Entrar</button>
+                    <button class="relative bg-red-100 p-2 rounded-full text-red-600">
+                        <i class="fas fa-shopping-bag text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">0</span>
+                    </button>
+                </div>
             </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <section class="mb-10">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">O que você quer hoje?</h2>
             
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🍔</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Lanchonetes</span>
+                    <span class="text-sm font-semibold text-gray-700">Lanchonetes</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🛒</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Supermercados</span>
+                    <span class="text-sm font-semibold text-gray-700">Supermercados</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🍱</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Orientais</span>
+                    <span class="text-sm font-semibold text-gray-700">Orientais</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">👕</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Roupas</span>
+                    <span class="text-sm font-semibold text-gray-700">Roupas</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🍽️</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Restaurantes</span>
+                    <span class="text-sm font-semibold text-gray-700">Restaurantes</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🍎</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Hortifruti</span>
+                    <span class="text-sm font-semibold text-gray-700">Hortifruti</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🍰</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Docerias</span>
+                    <span class="text-sm font-semibold text-gray-700">Docerias</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">💄</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Cosméticos</span>
+                    <span class="text-sm font-semibold text-gray-700">Cosméticos</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🔥</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Gás e Água</span>
+                    <span class="text-sm font-semibold text-gray-700">Gás e Água</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">💊</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Farmácias</span>
+                    <span class="text-sm font-semibold text-gray-700">Farmácias</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🍺</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Bares</span>
+                    <span class="text-sm font-semibold text-gray-700">Bares</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">📚</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Livrarias</span>
+                    <span class="text-sm font-semibold text-gray-700">Livrarias</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🧀</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Empórios</span>
+                    <span class="text-sm font-semibold text-gray-700">Empórios</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🍕</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Pizzarias</span>
+                    <span class="text-sm font-semibold text-gray-700">Pizzarias</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🥩</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Açougues</span>
+                    <span class="text-sm font-semibold text-gray-700">Açougues</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🎧</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Tecnologia</span>
+                    <span class="text-sm font-semibold text-gray-700">Tecnologia</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🥗</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Naturais</span>
+                    <span class="text-sm font-semibold text-gray-700">Naturais</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🍦</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Sorveterias</span>
+                    <span class="text-sm font-semibold text-gray-700">Sorveterias</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🐶</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">PetShops</span>
+                    <span class="text-sm font-semibold text-gray-700">PetShops</span>
                 </div>
 
-                <div class="category-card bg-white p-4 rounded-2xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-transparent hover:border-purple-500 hover:shadow-md transition-all">
+                <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
                     <div class="text-3xl mb-2">🎁</div>
-                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider text-center">Variedades</span>
+                    <span class="text-sm font-semibold text-gray-700">Variedades</span>
                 </div>
 
             </div>
         </section>
+
+        <section>
+            <div class="flex justify-between items-end mb-6">
+                <h2 class="text-xl font-bold text-gray-800">Lojas Disponíveis</h2>
+                <a href="#" class="text-red-600 text-sm font-bold hover:underline">Ver todas</a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition cursor-pointer border border-gray-100">
+                    <div class="relative h-40 bg-gray-200">
+                        <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=500&q=80" alt="Pizza" class="w-full h-full object-cover">
+                        <div class="absolute top-3 right-3 bg-white px-2 py-1 rounded-lg text-xs font-bold shadow-sm">
+                            <i class="fas fa-star text-yellow-400"></i> 4.8
+                        </div>
+                    </div>
+                    <div class="p-4 flex items-center gap-4">
+                        <div class="w-12 h-12 bg-white rounded-full border border-gray-100 flex items-center justify-center -mt-10 z-10 shadow-sm overflow-hidden">
+                            <img src="https://via.placeholder.com/50" alt="Logo">
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-800">Pizzaria do Bairro</h3>
+                            <p class="text-xs text-gray-500 italic">Pizza • 3.2km</p>
+                        </div>
+                        <div class="text-right text-xs">
+                            <span class="block font-bold text-green-600">30-45 min</span>
+                            <span class="text-gray-400">Frete R$ 5,00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition cursor-pointer border border-gray-100">
+                    <div class="relative h-40 bg-gray-200">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80" alt="Burger" class="w-full h-full object-cover">
+                        <div class="absolute top-3 right-3 bg-white px-2 py-1 rounded-lg text-xs font-bold shadow-sm">
+                            <i class="fas fa-star text-yellow-400"></i> 4.5
+                        </div>
+                    </div>
+                    <div class="p-4 flex items-center gap-4">
+                        <div class="w-12 h-12 bg-white rounded-full border border-gray-100 flex items-center justify-center -mt-10 z-10 shadow-sm overflow-hidden">
+                            <img src="https://via.placeholder.com/50" alt="Logo">
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-800">Burguer House</h3>
+                            <p class="text-xs text-gray-500 italic">Lanches • 1.5km</p>
+                        </div>
+                        <div class="text-right text-xs">
+                            <span class="block font-bold text-green-600">20-35 min</span>
+                            <span class="text-gray-400">Frete Grátis</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition cursor-pointer border border-gray-100">
+                    <div class="relative h-40 bg-gray-200">
+                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80" alt="Salada" class="w-full h-full object-cover">
+                        <div class="absolute top-3 right-3 bg-white px-2 py-1 rounded-lg text-xs font-bold shadow-sm">
+                            <i class="fas fa-star text-yellow-400"></i> 4.9
+                        </div>
+                    </div>
+                    <div class="p-4 flex items-center gap-4">
+                        <div class="w-12 h-12 bg-white rounded-full border border-gray-100 flex items-center justify-center -mt-10 z-10 shadow-sm overflow-hidden">
+                            <img src="https://via.placeholder.com/50" alt="Logo">
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-800">Saúde no Prato</h3>
+                            <p class="text-xs text-gray-500 italic">Saudável • 4.1km</p>
+                        </div>
+                        <div class="text-right text-xs">
+                            <span class="block font-bold text-green-600">40-55 min</span>
+                            <span class="text-gray-400">Frete R$ 8,00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-3 z-50">
+        <button class="text-red-600 flex flex-col items-center">
+            <i class="fas fa-home"></i>
+            <span class="text-[10px]">Início</span>
+        </button>
+        <button class="text-gray-400 flex flex-col items-center">
+            <i class="fas fa-search"></i>
+            <span class="text-[10px]">Buscar</span>
+        </button>
+        <button class="text-gray-400 flex flex-col items-center">
+            <i class="fas fa-list-alt"></i>
+            <span class="text-[10px]">Pedidos</span>
+        </button>
+        <button class="text-gray-400 flex flex-col items-center">
+            <i class="fas fa-user"></i>
+            <span class="text-[10px]">Perfil</span>
+        </button>
+    </div>
+
+</body>
+</html>
