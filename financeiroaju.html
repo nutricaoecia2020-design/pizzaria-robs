@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Gestão de Boletos e Comissões</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 flex h-screen overflow-hidden">
+
+    <aside class="w-64 bg-gray-900 text-white flex-shrink-0 hidden md:flex flex-col">
+        <div class="p-6">
+            <h1 class="text-xl font-bold text-red-500 uppercase tracking-tighter">Entrega<br><span class="text-white">Administrativa</span></h1>
+        </div>
+        <nav class="flex-1 px-4 space-y-2">
+            <a href="painel.html" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-chart-line mr-3"></i> Painel</a>
+            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-store mr-3"></i> Lojas Cadastradas</a>
+            <a href="painel.html" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-plus-circle mr-3"></i> Nova Loja</a>
+            <a href="vendas.html" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-shopping-cart mr-3"></i> Vendas / Pedidos</a>
+            <a href="#" class="flex items-center p-3 bg-red-600 rounded-lg text-white"><i class="fas fa-file-invoice-dollar mr-3"></i> Comissões / Boletos</a>
+            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-cog mr-3"></i> Configurações</a>
+        </nav>
+        <div class="p-4 border-t border-gray-800">
+            <button class="flex items-center text-gray-400 hover:text-red-400"><i class="fas fa-sign-out-alt mr-2"></i> Sair</button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-y-auto">
+        
+        <header class="bg-white shadow-sm p-4 flex justify-between items-center sticky top-0 z-10">
+            <h2 class="text-xl font-semibold text-gray-700">Financeiro & Boletos</h2>
+            <div class="flex items-center gap-4">
+                <button class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-green-700 transition">
+                    <i class="fas fa-file-export mr-2"></i> Relatório Mensal
+                </button>
+            </div>
+        </header>
+
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-blue-500">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-gray-500 font-bold uppercase">Total Emitido (Mês)</p>
+                            <h4 class="text-3xl font-black text-gray-800 mt-1">R$ 5.840,00</h4>
+                        </div>
+                        <i class="fas fa-file-invoice text-blue-100 text-4xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-green-500">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-gray-500 font-bold uppercase">Total Recebido</p>
+                            <h4 class="text-3xl font-black text-green-600 mt-1">R$ 4.200,00</h4>
+                        </div>
+                        <i class="fas fa-check-circle text-green-100 text-4xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-red-500">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-gray-500 font-bold uppercase">Aguardando Pagamento</p>
+                            <h4 class="text-3xl font-black text-red-500 mt-1">R$ 1.640,00</h4>
+                        </div>
+                        <i class="fas fa-clock text-red-100 text-4xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-4 bg-gray-50 border-b border-gray-100">
+                    <h3 class="font-bold text-gray-700">Histórico de Cobranças</h3>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 text-xs font-bold text-gray-400 uppercase">
+                            <tr>
+                                <th class="px-6 py-4">Ref. Boleto</th>
+                                <th class="px-6 py-4">Loja Parceira</th>
+                                <th class="px-6 py-4">Vencimento</th>
+                                <th class="px-6 py-4">Valor Boleto</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4 text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 font-mono text-sm text-blue-600">BOL-2026-001</td>
+                                <td class="px-6 py-4 font-bold text-gray-700 text-sm">Pizzaria do Bairro</td>
+                                <td class="px-6 py-4 text-sm text-gray-500">30/03/2026</td>
+                                <td class="px-6 py-4 text-sm font-black text-gray-800">R$ 450,00</td>
+                                <td class="px-6 py-4">
+                                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-[10px] font-bold">AGUARDANDO</span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <button class="text-gray-400 hover:text-blue-600 mr-3"><i class="fas fa-eye"></i> Ver</button>
+                                    <button class="text-gray-400 hover:text-green-600"><i class="fas fa-paper-plane"></i> Reenviar</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 font-mono text-sm text-blue-600">BOL-2026-002</td>
+                                <td class="px-6 py-4 font-bold text-gray-700 text-sm">Burguer House</td>
+                                <td class="px-6 py-4 text-sm text-gray-500">28/03/2026</td>
+                                <td class="px-6 py-4 text-sm font-black text-gray-800">R$ 1.200,00</td>
+                                <td class="px-6 py-4">
+                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold">LIQUIDADO</span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-xs text-green-600 font-medium italic">Recebido em 24/03</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
