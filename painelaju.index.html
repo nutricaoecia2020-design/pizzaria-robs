@@ -78,7 +78,7 @@
 
                         <div class="pt-4 flex justify-end">
                             <button type="button" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg mr-3 font-medium hover:bg-gray-300">Cancelar</button>
-                            <button type="submit" class="bg-red-600 text-white px-8 py-2 rounded-lg font-bold hover:bg-red-700 shadow-lg transition">CADASTRAR LOJA</button>
+                            <button type="submit" id="btnCadastrar" class="bg-red-600 text-white px-8 py-2 rounded-lg font-bold hover:bg-red-700 shadow-lg transition uppercase">Cadastrar Loja</button>
                         </div>
                     </form>
                 </div>
@@ -90,11 +90,11 @@
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
                         <p class="text-sm text-gray-500 uppercase font-bold">Comissão Acumulada</p>
-                        <h4 id="resumoComissao" class="text-2xl font-black text-blue-600">R$ 0,00</h4>
+                        <h4 class="text-2xl font-black text-blue-600">R$ 0,00</h4>
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-orange-500">
                         <p class="text-sm text-gray-500 uppercase font-bold">Lojas Ativas</p>
-                        <h4 id="totalLojas" class="text-2xl font-black text-gray-800">0</h4>
+                        <h4 id="contadorLojas" class="text-2xl font-black text-gray-800">0</h4>
                     </div>
                 </div>
             </div>
@@ -105,7 +105,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Suas configurações do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyATFpMv8Qd7XqypPjD4RRIzFd80EBdUDjc",
             authDomain: "deliveryaju-3e6bf.firebaseapp.com",
@@ -119,32 +118,43 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Cadastro de Loja
         const form = document.getElementById('formCadastro');
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
+        const btn = document.getElementById('btnCadastrar');
 
-            const dadosLoja = {
+        // Função para Cadastrar
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            btn.disabled = true;
+            btn.innerText = "CADASTRANDO...";
+
+            const novaLoja = {
                 nome: document.getElementById('nome').value,
                 categoria: document.getElementById('categoria').value,
                 comissao: document.getElementById('comissao').value,
                 tempo: document.getElementById('tempo').value,
                 endereco: document.getElementById('endereco').value,
-                imagem: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=500&q=80", // Imagem padrão
-                nota: (Math.random() * (5 - 4.2) + 4.2).toFixed(1) // Nota aleatória para o visual
+                // Imagens fixas para teste enquanto não fazemos o upload
+                imagem: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500",
+                nota: "4.9"
             };
 
-            push(ref(db, 'lojas'), dadosLoja).then(() => {
-                alert("Sucesso! Loja enviada para o site externo.");
+            try {
+                await push(ref(db, 'lojas'), novaLoja);
+                alert("SUCESSO! Loja cadastrada no banco de dados.");
                 form.reset();
-            }).catch((err) => alert("Erro ao cadastrar: " + err.message));
+            } catch (error) {
+                alert("Erro ao salvar: " + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "CADASTRAR LOJA";
+            }
         });
 
-        // Atualizar Contador de Lojas no Painel em tempo real
+        // Atualizar Contador de Lojas em tempo real
         onValue(ref(db, 'lojas'), (snapshot) => {
             const data = snapshot.val();
-            const count = data ? Object.keys(data).length : 0;
-            document.getElementById('totalLojas').innerText = count;
+            const total = data ? Object.keys(data).length : 0;
+            document.getElementById('contadorLojas').innerText = total;
         });
     </script>
 </body>
