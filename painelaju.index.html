@@ -15,87 +15,75 @@
         </div>
         <nav class="flex-1 px-4 space-y-2">
             <a href="#" class="flex items-center p-3 bg-red-600 rounded-lg"><i class="fas fa-chart-line mr-3"></i> Dashboard</a>
-            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-store mr-3"></i> Lojas Cadastradas</a>
-            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-plus-circle mr-3"></i> Nova Loja</a>
-            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-file-invoice-dollar mr-3"></i> Comissões</a>
-            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-cog mr-3"></i> Configurações</a>
+            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-store mr-3"></i> Lojas</a>
+            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-utensils mr-3"></i> Produtos</a>
         </nav>
-        <div class="p-4 border-t border-gray-800">
-            <button class="flex items-center text-gray-400 hover:text-red-400"><i class="fas fa-sign-out-alt mr-2"></i> Sair</button>
-        </div>
+        <div class="p-4 border-t border-gray-800 text-xs text-gray-500 text-center">v1.2 - Firebase Conectado</div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-y-auto">
         <header class="bg-white shadow-sm p-4 flex justify-between items-center">
-            <h2 class="text-xl font-semibold text-gray-700">Cadastrar Nova Loja</h2>
+            <h2 class="text-xl font-semibold text-gray-700">Gestão do Marketplace</h2>
             <div class="flex items-center gap-4">
                 <span class="text-sm text-gray-500">Bem-vindo, <strong>Admin</strong></span>
                 <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center"><i class="fas fa-user text-gray-400"></i></div>
             </div>
         </header>
 
-        <div class="p-6">
-            <div class="max-w-4xl mx-auto">
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div class="p-6 border-b border-gray-100">
-                        <h3 class="font-bold text-gray-800">Informações da Loja</h3>
-                        <p class="text-sm text-gray-500">Preencha os dados abaixo para publicar a loja no site.</p>
+        <div class="p-6 space-y-10">
+            <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-4 border-b border-gray-100 bg-gray-50 rounded-t-xl">
+                        <h3 class="font-bold text-gray-800"><i class="fas fa-store mr-2 text-red-500"></i>Nova Loja</h3>
                     </div>
-                    
-                    <form id="formCadastro" class="p-6 space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Nome da Loja</label>
-                                <input type="text" id="nome" required placeholder="Ex: Pizzaria do Bairro" class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:ring-red-500">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Categoria Principal</label>
-                                <select id="categoria" class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:ring-red-500">
-                                    <option>Lanchonetes</option>
-                                    <option>Pizzarias</option>
-                                    <option>Supermercados</option>
-                                    <option>Farmácias</option>
-                                    <option>PetShops</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Comissão (%)</label>
-                                <input type="number" id="comissao" placeholder="Ex: 10" class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:ring-red-500">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Tempo Médio Entrega (min)</label>
-                                <input type="text" id="tempo" placeholder="Ex: 30-45" class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:ring-red-500">
-                            </div>
+                    <form id="formCadastroLoja" class="p-6 space-y-4">
+                        <input type="text" id="nomeLoja" placeholder="Nome da Loja" class="w-full border rounded-lg p-2.5 bg-gray-50 border-gray-300 focus:ring-red-500" required>
+                        <select id="categoriaLoja" class="w-full border rounded-lg p-2.5 bg-gray-50 border-gray-300">
+                            <option>Pizzarias</option>
+                            <option>Lanchonetes</option>
+                            <option>Saudáveis</option>
+                            <option>Doces</option>
+                            <option>PetShop</option>
+                        </select>
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="text" id="tempoEntrega" placeholder="Tempo (ex: 30-40)" class="border rounded-lg p-2.5 bg-gray-50 border-gray-300">
+                            <input type="number" id="comissaoLoja" placeholder="Comissão %" class="border rounded-lg p-2.5 bg-gray-50 border-gray-300">
                         </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Endereço Completo</label>
-                            <input type="text" id="endereco" placeholder="Rua, Número, Bairro" class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:ring-red-500">
-                        </div>
-
-                        <div class="pt-4 flex justify-end">
-                            <button type="button" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg mr-3 font-medium hover:bg-gray-300">Cancelar</button>
-                            <button type="submit" id="btnCadastrar" class="bg-red-600 text-white px-8 py-2 rounded-lg font-bold hover:bg-red-700 shadow-lg transition uppercase">Cadastrar Loja</button>
-                        </div>
+                        <input type="text" id="enderecoLoja" placeholder="Endereço Completo" class="w-full border rounded-lg p-2.5 bg-gray-50 border-gray-300">
+                        <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 transition">CADASTRAR LOJA</button>
                     </form>
                 </div>
 
-                <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
-                        <p class="text-sm text-gray-500 uppercase font-bold">Vendas Totais</p>
-                        <h4 class="text-2xl font-black text-gray-800">R$ 0,00</h4>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-4 border-b border-gray-100 bg-gray-50 rounded-t-xl">
+                        <h3 class="font-bold text-gray-800"><i class="fas fa-hamburger mr-2 text-blue-500"></i>Novo Produto</h3>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
-                        <p class="text-sm text-gray-500 uppercase font-bold">Comissão Acumulada</p>
-                        <h4 class="text-2xl font-black text-blue-600">R$ 0,00</h4>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-orange-500">
-                        <p class="text-sm text-gray-500 uppercase font-bold">Lojas Ativas</p>
-                        <h4 id="contadorLojas" class="text-2xl font-black text-gray-800">0</h4>
-                    </div>
+                    <form id="formCadastroProduto" class="p-6 space-y-4">
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Vincular à Loja:</label>
+                        <select id="selectLojasDisponiveis" class="w-full border rounded-lg p-2.5 bg-blue-50 border-blue-200 focus:ring-blue-500" required>
+                            <option value="">Carregando lojas...</option>
+                        </select>
+                        
+                        <input type="text" id="nomeProd" placeholder="Nome do Produto (ex: Pizza G)" class="w-full border rounded-lg p-2.5 bg-gray-50 border-gray-300" required>
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="number" step="0.01" id="precoProd" placeholder="Preço R$" class="border rounded-lg p-2.5 bg-gray-50 border-gray-300" required>
+                            <input type="text" id="descProd" placeholder="Descrição curta" class="border rounded-lg p-2.5 bg-gray-50 border-gray-300">
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition uppercase">Adicionar ao Cardápio</button>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-orange-500">
+                    <p class="text-xs text-gray-400 font-bold uppercase">Lojas no Sistema</p>
+                    <h4 id="resumoLojas" class="text-3xl font-black text-gray-800">0</h4>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-blue-500">
+                    <p class="text-xs text-gray-400 font-bold uppercase">Produtos Cadastrados</p>
+                    <h4 id="resumoProdutos" class="text-3xl font-black text-gray-800">0</h4>
                 </div>
             </div>
         </div>
@@ -118,44 +106,77 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const form = document.getElementById('formCadastro');
-        const btn = document.getElementById('btnCadastrar');
+        // --- REFERÊNCIAS ---
+        const selectLojas = document.getElementById('selectLojasDisponiveis');
+        const resumoLojas = document.getElementById('resumoLojas');
+        const resumoProdutos = document.getElementById('resumoProdutos');
 
-        // Função para Cadastrar
-        form.addEventListener('submit', async (e) => {
+        // --- 1. SINCRONIZAR LOJAS (Para o Select e Contador) ---
+        onValue(ref(db, 'lojas'), (snapshot) => {
+            const lojas = snapshot.val();
+            selectLojas.innerHTML = '<option value="">Selecione a Loja...</option>';
+            let totalLojas = 0;
+
+            if (lojas) {
+                Object.keys(lojas).forEach(id => {
+                    totalLojas++;
+                    selectLojas.innerHTML += `<option value="${id}">${lojas[id].nome}</option>`;
+                });
+            }
+            resumoLojas.innerText = totalLojas;
+        });
+
+        // --- 2. CONTADOR TOTAL DE PRODUTOS ---
+        onValue(ref(db, 'produtos'), (snapshot) => {
+            const allProds = snapshot.val();
+            let totalGeral = 0;
+            if (allProds) {
+                Object.keys(allProds).forEach(lojaId => {
+                    totalGeral += Object.keys(allProds[lojaId]).length;
+                });
+            }
+            resumoProdutos.innerText = totalGeral;
+        });
+
+        // --- 3. CADASTRO DE LOJA ---
+        document.getElementById('formCadastroLoja').addEventListener('submit', async (e) => {
             e.preventDefault();
-            btn.disabled = true;
-            btn.innerText = "CADASTRANDO...";
-
             const novaLoja = {
-                nome: document.getElementById('nome').value,
-                categoria: document.getElementById('categoria').value,
-                comissao: document.getElementById('comissao').value,
-                tempo: document.getElementById('tempo').value,
-                endereco: document.getElementById('endereco').value,
-                // Imagens fixas para teste enquanto não fazemos o upload
+                nome: document.getElementById('nomeLoja').value,
+                categoria: document.getElementById('categoriaLoja').value,
+                tempo: document.getElementById('tempoEntrega').value,
+                comissao: document.getElementById('comissaoLoja').value,
+                endereco: document.getElementById('enderecoLoja').value,
                 imagem: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500",
-                nota: "4.9"
+                nota: "5.0"
+            };
+            try {
+                await push(ref(db, 'lojas'), novaLoja);
+                alert("Loja Cadastrada!");
+                e.target.reset();
+            } catch (err) { alert(err.message); }
+        });
+
+        // --- 4. CADASTRO DE PRODUTO ---
+        document.getElementById('formCadastroProduto').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const lojaId = selectLojas.value;
+            if(!lojaId) return alert("Selecione uma loja primeiro!");
+
+            const produto = {
+                nome: document.getElementById('nomeProd').value,
+                preco: document.getElementById('precoProd').value,
+                descricao: document.getElementById('descProd').value,
+                imagem: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200"
             };
 
             try {
-                await push(ref(db, 'lojas'), novaLoja);
-                alert("SUCESSO! Loja cadastrada no banco de dados.");
-                form.reset();
-            } catch (error) {
-                alert("Erro ao salvar: " + error.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "CADASTRAR LOJA";
-            }
+                await push(ref(db, 'produtos/' + lojaId), produto);
+                alert("Produto adicionado ao cardápio!");
+                e.target.reset();
+            } catch (err) { alert(err.message); }
         });
 
-        // Atualizar Contador de Lojas em tempo real
-        onValue(ref(db, 'lojas'), (snapshot) => {
-            const data = snapshot.val();
-            const total = data ? Object.keys(data).length : 0;
-            document.getElementById('contadorLojas').innerText = total;
-        });
     </script>
 </body>
 </html>
