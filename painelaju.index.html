@@ -3,115 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin | Gerenciar Marketplace</title>
+    <title>Delivery Local | Peça Já</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .category-card:hover { transform: translateY(-5px); transition: all 0.3s; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .modal-active { overflow: hidden; }
+    </style>
 </head>
-<body class="bg-gray-100 flex h-screen overflow-hidden">
+<body class="bg-gray-50 text-gray-800">
 
-    <aside class="w-64 bg-gray-900 text-white flex-shrink-0 hidden md:flex flex-col">
-        <div class="p-6">
-            <h1 class="text-xl font-bold text-red-500">ADMIN<span class="text-white">DELIVERY</span></h1>
-        </div>
-        <nav class="flex-1 px-4 space-y-2">
-            <a href="#" class="flex items-center p-3 bg-red-600 rounded-lg"><i class="fas fa-chart-line mr-3"></i> Dashboard</a>
-            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-store mr-3"></i> Lojas</a>
-            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-utensils mr-3"></i> Produtos</a>
-        </nav>
-        <div class="p-4 border-t border-gray-800 text-xs text-gray-500 text-center">v1.3 - Firebase Conectado</div>
-    </aside>
-
-    <main class="flex-1 flex flex-col overflow-y-auto">
-        <header class="bg-white shadow-sm p-4 flex justify-between items-center">
-            <h2 class="text-xl font-semibold text-gray-700">Gestão do Marketplace</h2>
-            <div class="flex items-center gap-4">
-                <span class="text-sm text-gray-500">Bem-vindo, <strong>Admin</strong></span>
-                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center"><i class="fas fa-user text-gray-400"></i></div>
-            </div>
-        </header>
-
-        <div class="p-6 space-y-10">
-            <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
-                
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                    <div class="p-4 border-b border-gray-100 bg-gray-50 rounded-t-xl">
-                        <h3 class="font-bold text-gray-800"><i class="fas fa-store mr-2 text-red-500"></i>Nova Loja</h3>
-                    </div>
-                    <form id="formCadastroLoja" class="p-6 space-y-4">
-                        <input type="text" id="nomeLoja" placeholder="Nome da Loja" class="w-full border rounded-lg p-2.5 bg-gray-50 border-gray-300 focus:ring-red-500" required>
-                        <select id="categoriaLoja" class="w-full border rounded-lg p-2.5 bg-gray-50 border-gray-300">
-                            <option>Pizzarias</option>
-                            <option>Lanchonetes</option>
-                            <option>Saudáveis</option>
-                            <option>Doces</option>
-                            <option>PetShop</option>
-                        </select>
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" id="tempoEntrega" placeholder="Tempo (ex: 30-40)" class="border rounded-lg p-2.5 bg-gray-50 border-gray-300">
-                            <input type="number" id="comissaoLoja" placeholder="Comissão %" class="border rounded-lg p-2.5 bg-gray-50 border-gray-300">
-                        </div>
-                        <input type="text" id="enderecoLoja" placeholder="Endereço Completo" class="w-full border rounded-lg p-2.5 bg-gray-50 border-gray-300">
-                        <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 transition">CADASTRAR LOJA</button>
-                    </form>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                    <div class="p-4 border-b border-gray-100 bg-gray-50 rounded-t-xl">
-                        <h3 class="font-bold text-gray-800"><i class="fas fa-hamburger mr-2 text-blue-500"></i>Novo Produto</h3>
-                    </div>
-                    <form id="formCadastroProduto" class="p-6 space-y-4">
-                        <label class="block text-xs font-bold text-gray-400 uppercase">Vincular à Loja:</label>
-                        <select id="selectLojasDisponiveis" class="w-full border rounded-lg p-2.5 bg-blue-50 border-blue-200 focus:ring-blue-500" required>
-                            <option value="">Carregando lojas...</option>
-                        </select>
-                        
-                        <input type="text" id="nomeProd" placeholder="Nome do Produto (ex: Pizza Calabresa)" class="w-full border rounded-lg p-2.5 bg-gray-50 border-gray-300" required>
-                        <input type="url" id="imgProd" placeholder="Link da Imagem (URL)" class="w-full border rounded-lg p-2.5 bg-gray-50 border-gray-300">
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="number" step="0.01" id="precoProd" placeholder="Preço R$" class="border rounded-lg p-2.5 bg-gray-50 border-gray-300" required>
-                            <input type="text" id="descProd" placeholder="Descrição (ingredientes)" class="border rounded-lg p-2.5 bg-gray-50 border-gray-300">
-                        </div>
-                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition uppercase">Adicionar ao Cardápio</button>
-                    </form>
-                </div>
-
-            </div>
-
-            <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="p-4 border-b border-gray-100 bg-gray-50 font-bold text-gray-800 text-sm">
-                    <i class="fas fa-list mr-2 text-orange-500"></i> Lojas Cadastradas
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-gray-100 text-gray-600 text-xs uppercase font-bold">
-                                <th class="p-4">Nome</th>
-                                <th class="p-4">Categoria</th>
-                                <th class="p-4 text-center">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelaLojasBody" class="text-sm text-gray-700"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-orange-500">
-                    <p class="text-xs text-gray-400 font-bold uppercase">Lojas Ativas</p>
-                    <h4 id="resumoLojas" class="text-3xl font-black text-gray-800">0</h4>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-blue-500">
-                    <p class="text-xs text-gray-400 font-bold uppercase">Produtos Totais</p>
-                    <h4 id="resumoProdutos" class="text-3xl font-black text-gray-800">0</h4>
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-black text-red-600 tracking-tighter cursor-pointer" onclick="location.reload()">MEU<span class="text-gray-900">DELIVERY</span></h1>
+            <div class="flex items-center gap-6">
+                <div class="relative cursor-pointer" onclick="abrirCarrinho()">
+                    <i class="fas fa-shopping-bag text-2xl text-red-600"></i>
+                    <span id="badge-carrinho" class="absolute -top-2 -right-2 bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
                 </div>
             </div>
         </div>
-    </main>
+    </header>
+
+    <section class="container mx-auto px-4 py-8">
+        <div class="flex overflow-x-auto gap-4 pb-4 no-scrollbar">
+            <div class="category-card min-w-[100px] bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
+                <div class="text-3xl mb-2">🍕</div><span class="text-xs font-bold text-gray-600">Pizzarias</span>
+            </div>
+            <div class="category-card min-w-[100px] bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
+                <div class="text-3xl mb-2">🍔</div><span class="text-xs font-bold text-gray-600">Lanches</span>
+            </div>
+            <div class="category-card min-w-[100px] bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
+                <div class="text-3xl mb-2">🥗</div><span class="text-xs font-bold text-gray-600">Saudáveis</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="container mx-auto px-4 py-6">
+        <h2 class="text-xl font-bold text-gray-800 uppercase mb-6 tracking-tight">Lojas Disponíveis</h2>
+        <div id="lista-lojas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+    </section>
+
+    <div id="modal-loja" class="fixed inset-0 bg-black/50 z-[60] hidden flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-2xl h-[90vh] md:h-auto md:max-h-[85vh] rounded-t-3xl md:rounded-3xl overflow-hidden flex flex-col">
+            <div class="relative h-40 bg-gray-200">
+                <img id="modal-loja-img" src="" class="w-full h-full object-cover">
+                <button onclick="fecharModal()" class="absolute top-4 right-4 bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <div class="mb-6">
+                    <h2 id="modal-loja-nome" class="text-2xl font-black text-gray-800"></h2>
+                    <p id="modal-loja-cat" class="text-sm text-gray-500"></p>
+                </div>
+                <div id="lista-produtos" class="space-y-4 pb-20">
+                    </div>
+            </div>
+            <div class="p-4 border-t bg-white sticky bottom-0">
+                <button onclick="fecharModal()" class="w-full bg-gray-100 py-3 rounded-xl font-bold text-gray-600">Voltar para Lojas</button>
+            </div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyATFpMv8Qd7XqypPjD4RRIzFd80EBdUDjc",
@@ -126,91 +83,129 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const selectLojas = document.getElementById('selectLojasDisponiveis');
-        const tabelaLojasBody = document.getElementById('tabelaLojasBody');
+        let carrinho = [];
+        let lojaAtual = null;
 
-        // 1. SINCRONIZAÇÃO DE LOJAS
+        // 1. CARREGAR LOJAS
         onValue(ref(db, 'lojas'), (snapshot) => {
             const lojas = snapshot.val();
-            selectLojas.innerHTML = '<option value="">Selecione a Loja...</option>';
-            tabelaLojasBody.innerHTML = "";
-            let total = 0;
+            const container = document.getElementById('lista-lojas');
+            container.innerHTML = "";
 
             if (lojas) {
-                Object.keys(lojas).forEach(id => {
-                    total++;
+                Object.keys(lojas).forEach((id) => {
                     const loja = lojas[id];
-                    selectLojas.innerHTML += `<option value="${id}">${loja.nome}</option>`;
-                    tabelaLojasBody.innerHTML += `
-                        <tr class="border-b border-gray-50 hover:bg-gray-50">
-                            <td class="p-4 font-medium">${loja.nome}</td>
-                            <td class="p-4 text-gray-500">${loja.categoria}</td>
-                            <td class="p-4 text-center">
-                                <button onclick="window.excluirLoja('${id}')" class="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition">
-                                    <i class="fas fa-trash-alt"></i> Excluir
-                                </button>
-                            </td>
-                        </tr>
+                    container.innerHTML += `
+                        <div onclick="abrirLoja('${id}')" class="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition cursor-pointer border border-gray-100 group">
+                            <div class="relative h-44 overflow-hidden">
+                                <img src="${loja.imagem}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <div class="absolute top-3 right-3 bg-white px-2 py-1 rounded-lg text-xs font-bold shadow-md flex items-center gap-1">
+                                    <i class="fas fa-star text-yellow-400"></i> ${loja.nota}
+                                </div>
+                            </div>
+                            <div class="p-4 flex items-center gap-4">
+                                <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-xl shadow-inner border border-green-100">
+                                    <i class="fas fa-store text-green-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-gray-800 leading-tight">${loja.nome}</h3>
+                                    <p class="text-[11px] text-gray-400 uppercase font-bold">${loja.categoria}</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="block text-sm font-bold text-green-600">${loja.tempo} min</span>
+                                </div>
+                            </div>
+                        </div>
                     `;
                 });
             }
-            document.getElementById('resumoLojas').innerText = total;
         });
 
-        // FUNÇÃO GLOBAL DE EXCLUSÃO
-        window.excluirLoja = async (id) => {
-            if(confirm("Deseja apagar esta loja e seus produtos?")) {
-                await remove(ref(db, 'lojas/' + id));
-                await remove(ref(db, 'produtos/' + id));
-                alert("Loja removida!");
-            }
+        // 2. ABRIR LOJA E CARREGAR PRODUTOS INDIVIDUALIZADOS
+        window.abrirLoja = (idLoja) => {
+            onValue(ref(db, `lojas/${idLoja}`), (snap) => {
+                const loja = snap.val();
+                lojaAtual = { ...loja, id: idLoja };
+                
+                document.getElementById('modal-loja-nome').innerText = loja.nome;
+                document.getElementById('modal-loja-cat').innerText = loja.categoria + " • Envio via WhatsApp";
+                document.getElementById('modal-loja-img').src = loja.imagem;
+
+                // Buscar produtos desta loja específica
+                onValue(ref(db, `produtos/${idLoja}`), (prodSnap) => {
+                    const produtos = prodSnap.val();
+                    const prodContainer = document.getElementById('lista-produtos');
+                    prodContainer.innerHTML = "";
+
+                    if (produtos) {
+                        Object.keys(produtos).forEach(pId => {
+                            const p = produtos[pId];
+                            prodContainer.innerHTML += `
+                                <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-2xl border border-gray-100">
+                                    <img src="${p.imagem}" class="w-20 h-20 object-cover rounded-xl">
+                                    <div class="flex-1">
+                                        <h4 class="font-bold text-gray-800">${p.nome}</h4>
+                                        <p class="text-xs text-gray-500 line-clamp-1">${p.descricao}</p>
+                                        <p class="text-green-600 font-bold mt-1">R$ ${parseFloat(p.preco).toFixed(2)}</p>
+                                    </div>
+                                    <button onclick="adicionarAoCarrinho('${p.nome}', ${p.preco})" class="bg-red-600 text-white w-10 h-10 rounded-xl hover:bg-red-700 shadow-md">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        prodContainer.innerHTML = "<p class='text-center text-gray-400 py-10'>Nenhum produto cadastrado nesta loja.</p>";
+                    }
+                });
+
+                document.getElementById('modal-loja').classList.remove('hidden');
+                document.body.classList.add('modal-active');
+            });
         };
 
-        // 2. CONTADOR DE PRODUTOS
-        onValue(ref(db, 'produtos'), (snapshot) => {
-            const prodData = snapshot.val();
-            let count = 0;
-            if(prodData) {
-                Object.keys(prodData).forEach(key => count += Object.keys(prodData[key]).length);
-            }
-            document.getElementById('resumoProdutos').innerText = count;
-        });
-
-        // 3. CADASTRO DE LOJA
-        document.getElementById('formCadastroLoja').onsubmit = async (e) => {
-            e.preventDefault();
-            const dados = {
-                nome: document.getElementById('nomeLoja').value,
-                categoria: document.getElementById('categoriaLoja').value,
-                tempo: document.getElementById('tempoEntrega').value,
-                comissao: document.getElementById('comissaoLoja').value,
-                endereco: document.getElementById('enderecoLoja').value,
-                imagem: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500",
-                nota: "5.0"
-            };
-            await push(ref(db, 'lojas'), dados);
-            alert("Loja salva!");
-            e.target.reset();
-        };
-
-        // 4. CADASTRO DE PRODUTO (COM CAMPO DE IMAGEM)
-        document.getElementById('formCadastroProduto').onsubmit = async (e) => {
-            e.preventDefault();
-            const lojaId = selectLojas.value;
-            const linkImagem = document.getElementById('imgProd').value;
+        // 3. LOGICA DO CARRINHO
+        window.adicionarAoCarrinho = (nome, preco) => {
+            carrinho.push({ nome, preco });
+            atualizarBadge();
             
-            const produto = {
-                nome: document.getElementById('nomeProd').value,
-                preco: document.getElementById('precoProd').value,
-                descricao: document.getElementById('descProd').value,
-                // Se o usuário não colocar link, usamos uma imagem padrão de comida
-                imagem: linkImagem || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300"
-            };
-
-            await push(ref(db, 'produtos/' + lojaId), produto);
-            alert("Item adicionado ao cardápio!");
-            e.target.reset();
+            // Feedback visual rápido
+            const btn = event.currentTarget;
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            btn.classList.replace('bg-red-600', 'bg-green-600');
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-plus"></i>';
+                btn.classList.replace('bg-green-600', 'bg-red-600');
+            }, 1000);
         };
+
+        function atualizarBadge() {
+            document.getElementById('badge-carrinho').innerText = carrinho.length;
+        }
+
+        window.abrirCarrinho = () => {
+            if (carrinho.length === 0) return alert("Seu carrinho está vazio!");
+
+            const total = carrinho.reduce((acc, item) => acc + parseFloat(item.preco), 0);
+            let msg = `*NOVO PEDIDO - ${lojaAtual.nome}*\n\n`;
+            carrinho.forEach(item => {
+                msg += `• ${item.nome}: R$ ${parseFloat(item.preco).toFixed(2)}\n`;
+            });
+            msg += `\n*TOTAL: R$ ${total.toFixed(2)}*`;
+            msg += `\n\n_Endereço da Loja: ${lojaAtual.endereco}_`;
+
+            const fone = "557999999999"; // Aqui você pode salvar o fone da loja no cadastro se quiser
+            window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`);
+            carrinho = [];
+            atualizarBadge();
+            fecharModal();
+        };
+
+        window.fecharModal = () => {
+            document.getElementById('modal-loja').classList.add('hidden');
+            document.body.classList.remove('modal-active');
+        };
+
     </script>
 </body>
 </html>
