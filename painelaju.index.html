@@ -70,17 +70,17 @@
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                     <h3 class="font-bold mb-4 text-gray-800 border-b pb-2">Cadastrar Nova Loja</h3>
                     <form id="formCadastroLoja" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <input type="text" id="nomeLoja" placeholder="Nome da Loja" class="border p-2 rounded" required>
-                        <input type="url" id="logoLoja" placeholder="URL do Logo" class="border p-2 rounded">
-                        <select id="categoriaLoja" class="border p-2 rounded">
+                        <input type="text" id="nomeLoja" placeholder="Nome da Loja" class="border p-2 rounded outline-none focus:border-red-500" required>
+                        <input type="url" id="logoLoja" placeholder="URL do Logo" class="border p-2 rounded outline-none focus:border-red-500">
+                        <select id="categoriaLoja" class="border p-2 rounded outline-none focus:border-red-500">
                             <option>Pizzarias</option>
                             <option>Lanchonetes</option>
                             <option>Saudáveis</option>
                             <option>Doces</option>
                         </select>
-                        <input type="text" id="tempoEntrega" placeholder="Tempo (ex: 30-45 min)" class="border p-2 rounded">
-                        <input type="number" id="comissaoLoja" placeholder="Sua Comissão %" class="border p-2 rounded" required>
-                        <input type="text" id="enderecoLoja" placeholder="Endereço" class="border p-2 rounded">
+                        <input type="text" id="tempoEntrega" placeholder="Tempo (ex: 30-45 min)" class="border p-2 rounded outline-none focus:border-red-500">
+                        <input type="number" id="comissaoLoja" placeholder="Sua Comissão %" class="border p-2 rounded outline-none focus:border-red-500" required>
+                        <input type="text" id="enderecoLoja" placeholder="Endereço" class="border p-2 rounded outline-none focus:border-red-500">
                         <button type="submit" class="md:col-span-full bg-red-600 text-white py-2 rounded font-bold hover:bg-red-700">SALVAR LOJA</button>
                     </form>
                 </div>
@@ -104,21 +104,21 @@
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                     <h3 class="font-bold mb-4 text-gray-800 border-b pb-2">Cadastrar Novo Produto</h3>
                     <form id="formCadastroProduto" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <select id="selectLojasDisponiveis" class="border p-2 rounded col-span-full bg-blue-50" required>
+                        <select id="selectLojasDisponiveis" class="border p-2 rounded col-span-full bg-blue-50 outline-none focus:border-blue-500" required>
                             <option value="">Selecione uma Loja...</option>
                         </select>
-                        <input type="text" id="nomeProd" placeholder="Nome do Produto" class="border p-2 rounded" required>
-                        <input type="url" id="imgProd" placeholder="URL da Imagem do Produto" class="border p-2 rounded">
-                        <input type="number" step="0.01" id="precoProd" placeholder="Preço R$" class="border p-2 rounded" required>
-                        <input type="text" id="descProd" placeholder="Descrição Curta" class="border p-2 rounded">
+                        <input type="text" id="nomeProd" placeholder="Nome do Produto" class="border p-2 rounded outline-none focus:border-blue-500" required>
+                        <input type="url" id="imgProd" placeholder="URL da Imagem do Produto" class="border p-2 rounded outline-none focus:border-blue-500">
+                        <input type="number" step="0.01" id="precoProd" placeholder="Preço R$" class="border p-2 rounded outline-none focus:border-blue-500" required>
+                        <input type="text" id="descProd" placeholder="Descrição Curta" class="border p-2 rounded outline-none focus:border-blue-500">
                         <button type="submit" class="col-span-full bg-blue-600 text-white py-2 rounded font-bold hover:bg-blue-700">ADICIONAR AO CARDÁPIO</button>
                     </form>
                 </div>
 
                 <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200">
-                    <div class="flex items-center justify-between mb-4">
-                        <h4 class="font-bold text-gray-700">Filtrar por Loja:</h4>
-                        <select id="filtroLojaProdutos" class="border p-2 rounded w-64 bg-gray-50"></select>
+                    <div class="flex items-center justify-between mb-4 gap-4">
+                        <h4 class="font-bold text-gray-700">Ver Produtos da Loja:</h4>
+                        <select id="filtroLojaProdutos" class="border p-2 rounded w-64 bg-gray-50 outline-none"></select>
                     </div>
                     <table class="w-full text-left">
                         <tbody id="tabelaProdutosBody"></tbody>
@@ -152,7 +152,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // CONFIGURAÇÃO DO FIREBASE (Sua base de dados atual)
+        // CONFIGURAÇÃO DO FIREBASE (Suas credenciais atuais)
         const firebaseConfig = {
             apiKey: "AIzaSyATFpMv8Qd7XqypPjD4RRIzFd80EBdUDjc",
             authDomain: "deliveryaju-3e6bf.firebaseapp.com",
@@ -166,27 +166,43 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // NAVEGAÇÃO ENTRE ABAS
+        // NAVEGAÇÃO ENTRE ABAS LATERAIS
         window.navegar = (secao) => {
+            // Esconde todas as abas
             document.querySelectorAll('.aba-conteudo').forEach(el => el.classList.remove('aba-ativa'));
+            // Remove destaque de todos os botões
             document.querySelectorAll('.menu-btn').forEach(el => el.classList.remove('menu-item-ativo'));
             
+            // Mostra a aba clicada e destaca o botão
             document.getElementById(`secao-${secao}`).classList.add('aba-ativa');
             document.getElementById(`btn-${secao}`).classList.add('menu-item-ativo');
-            document.getElementById('titulo-pagina').innerText = secao.charAt(0).toUpperCase() + secao.slice(1);
+            
+            // Atualiza título da página
+            const titulos = { 'dashboard': 'Painel de Controle', 'lojas': 'Gerenciar Lojas', 'produtos': 'Gerenciar Cardápios', 'pedidos': 'Relatório de Vendas' };
+            document.getElementById('titulo-pagina').innerText = titulos[secao];
         };
 
-        // EXCLUSÕES
-        window.apagarLoja = (id) => confirm("Apagar loja?") && remove(ref(db, `lojas/${id}`));
-        window.apagarProduto = (lojaId, prodId) => confirm("Apagar produto?") && remove(ref(db, `produtos/${lojaId}/${prodId}`));
+        // FUNÇÕES DE EXCLUSÃO (Globais)
+        window.apagarLoja = (id) => {
+            if(confirm("Deseja realmente apagar esta loja e todos os produtos dela?")) {
+                remove(ref(db, `lojas/${id}`));
+                remove(ref(db, `produtos/${id}`));
+            }
+        };
 
-        // SINCRONIZAÇÃO DE DADOS
+        window.apagarProduto = (lojaId, prodId) => {
+            if(confirm("Deseja apagar este produto do cardápio?")) {
+                remove(ref(db, `produtos/${lojaId}/${prodId}`));
+            }
+        };
+
+        // Cache para armazenar dados das lojas e cruzar com pedidos
         let cacheLojas = {};
 
-        // 1. Monitorar Lojas
+        // 1. Monitorar e Listar Lojas
         onValue(ref(db, 'lojas'), (snapshot) => {
             const lojas = snapshot.val() || {};
-            cacheLojas = lojas;
+            cacheLojas = lojas; // Atualiza cache
             const tabelaBody = document.getElementById('tabelaLojasBody');
             const selectProd = document.getElementById('selectLojasDisponiveis');
             const filtroProd = document.getElementById('filtroLojaProdutos');
@@ -195,49 +211,52 @@
             selectProd.innerHTML = '<option value="">Vincular à Loja...</option>';
             filtroProd.innerHTML = '<option value="">Selecione uma loja para ver os produtos</option>';
             
+            // Atualiza Dashboard
             document.getElementById('resumo-lojas').innerText = Object.keys(lojas).length;
 
             Object.keys(lojas).forEach(id => {
                 const loja = lojas[id];
-                const img = loja.logo || "https://cdn-icons-png.flaticon.com/512/123/123403.png";
+                // Imagem padrão caso não tenha logo
+                const imgLogo = loja.logo || "https://cdn-icons-png.flaticon.com/512/123/123403.png";
                 
-                // Tabela de Lojas
+                // Preenche Tabela de Lojas
                 tabelaBody.innerHTML += `
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="p-4"><img src="${img}" class="w-12 h-12 rounded-full border shadow-sm object-cover" onerror="this.src='https://cdn-icons-png.flaticon.com/512/123/123403.png'"></td>
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="p-4"><img src="${imgLogo}" class="w-12 h-12 rounded-full border shadow-sm object-cover" onerror="this.src='https://cdn-icons-png.flaticon.com/512/123/123403.png'"></td>
                         <td class="p-4 font-bold text-gray-700">${loja.nome}</td>
-                        <td class="p-4"><span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">${loja.comissao}%</span></td>
+                        <td class="p-4"><span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">${loja.comissao || 0}%</span></td>
                         <td class="p-4 text-center">
-                            <button onclick="apagarLoja('${id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                            <button onclick="apagarLoja('${id}')" class="text-red-400 hover:text-red-600 transition"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
                 
-                // Selects
+                // Preenche Selects (Cadastro e Filtro)
                 selectProd.innerHTML += `<option value="${id}">${loja.nome}</option>`;
                 filtroProd.innerHTML += `<option value="${id}">${loja.nome}</option>`;
             });
         });
 
-        // 2. Monitorar Produtos (Filtro)
+        // 2. Monitorar Produtos e Filtrar por Loja
         document.getElementById('filtroLojaProdutos').onchange = (e) => {
             const lojaId = e.target.value;
             const tabelaBody = document.getElementById('tabelaProdutosBody');
-            if(!lojaId) return tabelaBody.innerHTML = "";
+            if(!lojaId) { tabelaBody.innerHTML = ""; return; }
 
             onValue(ref(db, `produtos/${lojaId}`), (snapshot) => {
                 const produtos = snapshot.val() || {};
                 tabelaBody.innerHTML = "";
                 Object.keys(produtos).forEach(pid => {
                     const p = produtos[pid];
+                    // Imagem padrão de comida
                     const imgP = p.imagem || "https://img.freepik.com/vetores-premium/icone-de-imagem-padrao_671167-196.jpg";
                     tabelaBody.innerHTML += `
-                        <tr class="border-b">
+                        <tr class="border-b hover:bg-gray-50 transition">
                             <td class="p-3 w-16"><img src="${imgP}" class="w-12 h-12 rounded object-cover border" onerror="this.src='https://img.freepik.com/vetores-premium/icone-de-imagem-padrao_671167-196.jpg'"></td>
-                            <td class="p-3 font-medium">${p.nome}</td>
-                            <td class="p-3 text-green-600 font-bold">R$ ${p.preco}</td>
+                            <td class="p-3 font-medium text-gray-800">${p.nome}</td>
+                            <td class="p-3 text-green-600 font-bold">R$ ${parseFloat(p.preco || 0).toFixed(2)}</td>
                             <td class="p-3 text-right">
-                                <button onclick="apagarProduto('${lojaId}', '${pid}')" class="text-red-300 hover:text-red-500"><i class="fas fa-times-circle"></i></button>
+                                <button onclick="apagarProduto('${lojaId}', '${pid}')" class="text-red-300 hover:text-red-500 transition"><i class="fas fa-times-circle"></i></button>
                             </td>
                         </tr>
                     `;
@@ -245,7 +264,7 @@
             });
         };
 
-        // 3. Monitorar Pedidos e Calcular Comissões
+        // 3. Monitorar Pedidos e Calcular Comissões (Dashboard e Relatório)
         onValue(ref(db, 'pedidos'), (snapshot) => {
             const pedidos = snapshot.val() || {};
             const tabelaBody = document.getElementById('tabelaPedidosBody');
@@ -256,28 +275,33 @@
 
             Object.keys(pedidos).forEach(id => {
                 const ped = pedidos[id];
-                const lojaInfo = cacheLojas[ped.lojaId] || { nome: "Loja Excluída", comissao: 0 };
+                // Busca nome e comissão da loja no cache carregado anteriormente
+                const lojaInfo = cacheLojas[ped.lojaId] || { nome: "Loja Off", comissao: 0 };
+                
                 const valor = parseFloat(ped.total || 0);
-                const comissaoValor = (valor * (parseFloat(lojaInfo.comissao) / 100));
+                const comissaoPorcentagem = parseFloat(lojaInfo.comissao || 0);
+                const comissaoValor = (valor * (comissaoPorcentagem / 100));
 
                 totalVendas += valor;
                 totalComissoes += comissaoValor;
 
+                // Preenche Tabela de Pedidos
                 tabelaBody.innerHTML += `
-                    <tr class="border-b text-sm">
-                        <td class="p-4 font-bold">${lojaInfo.nome}</td>
+                    <tr class="border-b text-sm hover:bg-gray-50 Transition">
+                        <td class="p-4 font-bold text-gray-800">${lojaInfo.nome}</td>
                         <td class="p-4"><strong>${ped.clienteNome}</strong><br><span class="text-xs text-gray-400">${ped.endereco}</span></td>
                         <td class="p-4 font-bold">R$ ${valor.toFixed(2)}</td>
-                        <td class="p-4 text-green-600 font-bold">R$ ${comissaoValor.toFixed(2)}</td>
+                        <td class="p-4 text-green-600 font-bold">R$ ${comissaoValor.toFixed(2)} <span class="text-xs text-gray-400">(${comissaoPorcentagem}%)</span></td>
                     </tr>
                 `;
             });
 
+            // Atualiza Dashboard
             document.getElementById('resumo-vendas').innerText = `R$ ${totalVendas.toFixed(2)}`;
             document.getElementById('resumo-comissoes').innerText = `R$ ${totalComissoes.toFixed(2)}`;
         });
 
-        // 4. Salvar Dados
+        // 4. Salvar Dados (Lojas e Produtos)
         document.getElementById('formCadastroLoja').onsubmit = (e) => {
             e.preventDefault();
             const dados = {
@@ -288,9 +312,10 @@
                 comissao: document.getElementById('comissaoLoja').value,
                 endereco: document.getElementById('enderecoLoja').value
             };
-            push(ref(db, 'lojas'), dados);
-            e.target.reset();
-            alert("Loja Cadastrada!");
+            push(ref(db, 'lojas'), dados).then(() => {
+                e.target.reset();
+                alert("Loja Cadastrada com Sucesso!");
+            });
         };
 
         document.getElementById('formCadastroProduto').onsubmit = (e) => {
@@ -302,10 +327,12 @@
                 preco: document.getElementById('precoProd').value,
                 descricao: document.getElementById('descProd').value
             };
-            push(ref(db, `produtos/${lojaId}`), dados);
-            e.target.reset();
-            alert("Produto Adicionado!");
+            push(ref(db, `produtos/${lojaId}`), dados).then(() => {
+                e.target.reset();
+                alert("Produto Adicionado ao Cardápio!");
+            });
         };
+
     </script>
 </body>
 </html>
