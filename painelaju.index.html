@@ -6,6 +6,11 @@
     <title>Admin | Gerenciar Marketplace</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .aba-conteudo { display: none; }
+        .aba-ativa { display: block; }
+        .menu-item-ativo { background-color: #ef4444 !important; color: white !important; }
+    </style>
 </head>
 <body class="bg-gray-100 flex h-screen overflow-hidden">
 
@@ -14,80 +19,80 @@
             <h1 class="text-xl font-bold text-red-500">ADMIN<span class="text-white">DELIVERY</span></h1>
         </div>
         <nav class="flex-1 px-4 space-y-2">
-            <a href="#" class="flex items-center p-3 bg-red-600 rounded-lg"><i class="fas fa-chart-line mr-3"></i> Dashboard</a>
-            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-store mr-3"></i> Lojas</a>
-            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-utensils mr-3"></i> Produtos</a>
-            <a href="#secaoPedidos" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-shopping-cart mr-3"></i> Pedidos/Comissões</a>
+            <button onclick="navegar('dashboard')" id="btn-dashboard" class="menu-btn w-full flex items-center p-3 rounded-lg text-gray-400 hover:bg-gray-800 transition menu-item-ativo">
+                <i class="fas fa-chart-line mr-3"></i> Dashboard
+            </button>
+            <button onclick="navegar('lojas')" id="btn-lojas" class="menu-btn w-full flex items-center p-3 rounded-lg text-gray-400 hover:bg-gray-800 transition">
+                <i class="fas fa-store mr-3"></i> Lojas
+            </button>
+            <button onclick="navegar('produtos')" id="btn-produtos" class="menu-btn w-full flex items-center p-3 rounded-lg text-gray-400 hover:bg-gray-800 transition">
+                <i class="fas fa-utensils mr-3"></i> Produtos
+            </button>
+            <button onclick="navegar('pedidos')" id="btn-pedidos" class="menu-btn w-full flex items-center p-3 rounded-lg text-gray-400 hover:bg-gray-800 transition">
+                <i class="fas fa-shopping-cart mr-3"></i> Pedidos/Comissões
+            </button>
         </nav>
-        <div class="p-4 border-t border-gray-800 text-xs text-gray-500 text-center">v1.5 - Firebase Conectado</div>
+        <div class="p-4 border-t border-gray-800 text-xs text-gray-500 text-center">v1.6 - Firebase Online</div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-y-auto">
-        <header class="bg-white shadow-sm p-4 flex justify-between items-center">
-            <h2 class="text-xl font-semibold text-gray-700">Gestão do Marketplace</h2>
+        <header class="bg-white shadow-sm p-4 flex justify-between items-center sticky top-0 z-10">
+            <h2 id="titulo-pagina" class="text-xl font-semibold text-gray-700">Painel de Controle</h2>
             <div class="flex items-center gap-4">
-                <span class="text-sm text-gray-500">Bem-vindo, <strong>Admin</strong></span>
-                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center"><i class="fas fa-user text-gray-400"></i></div>
+                <div class="text-right hidden sm:block">
+                    <p class="text-sm font-bold text-gray-700">Administrador</p>
+                    <p class="text-xs text-green-500">Conectado</p>
+                </div>
+                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold">A</div>
             </div>
         </header>
 
-        <div class="p-6 space-y-10">
-            <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                    <div class="p-4 border-b border-gray-100 bg-gray-50 rounded-t-xl">
-                        <h3 class="font-bold text-gray-800"><i class="fas fa-store mr-2 text-red-500"></i>Nova Loja</h3>
+        <div class="p-6">
+            
+            <div id="secao-dashboard" class="aba-conteudo aba-ativa space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-red-500">
+                        <p class="text-gray-500 text-sm">Lojas Ativas</p>
+                        <h3 id="resumo-lojas" class="text-2xl font-bold">0</h3>
                     </div>
-                    <form id="formCadastroLoja" class="p-6 space-y-4">
-                        <input type="text" id="nomeLoja" placeholder="Nome da Loja" class="w-full border rounded-lg p-2.5 bg-gray-50 border-gray-300" required>
-                        <input type="url" id="logoLoja" placeholder="URL da Logomarca (PNG ou JPG)" class="w-full border rounded-lg p-2.5 bg-gray-50 border-gray-300">
-                        <select id="categoriaLoja" class="w-full border rounded-lg p-2.5 bg-gray-50 border-gray-300">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
+                        <p class="text-gray-500 text-sm">Total de Vendas</p>
+                        <h3 id="resumo-vendas" class="text-2xl font-bold">R$ 0,00</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
+                        <p class="text-gray-500 text-sm">Comissões a Receber</p>
+                        <h3 id="resumo-comissoes" class="text-2xl font-bold text-green-600">R$ 0,00</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div id="secao-lojas" class="aba-conteudo space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                    <h3 class="font-bold mb-4 text-gray-800 border-b pb-2">Cadastrar Nova Loja</h3>
+                    <form id="formCadastroLoja" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <input type="text" id="nomeLoja" placeholder="Nome da Loja" class="border p-2 rounded" required>
+                        <input type="url" id="logoLoja" placeholder="URL do Logo" class="border p-2 rounded">
+                        <select id="categoriaLoja" class="border p-2 rounded">
                             <option>Pizzarias</option>
                             <option>Lanchonetes</option>
                             <option>Saudáveis</option>
                             <option>Doces</option>
-                            <option>PetShop</option>
                         </select>
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" id="tempoEntrega" placeholder="Tempo (ex: 30-40)" class="border rounded-lg p-2.5 bg-gray-50 border-gray-300">
-                            <div class="relative">
-                                <input type="number" id="comissaoLoja" placeholder="Comissão" class="w-full border rounded-lg p-2.5 bg-blue-50 border-blue-200 font-bold text-blue-700" required>
-                                <span class="absolute right-3 top-2.5 text-blue-400">%</span>
-                            </div>
-                        </div>
-                        <input type="text" id="enderecoLoja" placeholder="Endereço Completo" class="w-full border rounded-lg p-2.5 bg-gray-50 border-gray-300">
-                        <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 transition">CADASTRAR LOJA</button>
+                        <input type="text" id="tempoEntrega" placeholder="Tempo (ex: 30-45 min)" class="border p-2 rounded">
+                        <input type="number" id="comissaoLoja" placeholder="Sua Comissão %" class="border p-2 rounded" required>
+                        <input type="text" id="enderecoLoja" placeholder="Endereço" class="border p-2 rounded">
+                        <button type="submit" class="md:col-span-full bg-red-600 text-white py-2 rounded font-bold hover:bg-red-700">SALVAR LOJA</button>
                     </form>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                    <div class="p-4 border-b border-gray-100 bg-gray-50 rounded-t-xl">
-                        <h3 class="font-bold text-gray-800"><i class="fas fa-hamburger mr-2 text-blue-500"></i>Novo Produto</h3>
-                    </div>
-                    <form id="formCadastroProduto" class="p-6 space-y-4">
-                        <select id="selectLojasDisponiveis" class="w-full border rounded-lg p-2.5 bg-blue-50 border-blue-200" required>
-                            <option value="">Carregando lojas...</option>
-                        </select>
-                        <input type="text" id="nomeProd" placeholder="Nome do Produto" class="w-full border rounded-lg p-2.5 bg-gray-50 border-gray-300" required>
-                        <input type="url" id="imgProd" placeholder="URL da Imagem do Produto" class="w-full border rounded-lg p-2.5 bg-gray-50 border-gray-300">
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="number" step="0.01" id="precoProd" placeholder="Preço R$" class="border rounded-lg p-2.5 bg-gray-50 border-gray-300" required>
-                            <input type="text" id="descProd" placeholder="Descrição curta" class="border rounded-lg p-2.5 bg-gray-50 border-gray-300">
-                        </div>
-                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition uppercase">Adicionar ao Cardápio</button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="p-4 border-b border-gray-100 bg-gray-50 font-bold text-gray-800 text-sm">Lojas Cadastradas</div>
-                <div class="overflow-x-auto">
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
                     <table class="w-full text-left">
-                        <thead>
-                            <tr class="bg-gray-100 text-gray-600 text-xs uppercase font-bold">
-                                <th class="p-4">Logo</th>
-                                <th class="p-4">Nome</th>
-                                <th class="p-4">Comissão</th>
-                                <th class="p-4 text-center">Ações</th>
+                        <thead class="bg-gray-50 border-b">
+                            <tr>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Logo</th>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Nome</th>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Comissão</th>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500 text-center">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="tabelaLojasBody"></tbody>
@@ -95,38 +100,51 @@
                 </div>
             </div>
 
-            <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="p-4 border-b border-gray-100 bg-blue-50 font-bold text-gray-800 text-sm flex justify-between items-center">
-                    <span><i class="fas fa-list mr-2 text-blue-500"></i> Produtos por Loja</span>
-                    <select id="filtroLojaProdutos" class="text-xs p-1 border rounded bg-white">
-                        <option value="">Selecione para listar produtos...</option>
-                    </select>
+            <div id="secao-produtos" class="aba-conteudo space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                    <h3 class="font-bold mb-4 text-gray-800 border-b pb-2">Cadastrar Novo Produto</h3>
+                    <form id="formCadastroProduto" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <select id="selectLojasDisponiveis" class="border p-2 rounded col-span-full bg-blue-50" required>
+                            <option value="">Selecione uma Loja...</option>
+                        </select>
+                        <input type="text" id="nomeProd" placeholder="Nome do Produto" class="border p-2 rounded" required>
+                        <input type="url" id="imgProd" placeholder="URL da Imagem do Produto" class="border p-2 rounded">
+                        <input type="number" step="0.01" id="precoProd" placeholder="Preço R$" class="border p-2 rounded" required>
+                        <input type="text" id="descProd" placeholder="Descrição Curta" class="border p-2 rounded">
+                        <button type="submit" class="col-span-full bg-blue-600 text-white py-2 rounded font-bold hover:bg-blue-700">ADICIONAR AO CARDÁPIO</button>
+                    </form>
                 </div>
-                <div class="overflow-x-auto">
+
+                <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-bold text-gray-700">Filtrar por Loja:</h4>
+                        <select id="filtroLojaProdutos" class="border p-2 rounded w-64 bg-gray-50"></select>
+                    </div>
                     <table class="w-full text-left">
                         <tbody id="tabelaProdutosBody"></tbody>
                     </table>
                 </div>
             </div>
 
-            <div id="secaoPedidos" class="max-w-5xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="p-4 border-b border-gray-100 bg-green-50 font-bold text-gray-800 text-sm text-green-700">
-                    <i class="fas fa-file-invoice-dollar mr-2"></i> Relatório de Pedidos & Comissões
-                </div>
-                <div class="overflow-x-auto">
+            <div id="secao-pedidos" class="aba-conteudo space-y-6">
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+                    <div class="p-4 bg-green-50 border-b border-green-100">
+                        <h3 class="font-bold text-green-800">Histórico de Pedidos Vendidos</h3>
+                    </div>
                     <table class="w-full text-left">
-                        <thead>
-                            <tr class="bg-gray-100 text-gray-600 text-xs uppercase font-bold">
-                                <th class="p-4">Loja</th>
-                                <th class="p-4">Cliente</th>
-                                <th class="p-4">Total</th>
-                                <th class="p-4">Comissão</th>
+                        <thead class="bg-gray-100 border-b">
+                            <tr>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Loja</th>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Cliente/Endereço</th>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Valor Total</th>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500 text-green-600">Sua Comissão</th>
                             </tr>
                         </thead>
-                        <tbody id="tabelaPedidosBody" class="text-sm"></tbody>
+                        <tbody id="tabelaPedidosBody"></tbody>
                     </table>
                 </div>
             </div>
+
         </div>
     </main>
 
@@ -134,6 +152,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        // CONFIGURAÇÃO DO FIREBASE (Sua base de dados atual)
         const firebaseConfig = {
             apiKey: "AIzaSyATFpMv8Qd7XqypPjD4RRIzFd80EBdUDjc",
             authDomain: "deliveryaju-3e6bf.firebaseapp.com",
@@ -147,140 +166,145 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Expor funções de exclusão para o HTML
-        window.excluirLoja = async (id) => {
-            if(confirm("Deseja apagar esta loja e seus produtos?")) {
-                await remove(ref(db, 'lojas/' + id));
-                await remove(ref(db, 'produtos/' + id));
-            }
+        // NAVEGAÇÃO ENTRE ABAS
+        window.navegar = (secao) => {
+            document.querySelectorAll('.aba-conteudo').forEach(el => el.classList.remove('aba-ativa'));
+            document.querySelectorAll('.menu-btn').forEach(el => el.classList.remove('menu-item-ativo'));
+            
+            document.getElementById(`secao-${secao}`).classList.add('aba-ativa');
+            document.getElementById(`btn-${secao}`).classList.add('menu-item-ativo');
+            document.getElementById('titulo-pagina').innerText = secao.charAt(0).toUpperCase() + secao.slice(1);
         };
 
-        window.excluirProduto = async (lojaId, prodId) => {
-            if(confirm("Excluir este produto?")) {
-                await remove(ref(db, `produtos/${lojaId}/${prodId}`));
-            }
-        };
+        // EXCLUSÕES
+        window.apagarLoja = (id) => confirm("Apagar loja?") && remove(ref(db, `lojas/${id}`));
+        window.apagarProduto = (lojaId, prodId) => confirm("Apagar produto?") && remove(ref(db, `produtos/${lojaId}/${prodId}`));
 
-        // 1. CARREGAR LOJAS
+        // SINCRONIZAÇÃO DE DADOS
+        let cacheLojas = {};
+
+        // 1. Monitorar Lojas
         onValue(ref(db, 'lojas'), (snapshot) => {
-            const lojas = snapshot.val();
-            const selectLojas = document.getElementById('selectLojasDisponiveis');
-            const filtroLojaProdutos = document.getElementById('filtroLojaProdutos');
-            const tabelaLojasBody = document.getElementById('tabelaLojasBody');
+            const lojas = snapshot.val() || {};
+            cacheLojas = lojas;
+            const tabelaBody = document.getElementById('tabelaLojasBody');
+            const selectProd = document.getElementById('selectLojasDisponiveis');
+            const filtroProd = document.getElementById('filtroLojaProdutos');
+            
+            tabelaBody.innerHTML = "";
+            selectProd.innerHTML = '<option value="">Vincular à Loja...</option>';
+            filtroProd.innerHTML = '<option value="">Selecione uma loja para ver os produtos</option>';
+            
+            document.getElementById('resumo-lojas').innerText = Object.keys(lojas).length;
 
-            selectLojas.innerHTML = '<option value="">Vincular à Loja...</option>';
-            filtroLojaProdutos.innerHTML = '<option value="">Filtrar Produtos...</option>';
-            tabelaLojasBody.innerHTML = "";
+            Object.keys(lojas).forEach(id => {
+                const loja = lojas[id];
+                const img = loja.logo || "https://cdn-icons-png.flaticon.com/512/123/123403.png";
+                
+                // Tabela de Lojas
+                tabelaBody.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-4"><img src="${img}" class="w-12 h-12 rounded-full border shadow-sm object-cover" onerror="this.src='https://cdn-icons-png.flaticon.com/512/123/123403.png'"></td>
+                        <td class="p-4 font-bold text-gray-700">${loja.nome}</td>
+                        <td class="p-4"><span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">${loja.comissao}%</span></td>
+                        <td class="p-4 text-center">
+                            <button onclick="apagarLoja('${id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+                
+                // Selects
+                selectProd.innerHTML += `<option value="${id}">${loja.nome}</option>`;
+                filtroProd.innerHTML += `<option value="${id}">${loja.nome}</option>`;
+            });
+        });
 
-            if (lojas) {
-                Object.keys(lojas).forEach(id => {
-                    const loja = lojas[id];
-                    const logoUrl = loja.logo || "https://cdn-icons-png.flaticon.com/512/123/123403.png";
+        // 2. Monitorar Produtos (Filtro)
+        document.getElementById('filtroLojaProdutos').onchange = (e) => {
+            const lojaId = e.target.value;
+            const tabelaBody = document.getElementById('tabelaProdutosBody');
+            if(!lojaId) return tabelaBody.innerHTML = "";
 
-                    selectLojas.innerHTML += `<option value="${id}">${loja.nome}</option>`;
-                    filtroLojaProdutos.innerHTML += `<option value="${id}">${loja.nome}</option>`;
-                    
-                    tabelaLojasBody.innerHTML += `
+            onValue(ref(db, `produtos/${lojaId}`), (snapshot) => {
+                const produtos = snapshot.val() || {};
+                tabelaBody.innerHTML = "";
+                Object.keys(produtos).forEach(pid => {
+                    const p = produtos[pid];
+                    const imgP = p.imagem || "https://img.freepik.com/vetores-premium/icone-de-imagem-padrao_671167-196.jpg";
+                    tabelaBody.innerHTML += `
                         <tr class="border-b">
-                            <td class="p-3"><img src="${logoUrl}" class="w-10 h-10 rounded-full border"></td>
-                            <td class="p-3 font-bold">${loja.nome}</td>
-                            <td class="p-3 text-blue-600 font-bold">${loja.comissao || 0}%</td>
-                            <td class="p-3 text-center">
-                                <button onclick="window.excluirLoja('${id}')" class="text-red-500 hover:underline">Excluir</button>
+                            <td class="p-3 w-16"><img src="${imgP}" class="w-12 h-12 rounded object-cover border" onerror="this.src='https://img.freepik.com/vetores-premium/icone-de-imagem-padrao_671167-196.jpg'"></td>
+                            <td class="p-3 font-medium">${p.nome}</td>
+                            <td class="p-3 text-green-600 font-bold">R$ ${p.preco}</td>
+                            <td class="p-3 text-right">
+                                <button onclick="apagarProduto('${lojaId}', '${pid}')" class="text-red-300 hover:text-red-500"><i class="fas fa-times-circle"></i></button>
                             </td>
                         </tr>
                     `;
                 });
-            }
-        });
-
-        // 2. LISTAR PRODUTOS INDIVIDUALIZADOS
-        document.getElementById('filtroLojaProdutos').onchange = (e) => {
-            const lojaId = e.target.value;
-            const tabelaProd = document.getElementById('tabelaProdutosBody');
-            if(!lojaId) { tabelaProd.innerHTML = ""; return; }
-
-            onValue(ref(db, `produtos/${lojaId}`), (snapshot) => {
-                const prods = snapshot.val();
-                tabelaProd.innerHTML = "";
-                if(prods) {
-                    Object.keys(prods).forEach(prodId => {
-                        const p = prods[prodId];
-                        tabelaProd.innerHTML += `
-                            <tr class="border-b text-sm">
-                                <td class="p-3"><img src="${p.imagem}" class="w-8 h-8 rounded"></td>
-                                <td class="p-3"><strong>${p.nome}</strong></td>
-                                <td class="p-3 font-bold text-green-600">R$ ${p.preco}</td>
-                                <td class="p-3 text-right">
-                                    <button onclick="window.excluirProduto('${lojaId}', '${prodId}')" class="text-red-400"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                } else {
-                    tabelaProd.innerHTML = "<tr><td class='p-4 text-center text-gray-400'>Nenhum produto cadastrado.</td></tr>";
-                }
             });
         };
 
-        // 3. RELATÓRIO DE PEDIDOS
+        // 3. Monitorar Pedidos e Calcular Comissões
         onValue(ref(db, 'pedidos'), (snapshot) => {
-            const pedidos = snapshot.val();
-            const tabelaPedidosBody = document.getElementById('tabelaPedidosBody');
-            tabelaPedidosBody.innerHTML = "";
+            const pedidos = snapshot.val() || {};
+            const tabelaBody = document.getElementById('tabelaPedidosBody');
+            tabelaBody.innerHTML = "";
+            
+            let totalVendas = 0;
+            let totalComissoes = 0;
 
-            if(pedidos) {
-                // Pegar informações das lojas para calcular comissão
-                onValue(ref(db, 'lojas'), (lSnap) => {
-                    const lojasData = lSnap.val() || {};
-                    Object.keys(pedidos).forEach(pedId => {
-                        const ped = pedidos[pedId];
-                        const infoLoja = lojasData[ped.lojaId] || { nome: "Loja Off", comissao: 0 };
-                        const vTotal = parseFloat(ped.total || 0);
-                        const vComissao = (vTotal * (parseFloat(infoLoja.comissao) / 100)).toFixed(2);
+            Object.keys(pedidos).forEach(id => {
+                const ped = pedidos[id];
+                const lojaInfo = cacheLojas[ped.lojaId] || { nome: "Loja Excluída", comissao: 0 };
+                const valor = parseFloat(ped.total || 0);
+                const comissaoValor = (valor * (parseFloat(lojaInfo.comissao) / 100));
 
-                        tabelaPedidosBody.innerHTML += `
-                            <tr class="border-b">
-                                <td class="p-4 font-bold">${infoLoja.nome}</td>
-                                <td class="p-4">${ped.clienteNome}<br><small class='text-gray-400'>${ped.endereco}</small></td>
-                                <td class="p-4 font-bold text-gray-700">R$ ${vTotal.toFixed(2)}</td>
-                                <td class="p-4"><span class='bg-blue-100 text-blue-700 px-2 py-1 rounded'>R$ ${vComissao}</span></td>
-                            </tr>
-                        `;
-                    });
-                });
-            }
+                totalVendas += valor;
+                totalComissoes += comissaoValor;
+
+                tabelaBody.innerHTML += `
+                    <tr class="border-b text-sm">
+                        <td class="p-4 font-bold">${lojaInfo.nome}</td>
+                        <td class="p-4"><strong>${ped.clienteNome}</strong><br><span class="text-xs text-gray-400">${ped.endereco}</span></td>
+                        <td class="p-4 font-bold">R$ ${valor.toFixed(2)}</td>
+                        <td class="p-4 text-green-600 font-bold">R$ ${comissaoValor.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('resumo-vendas').innerText = `R$ ${totalVendas.toFixed(2)}`;
+            document.getElementById('resumo-comissoes').innerText = `R$ ${totalComissoes.toFixed(2)}`;
         });
 
-        // 4. CADASTRO LOJA
-        document.getElementById('formCadastroLoja').onsubmit = async (e) => {
+        // 4. Salvar Dados
+        document.getElementById('formCadastroLoja').onsubmit = (e) => {
             e.preventDefault();
             const dados = {
                 nome: document.getElementById('nomeLoja').value,
-                logo: document.getElementById('logoLoja').value || "",
+                logo: document.getElementById('logoLoja').value,
                 categoria: document.getElementById('categoriaLoja').value,
                 tempo: document.getElementById('tempoEntrega').value,
                 comissao: document.getElementById('comissaoLoja').value,
                 endereco: document.getElementById('enderecoLoja').value
             };
-            await push(ref(db, 'lojas'), dados);
-            alert("Loja Salva!");
+            push(ref(db, 'lojas'), dados);
             e.target.reset();
+            alert("Loja Cadastrada!");
         };
 
-        // 5. CADASTRO PRODUTO
-        document.getElementById('formCadastroProduto').onsubmit = async (e) => {
+        document.getElementById('formCadastroProduto').onsubmit = (e) => {
             e.preventDefault();
             const lojaId = document.getElementById('selectLojasDisponiveis').value;
-            const produto = {
+            const dados = {
                 nome: document.getElementById('nomeProd').value,
+                imagem: document.getElementById('imgProd').value,
                 preco: document.getElementById('precoProd').value,
-                descricao: document.getElementById('descProd').value,
-                imagem: document.getElementById('imgProd').value || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300"
+                descricao: document.getElementById('descProd').value
             };
-            await push(ref(db, `produtos/${lojaId}`), produto);
-            alert("Produto Adicionado!");
+            push(ref(db, `produtos/${lojaId}`), dados);
             e.target.reset();
+            alert("Produto Adicionado!");
         };
     </script>
 </body>
