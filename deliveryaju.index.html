@@ -82,6 +82,10 @@
                             <input type="text" id="cliente-nome" class="w-full bg-gray-100 border-none rounded-xl p-3 focus:ring-2 focus:ring-red-500 outline-none" placeholder="Ex: João Silva">
                         </div>
                         <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">WhatsApp / Contato</label>
+                            <input type="tel" id="cliente-contato" class="w-full bg-gray-100 border-none rounded-xl p-3 focus:ring-2 focus:ring-red-500 outline-none" placeholder="Ex: (79) 99999-9999">
+                        </div>
+                        <div>
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Endereço Completo</label>
                             <textarea id="cliente-endereco" class="w-full bg-gray-100 border-none rounded-xl p-3 focus:ring-2 focus:ring-red-500 outline-none" rows="2" placeholder="Rua, Número, Bairro e Ponto de Referência"></textarea>
                         </div>
@@ -173,7 +177,7 @@
 
         window.abrirLoja = (idLoja) => {
             carrinhoLoja = [];
-            voltarParaProdutos(); // Garante que comece na tela de produtos
+            voltarParaProdutos(); 
             atualizarBarraCheckout();
 
             onValue(ref(db, `lojas/${idLoja}`), (snap) => {
@@ -230,12 +234,10 @@
             }
         }
 
-        // NAVEGAÇÃO INTERNA DO MODAL
         window.irParaCadastro = () => {
             document.getElementById('tela-produtos').classList.add('hidden');
             document.getElementById('tela-cadastro').classList.remove('hidden');
             
-            // Altera o botão de checkout para "Enviar WhatsApp"
             const btn = document.getElementById('btn-acao-checkout');
             btn.setAttribute('onclick', 'finalizarPedidoWhatsApp()');
             btn.classList.replace('bg-green-600', 'bg-green-700');
@@ -254,14 +256,14 @@
             document.getElementById('icone-btn').className = "fas fa-shopping-basket text-lg";
         };
 
-        // FINALIZAÇÃO REAL
         window.finalizarPedidoWhatsApp = () => {
             const nome = document.getElementById('cliente-nome').value;
+            const contato = document.getElementById('cliente-contato').value;
             const endereco = document.getElementById('cliente-endereco').value;
             const pagamento = document.getElementById('cliente-pagamento').value;
 
-            if(!nome || !endereco) {
-                alert("Por favor, preencha seu nome e endereço para entrega!");
+            if(!nome || !endereco || !contato) {
+                alert("Por favor, preencha todos os dados (Nome, Contato e Endereço)!");
                 return;
             }
 
@@ -277,10 +279,12 @@
             texto += `*TOTAL: R$ ${total.toFixed(2)}*\n\n`;
             texto += `*DADOS DO CLIENTE*\n`;
             texto += `👤 Nome: ${nome}\n`;
+            texto += `📱 Contato: ${contato}\n`;
             texto += `📍 Endereço: ${endereco}\n`;
             texto += `💳 Pagamento: ${pagamento}\n\n`;
             texto += `_Enviado via MeuDelivery_`;
 
+            // Aqui você deve colocar o número do lojista (ex: tirado do banco de dados se houver)
             const fone = "557999999999"; 
             window.open(`https://wa.me/${fone}?text=${encodeURIComponent(texto)}`);
         };
