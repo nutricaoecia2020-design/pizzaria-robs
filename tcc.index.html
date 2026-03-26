@@ -2,56 +2,63 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Gerador de TCC - Modelo Artigo Científico</title>
+    <title>Gerador de Artigo Científico ABNT</title>
     <style>
-        :root { --admin-bg: #f4f4f7; --accent: #2563eb; }
+        :root { --sidebar-bg: #2c3e50; --input-bg: #f8f9fa; }
         * { box-sizing: border-box; }
         
-        /* Layout da Tela */
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background: var(--admin-bg); }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background: #bdc3c7; }
 
+        /* PAINEL DE EDIÇÃO */
         #editor {
-            width: 400px; height: 100vh; background: white; padding: 20px;
-            overflow-y: auto; border-right: 1px solid #ddd; position: sticky; top: 0;
+            width: 450px; height: 100vh; background: white; padding: 25px;
+            overflow-y: auto; border-right: 2px solid #95a5a6; position: sticky; top: 0;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
         }
 
+        .group { border: 1px solid #dfe6e9; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        h2 { font-size: 1rem; color: #2980b9; margin-top: 0; text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        label { display: block; font-size: 11px; font-weight: bold; margin-top: 10px; color: #636e72; }
+        input, textarea { 
+            width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; 
+            border-radius: 4px; font-size: 13px; background: var(--input-bg);
+        }
+        button { 
+            width: 100%; padding: 15px; background: #27ae60; color: white; 
+            border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;
+            transition: 0.3s; margin-top: 10px;
+        }
+        button:hover { background: #219150; }
+
+        /* ÁREA DO DOCUMENTO */
         #preview-container { flex-grow: 1; padding: 40px; display: flex; flex-direction: column; align-items: center; }
 
-        /* Configuração da Folha ABNT */
         .folha {
             width: 210mm; min-height: 297mm; background: white;
-            padding: 3cm 2cm 2cm 3cm; /* Margens ABNT  */
+            padding: 3cm 2cm 2cm 3cm; /* MARGENS ABNT */
             font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; color: black;
-            text-align: justify; position: relative; margin-bottom: 30px; box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            text-align: justify; position: relative; margin-bottom: 30px;
         }
 
-        /* Estilos de Texto */
+        /* Formatações de Texto */
         .center { text-align: center; }
         .bold { font-weight: bold; }
         .uppercase { text-transform: uppercase; }
         .t14 { font-size: 14pt; }
-        .indent { text-indent: 1.5cm; }
+        .indent { text-indent: 1.5cm; margin-top: 0; }
         .page-num { position: absolute; top: 2cm; right: 2cm; font-size: 10pt; }
         
-        /* Espaçamentos do Modelo [cite: 3, 9] */
         .spacer-8 { height: 8em; }
         .spacer-23 { height: 23em; }
 
-        /* Formulário */
-        .field-group { border: 1px solid #eee; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
-        label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #666; }
-        input, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px; }
-        button { width: 100%; padding: 15px; background: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-
-        /* CORREÇÃO PARA IMPRESSÃO PDF */
+        /* CONFIGURAÇÃO DE IMPRESSÃO PDF */
         @media print {
-            body { background: white !important; display: block !important; }
-            #editor { display: none !important; } /* Esconde o formulário */
-            #preview-container { padding: 0 !important; width: 100% !important; }
+            body { background: white; display: block; }
+            #editor { display: none !important; }
+            #preview-container { padding: 0 !important; }
             .folha { 
                 box-shadow: none !important; margin: 0 !important; 
-                width: 210mm !important; height: 297mm !important;
-                page-break-after: always !important; 
+                width: 210mm; height: 297mm; page-break-after: always;
             }
             @page { size: A4; margin: 0; }
         }
@@ -60,33 +67,43 @@
 <body>
 
     <div id="editor">
-        <h2 style="font-size: 1.2rem; color: var(--accent);">Dados do Artigo</h2>
-        
-        <div class="field-group">
+        <h2>1. Identificação</h2>
+        <div class="group">
             <label>Instituição</label>
             <input type="text" id="in-inst" oninput="sync()" value="NOME DA INSTITUIÇÃO">
             <label>Curso</label>
             <input type="text" id="in-curso" oninput="sync()" value="NOME DO CURSO">
-            <label>Aluno</label>
+            <label>Nome do Aluno</label>
             <input type="text" id="in-aluno" oninput="sync()" placeholder="NOME COMPLETO">
-            <label>Título (Minúsculas)</label>
-            <input type="text" id="in-titulo" oninput="sync()" placeholder="Título do artigo">
+            <label>Título (Letras Minúsculas)</label>
+            <input type="text" id="in-titulo" oninput="sync()" placeholder="Título do trabalho">
             <label>Cidade, Ano</label>
             <input type="text" id="in-cidade" oninput="sync()" value="CIDADE, 2026">
         </div>
 
-        <div class="field-group">
-            <label>Sumário</label>
-            <textarea id="in-sumario" rows="3" oninput="sync()">INTRODUÇÃO. 1. Tópico. 2. Tópico. CONCLUSÃO. REFERÊNCIAS.</textarea>
-            <label>Introdução</label>
-            <textarea id="in-intro" rows="4" oninput="sync()"></textarea>
-            <label>Conclusão</label>
-            <textarea id="in-concl" rows="4" oninput="sync()"></textarea>
+        <h2>2. Sumário</h2>
+        <div class="group">
+            <label>Itens (ex: Introdução. 1. Tópico. Conclusão.)</label>
+            <textarea id="in-sumario" rows="3" oninput="sync()">INTRODUÇÃO. 1. Tópico. 2. Tópico. 3. Desenvolvimento. CONCLUSÃO. REFERÊNCIAS.</textarea>
         </div>
 
-        <button onclick="window.print()">GERAR PDF AGORA</button>
-        <p style="font-size: 10px; color: #666; margin-top: 10px;">
-            * Ao abrir a tela de impressão, desmarque "Cabeçalhos e rodapés".
+        <h2>3. Elementos Textuais</h2>
+        <div class="group">
+            <label>Resumo (Até 250 palavras)</label>
+            <textarea id="in-resumo" rows="4" oninput="sync()"></textarea>
+            <label>Introdução (Sem citações)</label>
+            <textarea id="in-intro" rows="4" oninput="sync()"></textarea>
+            <label>1. Título do Tópico</label>
+            <input type="text" id="in-t1-tit" oninput="sync()" value="1. BÁ BLÁ BLÁ">
+            <label>Conteúdo do Tópico 1</label>
+            <textarea id="in-t1-txt" rows="3" oninput="sync()"></textarea>
+            <label>3. Desenvolvimento</label>
+            <textarea id="in-desenv" rows="5" oninput="sync()"></textarea>
+        </div>
+
+        <button onclick="window.print()">GERAR PDF / IMPRIMIR</button>
+        <p style="font-size: 11px; color: #7f8c8d; margin-top: 15px; text-align: center;">
+            Dica: No navegador, desmarque "Cabeçalhos e rodapés" para um PDF limpo.
         </p>
     </div>
 
@@ -107,19 +124,29 @@
         <div class="folha">
             <div class="page-num">2</div>
             <div class="center bold uppercase" id="out-titulo-rep">TÍTULO DO ARTIGO</div>
-            <div class="center" id="out-aluno-rep">Nome completo do aluno</div>
+            <div class="center" id="out-aluno-rep">Nome do aluno</div>
+            
+            <br>
+            <div class="bold uppercase">RESUMO</div>
+            <div id="out-resumo" style="text-indent: 0;">Texto do resumo aqui...</div>
             
             <br>
             <div class="bold uppercase">SUMÁRIO</div>
             <div id="out-sumario" style="white-space: pre-line;">Sumário...</div>
 
-            <br><br>
+            <br>
             <div class="bold uppercase">INTRODUÇÃO</div>
             <div id="out-intro" class="indent">Texto da introdução...</div>
+        </div>
+
+        <div class="folha">
+            <div class="page-num">3</div>
+            <div class="bold uppercase" id="out-t1-tit">1. TÍTULO DO TÓPICO</div>
+            <div id="out-t1-txt" class="indent">Conteúdo do tópico...</div>
             
-            <br><br>
-            <div class="bold uppercase">CONCLUSÃO</div>
-            <div id="out-concl" class="indent">Texto da conclusão...</div>
+            <br>
+            <div class="bold uppercase">3. DESENVOLVIMENTO</div>
+            <div id="out-desenv" class="indent">Conteúdo do desenvolvimento...</div>
         </div>
     </div>
 
@@ -132,8 +159,11 @@
                 'in-titulo': 'out-titulo',
                 'in-cidade': 'out-cidade',
                 'in-sumario': 'out-sumario',
+                'in-resumo': 'out-resumo',
                 'in-intro': 'out-intro',
-                'in-concl': 'out-concl'
+                'in-t1-tit': 'out-t1-tit',
+                'in-t1-txt': 'out-t1-txt',
+                'in-desenv': 'out-desenv'
             };
 
             for (let id in map) {
