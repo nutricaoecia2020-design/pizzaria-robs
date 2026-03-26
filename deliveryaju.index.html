@@ -10,7 +10,6 @@
         .category-card:hover { transform: translateY(-5px); transition: all 0.3s; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .modal-active { overflow: hidden; }
-        /* Animação para o botão de checkout aparecer */
         .slide-up { animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     </style>
@@ -46,8 +45,7 @@
 
     <section class="container mx-auto px-4 py-6">
         <h2 class="text-xl font-bold text-gray-800 uppercase mb-6 tracking-tight">Lojas Disponíveis</h2>
-        <div id="lista-lojas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            </div>
+        <div id="lista-lojas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </section>
 
     <div id="modal-loja" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-end md:items-center justify-center p-0 md:p-4">
@@ -66,21 +64,47 @@
             </div>
 
             <div class="p-6 overflow-y-auto flex-1 bg-white">
-                <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <i class="fas fa-utensils text-red-600"></i> Cardápio Principal
-                </h3>
-                <div id="lista-produtos" class="space-y-4 pb-32">
+                <div id="tela-produtos">
+                    <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-utensils text-red-600"></i> Cardápio Principal
+                    </h3>
+                    <div id="lista-produtos" class="space-y-4 pb-32"></div>
+                </div>
+
+                <div id="tela-cadastro" class="hidden pb-32">
+                    <button onclick="voltarParaProdutos()" class="mb-4 text-red-600 font-bold text-sm flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i> Voltar ao Cardápio
+                    </button>
+                    <h3 class="font-bold text-gray-800 mb-4">Dados para Entrega</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Seu Nome</label>
+                            <input type="text" id="cliente-nome" class="w-full bg-gray-100 border-none rounded-xl p-3 focus:ring-2 focus:ring-red-500 outline-none" placeholder="Ex: João Silva">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Endereço Completo</label>
+                            <textarea id="cliente-endereco" class="w-full bg-gray-100 border-none rounded-xl p-3 focus:ring-2 focus:ring-red-500 outline-none" rows="2" placeholder="Rua, Número, Bairro e Ponto de Referência"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Forma de Pagamento</label>
+                            <select id="cliente-pagamento" class="w-full bg-gray-100 border-none rounded-xl p-3 focus:ring-2 focus:ring-red-500 outline-none">
+                                <option value="Pix">Pix</option>
+                                <option value="Cartão de Crédito/Débito">Cartão (Maquininha)</option>
+                                <option value="Dinheiro">Dinheiro</option>
+                            </select>
+                        </div>
                     </div>
+                </div>
             </div>
 
             <div id="barra-checkout" class="absolute bottom-0 left-0 right-0 bg-white border-t p-4 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] hidden slide-up">
-                <button onclick="finalizarPedidoWhatsApp()" class="w-full bg-green-600 hover:bg-green-700 text-white p-4 rounded-2xl flex justify-between items-center transition-all transform active:scale-95">
+                <button id="btn-acao-checkout" onclick="irParaCadastro()" class="w-full bg-green-600 hover:bg-green-700 text-white p-4 rounded-2xl flex justify-between items-center transition-all transform active:scale-95">
                     <div class="flex items-center gap-3">
                         <div class="bg-green-500 w-8 h-8 rounded-lg flex items-center justify-center">
-                            <i class="fab fa-whatsapp text-lg"></i>
+                            <i id="icone-btn" class="fas fa-shopping-basket text-lg"></i>
                         </div>
                         <div class="text-left">
-                            <span class="block text-[10px] uppercase font-bold opacity-80">Finalizar Pedido</span>
+                            <span id="label-btn" class="block text-[10px] uppercase font-bold opacity-80">Continuar</span>
                             <span id="qtd-itens" class="font-bold">0 itens</span>
                         </div>
                     </div>
@@ -113,12 +137,11 @@
         let carrinhoLoja = [];
         let lojaSelecionada = null;
 
-        // CARREGAR LOJAS NO FEED PRINCIPAL
+        // CARREGAR LOJAS
         onValue(ref(db, 'lojas'), (snapshot) => {
             const lojas = snapshot.val();
             const container = document.getElementById('lista-lojas');
             container.innerHTML = "";
-
             if (lojas) {
                 Object.keys(lojas).forEach((id) => {
                     const loja = lojas[id];
@@ -143,31 +166,27 @@
                                     <span class="text-[10px] text-gray-400 font-bold">Frete Grátis</span>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
             }
         });
 
-        // ABRIR CARDÁPIO DA LOJA
         window.abrirLoja = (idLoja) => {
-            carrinhoLoja = []; // Reseta o carrinho ao trocar de loja
+            carrinhoLoja = [];
+            voltarParaProdutos(); // Garante que comece na tela de produtos
             atualizarBarraCheckout();
 
             onValue(ref(db, `lojas/${idLoja}`), (snap) => {
                 const loja = snap.val();
                 lojaSelecionada = { ...loja, id: idLoja };
-                
                 document.getElementById('modal-loja-nome').innerText = loja.nome;
                 document.getElementById('modal-loja-cat').innerText = loja.categoria + " • Peça agora";
                 document.getElementById('modal-loja-img').src = loja.imagem;
 
-                // Carrega produtos desta loja
                 onValue(ref(db, `produtos/${idLoja}`), (prodSnap) => {
                     const produtos = prodSnap.val();
                     const prodContainer = document.getElementById('lista-produtos');
                     prodContainer.innerHTML = "";
-
                     if (produtos) {
                         Object.keys(produtos).forEach(pId => {
                             const p = produtos[pId];
@@ -182,24 +201,15 @@
                                     <button onclick="adicionar('${p.nome}', ${p.preco})" class="bg-white border-2 border-red-600 text-red-600 w-10 h-10 rounded-xl hover:bg-red-600 hover:text-white transition shadow-sm active:scale-90">
                                         <i class="fas fa-plus"></i>
                                     </button>
-                                </div>
-                            `;
+                                </div>`;
                         });
-                    } else {
-                        prodContainer.innerHTML = `
-                            <div class="text-center py-10">
-                                <i class="fas fa-box-open text-gray-300 text-4xl mb-2"></i>
-                                <p class="text-gray-400 text-sm">Nenhum produto disponível hoje.</p>
-                            </div>`;
                     }
                 });
-
                 document.getElementById('modal-loja').classList.remove('hidden');
                 document.body.classList.add('modal-active');
             });
         };
 
-        // ADICIONAR AO CARRINHO DA LOJA ATUAL
         window.adicionar = (nome, preco) => {
             carrinhoLoja.push({ nome, preco });
             atualizarBarraCheckout();
@@ -220,19 +230,57 @@
             }
         }
 
-        // FINALIZAR NO WHATSAPP DA LOJA ESPECÍFICA
+        // NAVEGAÇÃO INTERNA DO MODAL
+        window.irParaCadastro = () => {
+            document.getElementById('tela-produtos').classList.add('hidden');
+            document.getElementById('tela-cadastro').classList.remove('hidden');
+            
+            // Altera o botão de checkout para "Enviar WhatsApp"
+            const btn = document.getElementById('btn-acao-checkout');
+            btn.setAttribute('onclick', 'finalizarPedidoWhatsApp()');
+            btn.classList.replace('bg-green-600', 'bg-green-700');
+            document.getElementById('label-btn').innerText = "Enviar para o WhatsApp";
+            document.getElementById('icone-btn').className = "fab fa-whatsapp text-lg";
+        };
+
+        window.voltarParaProdutos = () => {
+            document.getElementById('tela-produtos').classList.remove('hidden');
+            document.getElementById('tela-cadastro').classList.add('hidden');
+            
+            const btn = document.getElementById('btn-acao-checkout');
+            btn.setAttribute('onclick', 'irParaCadastro()');
+            btn.classList.replace('bg-green-700', 'bg-green-600');
+            document.getElementById('label-btn').innerText = "Continuar";
+            document.getElementById('icone-btn').className = "fas fa-shopping-basket text-lg";
+        };
+
+        // FINALIZAÇÃO REAL
         window.finalizarPedidoWhatsApp = () => {
+            const nome = document.getElementById('cliente-nome').value;
+            const endereco = document.getElementById('cliente-endereco').value;
+            const pagamento = document.getElementById('cliente-pagamento').value;
+
+            if(!nome || !endereco) {
+                alert("Por favor, preencha seu nome e endereço para entrega!");
+                return;
+            }
+
             const total = carrinhoLoja.reduce((sum, item) => sum + parseFloat(item.preco), 0);
-            let texto = `*PEDIDO: ${lojaSelecionada.nome.toUpperCase()}*\n\n`;
+            let texto = `*NOVO PEDIDO: ${lojaSelecionada.nome.toUpperCase()}*\n`;
+            texto += `------------------------------\n`;
             
             carrinhoLoja.forEach((item, index) => {
-                texto += `*${index + 1}.* ${item.nome} - R$ ${parseFloat(item.preco).toFixed(2)}\n`;
+                texto += `• ${item.nome} - R$ ${parseFloat(item.preco).toFixed(2)}\n`;
             });
 
-            texto += `\n*VALOR TOTAL: R$ ${total.toFixed(2)}*`;
-            texto += `\n\n_Solicitado via MeuDelivery_`;
+            texto += `------------------------------\n`;
+            texto += `*TOTAL: R$ ${total.toFixed(2)}*\n\n`;
+            texto += `*DADOS DO CLIENTE*\n`;
+            texto += `👤 Nome: ${nome}\n`;
+            texto += `📍 Endereço: ${endereco}\n`;
+            texto += `💳 Pagamento: ${pagamento}\n\n`;
+            texto += `_Enviado via MeuDelivery_`;
 
-            // Envia para o WhatsApp (fone fixo como exemplo, pode vir do banco)
             const fone = "557999999999"; 
             window.open(`https://wa.me/${fone}?text=${encodeURIComponent(texto)}`);
         };
@@ -241,7 +289,6 @@
             document.getElementById('modal-loja').classList.add('hidden');
             document.body.classList.remove('modal-active');
         };
-
     </script>
 </body>
 </html>
