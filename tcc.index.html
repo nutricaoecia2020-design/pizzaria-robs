@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Gerador ABNT - Versão Final</title>
+    <title>Gerador ABNT - Finalizado</title>
     <style>
         :root { --sidebar-width: 450px; }
         * { box-sizing: border-box; }
@@ -27,20 +27,21 @@
         }
         .folha {
             width: 210mm; min-height: 297mm; background: white;
-            padding: 3cm 2cm 2cm 3cm; /* Margens ABNT: 3 Esquerda/Topo, 2 Direita/Base */
+            padding: 3cm 2cm 3cm 3cm; /* 3cm superior/esquerda, 2cm direita, 3cm inferior para recuo */
             font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; color: black;
             text-align: justify; position: relative; margin-bottom: 30px; box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
 
         .center { text-align: center; }
         .bold { font-weight: bold; }
         .uppercase { text-transform: uppercase; }
         .t14 { font-size: 14pt; }
-        .indent { text-indent: 1.5cm; } /* Recuo de parágrafo solicitado */
+        .indent { text-indent: 1.5cm; }
         .page-num { position: absolute; top: 2cm; right: 2cm; font-size: 10pt; }
         
-        /* Alinhamento à esquerda para tópicos do desenvolvimento solicitado */
-        .topico-desenv { text-align: left; font-weight: bold; text-transform: uppercase; margin-bottom: 1em; }
+        /* Tópicos à esquerda conforme solicitado */
+        .topico-esquerda { text-align: left; font-weight: bold; text-transform: uppercase; margin-bottom: 1em; }
 
         .spacer-8 { height: 8em; } 
         .spacer-23 { height: 23em; }
@@ -73,7 +74,7 @@
 
         <div class="section-box">
             <h2>2. Elementos Textuais</h2>
-            <label>Sumário (Enter para separar tópicos)</label>
+            <label>Sumário (Espaçamento Duplo)</label>
             <textarea id="in-sumario" rows="4" oninput="sync()">INTRODUÇÃO
 1. TÍTULO DO TÓPICO
 2. TÍTULO DO TÓPICO
@@ -111,18 +112,18 @@ REFERÊNCIAS</textarea>
             <div class="center" id="out-aluno-rep">Nome do Aluno</div>
             
             <br><br>
-            <div class="bold uppercase">SUMÁRIO</div>
+            <div class="topico-esquerda">SUMÁRIO</div>
             <div id="out-sumario" style="white-space: pre-line; line-height: 2.0; margin-top: 10px;"></div>
 
             <br><br>
-            <div class="bold uppercase">INTRODUÇÃO</div>
-            <div id="out-intro" class="indent" style="margin-top: 1.5em; white-space: pre-line;"></div>
+            <div class="topico-esquerda">INTRODUÇÃO</div>
+            <div id="out-intro" class="indent" style="white-space: pre-line;"></div>
         </div>
 
         <div class="folha">
             <div class="page-num">3</div>
-            <div class="topico-desenv">3. DESENVOLVIMENTO</div>
-            <div id="out-desenv" class="indent" style="margin-top: 1.5em; white-space: pre-line;"></div>
+            <div class="topico-esquerda">3. DESENVOLVIMENTO</div>
+            <div id="out-desenv" class="indent" style="white-space: pre-line;"></div>
         </div>
     </div>
 
