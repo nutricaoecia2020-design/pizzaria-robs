@@ -2,13 +2,13 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Gerador de Artigo Científico ABNT</title>
+    <title>Gerador de Artigo Científico ABNT - Completo</title>
     <style>
         :root { --admin-bg: #f0f2f5; --accent: #1a73e8; }
         * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background: var(--admin-bg); }
 
-        /* PAINEL DE EDIÇÃO */
+        /* PAINEL DE EDIÇÃO (ESQUERDA) */
         #editor {
             width: 450px; height: 100vh; background: white; padding: 20px;
             overflow-y: auto; border-right: 1px solid #ddd; box-shadow: 2px 0 10px rgba(0,0,0,0.1);
@@ -17,30 +17,28 @@
         h2 { color: var(--accent); font-size: 1.1rem; margin-top: 0; border-bottom: 2px solid var(--accent); padding-bottom: 5px; }
         label { display: block; font-size: 11px; font-weight: bold; margin-top: 10px; color: #555; text-transform: uppercase; }
         input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .instrucao { font-size: 10px; color: #888; font-style: italic; margin-top: 2px; }
         button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         
-        /* ÁREA DO DOCUMENTO (PREVIEW) */
+        /* ÁREA DO DOCUMENTO (DIREITA) */
         #preview-container { flex-grow: 1; height: 100vh; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; }
         
         .folha {
             width: 210mm; min-height: 297mm; background: white;
-            padding: 3cm 2cm 2cm 3cm; /* Margens ABNT  */
+            padding: 3cm 2cm 2cm 3cm; /* Margens ABNT: Sup 3, Esq 3, Inf 2, Dir 2 [cite: 4, 5] */
             font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; color: black;
             text-align: justify; position: relative; margin-bottom: 30px; box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
 
-        /* Estilos de Texto ABNT */
         .center { text-align: center; }
         .bold { font-weight: bold; }
         .uppercase { text-transform: uppercase; }
         .t14 { font-size: 14pt; }
-        .t10 { font-size: 10pt; line-height: 1.1; }
-        .indent { text-indent: 1.5cm; }
+        .indent { text-indent: 1.5cm; } /* Espaço de 1,5 para iniciar o texto [cite: 27] */
         .page-num { position: absolute; top: 2cm; right: 2cm; font-size: 10pt; }
         
-        /* Espaçamentos do Modelo [cite: 3, 9] */
-        .spacer-8 { margin-bottom: 8em; }
-        .spacer-23 { margin-bottom: 23em; }
+        .spacer-8 { margin-bottom: 8em; } /* 8 Enters [cite: 3, 7] */
+        .spacer-23 { margin-bottom: 23em; } /* 23 Enters [cite: 9] */
 
         @media print {
             #editor { display: none; }
@@ -53,44 +51,52 @@
 <body>
 
     <div id="editor" class="no-print">
-        <h2>1. Identificação</h2>
+        <h2>1. Capa e Identificação</h2>
         <div class="field-group">
             <label>Instituição</label>
             <input type="text" id="in-inst" oninput="sync()" value="NOME DA INSTITUIÇÃO">
             <label>Nome do Curso</label>
             <input type="text" id="in-curso" oninput="sync()" value="NOME DO CURSO">
             <label>Nome do Aluno</label>
-            <input type="text" id="in-aluno" oninput="sync()" placeholder="Completo">
-            <label>Título do Trabalho</label>
+            <input type="text" id="in-aluno" oninput="sync()" placeholder="NOME COMPLETO DO ALUNO">
+            <label>Título do Artigo</label>
             <input type="text" id="in-titulo" oninput="sync()" placeholder="Título em minúsculas">
             <label>Cidade e Ano</label>
             <input type="text" id="in-cidade" oninput="sync()" value="CIDADE, 2026">
         </div>
 
-        <h2>2. Resumo</h2>
+        <h2>2. Sumário</h2>
         <div class="field-group">
-            <label>Texto do Resumo (Até 250 palavras)</label>
-            <textarea id="in-resumo" rows="6" oninput="sync()"></textarea>
-            <label>Palavras-Chave (3 a 5)</label>
-            <input type="text" id="in-tags" oninput="sync()" placeholder="Termo 1; Termo 2; Termo 3">
+            <label>Itens do Sumário</label>
+            <textarea id="in-sumario" rows="4" oninput="sync()">Introdução. 1. Tópico. 2. Tópico. Conclusão. Referências.</textarea>
+            <div class="instrucao">Liste todos os itens e subitens[cite: 26].</div>
         </div>
 
-        <h2>3. Conteúdo Textual</h2>
+        <h2>3. Introdução e Desenvolvimento</h2>
         <div class="field-group">
             <label>Introdução</label>
-            <textarea id="in-intro" rows="5" oninput="sync()"></textarea>
-            <label>Título Tópico 1</label>
+            <textarea id="in-intro" rows="4" oninput="sync()"></textarea>
+            <div class="instrucao">Deve conter: tema, problema, relevância, objetivos e metodologia [cite: 30-36].</div>
+
+            <label>1. Título do Tópico</label>
             <input type="text" id="in-t1-tit" oninput="sync()" value="1. TÍTULO DO TÓPICO">
-            <label>Conteúdo Tópico 1</label>
-            <textarea id="in-t1-txt" rows="5" oninput="sync()"></textarea>
-            <label>Conclusão</label>
-            <textarea id="in-concl" rows="5" oninput="sync()"></textarea>
+            <textarea id="in-t1-txt" rows="3" oninput="sync()"></textarea>
+
+            <label>2. Título do Tópico</label>
+            <input type="text" id="in-t2-tit" oninput="sync()" value="2. TÍTULO DO TÓPICO">
+            <textarea id="in-t2-txt" rows="3" oninput="sync()"></textarea>
+
+            <label>3. Desenvolvimento</label>
+            <input type="text" id="in-t3-tit" oninput="sync()" value="3. DESENVOLVIMENTO">
+            <textarea id="in-t3-txt" rows="3" oninput="sync()"></textarea>
         </div>
 
-        <h2>4. Referências</h2>
+        <h2>4. Finalização</h2>
         <div class="field-group">
-            <label>Referências (Ordem Alfabética)</label>
-            <textarea id="in-ref" rows="5" oninput="sync()"></textarea>
+            <label>Conclusão</label>
+            <textarea id="in-concl" rows="4" oninput="sync()"></textarea>
+            <label>Referências</label>
+            <textarea id="in-ref" rows="4" oninput="sync()"></textarea>
         </div>
 
         <button onclick="window.print()">IMPRIMIR / SALVAR PDF</button>
@@ -115,11 +121,9 @@
             <div class="center bold uppercase" id="out-titulo-rep">TÍTULO DO ARTIGO</div>
             <div class="center" id="out-aluno-rep">Nome completo do aluno</div>
             
-            <br><br>
-            <div class="bold uppercase">RESUMO</div>
-            <div id="out-resumo" style="text-align: justify;">Texto do resumo...</div>
             <br>
-            <div><strong>Palavras-chave:</strong> <span id="out-tags">Termo 1; Termo 2.</span></div>
+            <div class="bold uppercase">SUMÁRIO</div>
+            <div id="out-sumario" style="white-space: pre-wrap;">Introdução. 1. Tópico...</div>
 
             <br><br>
             <div class="bold uppercase">INTRODUÇÃO</div>
@@ -127,19 +131,25 @@
             
             <br>
             <div class="bold uppercase" id="out-t1-tit">1. TÍTULO DO TÓPICO</div>
-            <div id="out-t1-txt" class="indent">Conteúdo do tópico...</div>
+            <div id="out-t1-txt" class="indent">Conteúdo do tópico 1...</div>
         </div>
 
         <div class="folha">
             <div class="page-num">3</div>
+            <div class="bold uppercase" id="out-t2-tit">2. TÍTULO DO TÓPICO</div>
+            <div id="out-t2-txt" class="indent">Conteúdo do tópico 2...</div>
+
+            <br>
+            <div class="bold uppercase" id="out-t3-tit">3. DESENVOLVIMENTO</div>
+            <div id="out-t3-txt" class="indent">Conteúdo do tópico 3...</div>
+
+            <br><br>
             <div class="bold uppercase">CONCLUSÃO</div>
             <div id="out-concl" class="indent">Texto da conclusão...</div>
-            
+
             <br><br>
             <div class="bold uppercase">REFERÊNCIAS</div>
-            <div id="out-ref" style="font-size: 12pt; text-align: left; line-height: 1;">
-                Lista de referências em ordem alfabética...
-            </div>
+            <div id="out-ref" style="font-size: 12pt; text-align: left; line-height: 1;">Referências...</div>
         </div>
     </div>
 
@@ -151,11 +161,11 @@
                 'in-aluno': 'out-aluno',
                 'in-titulo': 'out-titulo',
                 'in-cidade': 'out-cidade',
-                'in-resumo': 'out-resumo',
-                'in-tags': 'out-tags',
+                'in-sumario': 'out-sumario',
                 'in-intro': 'out-intro',
-                'in-t1-tit': 'out-t1-tit',
-                'in-t1-txt': 'out-t1-txt',
+                'in-t1-tit': 'out-t1-tit', 'in-t1-txt': 'out-t1-txt',
+                'in-t2-tit': 'out-t2-tit', 'in-t2-txt': 'out-t2-txt',
+                'in-t3-tit': 'out-t3-tit', 'in-t3-txt': 'out-t3-txt',
                 'in-concl': 'out-concl',
                 'in-ref': 'out-ref'
             };
