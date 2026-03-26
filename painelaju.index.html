@@ -3,89 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MASTER ADMIN | DELIVERY</title>
+    <title>MASTER ADMIN FINAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .aba-conteudo { display: none; }
         .aba-ativa { display: block; }
         .menu-ativo { background: #ef4444 !important; color: white !important; }
-        .card-shadow { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
     </style>
 </head>
-<body class="bg-gray-100 flex h-screen overflow-hidden font-sans">
+<body class="bg-gray-100 flex h-screen overflow-hidden font-sans text-slate-800">
 
     <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-2xl">
         <div class="p-6 border-b border-slate-800">
-            <h1 class="text-2xl font-black text-red-500 italic">DELIVERY<span class="text-white">HUB</span></h1>
+            <h1 class="text-2xl font-black text-red-500 italic">DELIVERY<span class="text-white font-light">HUB</span></h1>
         </div>
         <nav class="flex-1 p-4 space-y-2">
             <button onclick="navegar('dashboard')" id="btn-dashboard" class="menu-btn w-full flex items-center p-3 rounded-xl menu-ativo">
                 <i class="fas fa-home mr-3"></i> Dashboard
             </button>
             <button onclick="navegar('lojas')" id="btn-lojas" class="menu-btn w-full flex items-center p-3 rounded-xl text-slate-400 hover:bg-slate-800">
-                <i class="fas fa-store mr-3"></i> Gerenciar Lojas
+                <i class="fas fa-store mr-3"></i> Lojas
             </button>
-            <button onclick="navegar('produtos')" id="btn-produtos" class="menu-btn w-full flex items-center p-3 rounded-xl text-slate-400 hover:bg-slate-800">
-                <i class="fas fa-hamburger mr-3"></i> Cardápios
+            <button onclick="navegar('vendas')" id="btn-vendas" class="menu-btn w-full flex items-center p-3 rounded-xl text-slate-400 hover:bg-slate-800">
+                <i class="fas fa-receipt mr-3"></i> Vendas e Comissões
             </button>
         </nav>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-y-auto">
         <header class="bg-white p-4 border-b flex justify-between items-center sticky top-0 z-50">
-            <h2 id="txt-titulo" class="font-black text-slate-700 uppercase italic">Painel Admin</h2>
-            <span class="text-green-500 font-bold text-xs uppercase">● Banco de Dados Ativo</span>
+            <h2 id="txt-titulo" class="font-black text-slate-700 uppercase italic">Painel Administrativo</h2>
+            <span class="text-green-500 font-bold text-[10px] uppercase bg-green-50 px-2 py-1 rounded-full border border-green-200">● Conectado ao Firebase</span>
         </header>
 
-        <div class="p-6">
+        <div class="p-6 space-y-6">
             
             <div id="aba-dashboard" class="aba-conteudo aba-ativa">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-white p-6 rounded-2xl border-l-8 border-red-500 shadow-sm">
-                        <p class="text-gray-400 text-xs font-bold uppercase">Lojas</p>
-                        <h3 id="resumo-lojas" class="text-3xl font-black">0</h3>
+                        <p class="text-gray-400 text-xs font-bold uppercase">Lojas no Sistema</p>
+                        <h3 id="resumo-lojas" class="text-4xl font-black">0</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border-l-8 border-blue-500 shadow-sm">
+                        <p class="text-gray-400 text-xs font-bold uppercase">Total Vendido</p>
+                        <h3 id="resumo-vendas" class="text-4xl font-black text-blue-600">R$ 0,00</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border-l-8 border-green-500 shadow-sm">
+                        <p class="text-gray-400 text-xs font-bold uppercase">Sua Comissão</p>
+                        <h3 id="resumo-comissao" class="text-4xl font-black text-green-600">R$ 0,00</h3>
                     </div>
                 </div>
             </div>
 
             <div id="aba-lojas" class="aba-conteudo space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border">
-                    <h3 class="font-black mb-4 uppercase italic">Cadastrar Loja</h3>
-                    <form id="f-loja" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <input type="text" id="lnome" placeholder="Nome da Loja" class="border p-3 rounded-lg" required>
-                        <input type="url" id="llogo" placeholder="URL da Logo (Imagem)" class="border p-3 rounded-lg">
-                        <input type="text" id="lcat" placeholder="Categoria (ex: Pizza)" class="border p-3 rounded-lg">
-                        <input type="text" id="ltempo" placeholder="Tempo (ex: 30-40 min)" class="border p-3 rounded-lg">
-                        <input type="number" id="lcom" placeholder="Comissão %" class="border p-3 rounded-lg" required>
-                        <button type="submit" class="bg-red-600 text-white font-black rounded-lg p-3 hover:bg-red-700 uppercase">Salvar Loja</button>
-                    </form>
-                </div>
                 <div id="grid-lojas" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
             </div>
 
-            <div id="aba-produtos" class="aba-conteudo space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border">
-                    <h3 class="font-black mb-4 uppercase italic">Adicionar Produto</h3>
-                    <form id="f-prod" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <select id="p-loja-select" class="border p-3 rounded-lg bg-blue-50 font-bold" required></select>
-                        <input type="text" id="pnome" placeholder="Nome do Produto" class="border p-3 rounded-lg" required>
-                        <input type="url" id="pimg" placeholder="URL da Imagem" class="border p-3 rounded-lg">
-                        <input type="number" step="0.01" id="ppreco" placeholder="Preço R$" class="border p-3 rounded-lg" required>
-                        <button type="submit" class="bg-blue-600 text-white font-black rounded-lg p-3 hover:bg-blue-700 uppercase">Adicionar Item</button>
-                    </form>
-                </div>
+            <div id="aba-vendas" class="aba-conteudo">
                 <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                     <table class="w-full text-left">
-                        <thead class="bg-gray-100 text-xs uppercase">
+                        <thead class="bg-slate-800 text-white text-[10px] uppercase tracking-widest">
                             <tr>
-                                <th class="p-4">Foto</th>
-                                <th class="p-4">Produto</th>
-                                <th class="p-4">Preço</th>
-                                <th class="p-4">Ação</th>
+                                <th class="p-4">Loja</th>
+                                <th class="p-4">Cliente</th>
+                                <th class="p-4">Valor Pedido</th>
+                                <th class="p-4 text-green-400">Comissão</th>
                             </tr>
                         </thead>
-                        <tbody id="lista-produtos"></tbody>
+                        <tbody id="tabela-vendas" class="divide-y divide-gray-100 font-bold text-sm"></tbody>
                     </table>
                 </div>
             </div>
@@ -95,7 +81,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyATFpMv8Qd7XqypPjD4RRIzFd80EBdUDjc",
@@ -109,7 +95,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // NAVEGAÇÃO
         window.navegar = (aba) => {
             document.querySelectorAll('.aba-conteudo').forEach(x => x.classList.remove('aba-ativa'));
             document.querySelectorAll('.menu-btn').forEach(x => x.classList.remove('menu-ativo'));
@@ -117,84 +102,76 @@
             document.getElementById('btn-' + aba).classList.add('menu-ativo');
         };
 
-        // CARREGAR LOJAS
+        let cacheLojas = {};
+
+        // 1. CARREGAR LOJAS (CORRIGINDO IMAGENS)
         onValue(ref(db, 'lojas'), (snap) => {
             const lojas = snap.val() || {};
+            cacheLojas = lojas;
             const grid = document.getElementById('grid-lojas');
-            const select = document.getElementById('p-loja-select');
             grid.innerHTML = "";
-            select.innerHTML = '<option value="">Selecionar Loja...</option>';
-            
             document.getElementById('resumo-lojas').innerText = Object.keys(lojas).length;
 
             for (let id in lojas) {
                 const l = lojas[id];
-                // RESOLVE O PROBLEMA DAS IMAGENS: tenta todos os nomes de campos possíveis
-                const img = l.logo || l.logo_url || l.url || l.imagem || "https://via.placeholder.com/100";
+                // Tenta todos os nomes possíveis para a imagem
+                const img = l.logo || l.logo_url || l.imagem || l.url || "https://via.placeholder.com/150";
                 
                 grid.innerHTML += `
-                    <div class="bg-white p-4 rounded-xl border flex items-center gap-4 shadow-sm">
-                        <img src="${img}" class="w-12 h-12 rounded-lg object-cover bg-gray-100" onerror="this.src='https://via.placeholder.com/100'">
+                    <div class="bg-white p-4 rounded-2xl border flex items-center gap-4 shadow-sm hover:shadow-md transition">
+                        <img src="${img}" class="w-14 h-14 rounded-xl object-cover bg-gray-50 border" onerror="this.src='https://via.placeholder.com/150'">
                         <div class="flex-1">
-                            <h4 class="font-bold text-sm uppercase">${l.nome}</h4>
-                            <p class="text-[10px] text-gray-400 font-bold">${l.categoria || ''} • ${l.tempo || ''}</p>
+                            <h4 class="font-black text-slate-700 uppercase text-xs">${l.nome}</h4>
+                            <p class="text-[10px] text-blue-500 font-bold italic">${l.comissao}% de Comissão</p>
                         </div>
-                        <button onclick="window.excluirLoja('${id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
-                select.innerHTML += `<option value="${id}">${l.nome}</option>`;
             }
         });
 
-        // CARREGAR PRODUTOS (MULTI-LOJA)
-        onValue(ref(db, 'produtos'), (snap) => {
-            const data = snap.val() || {};
-            const lista = document.getElementById('lista-produtos');
-            lista.innerHTML = "";
+        // 2. CARREGAR VENDAS (CORRIGINDO idloja E VALORES)
+        onValue(ref(db, 'pedidos'), (snap) => {
+            const pedidos = snap.val() || {};
+            const tabela = document.getElementById('tabela-vendas');
+            tabela.innerHTML = "";
+            
+            let vTotais = 0;
+            let cTotais = 0;
 
-            for (let lojaId in data) {
-                for (let prodId in data[lojaId]) {
-                    const p = data[lojaId][prodId];
-                    const img = p.imagem || p.imagem_url || p.img || p.url || "https://via.placeholder.com/100";
-                    
-                    lista.innerHTML += `
-                        <tr class="border-b">
-                            <td class="p-4"><img src="${img}" class="w-10 h-10 rounded object-cover" onerror="this.src='https://via.placeholder.com/100'"></td>
-                            <td class="p-4 font-bold text-gray-700">${p.nome}</td>
-                            <td class="p-4 font-black text-green-600">R$ ${parseFloat(p.preco).toFixed(2)}</td>
-                            <td class="p-4"><button onclick="window.excluirProd('${lojaId}','${prodId}')" class="text-red-400"><i class="fas fa-times"></i></button></td>
-                        </tr>
-                    `;
-                }
+            for (let id in pedidos) {
+                const p = pedidos[id];
+                
+                // IMPORTANTE: Busca por 'idloja' (como está no seu print)
+                const lojaId = p.idloja || p.lojaId; 
+                const loja = cacheLojas[lojaId] || { nome: "Loja Excluída", comissao: 0 };
+                
+                const valor = parseFloat(p.total || p.valor || 0);
+                const comPerc = parseFloat(loja.comissao || 0);
+                const comReal = (valor * (comPerc / 100));
+
+                vTotais += valor;
+                cTotais += comReal;
+
+                tabela.innerHTML += `
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="p-4 text-xs font-black text-slate-400 uppercase">${loja.nome}</td>
+                        <td class="p-4">
+                            <div class="text-slate-700">${p.clienteNome || p.nome || "Cliente"}</div>
+                            <div class="text-[9px] text-slate-400 uppercase font-normal">${p.endereco || "Não informado"}</div>
+                        </td>
+                        <td class="p-4 font-black">R$ ${valor.toFixed(2)}</td>
+                        <td class="p-4 font-black text-green-600 italic">R$ ${comReal.toFixed(2)}</td>
+                    </tr>
+                `;
+            }
+
+            document.getElementById('resumo-vendas').innerText = `R$ ${vTotais.toFixed(2)}`;
+            document.getElementById('resumo-comissao').innerText = `R$ ${cTotais.toFixed(2)}`;
+            
+            if (Object.keys(pedidos).length === 0) {
+                tabela.innerHTML = "<tr><td colspan='4' class='p-10 text-center text-slate-300 italic'>Nenhum pedido encontrado.</td></tr>";
             }
         });
-
-        // FUNÇÕES DE CADASTRO
-        document.getElementById('f-loja').onsubmit = (e) => {
-            e.preventDefault();
-            const payload = {
-                nome: document.getElementById('lnome').value,
-                logo: document.getElementById('llogo').value,
-                categoria: document.getElementById('lcat').value,
-                tempo: document.getElementById('ltempo').value,
-                comissao: document.getElementById('lcom').value
-            };
-            push(ref(db, 'lojas'), payload).then(() => e.target.reset());
-        };
-
-        document.getElementById('f-prod').onsubmit = (e) => {
-            e.preventDefault();
-            const lojaId = document.getElementById('p-loja-select').value;
-            const payload = {
-                nome: document.getElementById('pnome').value,
-                imagem: document.getElementById('pimg').value,
-                preco: document.getElementById('ppreco').value
-            };
-            push(ref(db, `produtos/${lojaId}`), payload).then(() => e.target.reset());
-        };
-
-        window.excluirLoja = (id) => confirm("Excluir loja?") && remove(ref(db, `lojas/${id}`));
-        window.excluirProd = (lojaId, id) => confirm("Excluir produto?") && remove(ref(db, `produtos/${lojaId}/${id}`));
 
     </script>
 </body>
