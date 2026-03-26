@@ -2,66 +2,60 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Gerador ABNT - Impressão Corrigida</title>
+    <title>Gerador de Artigo Científico ABNT - Completo</title>
     <style>
         :root { --sidebar-width: 450px; }
         * { box-sizing: border-box; }
         
-        /* Layout de Tela */
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background: #bdc3c7; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background: #ecf0f1; }
 
+        /* PAINEL DE EDIÇÃO (ESQUERDA) */
         #editor {
             width: var(--sidebar-width); height: 100vh; background: white; padding: 25px;
-            overflow-y: auto; border-right: 2px solid #95a5a6; position: fixed; left: 0; top: 0;
+            overflow-y: auto; border-right: 2px solid #bdc3c7; position: fixed; left: 0; top: 0;
             z-index: 100;
         }
+        .section-box { border: 1px solid #dfe6e9; padding: 15px; border-radius: 8px; margin-bottom: 20px; background: #fdfdfd; }
+        h2 { font-size: 0.9rem; color: #2980b9; text-transform: uppercase; margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+        label { display: block; font-size: 11px; font-weight: bold; margin-top: 10px; color: #7f8c8d; }
+        input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+        button { width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; }
 
+        /* ÁREA DO DOCUMENTO (DIREITA) */
         #preview-container { 
-            margin-left: var(--sidebar-width); 
-            width: calc(100% - var(--sidebar-width));
+            margin-left: var(--sidebar-width); width: calc(100% - var(--sidebar-width));
             padding: 40px; display: flex; flex-direction: column; align-items: center; 
         }
-
-        /* Configuração das Folhas (ABNT) */
+        
         .folha {
             width: 210mm; min-height: 297mm; background: white;
-            padding: 3cm 2cm 2cm 3cm; /* Margens: Sup/Esq 3cm, Inf/Dir 2cm  */
+            padding: 3cm 2cm 2cm 3cm; /* Margens ABNT: Sup 3, Esq 3, Inf 2, Dir 2 [cite: 4, 5] */
             font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; color: black;
-            text-align: justify; position: relative; margin-bottom: 30px; box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            text-align: justify; position: relative; margin-bottom: 30px; box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
 
-        /* Estilos de Texto */
+        /* Estilos de Formatação */
         .center { text-align: center; }
         .bold { font-weight: bold; }
         .uppercase { text-transform: uppercase; }
         .t14 { font-size: 14pt; }
-        .indent { text-indent: 1.5cm; margin-top: 0; }
+        .indent { text-indent: 1.5cm; } /* Espaço de 1,5 para iniciar o texto [cite: 27] */
         .page-num { position: absolute; top: 2cm; right: 2cm; font-size: 10pt; }
         
-        .spacer-8 { height: 8em; }
-        .spacer-23 { height: 23em; }
+        .spacer-8 { height: 8em; } /* 8 Enters [cite: 3, 7] */
+        .spacer-23 { height: 23em; } /* 23 Enters [cite: 9] */
 
-        /* Estilo dos Inputs */
-        .group { border: 1px solid #dfe6e9; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        label { display: block; font-size: 11px; font-weight: bold; color: #636e72; }
-        input, textarea { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; }
-        button { width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-
-        /* CORREÇÃO CRÍTICA PARA IMPRESSÃO */
+        /* CONFIGURAÇÃO DE IMPRESSÃO */
         @media print {
             @page { size: A4; margin: 0; }
             body { display: block; background: white; }
             #editor { display: none !important; }
-            #preview-container { 
-                margin-left: 0 !important; width: 100% !important; padding: 0 !important; 
-                display: block !important; overflow: visible !important;
-            }
+            #preview-container { margin-left: 0 !important; width: 100% !important; padding: 0 !important; display: block !important; }
             .folha { 
                 box-shadow: none !important; margin: 0 !important; 
-                page-break-after: always !important; /* Força quebra de página */
                 width: 210mm !important; height: 297mm !important;
+                page-break-after: always !important; 
                 display: block !important;
-                overflow: hidden;
             }
         }
     </style>
@@ -69,28 +63,37 @@
 <body>
 
     <div id="editor">
-        <h2 style="font-size:1rem; color:#2980b9;">CONFIGURAÇÃO DO ARTIGO</h2>
-        
-        <div class="group">
-            <label>Instituição / Curso</label>
+        <div class="section-box">
+            <h2>1. Capa e Identificação</h2>
+            <label>Instituição</label>
             <input type="text" id="in-inst" oninput="sync()" value="NOME DA INSTITUIÇÃO">
+            <label>Curso</label>
             <input type="text" id="in-curso" oninput="sync()" value="NOME DO CURSO">
             <label>Nome do Aluno</label>
             <input type="text" id="in-aluno" oninput="sync()" placeholder="Nome Completo">
-            <label>Título (minúsculas)</label>
-            <input type="text" id="in-titulo" oninput="sync()" placeholder="Título do artigo">
+            <label>Título do Artigo</label>
+            <input type="text" id="in-titulo" oninput="sync()" placeholder="letras minúsculas">
+            <label>Cidade</label>
+            <input type="text" id="in-cidade" oninput="sync()" value="CIDADE">
+            <label>Ano</label>
+            <input type="text" id="in-ano" oninput="sync()" value="2026">
         </div>
 
-        <div class="group">
+        <div class="section-box">
+            <h2>2. Elementos Textuais</h2>
             <label>Sumário</label>
-            <textarea id="in-sumario" rows="3" oninput="sync()">INTRODUÇÃO. 1. Bá Blá Blá. 2. Tópico. CONCLUSÃO. REFERÊNCIAS.</textarea>
+            <textarea id="in-sumario" rows="3" oninput="sync()">INTRODUÇÃO. 1. Título. 2. Tópico. CONCLUSÃO. REFERÊNCIAS.</textarea>
             <label>Introdução</label>
             <textarea id="in-intro" rows="3" oninput="sync()"></textarea>
-            <label>Desenvolvimento (Tópico 1)</label>
+            <label>1. Título do Tópico</label>
+            <input type="text" id="in-t1-tit" oninput="sync()" value="1. TÍTULO DO TÓPICO">
+            <label>2. Título do Tópico</label>
+            <input type="text" id="in-t2-tit" oninput="sync()" value="2. TÍTULO DO TÓPICO">
+            <label>3. Desenvolvimento</label>
             <textarea id="in-desenv" rows="3" oninput="sync()"></textarea>
         </div>
 
-        <button onclick="window.print()">IMPRIMIR TODAS AS PÁGINAS</button>
+        <button onclick="window.print()">GERAR PDF COMPLETO</button>
     </div>
 
     <div id="preview-container">
@@ -99,15 +102,19 @@
                 <div id="out-inst">NOME DA INSTITUIÇÃO</div>
                 <div id="out-curso">NOME DO CURSO</div>
             </div>
-            <div class="spacer-8"></div> <div class="center bold uppercase t14" id="out-aluno">NOME DO ALUNO</div>
+            <div class="spacer-8"></div>
+            <div class="center bold uppercase t14" id="out-aluno">NOME DO ALUNO</div>
             <div class="spacer-8"></div>
             <div class="center t14" id="out-titulo">Título do artigo científico</div>
-            <div class="spacer-23"></div> <div class="center bold uppercase">CIDADE, 2026</div>
+            <div class="spacer-23"></div>
+            <div class="center bold uppercase">
+                <span id="out-cidade">CIDADE</span>, <span id="out-ano">2026</span> 
+            </div>
         </div>
 
         <div class="folha">
             <div class="page-num">2</div>
-            <div class="center bold uppercase" id="out-titulo-rep" style="font-size: 12pt;">TÍTULO</div>
+            <div class="center bold uppercase" id="out-titulo-rep" style="font-size: 12pt;">TÍTULO DO ARTIGO</div>
             <div class="center" id="out-aluno-rep">Nome do Aluno</div>
             
             <br>
@@ -116,34 +123,46 @@
 
             <br>
             <div class="bold uppercase">INTRODUÇÃO</div>
-            <div id="out-intro" class="indent">A introdução deve conter o tema e problema [cite: 27-31].</div>
+            <div id="out-intro" class="indent">Texto da introdução... [cite: 27-31]</div>
         </div>
 
         <div class="folha">
             <div class="page-num">3</div>
-            <div class="bold uppercase">1. TÍTULO DO TÓPICO</div>
-            <div id="out-desenv" class="indent">Conteúdo do desenvolvimento aqui [cite: 40-44].</div>
+            <div class="bold uppercase" id="out-t1-tit">1. TÍTULO DO TÓPICO</div>
+            <div class="indent">Conteúdo inicial... [cite: 37-40]</div>
+            
+            <br>
+            <div class="bold uppercase" id="out-t2-tit">2. TÍTULO DO TÓPICO</div>
+            <div class="indent">Conteúdo secundário... [cite: 49-51]</div>
+            
+            <br>
+            <div class="bold uppercase">3. DESENVOLVIMENTO</div>
+            <div id="out-desenv" class="indent">Texto do desenvolvimento...</div>
         </div>
     </div>
 
     <script>
         function sync() {
-            const map = {
+            const fields = {
                 'in-inst': 'out-inst',
                 'in-curso': 'out-curso',
                 'in-aluno': 'out-aluno',
                 'in-titulo': 'out-titulo',
+                'in-cidade': 'out-cidade',
+                'in-ano': 'out-ano',
                 'in-sumario': 'out-sumario',
                 'in-intro': 'out-intro',
+                'in-t1-tit': 'out-t1-tit',
+                'in-t2-tit': 'out-t2-tit',
                 'in-desenv': 'out-desenv'
             };
 
-            for (let id in map) {
-                let val = document.getElementById(id).value;
-                document.getElementById(map[id]).innerText = val || "...";
+            for (let inId in fields) {
+                let val = document.getElementById(inId).value;
+                document.getElementById(fields[inId]).innerText = val || "...";
                 
-                if(id === 'in-aluno') document.getElementById('out-aluno-rep').innerText = val;
-                if(id === 'in-titulo') document.getElementById('out-titulo-rep').innerText = val.toUpperCase();
+                if(inId === 'in-aluno') document.getElementById('out-aluno-rep').innerText = val;
+                if(inId === 'in-titulo') document.getElementById('out-titulo-rep').innerText = val.toUpperCase();
             }
         }
         sync();
