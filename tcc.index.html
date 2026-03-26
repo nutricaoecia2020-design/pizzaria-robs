@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Gerador ABNT - Completo</title>
+    <title>Gerador ABNT - Versão Final</title>
     <style>
         :root { --sidebar-width: 450px; }
         * { box-sizing: border-box; }
@@ -27,7 +27,7 @@
         }
         .folha {
             width: 210mm; min-height: 297mm; background: white;
-            padding: 3cm 2cm 2cm 3cm; /* Margens ABNT */
+            padding: 3cm 2cm 2cm 3cm; /* Margens ABNT: 3 Esquerda/Topo, 2 Direita/Base */
             font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; color: black;
             text-align: justify; position: relative; margin-bottom: 30px; box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
@@ -36,8 +36,12 @@
         .bold { font-weight: bold; }
         .uppercase { text-transform: uppercase; }
         .t14 { font-size: 14pt; }
-        .indent { text-indent: 1.5cm; }
+        .indent { text-indent: 1.5cm; } /* Recuo de parágrafo solicitado */
         .page-num { position: absolute; top: 2cm; right: 2cm; font-size: 10pt; }
+        
+        /* Alinhamento à esquerda para tópicos do desenvolvimento solicitado */
+        .topico-desenv { text-align: left; font-weight: bold; text-transform: uppercase; margin-bottom: 1em; }
+
         .spacer-8 { height: 8em; } 
         .spacer-23 { height: 23em; }
 
@@ -56,8 +60,8 @@
         <div class="section-box">
             <h2>1. Capa e Identificação</h2>
             <label>Instituição / Curso</label>
-            <input type="text" id="in-inst" oninput="sync()" value="NOME DA INSTITUIÇÃO">
-            <input type="text" id="in-curso" oninput="sync()" value="NOME DO CURSO">
+            <input type="text" id="in-inst" oninput="sync()" value="CENTRO UNIVERSITÁRIO ESTÁCIO DE SERGIPE">
+            <input type="text" id="in-curso" oninput="sync()" value="DIREITO">
             <label>Nome do Aluno</label>
             <input type="text" id="in-aluno" oninput="sync()" placeholder="Nome completo">
             <label>Título do Artigo</label>
@@ -69,7 +73,7 @@
 
         <div class="section-box">
             <h2>2. Elementos Textuais</h2>
-            <label>Sumário (Enter para separar)</label>
+            <label>Sumário (Enter para separar tópicos)</label>
             <textarea id="in-sumario" rows="4" oninput="sync()">INTRODUÇÃO
 1. TÍTULO DO TÓPICO
 2. TÍTULO DO TÓPICO
@@ -79,7 +83,7 @@ REFERÊNCIAS</textarea>
             <label>Introdução</label>
             <textarea id="in-intro" rows="3" oninput="sync()"></textarea>
             <label>3. Desenvolvimento (Texto Completo)</label>
-            <textarea id="in-desenv" rows="6" oninput="sync()"></textarea>
+            <textarea id="in-desenv" rows="8" oninput="sync()"></textarea>
         </div>
 
         <button onclick="window.print()">GERAR PDF COMPLETO</button>
@@ -117,7 +121,7 @@ REFERÊNCIAS</textarea>
 
         <div class="folha">
             <div class="page-num">3</div>
-            <div class="bold uppercase">3. DESENVOLVIMENTO</div>
+            <div class="topico-desenv">3. DESENVOLVIMENTO</div>
             <div id="out-desenv" class="indent" style="margin-top: 1.5em; white-space: pre-line;"></div>
         </div>
     </div>
