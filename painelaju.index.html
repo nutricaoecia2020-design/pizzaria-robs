@@ -1,294 +1,265 @@
 <!DOCTYPE html>
+
 <html lang="pt-br">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delivery Local | Peça Já</title>
+
+    <title>Admin | Gerenciar Marketplace</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .category-card:hover { transform: translateY(-5px); transition: all 0.3s; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .modal-active { overflow: hidden; }
-        .slide-up { animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    </style>
+
 </head>
-<body class="bg-gray-50 text-gray-800">
 
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-black text-red-600 tracking-tighter cursor-pointer" onclick="location.reload()">MEU<span class="text-gray-900">DELIVERY</span></h1>
-            <div class="flex items-center gap-2 text-gray-500 text-xs font-bold">
-                <i class="fas fa-map-marker-alt text-red-600"></i>
-                <span>ARACAJU, SE</span>
-            </div>
+<body class="bg-gray-100 flex h-screen overflow-hidden">
+
+
+
+    <aside class="w-64 bg-gray-900 text-white flex-shrink-0 hidden md:flex flex-col">
+
+        <div class="p-6">
+
+            <h1 class="text-xl font-bold text-red-500">ADMIN<span class="text-white">DELIVERY</span></h1>
+
         </div>
-    </header>
 
-    <section class="container mx-auto px-4 py-8">
-        <div class="flex overflow-x-auto gap-4 pb-4 no-scrollbar">
-            <div class="category-card min-w-[100px] bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
-                <div class="text-3xl mb-2">🍕</div><span class="text-xs font-bold text-gray-600">Pizzarias</span>
-            </div>
-            <div class="category-card min-w-[100px] bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
-                <div class="text-3xl mb-2">🍔</div><span class="text-xs font-bold text-gray-600">Lanches</span>
-            </div>
-            <div class="category-card min-w-[100px] bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
-                <div class="text-3xl mb-2">🥗</div><span class="text-xs font-bold text-gray-600">Saudáveis</span>
-            </div>
-            <div class="category-card min-w-[100px] bg-white p-4 rounded-2xl shadow-sm text-center cursor-pointer border border-transparent hover:border-red-500">
-                <div class="text-3xl mb-2">🍦</div><span class="text-xs font-bold text-gray-600">Doces</span>
-            </div>
+        <nav class="flex-1 px-4 space-y-2">
+
+            <a href="#" class="flex items-center p-3 bg-red-600 rounded-lg"><i class="fas fa-chart-line mr-3"></i> Dashboard</a>
+
+            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-store mr-3"></i> Lojas Cadastradas</a>
+
+            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-plus-circle mr-3"></i> Nova Loja</a>
+
+            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-file-invoice-dollar mr-3"></i> Comissões / Boletos</a>
+
+            <a href="#" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-cog mr-3"></i> Configurações</a>
+
+        </nav>
+
+        <div class="p-4 border-t border-gray-800">
+
+            <button class="flex items-center text-gray-400 hover:text-red-400"><i class="fas fa-sign-out-alt mr-2"></i> Sair</button>
+
         </div>
-    </section>
 
-    <section class="container mx-auto px-4 py-6">
-        <h2 class="text-xl font-bold text-gray-800 uppercase mb-6 tracking-tight">Lojas Disponíveis</h2>
-        <div id="lista-lojas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-    </section>
+    </aside>
 
-    <div id="modal-loja" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-end md:items-center justify-center p-0 md:p-4">
-        <div class="bg-white w-full max-w-2xl h-[95vh] md:h-auto md:max-h-[90vh] rounded-t-3xl md:rounded-3xl overflow-hidden flex flex-col relative">
-            
-            <div class="relative h-48 bg-gray-200 flex-shrink-0">
-                <img id="modal-loja-img" src="" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                <button onclick="fecharModal()" class="absolute top-4 right-4 bg-white/20 backdrop-blur-md text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/40 transition">
-                    <i class="fas fa-times"></i>
-                </button>
-                <div class="absolute bottom-4 left-6 text-white">
-                    <h2 id="modal-loja-nome" class="text-2xl font-black"></h2>
-                    <p id="modal-loja-cat" class="text-sm opacity-90"></p>
-                </div>
+
+
+    <main class="flex-1 flex flex-col overflow-y-auto">
+
+        
+
+        <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+
+            <h2 class="text-xl font-semibold text-gray-700">Cadastrar Nova Loja</h2>
+
+            <div class="flex items-center gap-4">
+
+                <span class="text-sm text-gray-500">Bem-vindo, <strong>Admin</strong></span>
+
+                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center"><i class="fas fa-user text-gray-400"></i></div>
+
             </div>
 
-            <div class="p-6 overflow-y-auto flex-1 bg-white">
-                <div id="tela-produtos">
-                    <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <i class="fas fa-utensils text-red-600"></i> Cardápio Principal
-                    </h3>
-                    <div id="lista-produtos" class="space-y-4 pb-32"></div>
-                </div>
+        </header>
 
-                <div id="tela-cadastro" class="hidden pb-32">
-                    <button onclick="voltarParaProdutos()" class="mb-4 text-red-600 font-bold text-sm flex items-center gap-2">
-                        <i class="fas fa-arrow-left"></i> Voltar ao Cardápio
-                    </button>
-                    <h3 class="font-bold text-gray-800 mb-4">Dados para Entrega</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Seu Nome</label>
-                            <input type="text" id="cliente-nome" class="w-full bg-gray-100 border-none rounded-xl p-3 focus:ring-2 focus:ring-red-500 outline-none" placeholder="Ex: João Silva">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Endereço Completo</label>
-                            <textarea id="cliente-endereco" class="w-full bg-gray-100 border-none rounded-xl p-3 focus:ring-2 focus:ring-red-500 outline-none" rows="2" placeholder="Rua, Número, Bairro e Ponto de Referência"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Forma de Pagamento</label>
-                            <select id="cliente-pagamento" class="w-full bg-gray-100 border-none rounded-xl p-3 focus:ring-2 focus:ring-red-500 outline-none">
-                                <option value="Pix">Pix</option>
-                                <option value="Cartão de Crédito/Débito">Cartão (Maquininha)</option>
-                                <option value="Dinheiro">Dinheiro</option>
-                            </select>
-                        </div>
+
+
+        <div class="p-6">
+
+            <div class="max-w-4xl mx-auto">
+
+                
+
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+
+                    <div class="p-6 border-b border-gray-100">
+
+                        <h3 class="font-bold text-gray-800">Informações da Loja</h3>
+
+                        <p class="text-sm text-gray-500">Preencha os dados abaixo para publicar a loja no site.</p>
+
                     </div>
-                </div>
-            </div>
 
-            <div id="barra-checkout" class="absolute bottom-0 left-0 right-0 bg-white border-t p-4 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] hidden slide-up">
-                <button id="btn-acao-checkout" onclick="irParaCadastro()" class="w-full bg-green-600 hover:bg-green-700 text-white p-4 rounded-2xl flex justify-between items-center transition-all transform active:scale-95">
-                    <div class="flex items-center gap-3">
-                        <div class="bg-green-500 w-8 h-8 rounded-lg flex items-center justify-center">
-                            <i id="icone-btn" class="fas fa-shopping-basket text-lg"></i>
-                        </div>
-                        <div class="text-left">
-                            <span id="label-btn" class="block text-[10px] uppercase font-bold opacity-80">Continuar</span>
-                            <span id="qtd-itens" class="font-bold">0 itens</span>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <span class="block text-[10px] uppercase font-bold opacity-80">Total</span>
-                        <span id="total-pedido" class="text-lg font-black">R$ 0,00</span>
-                    </div>
-                </button>
-            </div>
-        </div>
-    </div>
+                    
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+                    <form class="p-6 space-y-6">
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyATFpMv8Qd7XqypPjD4RRIzFd80EBdUDjc",
-            authDomain: "deliveryaju-3e6bf.firebaseapp.com",
-            databaseURL: "https://deliveryaju-3e6bf-default-rtdb.firebaseio.com",
-            projectId: "deliveryaju-3e6bf",
-            storageBucket: "deliveryaju-3e6bf.firebasestorage.app",
-            messagingSenderId: "582528849886",
-            appId: "1:582528849886:web:a7d4b0c545422c05b7ef4f"
-        };
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+                            <div>
 
-        let carrinhoLoja = [];
-        let lojaSelecionada = null;
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nome da Loja</label>
 
-        // CARREGAR LOJAS
-        onValue(ref(db, 'lojas'), (snapshot) => {
-            const lojas = snapshot.val();
-            const container = document.getElementById('lista-lojas');
-            container.innerHTML = "";
-            if (lojas) {
-                Object.keys(lojas).forEach((id) => {
-                    const loja = lojas[id];
-                    container.innerHTML += `
-                        <div onclick="abrirLoja('${id}')" class="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-all cursor-pointer border border-gray-100 group">
-                            <div class="relative h-44 overflow-hidden">
-                                <img src="${loja.imagem}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                                <div class="absolute top-3 right-3 bg-white px-2 py-1 rounded-lg text-xs font-bold shadow-md flex items-center gap-1">
-                                    <i class="fas fa-star text-yellow-400"></i> ${loja.nota}
-                                </div>
+                                <input type="text" placeholder="Ex: Pizzaria do Bairro" class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:ring-red-500 focus:border-red-500">
+
                             </div>
-                            <div class="p-4 flex items-center gap-4">
-                                <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-xl border border-green-100">
-                                    <i class="fas fa-store text-green-600"></i>
-                                </div>
-                                <div class="flex-1">
-                                    <h3 class="font-bold text-gray-800 leading-tight">${loja.nome}</h3>
-                                    <p class="text-[11px] text-gray-400 uppercase font-bold tracking-wider">${loja.categoria}</p>
-                                </div>
-                                <div class="text-right">
-                                    <span class="block text-sm font-bold text-green-600">${loja.tempo} min</span>
-                                    <span class="text-[10px] text-gray-400 font-bold">Frete Grátis</span>
-                                </div>
+
+
+
+                            <div>
+
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Categoria Principal</label>
+
+                                <select class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:ring-red-500 focus:border-red-500">
+
+                                    <option>Lanchonetes</option>
+
+                                    <option>Pizzarias</option>
+
+                                    <option>Supermercados</option>
+
+                                    <option>Farmácias</option>
+
+                                    <option>PetShops</option>
+
+                                    </select>
+
                             </div>
-                        </div>`;
-                });
-            }
-        });
 
-        window.abrirLoja = (idLoja) => {
-            carrinhoLoja = [];
-            voltarParaProdutos(); // Garante que comece na tela de produtos
-            atualizarBarraCheckout();
 
-            onValue(ref(db, `lojas/${idLoja}`), (snap) => {
-                const loja = snap.val();
-                lojaSelecionada = { ...loja, id: idLoja };
-                document.getElementById('modal-loja-nome').innerText = loja.nome;
-                document.getElementById('modal-loja-cat').innerText = loja.categoria + " • Peça agora";
-                document.getElementById('modal-loja-img').src = loja.imagem;
 
-                onValue(ref(db, `produtos/${idLoja}`), (prodSnap) => {
-                    const produtos = prodSnap.val();
-                    const prodContainer = document.getElementById('lista-produtos');
-                    prodContainer.innerHTML = "";
-                    if (produtos) {
-                        Object.keys(produtos).forEach(pId => {
-                            const p = produtos[pId];
-                            prodContainer.innerHTML += `
-                                <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-red-200 transition">
-                                    <img src="${p.imagem}" class="w-20 h-20 object-cover rounded-2xl shadow-sm">
-                                    <div class="flex-1">
-                                        <h4 class="font-bold text-gray-800">${p.nome}</h4>
-                                        <p class="text-xs text-gray-500 line-clamp-2 mb-1">${p.descricao}</p>
-                                        <p class="text-red-600 font-black">R$ ${parseFloat(p.preco).toFixed(2)}</p>
+                            <div>
+
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Comissão (%)</label>
+
+                                <input type="number" placeholder="Ex: 10" class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:ring-red-500 focus:border-red-500">
+
+                            </div>
+
+
+
+                            <div>
+
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tempo Médio Entrega (min)</label>
+
+                                <input type="text" placeholder="Ex: 30-45" class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:ring-red-500 focus:border-red-500">
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            <div>
+
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Logo da Loja</label>
+
+                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-red-400 transition cursor-pointer">
+
+                                    <div class="space-y-1 text-center">
+
+                                        <i class="fas fa-image text-gray-400 text-2xl"></i>
+
+                                        <div class="flex text-sm text-gray-600">
+
+                                            <span>Subir arquivo</span>
+
+                                        </div>
+
                                     </div>
-                                    <button onclick="adicionar('${p.nome}', ${p.preco})" class="bg-white border-2 border-red-600 text-red-600 w-10 h-10 rounded-xl hover:bg-red-600 hover:text-white transition shadow-sm active:scale-90">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>`;
-                        });
-                    }
-                });
-                document.getElementById('modal-loja').classList.remove('hidden');
-                document.body.classList.add('modal-active');
-            });
-        };
 
-        window.adicionar = (nome, preco) => {
-            carrinhoLoja.push({ nome, preco });
-            atualizarBarraCheckout();
-        };
+                                </div>
 
-        function atualizarBarraCheckout() {
-            const barra = document.getElementById('barra-checkout');
-            const totalElement = document.getElementById('total-pedido');
-            const qtdElement = document.getElementById('qtd-itens');
+                            </div>
 
-            if (carrinhoLoja.length > 0) {
-                const total = carrinhoLoja.reduce((sum, item) => sum + parseFloat(item.preco), 0);
-                totalElement.innerText = `R$ ${total.toFixed(2)}`;
-                qtdElement.innerText = `${carrinhoLoja.length} ${carrinhoLoja.length > 1 ? 'itens' : 'item'}`;
-                barra.classList.remove('hidden');
-            } else {
-                barra.classList.add('hidden');
-            }
-        }
+                            <div>
 
-        // NAVEGAÇÃO INTERNA DO MODAL
-        window.irParaCadastro = () => {
-            document.getElementById('tela-produtos').classList.add('hidden');
-            document.getElementById('tela-cadastro').classList.remove('hidden');
-            
-            // Altera o botão de checkout para "Enviar WhatsApp"
-            const btn = document.getElementById('btn-acao-checkout');
-            btn.setAttribute('onclick', 'finalizarPedidoWhatsApp()');
-            btn.classList.replace('bg-green-600', 'bg-green-700');
-            document.getElementById('label-btn').innerText = "Enviar para o WhatsApp";
-            document.getElementById('icone-btn').className = "fab fa-whatsapp text-lg";
-        };
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Capa/Banner</label>
 
-        window.voltarParaProdutos = () => {
-            document.getElementById('tela-produtos').classList.remove('hidden');
-            document.getElementById('tela-cadastro').classList.add('hidden');
-            
-            const btn = document.getElementById('btn-acao-checkout');
-            btn.setAttribute('onclick', 'irParaCadastro()');
-            btn.classList.replace('bg-green-700', 'bg-green-600');
-            document.getElementById('label-btn').innerText = "Continuar";
-            document.getElementById('icone-btn').className = "fas fa-shopping-basket text-lg";
-        };
+                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-red-400 transition cursor-pointer">
 
-        // FINALIZAÇÃO REAL
-        window.finalizarPedidoWhatsApp = () => {
-            const nome = document.getElementById('cliente-nome').value;
-            const endereco = document.getElementById('cliente-endereco').value;
-            const pagamento = document.getElementById('cliente-pagamento').value;
+                                    <div class="space-y-1 text-center">
 
-            if(!nome || !endereco) {
-                alert("Por favor, preencha seu nome e endereço para entrega!");
-                return;
-            }
+                                        <i class="fas fa-camera text-gray-400 text-2xl"></i>
 
-            const total = carrinhoLoja.reduce((sum, item) => sum + parseFloat(item.preco), 0);
-            let texto = `*NOVO PEDIDO: ${lojaSelecionada.nome.toUpperCase()}*\n`;
-            texto += `------------------------------\n`;
-            
-            carrinhoLoja.forEach((item, index) => {
-                texto += `• ${item.nome} - R$ ${parseFloat(item.preco).toFixed(2)}\n`;
-            });
+                                        <div class="flex text-sm text-gray-600">
 
-            texto += `------------------------------\n`;
-            texto += `*TOTAL: R$ ${total.toFixed(2)}*\n\n`;
-            texto += `*DADOS DO CLIENTE*\n`;
-            texto += `👤 Nome: ${nome}\n`;
-            texto += `📍 Endereço: ${endereco}\n`;
-            texto += `💳 Pagamento: ${pagamento}\n\n`;
-            texto += `_Enviado via MeuDelivery_`;
+                                            <span>Subir banner</span>
 
-            const fone = "557999999999"; 
-            window.open(`https://wa.me/${fone}?text=${encodeURIComponent(texto)}`);
-        };
+                                        </div>
 
-        window.fecharModal = () => {
-            document.getElementById('modal-loja').classList.add('hidden');
-            document.body.classList.remove('modal-active');
-        };
-    </script>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div>
+
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Endereço Completo</label>
+
+                            <input type="text" placeholder="Rua, Número, Bairro" class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:ring-red-500 focus:border-red-500">
+
+                        </div>
+
+
+
+                        <div class="pt-4 flex justify-end">
+
+                            <button type="button" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg mr-3 font-medium hover:bg-gray-300">Cancelar</button>
+
+                            <button type="submit" class="bg-red-600 text-white px-8 py-2 rounded-lg font-bold hover:bg-red-700 shadow-lg shadow-red-200 transition">CADASTRAR LOJA</button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+
+
+                <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
+
+                        <p class="text-sm text-gray-500 uppercase font-bold">Vendas Totais</p>
+
+                        <h4 class="text-2xl font-black text-gray-800">R$ 12.450,00</h4>
+
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
+
+                        <p class="text-sm text-gray-500 uppercase font-bold">Sua Comissão (10%)</p>
+
+                        <h4 class="text-2xl font-black text-gray-800 text-blue-600">R$ 1.245,00</h4>
+
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-orange-500">
+
+                        <p class="text-sm text-gray-500 uppercase font-bold">Boletos Pendentes</p>
+
+                        <h4 class="text-2xl font-black text-gray-800">08</h4>
+
+                    </div>
+
+                </div>
+
+
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+
 </body>
+
 </html>
