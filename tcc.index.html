@@ -2,14 +2,14 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Gerador de Artigo Científico ABNT - Final</title>
+    <title>Gerador de Artigo Científico ABNT</title>
     <style>
         :root { --sidebar-width: 450px; }
         * { box-sizing: border-box; }
         
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background: #ecf0f1; }
 
-        /* PAINEL DE EDIÇÃO (ESQUERDA) */
+        /* PAINEL DE EDIÇÃO */
         #editor {
             width: var(--sidebar-width); height: 100vh; background: white; padding: 25px;
             overflow-y: auto; border-right: 2px solid #bdc3c7; position: fixed; left: 0; top: 0;
@@ -21,7 +21,7 @@
         input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
         button { width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; }
 
-        /* ÁREA DO DOCUMENTO (DIREITA) */
+        /* ÁREA DO DOCUMENTO */
         #preview-container { 
             margin-left: var(--sidebar-width); width: calc(100% - var(--sidebar-width));
             padding: 40px; display: flex; flex-direction: column; align-items: center; 
@@ -29,7 +29,7 @@
         
         .folha {
             width: 210mm; min-height: 297mm; background: white;
-            padding: 3cm 2cm 2cm 3cm; /* Margens ABNT [cite: 218, 219] */
+            padding: 3cm 2cm 2cm 3cm; /* Margens ABNT: Sup 3, Esq 3, Inf 2, Dir 2 [cite: 4, 5] */
             font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; color: black;
             text-align: justify; position: relative; margin-bottom: 30px; box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
@@ -38,13 +38,12 @@
         .bold { font-weight: bold; }
         .uppercase { text-transform: uppercase; }
         .t14 { font-size: 14pt; }
-        .indent { text-indent: 1.5cm; } /* Espaço de 1,5 [cite: 241] */
+        .indent { text-indent: 1.5cm; } /* Recuo de 1,5cm  */
         .page-num { position: absolute; top: 2cm; right: 2cm; font-size: 10pt; }
         
-        .spacer-8 { height: 8em; } 
-        .spacer-23 { height: 23em; }
+        .spacer-8 { height: 8em; } /* 8 Enters [cite: 3, 7] */
+        .spacer-23 { height: 23em; } /* 23 Enters [cite: 9] */
 
-        /* CONFIGURAÇÃO DE IMPRESSÃO */
         @media print {
             @page { size: A4; margin: 0; }
             body { display: block; background: white; }
@@ -80,7 +79,7 @@
 
         <div class="section-box">
             <h2>2. Elementos Textuais</h2>
-            <label>Sumário (pressione Enter entre os itens)</label>
+            <label>Sumário (pressione Enter para espaçar)</label>
             <textarea id="in-sumario" rows="4" oninput="sync()">INTRODUÇÃO
 1. TÍTULO DO TÓPICO
 2. TÍTULO DO TÓPICO
@@ -90,11 +89,11 @@ REFERÊNCIAS</textarea>
             <textarea id="in-intro" rows="3" oninput="sync()"></textarea>
             <label>1. Título do Tópico</label>
             <input type="text" id="in-t1-tit" oninput="sync()" value="1. TÍTULO DO TÓPICO">
-            <label>Texto do Tópico 1</label>
-            <textarea id="in-t1-txt" rows="4" oninput="sync()"></textarea>
+            <label>Conteúdo do Tópico 1</label>
+            <textarea id="in-t1-txt" rows="5" oninput="sync()"></textarea>
         </div>
 
-        <button onclick="window.print()">GERAR PDF PRONTO</button>
+        <button onclick="window.print()">GERAR PDF COMPLETO</button>
     </div>
 
     <div id="preview-container">
@@ -104,12 +103,12 @@ REFERÊNCIAS</textarea>
                 <div id="out-curso">NOME DO CURSO</div>
             </div>
             <div class="spacer-8"></div>
-            <div class="center bold uppercase t14" id="out-aluno">NOME COMPLETO DO ALUNO</div>
+            <div class="center bold uppercase t14" id="out-aluno">NOME DO ALUNO</div>
             <div class="spacer-8"></div>
             <div class="center t14" id="out-titulo">Título do artigo científico</div>
             <div class="spacer-23"></div>
             <div class="center bold uppercase">
-                <span id="out-cidade">CIDADE</span>, <span id="out-ano">2026</span>
+                <span id="out-cidade">ARACAJU</span>, <span id="out-ano">2026</span>
             </div>
         </div>
 
@@ -124,13 +123,13 @@ REFERÊNCIAS</textarea>
 
             <br><br>
             <div class="bold uppercase">INTRODUÇÃO</div>
-            <div id="out-intro" class="indent" style="margin-top: 1.5em;">Texto da introdução... [cite: 242-245]</div>
+            <div id="out-intro" class="indent" style="margin-top: 1.5em;"></div>
         </div>
 
         <div class="folha">
             <div class="page-num">3</div>
             <div class="bold uppercase" id="out-t1-tit">1. TÍTULO DO TÓPICO</div>
-            <div id="out-t1-txt" class="indent" style="margin-top: 1.5em;">Conteúdo do primeiro tópico...</div>
+            <div id="out-t1-txt" class="indent" style="margin-top: 1.5em; white-space: pre-line;"></div>
         </div>
     </div>
 
@@ -155,12 +154,12 @@ REFERÊNCIAS</textarea>
                 
                 if (inId === 'in-aluno') {
                     outElement.innerText = val.toUpperCase() || "NOME DO ALUNO";
-                    document.getElementById('out-aluno-rep').innerText = val; // Mantém minúsculo na pág 2 se desejar, ou mude para upper
+                    document.getElementById('out-aluno-rep').innerText = val;
                 } else if (inId === 'in-titulo') {
                     outElement.innerText = val || "Título do artigo";
                     document.getElementById('out-titulo-rep').innerText = val.toUpperCase();
                 } else {
-                    outElement.innerText = val || "...";
+                    outElement.innerText = val || "";
                 }
             }
         }
