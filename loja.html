@@ -13,7 +13,7 @@
 
     <style>
         :root {
-            --primary: #e31837;
+            --primary: #00a8ff; /* Azul Claro */
             --dark: #121212;
             --card: #1e1e1e;
             --text: #ffffff;
@@ -83,6 +83,7 @@
         
         .btn-flash { background: #28a745 !important; transform: scale(0.95); }
 
+        /* Painel de Gestão */
         .painel-gestao { margin-top: 50px; padding: 25px; background: #1a1a1a; border: 2px dashed var(--primary); border-radius: 20px; }
         .status-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; background: #222; padding: 10px; border-radius: 12px; }
         .bola { width: 15px; height: 15px; border-radius: 50%; }
@@ -98,6 +99,12 @@
 
         .float-btns { position: fixed; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 99; }
         .circle-btn { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 24px; }
+
+        .cart-tax-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0, 168, 255, 0.1); padding: 10px; border-radius: 10px;
+            margin-top: 10px; border: 1px solid var(--primary);
+        }
 
         @media(max-width: 600px) { .cart-sidebar { width: 100%; } }
     </style>
@@ -130,7 +137,7 @@
         <input id="endereco" placeholder="Endereço Completo (Rua, Número, Apto)">
         
         <select id="bairro" onchange="window.renderCarrinho()">
-            <option value="" data-taxa="0">Selecione seu Bairro</option>
+            <option value="" data-taxa="0">Escolha o Bairro para entrega</option>
             <option value="Aeroporto" data-taxa="12">Aeroporto - R$ 12,00</option>
             <option value="Atalaia" data-taxa="12">Atalaia - R$ 12,00</option>
             <option value="Coroa do Meio" data-taxa="12">Coroa do Meio - R$ 12,00</option>
@@ -171,27 +178,7 @@
             <input type="password" id="senhaMestra" placeholder="Senha" style="max-width: 150px; display: inline-block;">
             <button class="btn btn-add" style="width: auto; padding: 10px 20px;" onclick="acessarGestao()">Entrar</button>
         </div>
-
         <div id="gestaoConteudo" style="display:none;">
-            <h4>Atualização Rápida de Status</h4>
-            <div class="status-row">
-                <div class="bola vermelha"></div>
-                <input type="text" id="status_tel_prep" placeholder="WhatsApp Cliente" style="margin:0; flex:1">
-                <button class="btn-status" onclick="enviarStatusManual('prep')">Em Preparo</button>
-            </div>
-            <div class="status-row">
-                <div class="bola azul"></div>
-                <input type="text" id="status_tel_pronto" placeholder="WhatsApp Cliente" style="margin:0; flex:1">
-                <button class="btn-status" onclick="enviarStatusManual('pronto')">Pronto</button>
-            </div>
-            <div class="status-row">
-                <div class="bola verde"></div>
-                <input type="text" id="status_tel_entrega" placeholder="WhatsApp Cliente" style="margin:0; flex:1">
-                <button class="btn-status" onclick="enviarStatusManual('entrega')">Saiu Entrega</button>
-            </div>
-
-            <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
-            
             <h4>📋 Pedidos em Tempo Real</h4>
             <div style="overflow-x: auto;">
                 <table>
@@ -210,8 +197,7 @@
     <span class="close-cart" onclick="toggleCart()"><i class="fas fa-times"></i></span>
     <h3>Seu Carrinho</h3>
     <div id="carrinhoItens"></div>
-    <div id="taxaEntregaDisplay" style="margin-top:10px; color: var(--text-dim); font-size: 14px;"></div>
-    <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 20px;">
+    <div id="taxaNoCarrinho"></div> <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 20px;">
         <div style="display:flex; justify-content:space-between; font-size: 20px; font-weight: bold;">
             <span>Total:</span>
             <span style="color: var(--primary)">R$ <span id="total">0.00</span></span>
@@ -268,6 +254,7 @@ function atualizarTempo() {
 }
 setInterval(atualizarTempo, 1000);
 
+// Gestão
 window.acessarGestao = function() {
     if(document.getElementById("senhaMestra").value === "253641") {
         document.getElementById("gestaoLogin").style.display = "none";
@@ -284,46 +271,22 @@ function ouvirPedidos() {
         snapshot.forEach((docSnap) => {
             const p = docSnap.data();
             const id = docSnap.id.substring(0, 5).toUpperCase();
-            const statusStyle = p.status === 'Entregue' ? 'text-decoration: line-through; color: gray;' : '';
-            
             tabela.innerHTML += `
-                <tr style="${statusStyle}">
+                <tr>
                     <td><b>#${id}</b></td>
-                    <td>${p.cliente}<br><small>${p.telefone}</small></td>
+                    <td>${p.cliente}</td>
                     <td>${p.produtos}</td>
                     <td>R$ ${p.total}</td>
                     <td>
                         <button class="btn-acao btn-entregar" onclick="window.iniciarEntrega('${p.telefone}', '${p.cliente}')"><i class="fas fa-motorcycle"></i></button>
-                        <button class="btn-acao btn-fim" onclick="window.finalizarPedidoBanco('${docSnap.id}')"><i class="fas fa-check"></i></button>
                         <button class="btn-acao btn-del" onclick="window.apagarPedido('${docSnap.id}')"><i class="fas fa-trash"></i></button>
                     </td>
-                </tr>
-            `;
+                </tr>`;
         });
     });
 }
 
-window.apagarPedido = async (id) => { if(confirm("Apagar pedido?")) await deleteDoc(doc(db, "pedidos", id)); }
-window.finalizarPedidoBanco = async (id) => {
-    const pass = prompt("Senha (1234):");
-    if(pass === "1234") await updateDoc(doc(db, "pedidos", id), { status: 'Entregue' });
-}
-
-window.iniciarEntrega = (tel, nome) => {
-    let num = tel.replace(/\D/g, '');
-    if(!num.startsWith('55')) num = '55' + num;
-    window.open(`https://wa.me/${num}?text=${encodeURIComponent('Olá '+nome+', seu pedido saiu para entrega! 🚀')}`);
-}
-
-window.enviarStatusManual = (tipo) => {
-    let input = tipo === 'prep' ? 'status_tel_prep' : tipo === 'pronto' ? 'status_tel_pronto' : 'status_tel_entrega';
-    let tel = document.getElementById(input).value;
-    let msgs = { prep: 'Seu pedido está em preparação! 🍕', pronto: 'Seu pedido está pronto! ✅', entrega: 'Pedido a caminho! 🚀' };
-    if(!tel) return alert("Digite o Zap!");
-    let num = tel.replace(/\D/g, ''); if(!num.startsWith('55')) num = '55' + num;
-    window.open(`https://wa.me/${num}?text=${encodeURIComponent('Pizzaria Robs: ' + msgs[tipo])}`);
-}
-
+// Cardápio e Compras
 async function carregarProdutos(){
     const {data:produtos} = await _supabase.from('produtos').select('*');
     produtosDoBanco = produtos;
@@ -350,35 +313,48 @@ window.add = (i) => {
 
 window.remover = (i) => { carrinho.splice(i,1); window.renderCarrinho(); }
 
+window.removerTaxa = () => {
+    document.getElementById("bairro").value = "";
+    window.renderCarrinho();
+}
+
 window.renderCarrinho = function(){
     let area = document.getElementById("carrinhoItens"); 
-    let displayTaxa = document.getElementById("taxaEntregaDisplay");
+    let areaTaxa = document.getElementById("taxaNoCarrinho");
     area.innerHTML = ""; 
-    let totalItens = 0;
-    
+    let subtotal = 0;
+
     carrinho.forEach((p,i)=>{ 
-        totalItens += parseFloat(p.preco);
-        area.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; background:#2a2a2a; padding:10px; border-radius:10px;">
-            <span>${p.nome}</span><button class="btn-acao btn-del" onclick="window.remover(${i})">X</button>
+        subtotal += parseFloat(p.preco);
+        area.innerHTML += `
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px; background:#2a2a2a; padding:10px; border-radius:10px; border-left: 4px solid var(--primary);">
+            <span>${p.nome}</span>
+            <button class="btn-acao btn-del" onclick="window.remover(${i})"><i class="fas fa-trash"></i></button>
         </div>`;
     });
 
-    const bairroSelect = document.getElementById("bairro");
-    const taxa = parseFloat(bairroSelect.options[bairroSelect.selectedIndex].getAttribute('data-taxa') || 0);
-    const bairroNome = bairroSelect.value;
+    // Lógica da Taxa no Carrinho
+    const selBairro = document.getElementById("bairro");
+    const bairroNome = selBairro.value;
+    const taxaValor = parseFloat(selBairro.options[selBairro.selectedIndex].getAttribute("data-taxa") || 0);
 
-    if(bairroNome && taxa > 0) {
-        displayTaxa.innerHTML = `<i class="fas fa-motorcycle"></i> Entrega (${bairroNome}): R$ ${taxa.toFixed(2)}`;
-    } else if(bairroNome && taxa === 0) {
-        displayTaxa.innerHTML = `<i class="fas fa-motorcycle"></i> Entrega (${bairroNome}): Grátis`;
+    if (bairroNome !== "") {
+        areaTaxa.innerHTML = `
+        <div class="cart-tax-row">
+            <span><i class="fas fa-motorcycle"></i> Entrega: ${bairroNome}</span>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-weight:bold">${taxaValor === 0 ? 'Grátis' : 'R$ '+taxaValor.toFixed(2)}</span>
+                <button class="btn-acao btn-del" onclick="window.removerTaxa()"><i class="fas fa-times"></i></button>
+            </div>
+        </div>`;
     } else {
-        displayTaxa.innerHTML = "";
+        areaTaxa.innerHTML = "";
     }
 
-    let totalFinal = totalItens + taxa;
-    document.getElementById("total").innerText = totalFinal.toFixed(2);
+    let totalGeral = subtotal + taxaValor;
+    document.getElementById("total").innerText = totalGeral.toFixed(2);
     document.getElementById("contagem").innerText = carrinho.length;
-    document.getElementById("pixArea").style.display = (document.getElementById("pagamento").value === "Pix" && totalFinal > 0) ? "block" : "none";
+    document.getElementById("pixArea").style.display = (document.getElementById("pagamento").value === "Pix" && totalGeral > 0) ? "block" : "none";
 }
 
 window.finalizar = async function(){
@@ -392,26 +368,18 @@ window.finalizar = async function(){
     let p = document.getElementById("pagamento").value;
     let t = document.getElementById("total").innerText;
     
-    if(!n || !e || !b || !c || carrinho.length < 2) {
-        return alert("Preencha todos os campos (incluindo o bairro) e escolha pelo menos 2 itens!");
-    }
-
-    const bairroSelect = document.getElementById("bairro");
-    const taxa = parseFloat(bairroSelect.options[bairroSelect.selectedIndex].getAttribute('data-taxa') || 0);
+    if(!n || !e || !b || !c || carrinho.length < 2) return alert("Preencha tudo e escolha pelo menos 2 itens!");
 
     let listaProd = ""; 
     carrinho.forEach(item => { listaProd += `• ${item.nome}\n`; });
     listaProd += `\n📍 Bairro: ${b}`;
-    listaProd += `\n🚚 Taxa de Entrega: R$ ${taxa.toFixed(2)}`;
 
     try {
         await addDoc(collection(db, "pedidos"), { 
-            cliente: n, endereco: `${e} - Bairro: ${b}`, telefone: c, pagamento: p,
+            cliente: n, endereco: e, telefone: c, pagamento: p,
             produtos: listaProd, total: t, status: 'Pendente', data: serverTimestamp() 
         });
-        
-        let msgWhatsApp = `*Pizzaria Robs*\n\n${listaProd}\n\n*Total:* R$ ${t}\n*Pagamento:* ${p}\n*Cliente:* ${n}\n*Endereço:* ${e}`;
-        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(msgWhatsApp)}`);
+        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent('*PEDIDO ROBS*\n\n'+listaProd+'\n\n*Total:* R$ '+t+'\n*Cliente:* '+n+'\n*Bairro:* '+b)}`);
         location.reload();
     } catch(err) { alert("Erro ao salvar!"); }
 }
@@ -423,12 +391,6 @@ function verificarHorario(){
     status.innerHTML = aberto ? "🟢 LOJA ABERTA" : "🔴 FECHADO";
     status.className = aberto ? "aberto" : "fechado";
 }
-
-verificarHorario();
-carregarProdutos();
-</script>
-</body>
-</html>
 
 verificarHorario();
 carregarProdutos();
