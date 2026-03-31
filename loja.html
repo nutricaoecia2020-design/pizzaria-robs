@@ -185,10 +185,11 @@
 
         .aviso-obrigatorio { font-size: 13px; color: var(--primary); font-weight: 400; margin-left: 10px; }
 
-        /* Estilos do Painel do Lojista */
-        #painelLojista { margin-top: 80px; padding: 40px 20px; background: #f8f9fa; border-top: 3px solid var(--primary); }
-        .card-pedido { background: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; border-left: 5px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .badge-pedido { background: var(--primary); color: white; padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: bold; }
+        /* PAINEL DO LOJISTA STYLES */
+        #painelLojista { margin-top: 80px; padding: 40px 20px; background: #f8f9fa; border-top: 4px solid var(--primary); }
+        .card-pedido { background: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; border-left: 6px solid var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.08); position: relative; }
+        .badge-pedido { background: var(--primary); color: white; padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .link-zap { color: #25d366; text-decoration: none; font-weight: bold; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; margin-top: 5px; }
 
         @media(max-width: 600px) { 
             .cart-sidebar { width: 100%; } 
@@ -334,22 +335,27 @@
 </div>
 
 <section id="painelLojista" class="container">
-    <div style="text-align: center; margin-bottom: 20px;">
-        <h2 style="color: var(--dark)"><i class="fas fa-user-shield"></i> Painel do Lojista</h2>
+    <div style="text-align: center; margin-bottom: 25px;">
+        <h2 style="color: var(--dark);"><i class="fas fa-user-shield"></i> Painel do Lojista</h2>
         <div id="loginPainel">
-            <input type="password" id="senhaAcesso" placeholder="Senha de Acesso" style="max-width: 200px; display: inline-block;">
-            <button class="btn btn-add" style="width: auto;" onclick="window.acessarPainel()">Acessar</button>
+            <input type="password" id="senhaAcesso" placeholder="Senha: 253641" style="max-width: 250px; display: inline-block;">
+            <button class="btn btn-add" style="width: auto; padding: 12px 30px;" onclick="window.acessarPainel()">Acessar Painel</button>
         </div>
     </div>
 
     <div id="conteudoPainel" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 style="margin:0">Pedidos Recentes</h3>
-            <button class="btn" style="background: #666; width: auto; color: white;" onclick="window.carregarPedidosPainel()">Atualizar</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+            <h3 style="margin:0">Gestão de Pedidos</h3>
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="background: #666; color: white; width: auto;" onclick="window.carregarPedidosPainel()">
+                    <i class="fas fa-sync"></i> Atualizar
+                </button>
+            </div>
         </div>
-        <div id="listaPedidosRecentes">Carregando pedidos...</div>
+        <div id="listaPedidosRecentes">Carregando histórico...</div>
     </div>
 </section>
+
 <div class="float-btns">
     <a href="https://wa.me/5579999769581" class="circle-btn" style="background: #25d366;"><i class="fab fa-whatsapp"></i></a>
     <a href="https://www.instagram.com/robs_pizzaria" class="circle-btn" style="background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%);"><i class="fab fa-instagram"></i></a>
@@ -550,7 +556,7 @@ function verificarHorario(){
     }
 }
 
-// LOGICA DO PAINEL DO LOJISTA
+// LOGICA DO PAINEL
 window.acessarPainel = function() {
     const senha = document.getElementById("senhaAcesso").value;
     if(senha === "253641") {
@@ -564,46 +570,46 @@ window.acessarPainel = function() {
 
 window.carregarPedidosPainel = async function() {
     const area = document.getElementById("listaPedidosRecentes");
-    area.innerHTML = "Carregando...";
+    area.innerHTML = "Buscando pedidos...";
     
     try {
-        const q = query(collection(db, "pedidos"), orderBy("data", "desc"), limit(20));
-        const querySnapshot = await getDocs(q);
+        const q = query(collection(db, "pedidos"), orderBy("data", "desc"), limit(25));
+        const snap = await getDocs(q);
         area.innerHTML = "";
         
-        if (querySnapshot.empty) {
-            area.innerHTML = "<p>Nenhum pedido encontrado.</p>";
+        if(snap.empty) {
+            area.innerHTML = "<p style='text-align:center; color:#666;'>Nenhum pedido no banco de dados.</p>";
             return;
         }
 
-        querySnapshot.forEach((doc) => {
-            const ped = doc.data();
+        snap.forEach(doc => {
+            const d = doc.data();
             area.innerHTML += `
                 <div class="card-pedido">
                     <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                         <div>
-                            <strong>${ped.cliente}</strong> <span class="badge-pedido">${ped.tipo}</span><br>
-                            <small>${ped.bairro} - ${ped.endereco}</small>
+                            <strong>${d.cliente}</strong> <span class="badge-pedido">${d.tipo}</span><br>
+                            <small>${d.bairro} - ${d.endereco}</small><br>
+                            <a href="https://wa.me/55${d.telefone.replace(/\D/g,'')}" target="_blank" class="link-zap">
+                                <i class="fab fa-whatsapp"></i> ${d.telefone}
+                            </a>
                         </div>
                         <div style="text-align:right">
-                            <span style="color:var(--primary); font-weight:bold;">R$ ${ped.total}</span><br>
-                            <small>${ped.pagamento}</small>
+                            <span style="color:var(--primary); font-weight:bold; font-size:18px;">R$ ${d.total}</span><br>
+                            <small>${d.pagamento}</small>
                         </div>
                     </div>
-                    <div style="background:#f1f1f1; padding:10px; border-radius:8px; margin-top:10px; font-size:13px; white-space:pre-line;">
-                        ${ped.produtos}
+                    <div style="background:#f8f9fa; padding:12px; border-radius:10px; margin-top:10px; font-size:13px; border: 1px solid #eee; white-space:pre-line;">
+                        ${d.produtos}
                     </div>
-                    <div style="margin-top:10px; font-size:12px;">
-                        <i class="fas fa-calendar"></i> Agendado: <strong>${ped.agendamento}</strong><br>
-                        ${ped.obs ? `<i class="fas fa-comment"></i> Obs: ${ped.obs}` : ''}
+                    <div style="margin-top:10px; font-size:12px; color:#555;">
+                        <i class="fas fa-clock"></i> Entrega: <strong>${d.agendamento}</strong><br>
+                        ${d.obs ? `<i class="fas fa-comment-dots"></i> <b>Obs:</b> ${d.obs}` : ''}
                     </div>
                 </div>
             `;
         });
-    } catch (err) {
-        area.innerHTML = "Erro ao carregar dados do Firebase.";
-        console.error(err);
-    }
+    } catch(e) { area.innerHTML = "Erro ao conectar com Firebase."; }
 }
 
 const inputData = document.getElementById('dataAgendamento');
