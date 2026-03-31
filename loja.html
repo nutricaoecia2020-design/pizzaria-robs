@@ -97,7 +97,6 @@
             position: relative; overflow: hidden;
         }
 
-        /* NOVO ESTILO: AVISO PISCANDO */
         .aviso-limitado {
             display: block;
             font-size: 12px;
@@ -175,18 +174,6 @@
         .btn-add { background: var(--primary); color: white; }
         .btn-flash { background: #28a745 !important; transform: scale(0.95); }
 
-        .painel-gestao { margin-top: 50px; padding: 25px; background: white; border: 2px dashed var(--primary); border-radius: 20px; }
-        
-        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 20px; color: #333; }
-        th { text-align: left; padding: 12px; border-bottom: 2px solid #eee; color: var(--primary); background: #f8f9fa; }
-        td { padding: 15px; border-bottom: 1px solid #eee; vertical-align: top; line-height: 1.6; }
-
-        .info-bloco { margin-bottom: 8px; border-bottom: 1px dotted #ccc; padding-bottom: 4px; }
-        .info-label { font-weight: bold; color: #555; text-transform: uppercase; font-size: 11px; display: block; }
-
-        .btn-acao { padding: 8px 12px; border-radius: 6px; border: none; cursor: pointer; margin-right: 5px; color: white; }
-        .btn-entregar { background: #25d366; } .btn-del { background: #ff4444; }
-
         .float-btns { position: fixed; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 99; }
         .circle-btn { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 24px; }
 
@@ -202,7 +189,6 @@
             .cart-sidebar { width: 100%; } 
             .combo-grid { grid-template-columns: 1fr; }
             .campanha-sorteio { flex-direction: column; text-align: center; }
-            th:nth-child(3), td:nth-child(3) { display: none; }
         }
     </style>
 </head>
@@ -234,12 +220,10 @@
 
     <section class="banner-pascoa">
         <div class="animacao-agendar"><i class="fas fa-clock"></i> AGENDE AGORA!</div>
-        
         <h2>
             🐰 PIZZA DE PÁSCOA (30cm): 2 SABORES 🐰
             <span class="aviso-limitado">⚠️ Quantidades Limitadas ⚠️<br><small>Devido a muitos agendamentos</small></span>
         </h2>
-
         <p>Escolha dois sabores (meio a meio) por apenas <b>R$ 29,90</b></p>
         <div class="combo-grid">
             <select id="comboSabor1"><option value="">Carregando sabores...</option></select>
@@ -327,26 +311,6 @@
             <i class="fab fa-whatsapp"></i> ENVIAR PEDIDO
         </button>
     </div>
-
-    <div class="painel-gestao">
-        <h3><i class="fas fa-tools"></i> Painel do Lojista</h3>
-        <div id="gestaoLogin" style="text-align: center;">
-            <input type="password" id="senhaMestra" placeholder="Senha" style="max-width: 150px; display: inline-block;">
-            <button class="btn btn-add" style="width: auto; padding: 10px 20px;" onclick="acessarGestao()">Entrar</button>
-        </div>
-        <div id="gestaoConteudo" style="display:none;">
-            <h4>📋 Detalhes dos Pedidos</h4>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr><th>ID</th><th>Dados do Pedido (Completo)</th><th>Total</th><th>Ações</th></tr>
-                    </thead>
-                    <tbody id="corpoTabelaPedidos"></tbody>
-                </table>
-            </div>
-            <button onclick="location.reload()" style="background:none; border:none; color:#999; cursor:pointer; margin-top:20px;">Sair do Painel</button>
-        </div>
-    </div>
 </div>
 
 <div class="cart-sidebar" id="cartSidebar">
@@ -371,7 +335,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE", 
@@ -407,52 +371,13 @@ window.copiarPix = () => { navigator.clipboard.writeText("rcsv74@gmail.com"); al
 
 function atualizarTempo() {
     const agora = new Date();
-    document.getElementById('relogio').textContent = agora.toLocaleTimeString('pt-BR');
-    document.getElementById('data').textContent = agora.toLocaleDateString('pt-BR');
+    const relogio = document.getElementById('relogio');
+    const data = document.getElementById('data');
+    if(relogio) relogio.textContent = agora.toLocaleTimeString('pt-BR');
+    if(data) data.textContent = agora.toLocaleDateString('pt-BR');
     verificarHorario();
 }
 setInterval(atualizarTempo, 1000);
-
-window.acessarGestao = function() {
-    if(document.getElementById("senhaMestra").value === "253641") {
-        document.getElementById("gestaoLogin").style.display = "none";
-        document.getElementById("gestaoConteudo").style.display = "block";
-        ouvirPedidos();
-    } else { alert("Senha incorreta!"); }
-}
-
-function ouvirPedidos() {
-    const q = query(collection(db, "pedidos"), orderBy("data", "desc"));
-    onSnapshot(q, (snapshot) => {
-        const tabela = document.getElementById("corpoTabelaPedidos");
-        tabela.innerHTML = "";
-        snapshot.forEach((docSnap) => {
-            const p = docSnap.data();
-            const id = docSnap.id.substring(0, 5).toUpperCase();
-            tabela.innerHTML += `
-                <tr>
-                    <td><b>#${id}</b></td>
-                    <td>
-                        <div class="info-bloco"><span class="info-label">👤 Cliente:</span> ${p.cliente}</div>
-                        <div class="info-bloco"><span class="info-label">📞 Contato:</span> ${p.telefone}</div>
-                        <div class="info-bloco"><span class="info-label">📍 Endereço:</span> ${p.endereco}</div>
-                        <div class="info-bloco"><span class="info-label">🏘️ Bairro:</span> ${p.bairro || 'Não informado'}</div>
-                        <div class="info-bloco"><span class="info-label">🍕 Itens:</span> ${p.produtos.replace(/\n/g, '<br>')}</div>
-                        <div class="info-bloco"><span class="info-label">💳 Pagamento:</span> ${p.pagamento}</div>
-                        <div class="info-bloco"><span class="info-label">📅 Agendamento/Tipo:</span> ${p.agendamento} | ${p.tipo}</div>
-                        ${p.obs ? `<div class="info-bloco"><span class="info-label">📝 Observação:</span> ${p.obs}</div>` : ''}
-                    </td>
-                    <td><b>R$ ${p.total}</b></td>
-                    <td>
-                        <button class="btn-acao btn-entregar" onclick="window.open('https://wa.me/55${p.telefone}')" title="Chamar WhatsApp"><i class="fab fa-whatsapp"></i></button>
-                        <button class="btn-acao btn-del" onclick="window.apagarPedido('${docSnap.id}')" title="Excluir"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>`;
-        });
-    });
-}
-
-window.apagarPedido = async (id) => { if(confirm("Deseja apagar esse registro?")) await deleteDoc(doc(db, "pedidos", id)); };
 
 async function carregarProdutos(){
     const {data:produtos} = await _supabase.from('produtos').select('*');
@@ -590,26 +515,30 @@ function verificarHorario(){
     let status = document.getElementById("statusLoja");
     let msgAgendamento = document.getElementById("msgAgendamento");
 
-    if(aberto) {
-        status.innerHTML = "🟢 LOJA ABERTA";
-        status.className = "aberto";
-        msgAgendamento.style.display = "none";
-    } else {
-        status.innerHTML = "🔴 FECHADO (AGENDAMENTO DISPONÍVEL)";
-        status.className = "fechado";
-        msgAgendamento.style.display = "block";
+    if(status) {
+        if(aberto) {
+            status.innerHTML = "🟢 LOJA ABERTA";
+            status.className = "aberto";
+            if(msgAgendamento) msgAgendamento.style.display = "none";
+        } else {
+            status.innerHTML = "🔴 FECHADO (AGENDAMENTO DISPONÍVEL)";
+            status.className = "fechado";
+            if(msgAgendamento) msgAgendamento.style.display = "block";
+        }
     }
 }
 
-const hoje = new Date().toISOString().split('T')[0];
-document.getElementById('dataAgendamento').setAttribute('min', hoje);
+const inputData = document.getElementById('dataAgendamento');
+if(inputData) {
+    const hoje = new Date().toISOString().split('T')[0];
+    inputData.setAttribute('min', hoje);
+}
 
 verificarHorario();
 carregarProdutos();
 </script>
 </body>
 </html>
-
 
 
 
