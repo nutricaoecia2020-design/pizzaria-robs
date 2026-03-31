@@ -88,7 +88,7 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
-        /* BANNER PROMOCIONAL PÁSCOA */
+        /* BANNER PROMOCIONAL PÁSCOA - ATUALIZADO PARA 1 PIZZA 2 SABORES */
         .banner-pascoa {
             background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
             color: white; padding: 25px; border-radius: 20px; margin-bottom: 30px;
@@ -96,7 +96,7 @@
         }
         .banner-pascoa h2 { margin: 0 0 10px 0; font-size: 22px; text-transform: uppercase; }
         .combo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
-        .btn-pascoa { background: #ff79c6; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; }
+        .btn-pascoa { background: #ff79c6; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; }
 
         #statusLoja { padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; display: inline-block; color: white; }
         .aberto { background: var(--success); }
@@ -182,14 +182,14 @@
     </div>
 
     <section class="banner-pascoa">
-        <h2>🐰 COMBO PÁSCOA: 2 PIZZAS (30cm) 🐰</h2>
-        <p>Escolha dois sabores por apenas <b>R$ 29,90</b></p>
+        <h2>🐰 PIZZA DE PÁSCOA (30cm): 2 SABORES 🐰</h2>
+        <p>Escolha dois sabores (meio a meio) por apenas <b>R$ 29,90</b></p>
         <div class="combo-grid">
             <select id="comboSabor1"><option value="">Carregando sabores...</option></select>
             <select id="comboSabor2"><option value="">Carregando sabores...</option></select>
         </div>
-        <button class="btn-pascoa" onclick="window.addComboPascoa()">
-            <i class="fas fa-cart-plus"></i> ADICIONAR COMBO AO CARRINHO
+        <button class="btn-pascoa" id="btnCombo" onclick="window.addComboPascoa()">
+            <i class="fas fa-cart-plus"></i> ADICIONAR PIZZA AO CARRINHO
         </button>
     </section>
 
@@ -362,7 +362,7 @@ async function carregarProdutos(){
     const {data:produtos} = await _supabase.from('produtos').select('*');
     produtosDoBanco = produtos;
     
-    // Popular Selects da Promoção
+    // Popular Selects da Promoção (Meio a Meio)
     const s1 = document.getElementById("comboSabor1");
     const s2 = document.getElementById("comboSabor2");
     s1.innerHTML = '<option value="">Selecione o 1º sabor</option>';
@@ -390,21 +390,23 @@ async function carregarProdutos(){
     });
 }
 
-// LOGICA COMBO PASCOA
+// LÓGICA COMBO PÁSCOA (1 Pizza Meio a Meio) - COM FEEDBACK SONORO
 window.addComboPascoa = () => {
     const sab1 = document.getElementById("comboSabor1").value;
     const sab2 = document.getElementById("comboSabor2").value;
 
-    if(!sab1 || !sab2) return alert("Escolha os dois sabores do combo!");
+    if(!sab1 || !sab2) return alert("Escolha os dois sabores para sua pizza meio a meio!");
 
     const itemCombo = {
-        nome: `🎁 COMBO PÁSCOA (30cm): ${sab1} + ${sab2}`,
+        nome: `🎁 PIZZA PÁSCOA (30cm): ½ ${sab1} / ½ ${sab2}`,
         preco: 29.90
     };
 
+    // Feedback visual e sonoro no botão
+    feedback(document.getElementById("btnCombo"));
+
     carrinho.push(itemCombo);
     window.renderCarrinho();
-    alert("Combo adicionado ao carrinho!");
 }
 
 window.add = (i) => { 
@@ -496,7 +498,6 @@ function verificarHorario(){
     let min = agora.getMinutes();
     let tempoAtual = hora + (min/60);
 
-    // Quarta a Domingo, das 18:00 às 23:00
     let diaUtil = (dia >= 3 && dia <= 6) || dia == 0;
     let horaUtil = (tempoAtual >= 18 && tempoAtual < 23);
     
@@ -520,7 +521,6 @@ carregarProdutos();
 </script>
 </body>
 </html>
-
 
 
 
