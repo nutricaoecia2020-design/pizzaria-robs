@@ -81,10 +81,8 @@
         .btn { border: none; border-radius: 10px; cursor: pointer; font-weight: 600; padding: 12px; transition: 0.2s; width: 100%; }
         .btn-add { background: var(--primary); color: white; }
         
-        /* Efeito de Flash */
         .btn-flash { background: #28a745 !important; transform: scale(0.95); }
 
-        /* PAINEL DE GESTÃO */
         .painel-gestao { margin-top: 50px; padding: 25px; background: #1a1a1a; border: 2px dashed var(--primary); border-radius: 20px; }
         .status-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; background: #222; padding: 10px; border-radius: 12px; }
         .bola { width: 15px; height: 15px; border-radius: 50%; }
@@ -129,7 +127,26 @@
     <div id="finalizacao" style="margin-top: 40px; background: #1e1e1e; padding: 25px; border-radius: 20px;">
         <h3><i class="fas fa-truck"></i> Finalizar Pedido</h3>
         <input id="nome" placeholder="Seu Nome">
-        <input id="endereco" placeholder="Endereço Completo">
+        <input id="endereco" placeholder="Endereço Completo (Rua, Número, Apto)">
+        
+        <select id="bairro" onchange="window.renderCarrinho()">
+            <option value="" data-taxa="0">Selecione seu Bairro</option>
+            <option value="Aeroporto" data-taxa="12">Aeroporto - R$ 12,00</option>
+            <option value="Atalaia" data-taxa="12">Atalaia - R$ 12,00</option>
+            <option value="Coroa do Meio" data-taxa="12">Coroa do Meio - R$ 12,00</option>
+            <option value="Farolândia" data-taxa="12">Farolândia - R$ 12,00</option>
+            <option value="Getúlio Vargas" data-taxa="10">Getúlio Vargas - R$ 10,00</option>
+            <option value="Grageru" data-taxa="6">Grageru - R$ 6,00</option>
+            <option value="Jabotiana" data-taxa="12">Jabotiana - R$ 12,00</option>
+            <option value="Luzia" data-taxa="0">Luzia - Grátis</option>
+            <option value="Ponto Novo" data-taxa="0">Ponto Novo - Grátis</option>
+            <option value="Salgado Filho" data-taxa="6">Salgado Filho - R$ 6,00</option>
+            <option value="São Conrado" data-taxa="12">São Conrado - R$ 12,00</option>
+            <option value="São José" data-taxa="12">São José - R$ 12,00</option>
+            <option value="Suíssa" data-taxa="6">Suíssa - R$ 6,00</option>
+            <option value="Treze de Julho" data-taxa="12">Treze de Julho - R$ 12,00</option>
+        </select>
+
         <input id="contato" placeholder="WhatsApp (79999999999)">
         <select id="pagamento" onchange="window.renderCarrinho()">
             <option value="Dinheiro">Dinheiro</option>
@@ -193,6 +210,7 @@
     <span class="close-cart" onclick="toggleCart()"><i class="fas fa-times"></i></span>
     <h3>Seu Carrinho</h3>
     <div id="carrinhoItens"></div>
+    <div id="taxaEntregaDisplay" style="margin-top:10px; color: var(--text-dim); font-size: 14px;"></div>
     <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 20px;">
         <div style="display:flex; justify-content:space-between; font-size: 20px; font-weight: bold;">
             <span>Total:</span>
@@ -227,23 +245,19 @@ const _supabase = supabase.createClient('https://gsvvyktjeqlmhspqzppy.supabase.c
 let carrinho = [];
 let produtosDoBanco = [];
 
-// --- FUNÇÃO FEEDBACK (SOM + COR) ---
 function feedback(el) {
-    // Som
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();
     const g = ctx.createGain();
     osc.connect(g); g.connect(ctx.destination);
     osc.frequency.value = 800; g.gain.value = 0.1;
     osc.start(); osc.stop(ctx.currentTime + 0.1);
-    // Cor
     if(el) {
         el.classList.add('btn-flash');
         setTimeout(() => el.classList.remove('btn-flash'), 250);
     }
 }
 
-// Interface
 window.toggleCart = () => document.getElementById('cartSidebar').classList.toggle('active');
 window.copiarPix = () => { navigator.clipboard.writeText("rcsv74@gmail.com"); alert("Pix copiado!"); };
 
@@ -254,7 +268,6 @@ function atualizarTempo() {
 }
 setInterval(atualizarTempo, 1000);
 
-// GESTÃO
 window.acessarGestao = function() {
     if(document.getElementById("senhaMestra").value === "253641") {
         document.getElementById("gestaoLogin").style.display = "none";
@@ -311,7 +324,6 @@ window.enviarStatusManual = (tipo) => {
     window.open(`https://wa.me/${num}?text=${encodeURIComponent('Pizzaria Robs: ' + msgs[tipo])}`);
 }
 
-// CARDÁPIO E COMPRAS
 async function carregarProdutos(){
     const {data:produtos} = await _supabase.from('produtos').select('*');
     produtosDoBanco = produtos;
@@ -339,16 +351,34 @@ window.add = (i) => {
 window.remover = (i) => { carrinho.splice(i,1); window.renderCarrinho(); }
 
 window.renderCarrinho = function(){
-    let area = document.getElementById("carrinhoItens"); area.innerHTML = ""; let total = 0;
+    let area = document.getElementById("carrinhoItens"); 
+    let displayTaxa = document.getElementById("taxaEntregaDisplay");
+    area.innerHTML = ""; 
+    let totalItens = 0;
+    
     carrinho.forEach((p,i)=>{ 
-        total += parseFloat(p.preco);
+        totalItens += parseFloat(p.preco);
         area.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; background:#2a2a2a; padding:10px; border-radius:10px;">
             <span>${p.nome}</span><button class="btn-acao btn-del" onclick="window.remover(${i})">X</button>
         </div>`;
     });
-    document.getElementById("total").innerText = total.toFixed(2);
+
+    const bairroSelect = document.getElementById("bairro");
+    const taxa = parseFloat(bairroSelect.options[bairroSelect.selectedIndex].getAttribute('data-taxa') || 0);
+    const bairroNome = bairroSelect.value;
+
+    if(bairroNome && taxa > 0) {
+        displayTaxa.innerHTML = `<i class="fas fa-motorcycle"></i> Entrega (${bairroNome}): R$ ${taxa.toFixed(2)}`;
+    } else if(bairroNome && taxa === 0) {
+        displayTaxa.innerHTML = `<i class="fas fa-motorcycle"></i> Entrega (${bairroNome}): Grátis`;
+    } else {
+        displayTaxa.innerHTML = "";
+    }
+
+    let totalFinal = totalItens + taxa;
+    document.getElementById("total").innerText = totalFinal.toFixed(2);
     document.getElementById("contagem").innerText = carrinho.length;
-    document.getElementById("pixArea").style.display = (document.getElementById("pagamento").value === "Pix" && total > 0) ? "block" : "none";
+    document.getElementById("pixArea").style.display = (document.getElementById("pagamento").value === "Pix" && totalFinal > 0) ? "block" : "none";
 }
 
 window.finalizar = async function(){
@@ -357,19 +387,31 @@ window.finalizar = async function(){
 
     let n = document.getElementById("nome").value;
     let e = document.getElementById("endereco").value;
+    let b = document.getElementById("bairro").value;
     let c = document.getElementById("contato").value;
     let p = document.getElementById("pagamento").value;
     let t = document.getElementById("total").innerText;
     
-    if(!n || !e || !c || carrinho.length < 2) return alert("Preencha tudo e escolha pelo menos 2 itens!");
+    if(!n || !e || !b || !c || carrinho.length < 2) {
+        return alert("Preencha todos os campos (incluindo o bairro) e escolha pelo menos 2 itens!");
+    }
 
-    let listaProd = ""; carrinho.forEach(item => { listaProd += `• ${item.nome}\n`; });
+    const bairroSelect = document.getElementById("bairro");
+    const taxa = parseFloat(bairroSelect.options[bairroSelect.selectedIndex].getAttribute('data-taxa') || 0);
+
+    let listaProd = ""; 
+    carrinho.forEach(item => { listaProd += `• ${item.nome}\n`; });
+    listaProd += `\n📍 Bairro: ${b}`;
+    listaProd += `\n🚚 Taxa de Entrega: R$ ${taxa.toFixed(2)}`;
+
     try {
         await addDoc(collection(db, "pedidos"), { 
-            cliente: n, endereco: e, telefone: c, pagamento: p,
+            cliente: n, endereco: `${e} - Bairro: ${b}`, telefone: c, pagamento: p,
             produtos: listaProd, total: t, status: 'Pendente', data: serverTimestamp() 
         });
-        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent('*Pizzaria Robs*\n'+listaProd+'\n*Total:* R$ '+t+'\n*Cliente:* '+n)}`);
+        
+        let msgWhatsApp = `*Pizzaria Robs*\n\n${listaProd}\n\n*Total:* R$ ${t}\n*Pagamento:* ${p}\n*Cliente:* ${n}\n*Endereço:* ${e}`;
+        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(msgWhatsApp)}`);
         location.reload();
     } catch(err) { alert("Erro ao salvar!"); }
 }
@@ -381,6 +423,12 @@ function verificarHorario(){
     status.innerHTML = aberto ? "🟢 LOJA ABERTA" : "🔴 FECHADO";
     status.className = aberto ? "aberto" : "fechado";
 }
+
+verificarHorario();
+carregarProdutos();
+</script>
+</body>
+</html>
 
 verificarHorario();
 carregarProdutos();
