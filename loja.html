@@ -21,7 +21,7 @@
             --text-white: #ffffff;
             --text-dim: #666666;
             --success: #28a745;
-            --pascoa: #ff79c6; /* Cor temática para a promoção */
+            --pascoa: #6c5ce7;
         }
 
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
@@ -57,18 +57,6 @@
             text-transform: uppercase;
         }
 
-        /* Banner de Promoção */
-        .banner-pascoa {
-            background: linear-gradient(45deg, #6c5ce7, var(--pascoa));
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            display: none; /* Ativado via JS */
-            text-align: center;
-            box-shadow: 0 10px 20px rgba(255, 121, 198, 0.3);
-        }
-
         .logo h1 { color: white; margin: 0; font-size: 22px; text-transform: uppercase; letter-spacing: 2px; }
 
         .cart-trigger {
@@ -99,6 +87,16 @@
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
+
+        /* BANNER PROMOCIONAL PÁSCOA */
+        .banner-pascoa {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white; padding: 25px; border-radius: 20px; margin-bottom: 30px;
+            text-align: center; border: 3px solid #fff; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
+        }
+        .banner-pascoa h2 { margin: 0 0 10px 0; font-size: 22px; text-transform: uppercase; }
+        .combo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .btn-pascoa { background: #ff79c6; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; }
 
         #statusLoja { padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; display: inline-block; color: white; }
         .aberto { background: var(--success); }
@@ -132,7 +130,6 @@
 
         .btn { border: none; border-radius: 10px; cursor: pointer; font-weight: 600; padding: 12px; transition: 0.2s; width: 100%; }
         .btn-add { background: var(--primary); color: white; }
-        .btn-pascoa { background: #6c5ce7; color: white; }
         .btn-flash { background: #28a745 !important; transform: scale(0.95); }
 
         .painel-gestao { margin-top: 50px; padding: 25px; background: white; border: 2px dashed var(--primary); border-radius: 20px; }
@@ -155,7 +152,7 @@
 
         .aviso-obrigatorio { font-size: 13px; color: var(--primary); font-weight: 400; margin-left: 10px; }
 
-        @media(max-width: 600px) { .cart-sidebar { width: 100%; } }
+        @media(max-width: 600px) { .cart-sidebar { width: 100%; } .combo-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -173,29 +170,28 @@
 </header>
 
 <div class="container">
-    
-    <div id="bannerPascoa" class="banner-pascoa">
-        <h2>🐰 PROMOÇÃO DE PÁSCOA! 🐰</h2>
-        <p>Escolha 2 sabores de Pizza (30cm) por apenas <b>R$ 29,90</b></p>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
-            <select id="sabor1"><option value="">Sabor 1...</option></select>
-            <select id="sabor2"><option value="">Sabor 2...</option></select>
-        </div>
-        <button class="btn btn-pascoa" onclick="window.addComboPascoa()">
-            <i class="fas fa-cart-plus"></i> ADICIONAR COMBO R$ 29,90
-        </button>
-    </div>
-
     <div class="header-meta">
         <div id="statusLoja">Carregando...</div>
         <div id="msgAgendamento" class="aviso-agendamento">
-            <i class="fas fa-calendar-alt"></i> No momento estamos fechados, mas você pode deixar seu pedido agendado!
+            <i class="fas fa-calendar-alt"></i> No momento estamos fechados, mas você pode deixar seu pedido agendado para o final de semana!
         </div>
         <div style="font-size: 14px; color: var(--text-dim)">
             <i class="far fa-clock"></i> <span id="relogio">00:00:00</span> | 
             <i class="far fa-calendar-alt"></i> <span id="data">--/--/--</span>
         </div>
     </div>
+
+    <section class="banner-pascoa">
+        <h2>🐰 COMBO PÁSCOA: 2 PIZZAS (30cm) 🐰</h2>
+        <p>Escolha dois sabores por apenas <b>R$ 29,90</b></p>
+        <div class="combo-grid">
+            <select id="comboSabor1"><option value="">Carregando sabores...</option></select>
+            <select id="comboSabor2"><option value="">Carregando sabores...</option></select>
+        </div>
+        <button class="btn-pascoa" onclick="window.addComboPascoa()">
+            <i class="fas fa-cart-plus"></i> ADICIONAR COMBO AO CARRINHO
+        </button>
+    </section>
 
     <h2 style="margin-bottom: 25px; display: flex; align-items: center; flex-wrap: wrap;">
         <i class="fas fa-pizza-slice"></i> &nbsp;Cardápio 
@@ -232,7 +228,7 @@
             <option value="Pix">Pix</option>
             <option value="Cartão">Cartão</option>
         </select>
-        <textarea id="obs" placeholder="Observações (Caso seja agendamento, informe o horário aqui)..."></textarea>
+        <textarea id="obs" placeholder="Observações (Caso seja agendamento, informe o dia e horário aqui)..."></textarea>
         
         <div id="pixArea" style="display:none; background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border: 1px dashed var(--primary); margin-bottom: 15px;">
             <p style="margin:0 0 10px 0">Chave Pix: <b>rcsv74@gmail.com</b></p>
@@ -366,20 +362,22 @@ async function carregarProdutos(){
     const {data:produtos} = await _supabase.from('produtos').select('*');
     produtosDoBanco = produtos;
     
-    // Popular selects da promoção
-    const s1 = document.getElementById("sabor1");
-    const s2 = document.getElementById("sabor2");
+    // Popular Selects da Promoção
+    const s1 = document.getElementById("comboSabor1");
+    const s2 = document.getElementById("comboSabor2");
+    s1.innerHTML = '<option value="">Selecione o 1º sabor</option>';
+    s2.innerHTML = '<option value="">Selecione o 2º sabor</option>';
     
+    produtos.forEach(p => {
+        let opt = `<option value="${p.nome}">${p.nome}</option>`;
+        s1.innerHTML += opt;
+        s2.innerHTML += opt;
+    });
+
+    // Popular Cardápio Geral
     let lista = document.getElementById("produtos");
     lista.innerHTML = "";
     produtos.forEach((p, index) => {
-        // Adiciona aos selects de promoção
-        let opt = document.createElement("option");
-        opt.value = p.nome;
-        opt.text = p.nome;
-        s1.add(opt.cloneNode(true));
-        s2.add(opt);
-
         lista.innerHTML += `
             <div class="produto-card">
                 <img src="${p.url_imagem||'https://via.placeholder.com/300x200'}" class="prod-img">
@@ -392,29 +390,27 @@ async function carregarProdutos(){
     });
 }
 
-window.add = (i) => { 
-    feedback(document.getElementById(`btn-add-${i}`));
-    carrinho.push(produtosDoBanco[i]); 
-    window.renderCarrinho(); 
-}
-
-// LOGICA COMBO PÁSCOA
+// LOGICA COMBO PASCOA
 window.addComboPascoa = () => {
-    const s1 = document.getElementById("sabor1").value;
-    const s2 = document.getElementById("sabor2").value;
-    
-    if(!s1 || !s2) return alert("Selecione os dois sabores para a promoção!");
+    const sab1 = document.getElementById("comboSabor1").value;
+    const sab2 = document.getElementById("comboSabor2").value;
+
+    if(!sab1 || !sab2) return alert("Escolha os dois sabores do combo!");
 
     const itemCombo = {
-        nome: `🎁 COMBO PÁSCOA (30cm): ${s1} + ${s2}`,
-        preco: 29.90,
-        isCombo: true
+        nome: `🎁 COMBO PÁSCOA (30cm): ${sab1} + ${sab2}`,
+        preco: 29.90
     };
 
     carrinho.push(itemCombo);
     window.renderCarrinho();
-    alert("Combo Adicionado!");
-    toggleCart();
+    alert("Combo adicionado ao carrinho!");
+}
+
+window.add = (i) => { 
+    feedback(document.getElementById(`btn-add-${i}`));
+    carrinho.push(produtosDoBanco[i]); 
+    window.renderCarrinho(); 
 }
 
 window.remover = (i) => { carrinho.splice(i,1); window.renderCarrinho(); }
@@ -433,7 +429,7 @@ window.renderCarrinho = function(){
     carrinho.forEach((p,i)=>{ 
         subtotal += parseFloat(p.preco);
         area.innerHTML += `
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px; background:#333; padding:10px; border-radius:10px; border-left: 4px solid ${p.isCombo ? 'var(--pascoa)' : 'var(--primary)'};">
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px; background:#333; padding:10px; border-radius:10px; border-left: 4px solid var(--primary);">
             <span style="font-size:14px">${p.nome}</span>
             <button class="btn-acao btn-del" style="background:transparent" onclick="window.remover(${i})"><i class="fas fa-times"></i></button>
         </div>`;
@@ -475,10 +471,7 @@ window.finalizar = async function(){
     let t = document.getElementById("total").innerText;
     
     if(!n || !e || !b || !c) return alert("Por favor, preencha seus dados de entrega!");
-    
-    // Regra: se tiver combo, ele já conta como 2 sabores, então validamos por preço ou lógica de itens
-    if(carrinho.length < 1) return alert("Carrinho vazio!");
-    if(carrinho.length < 2 && !carrinho.some(i => i.isCombo)) return alert("Obrigatório escolher pelo menos 2 itens ou 1 Combo!");
+    if(carrinho.length === 0) return alert("Seu carrinho está vazio!");
 
     let listaProd = ""; 
     carrinho.forEach(item => { listaProd += `• ${item.nome}\n`; });
@@ -503,15 +496,7 @@ function verificarHorario(){
     let min = agora.getMinutes();
     let tempoAtual = hora + (min/60);
 
-    // Lógica Banner Páscoa (Sexta=5, Sábado=6, Domingo=0)
-    let banner = document.getElementById("bannerPascoa");
-    if(dia === 5 || dia === 6 || dia === 0) {
-        banner.style.display = "block";
-    } else {
-        banner.style.display = "none";
-    }
-
-    // Horário: Quarta a Domingo, das 18:00 às 23:00
+    // Quarta a Domingo, das 18:00 às 23:00
     let diaUtil = (dia >= 3 && dia <= 6) || dia == 0;
     let horaUtil = (tempoAtual >= 18 && tempoAtual < 23);
     
@@ -524,7 +509,7 @@ function verificarHorario(){
         status.className = "aberto";
         msgAgendamento.style.display = "none";
     } else {
-        status.innerHTML = "🔴 FECHADO";
+        status.innerHTML = "🔴 FECHADO (AGENDAMENTO DISPONÍVEL)";
         status.className = "fechado";
         msgAgendamento.style.display = "block";
     }
