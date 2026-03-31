@@ -185,6 +185,11 @@
 
         .aviso-obrigatorio { font-size: 13px; color: var(--primary); font-weight: 400; margin-left: 10px; }
 
+        /* Estilos do Painel do Lojista */
+        #painelLojista { margin-top: 80px; padding: 40px 20px; background: #f8f9fa; border-top: 3px solid var(--primary); }
+        .card-pedido { background: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; border-left: 5px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .badge-pedido { background: var(--primary); color: white; padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: bold; }
+
         @media(max-width: 600px) { 
             .cart-sidebar { width: 100%; } 
             .combo-grid { grid-template-columns: 1fr; }
@@ -328,6 +333,23 @@
     </div>
 </div>
 
+<section id="painelLojista" class="container">
+    <div style="text-align: center; margin-bottom: 20px;">
+        <h2 style="color: var(--dark)"><i class="fas fa-user-shield"></i> Painel do Lojista</h2>
+        <div id="loginPainel">
+            <input type="password" id="senhaAcesso" placeholder="Senha de Acesso" style="max-width: 200px; display: inline-block;">
+            <button class="btn btn-add" style="width: auto;" onclick="window.acessarPainel()">Acessar</button>
+        </div>
+    </div>
+
+    <div id="conteudoPainel" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin:0">Pedidos Recentes</h3>
+            <button class="btn" style="background: #666; width: auto; color: white;" onclick="window.carregarPedidosPainel()">Atualizar</button>
+        </div>
+        <div id="listaPedidosRecentes">Carregando pedidos...</div>
+    </div>
+</section>
 <div class="float-btns">
     <a href="https://wa.me/5579999769581" class="circle-btn" style="background: #25d366;"><i class="fab fa-whatsapp"></i></a>
     <a href="https://www.instagram.com/robs_pizzaria" class="circle-btn" style="background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%);"><i class="fab fa-instagram"></i></a>
@@ -335,7 +357,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, getDocs, orderBy, query, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE", 
@@ -528,6 +550,62 @@ function verificarHorario(){
     }
 }
 
+// LOGICA DO PAINEL DO LOJISTA
+window.acessarPainel = function() {
+    const senha = document.getElementById("senhaAcesso").value;
+    if(senha === "253641") {
+        document.getElementById("loginPainel").style.display = "none";
+        document.getElementById("conteudoPainel").style.display = "block";
+        window.carregarPedidosPainel();
+    } else {
+        alert("Senha incorreta!");
+    }
+}
+
+window.carregarPedidosPainel = async function() {
+    const area = document.getElementById("listaPedidosRecentes");
+    area.innerHTML = "Carregando...";
+    
+    try {
+        const q = query(collection(db, "pedidos"), orderBy("data", "desc"), limit(20));
+        const querySnapshot = await getDocs(q);
+        area.innerHTML = "";
+        
+        if (querySnapshot.empty) {
+            area.innerHTML = "<p>Nenhum pedido encontrado.</p>";
+            return;
+        }
+
+        querySnapshot.forEach((doc) => {
+            const ped = doc.data();
+            area.innerHTML += `
+                <div class="card-pedido">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <strong>${ped.cliente}</strong> <span class="badge-pedido">${ped.tipo}</span><br>
+                            <small>${ped.bairro} - ${ped.endereco}</small>
+                        </div>
+                        <div style="text-align:right">
+                            <span style="color:var(--primary); font-weight:bold;">R$ ${ped.total}</span><br>
+                            <small>${ped.pagamento}</small>
+                        </div>
+                    </div>
+                    <div style="background:#f1f1f1; padding:10px; border-radius:8px; margin-top:10px; font-size:13px; white-space:pre-line;">
+                        ${ped.produtos}
+                    </div>
+                    <div style="margin-top:10px; font-size:12px;">
+                        <i class="fas fa-calendar"></i> Agendado: <strong>${ped.agendamento}</strong><br>
+                        ${ped.obs ? `<i class="fas fa-comment"></i> Obs: ${ped.obs}` : ''}
+                    </div>
+                </div>
+            `;
+        });
+    } catch (err) {
+        area.innerHTML = "Erro ao carregar dados do Firebase.";
+        console.error(err);
+    }
+}
+
 const inputData = document.getElementById('dataAgendamento');
 if(inputData) {
     const hoje = new Date().toISOString().split('T')[0];
@@ -539,7 +617,6 @@ carregarProdutos();
 </script>
 </body>
 </html>
-
 
 
 
