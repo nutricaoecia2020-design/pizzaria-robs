@@ -22,6 +22,7 @@
             --text-dim: #666666;
             --success: #28a745;
             --pascoa: #6c5ce7;
+            --accent: #ff79c6;
         }
 
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
@@ -88,30 +89,56 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
-        /* BANNER PROMOCIONAL PÁSCOA - ATUALIZADO PARA 1 PIZZA 2 SABORES */
+        /* BANNER PÁSCOA COM ANIMAÇÃO */
         .banner-pascoa {
             background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
-            color: white; padding: 25px; border-radius: 20px; margin-bottom: 30px;
+            color: white; padding: 25px; border-radius: 20px; margin-bottom: 20px;
             text-align: center; border: 3px solid #fff; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
+            position: relative; overflow: hidden;
         }
-        .banner-pascoa h2 { margin: 0 0 10px 0; font-size: 22px; text-transform: uppercase; }
+
+        .animacao-agendar {
+            position: absolute; right: 15px; top: 15px;
+            background: #fff; color: var(--pascoa);
+            padding: 8px 12px; border-radius: 50px;
+            font-size: 11px; font-weight: 900;
+            animation: pulse-glow 2s infinite;
+            display: flex; align-items: center; gap: 5px;
+            box-shadow: 0 0 15px rgba(255,255,255,0.5);
+            pointer-events: none;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; box-shadow: 0 0 25px rgba(255,255,255,0.8); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
         .combo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .btn-pascoa { background: #ff79c6; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; }
+
+        /* SEÇÃO CAMPANHA SORTEIO */
+        .campanha-sorteio {
+            background: #ffffff; border-radius: 20px; padding: 20px; margin-bottom: 30px;
+            border: 2px solid var(--accent); display: flex; align-items: center; gap: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .sorteio-info h3 { margin: 0; color: var(--accent); font-size: 18px; }
+        .sorteio-info p { margin: 5px 0; font-size: 13px; color: var(--text-dim); }
+        .btn-insta { 
+            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+            color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none;
+            font-weight: bold; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;
+        }
 
         #statusLoja { padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; display: inline-block; color: white; }
         .aberto { background: var(--success); }
         .fechado { background: #dc3545; }
         
         .aviso-agendamento {
-            display: none;
-            background: #fff3cd;
-            color: #856404;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            font-size: 14px;
-            border: 1px solid #ffeeba;
-            font-weight: 600;
+            display: none; background: #fff3cd; color: #856404; padding: 10px;
+            border-radius: 10px; margin-bottom: 15px; font-size: 14px;
+            border: 1px solid #ffeeba; font-weight: 600;
         }
 
         #produtos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
@@ -152,7 +179,11 @@
 
         .aviso-obrigatorio { font-size: 13px; color: var(--primary); font-weight: 400; margin-left: 10px; }
 
-        @media(max-width: 600px) { .cart-sidebar { width: 100%; } .combo-grid { grid-template-columns: 1fr; } }
+        @media(max-width: 600px) { 
+            .cart-sidebar { width: 100%; } 
+            .combo-grid { grid-template-columns: 1fr; }
+            .campanha-sorteio { flex-direction: column; text-align: center; }
+        }
     </style>
 </head>
 <body>
@@ -182,6 +213,7 @@
     </div>
 
     <section class="banner-pascoa">
+        <div class="animacao-agendar"><i class="fas fa-clock"></i> AGENDE AGORA!</div>
         <h2>🐰 PIZZA DE PÁSCOA (30cm): 2 SABORES 🐰</h2>
         <p>Escolha dois sabores (meio a meio) por apenas <b>R$ 29,90</b></p>
         <div class="combo-grid">
@@ -191,6 +223,19 @@
         <button class="btn-pascoa" id="btnCombo" onclick="window.addComboPascoa()">
             <i class="fas fa-cart-plus"></i> ADICIONAR PIZZA AO CARRINHO
         </button>
+    </section>
+
+    <section class="campanha-sorteio">
+        <div style="font-size: 40px;">🎁</div>
+        <div class="sorteio-info">
+            <h3>SORTEIO: 1 PIZZA GRÁTIS NO DOMINGO!</h3>
+            <p>1. Compartilhe o link do site com 5 amigos no WhatsApp.<br>
+               2. Mande o print para <b>@robs_pizzaria</b> no Instagram.<br>
+               3. Siga nossa página para validar sua participação!</p>
+            <a href="https://www.instagram.com/robs_pizzaria" target="_blank" class="btn-insta">
+                <i class="fab fa-instagram"></i> SEGUIR & PARTICIPAR
+            </a>
+        </div>
     </section>
 
     <h2 style="margin-bottom: 25px; display: flex; align-items: center; flex-wrap: wrap;">
@@ -362,7 +407,6 @@ async function carregarProdutos(){
     const {data:produtos} = await _supabase.from('produtos').select('*');
     produtosDoBanco = produtos;
     
-    // Popular Selects da Promoção (Meio a Meio)
     const s1 = document.getElementById("comboSabor1");
     const s2 = document.getElementById("comboSabor2");
     s1.innerHTML = '<option value="">Selecione o 1º sabor</option>';
@@ -374,7 +418,6 @@ async function carregarProdutos(){
         s2.innerHTML += opt;
     });
 
-    // Popular Cardápio Geral
     let lista = document.getElementById("produtos");
     lista.innerHTML = "";
     produtos.forEach((p, index) => {
@@ -390,7 +433,6 @@ async function carregarProdutos(){
     });
 }
 
-// LÓGICA COMBO PÁSCOA (1 Pizza Meio a Meio) - COM FEEDBACK SONORO
 window.addComboPascoa = () => {
     const sab1 = document.getElementById("comboSabor1").value;
     const sab2 = document.getElementById("comboSabor2").value;
@@ -402,9 +444,7 @@ window.addComboPascoa = () => {
         preco: 29.90
     };
 
-    // Feedback visual e sonoro no botão
     feedback(document.getElementById("btnCombo"));
-
     carrinho.push(itemCombo);
     window.renderCarrinho();
 }
