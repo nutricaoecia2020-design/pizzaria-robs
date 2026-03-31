@@ -89,7 +89,6 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
-        /* BANNER PÁSCOA COM ANIMAÇÃO */
         .banner-pascoa {
             background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
             color: white; padding: 25px; border-radius: 20px; margin-bottom: 20px;
@@ -117,7 +116,6 @@
         .combo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .btn-pascoa { background: #ff79c6; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; }
 
-        /* SEÇÃO CAMPANHA SORTEIO */
         .campanha-sorteio {
             background: #ffffff; border-radius: 20px; padding: 20px; margin-bottom: 30px;
             border: 2px solid var(--accent); display: flex; align-items: center; gap: 20px;
@@ -154,6 +152,8 @@
             width: 100%; background: #ffffff; border: 1px solid #ddd; color: #333;
             padding: 12px; border-radius: 10px; margin-bottom: 12px; outline: none;
         }
+
+        .label-agendamento { font-size: 12px; font-weight: bold; color: var(--primary); margin-bottom: 5px; display: block; text-transform: uppercase; }
 
         .btn { border: none; border-radius: 10px; cursor: pointer; font-weight: 600; padding: 12px; transition: 0.2s; width: 100%; }
         .btn-add { background: var(--primary); color: white; }
@@ -268,12 +268,29 @@
         </select>
 
         <input id="contato" placeholder="WhatsApp (79999999999)">
+        
         <select id="pagamento" onchange="window.renderCarrinho()">
             <option value="Dinheiro">Dinheiro</option>
             <option value="Pix">Pix</option>
             <option value="Cartão">Cartão</option>
         </select>
-        <textarea id="obs" placeholder="Observações (Caso seja agendamento, informe o dia e horário aqui)..."></textarea>
+
+        <label class="label-agendamento">Tipo de Pedido:</label>
+        <select id="tipoPedido">
+            <option value="Pedido Normal">Pedido Normal</option>
+            <option value="Pedido da Promoção">Pedido da Promoção</option>
+        </select>
+
+        <label class="label-agendamento">Data de Entrega/Agendamento:</label>
+        <input type="date" id="dataAgendamento">
+
+        <label class="label-agendamento">Horário Disponível:</label>
+        <select id="horaAgendamento">
+            <option value="18:00 - 19:00">18:00 às 19:00</option>
+            <option value="19:00 - 20:00">19:00 às 20:00</option>
+            <option value="20:00 - 21:00">20:00 às 21:00</option>
+        </select>
+        <textarea id="obs" placeholder="Observações adicionais..."></textarea>
         
         <div id="pixArea" style="display:none; background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border: 1px dashed var(--primary); margin-bottom: 15px;">
             <p style="margin:0 0 10px 0">Chave Pix: <b>rcsv74@gmail.com</b></p>
@@ -509,22 +526,26 @@ window.finalizar = async function(){
     let b = document.getElementById("bairro").value;
     let c = document.getElementById("contato").value;
     let p = document.getElementById("pagamento").value;
+    let tPedido = document.getElementById("tipoPedido").value;
+    let dAgend = document.getElementById("dataAgendamento").value;
+    let hAgend = document.getElementById("horaAgendamento").value;
     let o = document.getElementById("obs").value;
     let t = document.getElementById("total").innerText;
     
-    if(!n || !e || !b || !c) return alert("Por favor, preencha seus dados de entrega!");
+    if(!n || !e || !b || !c || !dAgend) return alert("Por favor, preencha todos os dados de entrega e a data!");
     if(carrinho.length === 0) return alert("Seu carrinho está vazio!");
 
     let listaProd = ""; 
     carrinho.forEach(item => { listaProd += `• ${item.nome}\n`; });
     
-    let textoWhatsApp = `*NOVO PEDIDO ROBS*\n\n${listaProd}\n📍 *Bairro:* ${b}\n🏠 *Endereço:* ${e}\n💰 *Total:* R$ ${t}\n👤 *Cliente:* ${n}\n💳 *Pagamento:* ${p}`;
-    if(o) textoWhatsApp += `\n📝 *Obs:* ${o}`;
+    let textoWhatsApp = `*NOVO PEDIDO ROBS*\n\n${listaProd}\n📍 *Bairro:* ${b}\n🏠 *Endereço:* ${e}\n💰 *Total:* R$ ${t}\n👤 *Cliente:* ${n}\n💳 *Pagamento:* ${p}\n\n📅 *Agendamento:* ${dAgend.split('-').reverse().join('/')}\n⏰ *Horário:* ${hAgend}\n💎 *Tipo:* ${tPedido}`;
+    if(o) textoWhatsApp += `\n\n📝 *Obs:* ${o}`;
 
     try {
         await addDoc(collection(db, "pedidos"), { 
             cliente: n, endereco: e, telefone: c, pagamento: p,
-            produtos: listaProd, total: t, status: 'Pendente', data: serverTimestamp() 
+            produtos: listaProd, total: t, status: 'Pendente', data: serverTimestamp(),
+            agendamento: `${dAgend} ${hAgend}`, tipo: tPedido
         });
         window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(textoWhatsApp)}`);
         location.reload();
@@ -556,12 +577,15 @@ function verificarHorario(){
     }
 }
 
+// Bloquear datas passadas no calendário
+const hoje = new Date().toISOString().split('T')[0];
+document.getElementById('dataAgendamento').setAttribute('min', hoje);
+
 verificarHorario();
 carregarProdutos();
 </script>
 </body>
 </html>
-
 
 
 
