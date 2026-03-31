@@ -37,6 +37,17 @@
             backdrop-filter: blur(10px);
         }
 
+        .destaque-topo {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
         .logo h1 { color: var(--primary); margin: 0; font-size: 22px; text-transform: uppercase; letter-spacing: 2px; }
 
         .cart-trigger {
@@ -80,22 +91,16 @@
 
         .btn { border: none; border-radius: 10px; cursor: pointer; font-weight: 600; padding: 12px; transition: 0.2s; width: 100%; }
         .btn-add { background: var(--primary); color: white; }
-        
         .btn-flash { background: #28a745 !important; transform: scale(0.95); }
 
-        /* Painel de Gestão */
         .painel-gestao { margin-top: 50px; padding: 25px; background: #1a1a1a; border: 2px dashed var(--primary); border-radius: 20px; }
-        .status-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; background: #222; padding: 10px; border-radius: 12px; }
-        .bola { width: 15px; height: 15px; border-radius: 50%; }
-        .vermelha { background: #dc3545; } .azul { background: #007bff; } .verde { background: #28a745; }
-
+        
         table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 20px; }
         th { text-align: left; padding: 12px; border-bottom: 2px solid #333; color: var(--primary); }
         td { padding: 12px; border-bottom: 1px solid #222; }
 
         .btn-acao { padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer; margin-right: 5px; color: white; }
-        .btn-entregar { background: #25d366; } .btn-fim { background: #666; } .btn-del { background: #ff4444; }
-        .btn-status { background: #333; color: white; padding: 8px; font-size: 11px; cursor: pointer; border-radius: 5px; border:none; }
+        .btn-entregar { background: #25d366; } .btn-del { background: #ff4444; }
 
         .float-btns { position: fixed; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 99; }
         .circle-btn { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 24px; }
@@ -106,10 +111,16 @@
             margin-top: 10px; border: 1px solid var(--primary);
         }
 
+        .aviso-obrigatorio { font-size: 14px; color: var(--primary); font-weight: 400; margin-left: 10px; }
+
         @media(max-width: 600px) { .cart-sidebar { width: 100%; } }
     </style>
 </head>
 <body>
+
+<div class="destaque-topo">
+    <i class="fas fa-star"></i> PIZZARIA DELIVERY - BAIRRO LUZIA <i class="fas fa-star"></i>
+</div>
 
 <header>
     <div class="logo"><h1>Robs<span>🍕</span></h1></div>
@@ -128,7 +139,10 @@
         </div>
     </div>
 
-    <h2 style="margin-bottom: 25px;"><i class="fas fa-pizza-slice"></i> Cardápio</h2>
+    <h2 style="margin-bottom: 25px; display: flex; align-items: center; flex-wrap: wrap;">
+        <i class="fas fa-pizza-slice"></i> &nbsp;Cardápio 
+        <span class="aviso-obrigatorio">(Mínimo de 2 sabores/itens)</span>
+    </h2>
     <div id="produtos">Carregando...</div>
 
     <div id="finalizacao" style="margin-top: 40px; background: #1e1e1e; padding: 25px; border-radius: 20px;">
@@ -164,7 +178,7 @@
         
         <div id="pixArea" style="display:none; background: #000; padding: 15px; border-radius: 10px; text-align: center; border: 1px dashed var(--primary); margin-bottom: 15px;">
             <p>Pix: <b>rcsv74@gmail.com</b></p>
-            <button class="btn" style="background: #007bff; width: auto; padding: 5px 15px;" onclick="window.copiarPix()">Copiar Pix</button>
+            <button class="btn" style="background: var(--primary); width: auto; padding: 5px 15px;" onclick="window.copiarPix()">Copiar Pix</button>
         </div>
 
         <button id="btnFinalizar" class="btn btn-add" style="padding: 18px; font-size: 18px;" onclick="window.finalizar()">
@@ -197,7 +211,9 @@
     <span class="close-cart" onclick="toggleCart()"><i class="fas fa-times"></i></span>
     <h3>Seu Carrinho</h3>
     <div id="carrinhoItens"></div>
-    <div id="taxaNoCarrinho"></div> <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 20px;">
+    <div id="taxaNoCarrinho"></div>
+    
+    <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 20px;">
         <div style="display:flex; justify-content:space-between; font-size: 20px; font-weight: bold;">
             <span>Total:</span>
             <span style="color: var(--primary)">R$ <span id="total">0.00</span></span>
@@ -213,7 +229,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE", 
@@ -254,7 +270,6 @@ function atualizarTempo() {
 }
 setInterval(atualizarTempo, 1000);
 
-// Gestão
 window.acessarGestao = function() {
     if(document.getElementById("senhaMestra").value === "253641") {
         document.getElementById("gestaoLogin").style.display = "none";
@@ -278,7 +293,7 @@ function ouvirPedidos() {
                     <td>${p.produtos}</td>
                     <td>R$ ${p.total}</td>
                     <td>
-                        <button class="btn-acao btn-entregar" onclick="window.iniciarEntrega('${p.telefone}', '${p.cliente}')"><i class="fas fa-motorcycle"></i></button>
+                        <button class="btn-acao btn-entregar" onclick="window.open('https://wa.me/55${p.telefone}')"><i class="fas fa-motorcycle"></i></button>
                         <button class="btn-acao btn-del" onclick="window.apagarPedido('${docSnap.id}')"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
@@ -286,7 +301,8 @@ function ouvirPedidos() {
     });
 }
 
-// Cardápio e Compras
+window.apagarPedido = async (id) => { if(confirm("Apagar pedido?")) await deleteDoc(doc(db, "pedidos", id)); };
+
 async function carregarProdutos(){
     const {data:produtos} = await _supabase.from('produtos').select('*');
     produtosDoBanco = produtos;
@@ -333,7 +349,6 @@ window.renderCarrinho = function(){
         </div>`;
     });
 
-    // Lógica da Taxa no Carrinho
     const selBairro = document.getElementById("bairro");
     const bairroNome = selBairro.value;
     const taxaValor = parseFloat(selBairro.options[selBairro.selectedIndex].getAttribute("data-taxa") || 0);
@@ -368,20 +383,20 @@ window.finalizar = async function(){
     let p = document.getElementById("pagamento").value;
     let t = document.getElementById("total").innerText;
     
-    if(!n || !e || !b || !c || carrinho.length < 2) return alert("Preencha tudo e escolha pelo menos 2 itens!");
+    if(!n || !e || !b || !c) return alert("Preencha todos os campos!");
+    if(carrinho.length < 2) return alert("Obrigatório escolher pelo menos 2 sabores/itens!");
 
     let listaProd = ""; 
     carrinho.forEach(item => { listaProd += `• ${item.nome}\n`; });
-    listaProd += `\n📍 Bairro: ${b}`;
-
+    
     try {
         await addDoc(collection(db, "pedidos"), { 
             cliente: n, endereco: e, telefone: c, pagamento: p,
             produtos: listaProd, total: t, status: 'Pendente', data: serverTimestamp() 
         });
-        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent('*PEDIDO ROBS*\n\n'+listaProd+'\n\n*Total:* R$ '+t+'\n*Cliente:* '+n+'\n*Bairro:* '+b)}`);
+        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent('*NOVO PEDIDO ROBS*\n\n'+listaProd+'\n📍 Bairro: '+b+'\n💰 Total: R$ '+t+'\n👤 Cliente: '+n)}`);
         location.reload();
-    } catch(err) { alert("Erro ao salvar!"); }
+    } catch(err) { alert("Erro ao enviar pedido!"); }
 }
 
 function verificarHorario(){
