@@ -13,19 +13,28 @@
 
     <style>
         :root {
-            --primary: #00a8ff; /* Azul Claro */
+            --primary: #00a8ff; 
+            --bg-light: #f0f8ff; /* Azul bem clarinho para o fundo */
             --dark: #121212;
             --card: #1e1e1e;
-            --text: #ffffff;
-            --text-dim: #a0a0a0;
+            --text-dark: #333333;
+            --text-white: #ffffff;
+            --text-dim: #666666;
             --success: #28a745;
         }
 
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
-        body { background: var(--dark); color: var(--text); margin: 0; padding-bottom: 50px; }
+        
+        /* Fundo alterado para Azul Clarinho */
+        body { 
+            background: var(--bg-light); 
+            color: var(--text-dark); 
+            margin: 0; 
+            padding-bottom: 50px; 
+        }
 
         header {
-            background: rgba(18, 18, 18, 0.95);
+            background: rgba(0, 168, 255, 0.9);
             padding: 15px 20px;
             position: sticky;
             top: 0;
@@ -33,12 +42,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
             backdrop-filter: blur(10px);
         }
 
         .destaque-topo {
-            background: var(--primary);
+            background: #0084c9;
             color: white;
             text-align: center;
             padding: 8px;
@@ -48,14 +57,14 @@
             text-transform: uppercase;
         }
 
-        .logo h1 { color: var(--primary); margin: 0; font-size: 22px; text-transform: uppercase; letter-spacing: 2px; }
+        .logo h1 { color: white; margin: 0; font-size: 22px; text-transform: uppercase; letter-spacing: 2px; }
 
         .cart-trigger {
-            background: var(--primary); color: white; padding: 10px 18px; border-radius: 50px;
-            cursor: pointer; position: relative; transition: 0.2s;
+            background: white; color: var(--primary); padding: 10px 18px; border-radius: 50px;
+            cursor: pointer; position: relative; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         .cart-count {
-            position: absolute; top: -5px; right: -5px; background: white; color: var(--primary);
+            position: absolute; top: -5px; right: -5px; background: var(--dark); color: white;
             font-size: 12px; width: 20px; height: 20px; border-radius: 50%; display: flex;
             align-items: center; justify-content: center; font-weight: bold;
         }
@@ -63,29 +72,49 @@
         .cart-sidebar {
             position: fixed; right: -100%; top: 0; width: 350px; height: 100%;
             background: var(--card); z-index: 1001; box-shadow: -5px 0 20px rgba(0,0,0,0.5);
-            transition: 0.4s; padding: 25px; overflow-y: auto;
+            transition: 0.4s; padding: 25px; overflow-y: auto; color: white;
         }
         .cart-sidebar.active { right: 0; }
         .close-cart { font-size: 24px; cursor: pointer; margin-bottom: 20px; display: block; }
 
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
 
-        .header-meta { text-align: center; margin-bottom: 30px; background: #1e1e1e; padding: 20px; border-radius: 15px; }
-        #statusLoja { padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
+        .header-meta { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        #statusLoja { padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; display: inline-block; color: white; }
         .aberto { background: var(--success); }
-        .fechado { background: #555; }
+        .fechado { background: #dc3545; }
+        
+        .aviso-agendamento {
+            display: none;
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            border: 1px solid #ffeeba;
+            font-weight: 600;
+        }
 
         #produtos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .produto-card {
             background: var(--card); border-radius: 18px; overflow: hidden;
-            transition: 0.3s; border: 1px solid #333;
+            transition: 0.3s; border: 1px solid #333; color: white;
         }
         .prod-img { width: 100%; height: 180px; object-fit: cover; }
         .prod-info { padding: 15px; }
         .prod-price { color: var(--primary); font-weight: bold; font-size: 20px; }
 
         input, select, textarea {
-            width: 100%; background: #2a2a2a; border: 1px solid #444; color: white;
+            width: 100%; background: #ffffff; border: 1px solid #ddd; color: #333;
             padding: 12px; border-radius: 10px; margin-bottom: 12px; outline: none;
         }
 
@@ -93,11 +122,11 @@
         .btn-add { background: var(--primary); color: white; }
         .btn-flash { background: #28a745 !important; transform: scale(0.95); }
 
-        .painel-gestao { margin-top: 50px; padding: 25px; background: #1a1a1a; border: 2px dashed var(--primary); border-radius: 20px; }
+        .painel-gestao { margin-top: 50px; padding: 25px; background: white; border: 2px dashed var(--primary); border-radius: 20px; }
         
-        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 20px; }
-        th { text-align: left; padding: 12px; border-bottom: 2px solid #333; color: var(--primary); }
-        td { padding: 12px; border-bottom: 1px solid #222; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 20px; color: #333; }
+        th { text-align: left; padding: 12px; border-bottom: 2px solid #eee; color: var(--primary); }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
 
         .btn-acao { padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer; margin-right: 5px; color: white; }
         .btn-entregar { background: #25d366; } .btn-del { background: #ff4444; }
@@ -111,7 +140,7 @@
             margin-top: 10px; border: 1px solid var(--primary);
         }
 
-        .aviso-obrigatorio { font-size: 14px; color: var(--primary); font-weight: 400; margin-left: 10px; }
+        .aviso-obrigatorio { font-size: 13px; color: var(--primary); font-weight: 400; margin-left: 10px; }
 
         @media(max-width: 600px) { .cart-sidebar { width: 100%; } }
     </style>
@@ -133,6 +162,9 @@
 <div class="container">
     <div class="header-meta">
         <div id="statusLoja">Carregando...</div>
+        <div id="msgAgendamento" class="aviso-agendamento">
+            <i class="fas fa-calendar-alt"></i> No momento estamos fechados, mas você pode deixar seu pedido agendado!
+        </div>
         <div style="font-size: 14px; color: var(--text-dim)">
             <i class="far fa-clock"></i> <span id="relogio">00:00:00</span> | 
             <i class="far fa-calendar-alt"></i> <span id="data">--/--/--</span>
@@ -143,9 +175,9 @@
         <i class="fas fa-pizza-slice"></i> &nbsp;Cardápio 
         <span class="aviso-obrigatorio">(Mínimo de 2 sabores/itens)</span>
     </h2>
-    <div id="produtos">Carregando...</div>
+    <div id="produtos">Carregando cardápio...</div>
 
-    <div id="finalizacao" style="margin-top: 40px; background: #1e1e1e; padding: 25px; border-radius: 20px;">
+    <div id="finalizacao" style="margin-top: 40px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
         <h3><i class="fas fa-truck"></i> Finalizar Pedido</h3>
         <input id="nome" placeholder="Seu Nome">
         <input id="endereco" placeholder="Endereço Completo (Rua, Número, Apto)">
@@ -174,11 +206,11 @@
             <option value="Pix">Pix</option>
             <option value="Cartão">Cartão</option>
         </select>
-        <textarea id="obs" placeholder="Observações..."></textarea>
+        <textarea id="obs" placeholder="Observações (Caso seja agendamento, informe o horário aqui)..."></textarea>
         
-        <div id="pixArea" style="display:none; background: #000; padding: 15px; border-radius: 10px; text-align: center; border: 1px dashed var(--primary); margin-bottom: 15px;">
-            <p>Pix: <b>rcsv74@gmail.com</b></p>
-            <button class="btn" style="background: var(--primary); width: auto; padding: 5px 15px;" onclick="window.copiarPix()">Copiar Pix</button>
+        <div id="pixArea" style="display:none; background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border: 1px dashed var(--primary); margin-bottom: 15px;">
+            <p style="margin:0 0 10px 0">Chave Pix: <b>rcsv74@gmail.com</b></p>
+            <button class="btn" style="background: var(--primary); width: auto; padding: 5px 15px; font-size: 13px;" onclick="window.copiarPix()">Copiar Chave</button>
         </div>
 
         <button id="btnFinalizar" class="btn btn-add" style="padding: 18px; font-size: 18px;" onclick="window.finalizar()">
@@ -193,7 +225,7 @@
             <button class="btn btn-add" style="width: auto; padding: 10px 20px;" onclick="acessarGestao()">Entrar</button>
         </div>
         <div id="gestaoConteudo" style="display:none;">
-            <h4>📋 Pedidos em Tempo Real</h4>
+            <h4>📋 Pedidos Recentes</h4>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
@@ -202,7 +234,7 @@
                     <tbody id="corpoTabelaPedidos"></tbody>
                 </table>
             </div>
-            <button onclick="location.reload()" style="background:none; border:none; color:#555; cursor:pointer; margin-top:20px;">Sair do Painel</button>
+            <button onclick="location.reload()" style="background:none; border:none; color:#999; cursor:pointer; margin-top:20px;">Sair do Painel</button>
         </div>
     </div>
 </div>
@@ -213,7 +245,7 @@
     <div id="carrinhoItens"></div>
     <div id="taxaNoCarrinho"></div>
     
-    <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 20px;">
+    <div style="margin-top: 20px; border-top: 1px solid #444; padding-top: 20px;">
         <div style="display:flex; justify-content:space-between; font-size: 20px; font-weight: bold;">
             <span>Total:</span>
             <span style="color: var(--primary)">R$ <span id="total">0.00</span></span>
@@ -261,12 +293,13 @@ function feedback(el) {
 }
 
 window.toggleCart = () => document.getElementById('cartSidebar').classList.toggle('active');
-window.copiarPix = () => { navigator.clipboard.writeText("rcsv74@gmail.com"); alert("Pix copiado!"); };
+window.copiarPix = () => { navigator.clipboard.writeText("rcsv74@gmail.com"); alert("Chave Pix copiada!"); };
 
 function atualizarTempo() {
     const agora = new Date();
     document.getElementById('relogio').textContent = agora.toLocaleTimeString('pt-BR');
     document.getElementById('data').textContent = agora.toLocaleDateString('pt-BR');
+    verificarHorario();
 }
 setInterval(atualizarTempo, 1000);
 
@@ -275,7 +308,7 @@ window.acessarGestao = function() {
         document.getElementById("gestaoLogin").style.display = "none";
         document.getElementById("gestaoConteudo").style.display = "block";
         ouvirPedidos();
-    } else { alert("Chave incorreta!"); }
+    } else { alert("Senha incorreta!"); }
 }
 
 function ouvirPedidos() {
@@ -301,7 +334,7 @@ function ouvirPedidos() {
     });
 }
 
-window.apagarPedido = async (id) => { if(confirm("Apagar pedido?")) await deleteDoc(doc(db, "pedidos", id)); };
+window.apagarPedido = async (id) => { if(confirm("Deseja apagar esse registro?")) await deleteDoc(doc(db, "pedidos", id)); };
 
 async function carregarProdutos(){
     const {data:produtos} = await _supabase.from('produtos').select('*');
@@ -313,7 +346,7 @@ async function carregarProdutos(){
             <div class="produto-card">
                 <img src="${p.url_imagem||'https://via.placeholder.com/300x200'}" class="prod-img">
                 <div class="prod-info">
-                    <div style="font-weight:600">${p.nome}</div>
+                    <div style="font-weight:600; min-height: 40px;">${p.nome}</div>
                     <div class="prod-price">R$ ${parseFloat(p.preco).toFixed(2)}</div>
                     <button class="btn btn-add" id="btn-add-${index}" style="margin-top:10px" onclick="window.add(${index})">Adicionar</button>
                 </div>
@@ -343,9 +376,9 @@ window.renderCarrinho = function(){
     carrinho.forEach((p,i)=>{ 
         subtotal += parseFloat(p.preco);
         area.innerHTML += `
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px; background:#2a2a2a; padding:10px; border-radius:10px; border-left: 4px solid var(--primary);">
-            <span>${p.nome}</span>
-            <button class="btn-acao btn-del" onclick="window.remover(${i})"><i class="fas fa-trash"></i></button>
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px; background:#333; padding:10px; border-radius:10px; border-left: 4px solid var(--primary);">
+            <span style="font-size:14px">${p.nome}</span>
+            <button class="btn-acao btn-del" style="background:transparent" onclick="window.remover(${i})"><i class="fas fa-times"></i></button>
         </div>`;
     });
 
@@ -356,10 +389,10 @@ window.renderCarrinho = function(){
     if (bairroNome !== "") {
         areaTaxa.innerHTML = `
         <div class="cart-tax-row">
-            <span><i class="fas fa-motorcycle"></i> Entrega: ${bairroNome}</span>
+            <span style="font-size:13px"><i class="fas fa-motorcycle"></i> ${bairroNome}</span>
             <div style="display:flex; align-items:center; gap:10px;">
                 <span style="font-weight:bold">${taxaValor === 0 ? 'Grátis' : 'R$ '+taxaValor.toFixed(2)}</span>
-                <button class="btn-acao btn-del" onclick="window.removerTaxa()"><i class="fas fa-times"></i></button>
+                <button class="btn-acao btn-del" style="background:transparent" onclick="window.removerTaxa()"><i class="fas fa-times"></i></button>
             </div>
         </div>`;
     } else {
@@ -381,30 +414,52 @@ window.finalizar = async function(){
     let b = document.getElementById("bairro").value;
     let c = document.getElementById("contato").value;
     let p = document.getElementById("pagamento").value;
+    let o = document.getElementById("obs").value;
     let t = document.getElementById("total").innerText;
     
-    if(!n || !e || !b || !c) return alert("Preencha todos os campos!");
-    if(carrinho.length < 2) return alert("Obrigatório escolher pelo menos 2 sabores/itens!");
+    if(!n || !e || !b || !c) return alert("Por favor, preencha seus dados de entrega!");
+    if(carrinho.length < 2) return alert("Obrigatório escolher pelo menos 2 itens!");
 
     let listaProd = ""; 
     carrinho.forEach(item => { listaProd += `• ${item.nome}\n`; });
     
+    let textoWhatsApp = `*NOVO PEDIDO ROBS*\n\n${listaProd}\n📍 *Bairro:* ${b}\n🏠 *Endereço:* ${e}\n💰 *Total:* R$ ${t}\n👤 *Cliente:* ${n}\n💳 *Pagamento:* ${p}`;
+    if(o) textoWhatsApp += `\n📝 *Obs:* ${o}`;
+
     try {
         await addDoc(collection(db, "pedidos"), { 
             cliente: n, endereco: e, telefone: c, pagamento: p,
             produtos: listaProd, total: t, status: 'Pendente', data: serverTimestamp() 
         });
-        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent('*NOVO PEDIDO ROBS*\n\n'+listaProd+'\n📍 Bairro: '+b+'\n💰 Total: R$ '+t+'\n👤 Cliente: '+n)}`);
+        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(textoWhatsApp)}`);
         location.reload();
-    } catch(err) { alert("Erro ao enviar pedido!"); }
+    } catch(err) { alert("Erro ao processar pedido. Tente novamente."); }
 }
 
 function verificarHorario(){
-    let agora=new Date(); let dia=agora.getDay(); let hora=agora.getHours();
-    let aberto = ((dia>=3 && dia<=6) || dia==0) && (hora>=18 && hora<23);
-    let status=document.getElementById("statusLoja");
-    status.innerHTML = aberto ? "🟢 LOJA ABERTA" : "🔴 FECHADO";
-    status.className = aberto ? "aberto" : "fechado";
+    let agora = new Date(); 
+    let dia = agora.getDay(); 
+    let hora = agora.getHours();
+    let min = agora.getMinutes();
+    let tempoAtual = hora + (min/60);
+
+    // Horário: Quarta a Domingo, das 18:00 às 23:00
+    let diaUtil = (dia >= 3 && dia <= 6) || dia == 0;
+    let horaUtil = (tempoAtual >= 18 && tempoAtual < 23);
+    
+    let aberto = diaUtil && horaUtil;
+    let status = document.getElementById("statusLoja");
+    let msgAgendamento = document.getElementById("msgAgendamento");
+
+    if(aberto) {
+        status.innerHTML = "🟢 LOJA ABERTA";
+        status.className = "aberto";
+        msgAgendamento.style.display = "none";
+    } else {
+        status.innerHTML = "🔴 FECHADO";
+        status.className = "fechado";
+        msgAgendamento.style.display = "block";
+    }
 }
 
 verificarHorario();
