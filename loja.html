@@ -161,11 +161,14 @@
 
         .painel-gestao { margin-top: 50px; padding: 25px; background: white; border: 2px dashed var(--primary); border-radius: 20px; }
         
-        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 20px; color: #333; }
-        th { text-align: left; padding: 12px; border-bottom: 2px solid #eee; color: var(--primary); }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 20px; color: #333; }
+        th { text-align: left; padding: 12px; border-bottom: 2px solid #eee; color: var(--primary); background: #f8f9fa; }
+        td { padding: 15px; border-bottom: 1px solid #eee; vertical-align: top; line-height: 1.6; }
 
-        .btn-acao { padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer; margin-right: 5px; color: white; }
+        .info-bloco { margin-bottom: 8px; border-bottom: 1px dotted #ccc; padding-bottom: 4px; }
+        .info-label { font-weight: bold; color: #555; text-transform: uppercase; font-size: 11px; display: block; }
+
+        .btn-acao { padding: 8px 12px; border-radius: 6px; border: none; cursor: pointer; margin-right: 5px; color: white; }
         .btn-entregar { background: #25d366; } .btn-del { background: #ff4444; }
 
         .float-btns { position: fixed; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 99; }
@@ -183,6 +186,7 @@
             .cart-sidebar { width: 100%; } 
             .combo-grid { grid-template-columns: 1fr; }
             .campanha-sorteio { flex-direction: column; text-align: center; }
+            th:nth-child(3), td:nth-child(3) { display: none; } /* Esconde total em telas muito pequenas para focar nos dados */
         }
     </style>
 </head>
@@ -290,6 +294,7 @@
             <option value="19:00 - 20:00">19:00 às 20:00</option>
             <option value="20:00 - 21:00">20:00 às 21:00</option>
         </select>
+
         <textarea id="obs" placeholder="Observações adicionais..."></textarea>
         
         <div id="pixArea" style="display:none; background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border: 1px dashed var(--primary); margin-bottom: 15px;">
@@ -309,11 +314,11 @@
             <button class="btn btn-add" style="width: auto; padding: 10px 20px;" onclick="acessarGestao()">Entrar</button>
         </div>
         <div id="gestaoConteudo" style="display:none;">
-            <h4>📋 Pedidos Recentes</h4>
+            <h4>📋 Detalhes dos Pedidos</h4>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
-                        <tr><th>ID</th><th>Cliente</th><th>Produtos</th><th>Total</th><th>Ações</th></tr>
+                        <tr><th>ID</th><th>Dados do Pedido (Completo)</th><th>Total</th><th>Ações</th></tr>
                     </thead>
                     <tbody id="corpoTabelaPedidos"></tbody>
                 </table>
@@ -403,15 +408,25 @@ function ouvirPedidos() {
         snapshot.forEach((docSnap) => {
             const p = docSnap.data();
             const id = docSnap.id.substring(0, 5).toUpperCase();
+            
+            // Formatando os dados linha por linha como solicitado
             tabela.innerHTML += `
                 <tr>
                     <td><b>#${id}</b></td>
-                    <td>${p.cliente}</td>
-                    <td>${p.produtos}</td>
-                    <td>R$ ${p.total}</td>
                     <td>
-                        <button class="btn-acao btn-entregar" onclick="window.open('https://wa.me/55${p.telefone}')"><i class="fas fa-motorcycle"></i></button>
-                        <button class="btn-acao btn-del" onclick="window.apagarPedido('${docSnap.id}')"><i class="fas fa-trash"></i></button>
+                        <div class="info-bloco"><span class="info-label">👤 Cliente:</span> ${p.cliente}</div>
+                        <div class="info-bloco"><span class="info-label">📞 Contato:</span> ${p.telefone}</div>
+                        <div class="info-bloco"><span class="info-label">📍 Endereço:</span> ${p.endereco}</div>
+                        <div class="info-bloco"><span class="info-label">🏘️ Bairro:</span> ${p.bairro || 'Não informado'}</div>
+                        <div class="info-bloco"><span class="info-label">🍕 Itens:</span> ${p.produtos.replace(/\n/g, '<br>')}</div>
+                        <div class="info-bloco"><span class="info-label">💳 Pagamento:</span> ${p.pagamento}</div>
+                        <div class="info-bloco"><span class="info-label">📅 Agendamento/Tipo:</span> ${p.agendamento} | ${p.tipo}</div>
+                        ${p.obs ? `<div class="info-bloco"><span class="info-label">📝 Observação:</span> ${p.obs}</div>` : ''}
+                    </td>
+                    <td><b>R$ ${p.total}</b></td>
+                    <td>
+                        <button class="btn-acao btn-entregar" onclick="window.open('https://wa.me/55${p.telefone}')" title="Chamar WhatsApp"><i class="fab fa-whatsapp"></i></button>
+                        <button class="btn-acao btn-del" onclick="window.apagarPedido('${docSnap.id}')" title="Excluir"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
         });
@@ -453,14 +468,8 @@ async function carregarProdutos(){
 window.addComboPascoa = () => {
     const sab1 = document.getElementById("comboSabor1").value;
     const sab2 = document.getElementById("comboSabor2").value;
-
     if(!sab1 || !sab2) return alert("Escolha os dois sabores para sua pizza meio a meio!");
-
-    const itemCombo = {
-        nome: `🎁 PIZZA PÁSCOA (30cm): ½ ${sab1} / ½ ${sab2}`,
-        preco: 29.90
-    };
-
+    const itemCombo = { nome: `🎁 PIZZA PÁSCOA (30cm): ½ ${sab1} / ½ ${sab2}`, preco: 29.90 };
     feedback(document.getElementById("btnCombo"));
     carrinho.push(itemCombo);
     window.renderCarrinho();
@@ -507,9 +516,7 @@ window.renderCarrinho = function(){
                 <button class="btn-acao btn-del" style="background:transparent" onclick="window.removerTaxa()"><i class="fas fa-times"></i></button>
             </div>
         </div>`;
-    } else {
-        areaTaxa.innerHTML = "";
-    }
+    } else { areaTaxa.innerHTML = ""; }
 
     let totalGeral = subtotal + taxaValor;
     document.getElementById("total").innerText = totalGeral.toFixed(2);
@@ -532,7 +539,7 @@ window.finalizar = async function(){
     let o = document.getElementById("obs").value;
     let t = document.getElementById("total").innerText;
     
-    if(!n || !e || !b || !c || !dAgend) return alert("Por favor, preencha todos os dados de entrega e a data!");
+    if(!n || !e || !b || !c || !dAgend) return alert("Por favor, preencha todos os dados!");
     if(carrinho.length === 0) return alert("Seu carrinho está vazio!");
 
     let listaProd = ""; 
@@ -543,13 +550,13 @@ window.finalizar = async function(){
 
     try {
         await addDoc(collection(db, "pedidos"), { 
-            cliente: n, endereco: e, telefone: c, pagamento: p,
+            cliente: n, endereco: e, bairro: b, telefone: c, pagamento: p,
             produtos: listaProd, total: t, status: 'Pendente', data: serverTimestamp(),
-            agendamento: `${dAgend} ${hAgend}`, tipo: tPedido
+            agendamento: `${dAgend.split('-').reverse().join('/')} às ${hAgend}`, tipo: tPedido, obs: o
         });
         window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(textoWhatsApp)}`);
         location.reload();
-    } catch(err) { alert("Erro ao processar pedido. Tente novamente."); }
+    } catch(err) { alert("Erro ao processar pedido."); }
 }
 
 function verificarHorario(){
@@ -558,10 +565,8 @@ function verificarHorario(){
     let hora = agora.getHours();
     let min = agora.getMinutes();
     let tempoAtual = hora + (min/60);
-
     let diaUtil = (dia >= 3 && dia <= 6) || dia == 0;
     let horaUtil = (tempoAtual >= 18 && tempoAtual < 23);
-    
     let aberto = diaUtil && horaUtil;
     let status = document.getElementById("statusLoja");
     let msgAgendamento = document.getElementById("msgAgendamento");
@@ -577,7 +582,6 @@ function verificarHorario(){
     }
 }
 
-// Bloquear datas passadas no calendário
 const hoje = new Date().toISOString().split('T')[0];
 document.getElementById('dataAgendamento').setAttribute('min', hoje);
 
