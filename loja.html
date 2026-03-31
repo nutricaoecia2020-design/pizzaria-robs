@@ -23,6 +23,7 @@
             --success: #28a745;
             --pascoa: #6c5ce7;
             --accent: #ff79c6;
+            --warning-yellow: #fff200;
         }
 
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
@@ -94,6 +95,21 @@
             color: white; padding: 25px; border-radius: 20px; margin-bottom: 20px;
             text-align: center; border: 3px solid #fff; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
             position: relative; overflow: hidden;
+        }
+
+        /* NOVO ESTILO: AVISO PISCANDO */
+        .aviso-limitado {
+            display: block;
+            font-size: 12px;
+            color: var(--warning-yellow);
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-top: 5px;
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
         }
 
         .animacao-agendar {
@@ -186,7 +202,7 @@
             .cart-sidebar { width: 100%; } 
             .combo-grid { grid-template-columns: 1fr; }
             .campanha-sorteio { flex-direction: column; text-align: center; }
-            th:nth-child(3), td:nth-child(3) { display: none; } /* Esconde total em telas muito pequenas para focar nos dados */
+            th:nth-child(3), td:nth-child(3) { display: none; }
         }
     </style>
 </head>
@@ -218,7 +234,12 @@
 
     <section class="banner-pascoa">
         <div class="animacao-agendar"><i class="fas fa-clock"></i> AGENDE AGORA!</div>
-        <h2>🐰 PIZZA DE PÁSCOA (30cm): 2 SABORES 🐰</h2>
+        
+        <h2>
+            🐰 PIZZA DE PÁSCOA (30cm): 2 SABORES 🐰
+            <span class="aviso-limitado">⚠️ Quantidades Limitadas ⚠️<br><small>Devido a muitos agendamentos</small></span>
+        </h2>
+
         <p>Escolha dois sabores (meio a meio) por apenas <b>R$ 29,90</b></p>
         <div class="combo-grid">
             <select id="comboSabor1"><option value="">Carregando sabores...</option></select>
@@ -408,8 +429,6 @@ function ouvirPedidos() {
         snapshot.forEach((docSnap) => {
             const p = docSnap.data();
             const id = docSnap.id.substring(0, 5).toUpperCase();
-            
-            // Formatando os dados linha por linha como solicitado
             tabela.innerHTML += `
                 <tr>
                     <td><b>#${id}</b></td>
