@@ -616,3 +616,79 @@
 
 </body>
 </html>
+// LOGICA DO PAINEL DO LOJISTA
+window.acessarPainel = function() {
+    const senha = document.getElementById("senhaAcesso").value;
+    if(senha === "253641") {
+        document.getElementById("loginPainel").style.display = "none";
+        document.getElementById("conteudoPainel").style.display = "block";
+        window.carregarPedidosPainel();
+    } else {
+        alert("Senha incorreta!");
+    }
+}
+
+window.carregarPedidosPainel = async function() {
+    const area = document.getElementById("listaPedidosRecentes");
+    area.innerHTML = "Carregando...";
+    
+    try {
+        const q = query(collection(db, "pedidos"), orderBy("data", "desc"), limit(20));
+        const querySnapshot = await getDocs(q);
+        area.innerHTML = "";
+        
+        if (querySnapshot.empty) {
+            area.innerHTML = "<p>Nenhum pedido encontrado.</p>";
+            return;
+        }
+
+        querySnapshot.forEach((doc) => {
+            const ped = doc.data();
+            area.innerHTML += `
+                <div class="card-pedido">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <strong>${ped.cliente}</strong> <span class="badge-pedido">${ped.tipo}</span><br>
+                            <small>${ped.bairro} - ${ped.endereco}</small>
+                        </div>
+                        <div style="text-align:right">
+                            <span style="color:var(--primary); font-weight:bold;">R$ ${ped.total}</span><br>
+                            <small>${ped.pagamento}</small>
+                        </div>
+                    </div>
+                    <div style="background:#f1f1f1; padding:10px; border-radius:8px; margin-top:10px; font-size:13px; white-space:pre-line;">
+                        ${ped.produtos}
+                    </div>
+                    <div style="margin-top:10px; font-size:12px;">
+                        <i class="fas fa-calendar"></i> Agendado: <strong>${ped.agendamento}</strong><br>
+                        ${ped.obs ? `<i class="fas fa-comment"></i> Obs: ${ped.obs}` : ''}
+                    </div>
+                </div>
+            `;
+        });
+    } catch (err) {
+        area.innerHTML = "Erro ao carregar dados do Firebase.";
+        console.error(err);
+    }
+}
+
+const inputData = document.getElementById('dataAgendamento');
+if(inputData) {
+    const hoje = new Date().toISOString().split('T')[0];
+    inputData.setAttribute('min', hoje);
+}
+
+verificarHorario();
+carregarProdutos();
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
