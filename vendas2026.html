@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Caderno de Notas - Pedidos</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #075E54; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .form-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        input, select { padding: 10px; margin: 5px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 20px; background: #25D366; color: white; border: none; cursor: pointer; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="form-box">
+        <h2>📝 Registrar Novo Pedido</h2>
+        <input type="text" id="loja" placeholder="Nome da Loja">
+        <input type="text" id="cliente" placeholder="Nome do Cliente">
+        <input type="text" id="produto" placeholder="Produto">
+        <input type="text" id="valor" placeholder="Valor (R$)">
+        <input type="text" id="pagamento" placeholder="Forma de Pagamento">
+        <input type="text" id="contato" placeholder="WhatsApp Cliente">
+        <input type="text" id="endereco" placeholder="Endereço">
+        <button onclick="adicionarPedido()">Salvar no Caderno</button>
+    </div>
+
+    <table id="tabelaPedidos">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Loja</th>
+                <th>Cliente</th>
+                <th>Produto</th>
+                <th>Valor</th>
+                <th>Pagamento</th>
+                <th>Contato</th>
+                <th>Endereço</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+
+    <script>
+        function adicionarPedido() {
+            const data = new Date().toLocaleString('pt-BR');
+            const loja = document.getElementById('loja').value;
+            const cliente = document.getElementById('cliente').value;
+            const produto = document.getElementById('produto').value;
+            const valor = document.getElementById('valor').value;
+            const pagamento = document.getElementById('pagamento').value;
+            const contato = document.getElementById('contato').value;
+            const endereco = document.getElementById('endereco').value;
+
+            if(!cliente || !loja) { alert("Preencha ao menos a Loja e o Cliente!"); return; }
+
+            const tabela = document.getElementById('tabelaPedidos').getElementsByTagName('tbody')[0];
+            const novaLinha = tabela.insertRow(0);
+
+            novaLinha.innerHTML = `
+                <td>${data}</td>
+                <td><b>${loja}</b></td>
+                <td>${cliente}</td>
+                <td>${produto}</td>
+                <td>R$ ${valor}</td>
+                <td>${pagamento}</td>
+                <td>${contato}</td>
+                <td>${endereco}</td>
+            `;
+
+            // Limpar campos após salvar
+            document.querySelectorAll('input').forEach(input => input.value = '');
+        }
+    </script>
+</body>
+</html>
