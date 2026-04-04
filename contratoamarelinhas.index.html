@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro e Contrato - Amarelinhas Delivery</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --amarelo-claro: #fff9c4;
+            --amarelo-destaque: #fdd835;
+            --texto: #444;
+            --borda: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fefefe;
+            color: var(--texto);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: var(--amarelo-claro);
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid var(--amarelo-destaque);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: #fbc02d;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        header p { margin: 5px 0; font-weight: bold; }
+
+        fieldset {
+            border: 1px solid var(--amarelo-destaque);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+        }
+
+        legend {
+            font-weight: bold;
+            padding: 0 10px;
+            color: #f9a825;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .full-width { grid-column: span 2; }
+
+        label { display: block; margin-bottom: 5px; font-size: 14px; }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--borda);
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .termos {
+            font-size: 12px;
+            height: 150px;
+            overflow-y: scroll;
+            background: #fff;
+            padding: 10px;
+            border: 1px inset #eee;
+            margin-top: 10px;
+        }
+
+        button {
+            background-color: var(--amarelo-destaque);
+            color: #333;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #fbc02d;
+        }
+
+        .contato-zap {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            .grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Amarelinhas Delivery</h1>
+        <p>Bairro Luzia - Aracaju/SE</p>
+    </header>
+
+    <form id="contratoForm">
+        <fieldset>
+            <legend>Dados do Contratante</legend>
+            <div class="grid">
+                <div class="full-width">
+                    <label>Nome Completo / Razão Social</label>
+                    <input type="text" id="nome" required>
+                </div>
+                <div>
+                    <label>CPF/CNPJ</label>
+                    <input type="text" id="documento" required>
+                </div>
+                <div>
+                    <label>Contato (WhatsApp)</label>
+                    <input type="tel" id="tel" placeholder="(79) 00000-0000" required>
+                </div>
+                <div class="full-width">
+                    <label>Endereço Completo</label>
+                    <input type="text" id="endereco" required>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Plano e Pagamento</legend>
+            <div class="grid">
+                <div>
+                    <label>Valor Mensal</label>
+                    <input type="text" value="R$ 29,90" readonly>
+                </div>
+                <div>
+                    <label>Período</label>
+                    <input type="text" value="06 Meses (Renovável)" readonly>
+                </div>
+                <div>
+                    <label>Forma de Pagamento</label>
+                    <select id="pagamento">
+                        <option value="Pix">Pix</option>
+                        <option value="Cartão de Crédito">Cartão de Crédito</option>
+                        <option value="Boleto">Boleto</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Data de Vencimento (Dia)</label>
+                    <input type="number" id="vencimento" min="1" max="31" placeholder="Ex: 10" required>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Cláusulas Principais</legend>
+            <div class="termos">
+                <p><strong>1. OBJETO:</strong> O site Amarelinhas Delivery tem como finalidade aumentar as vendas do estabelecimento através de sistema de delivery.</p>
+                <p><strong>2. LOGÍSTICA:</strong> A entrega dos produtos vendidos pelo site é de inteira responsabilidade do <strong>PRESTADOR DE SERVIÇO</strong>.</p>
+                <p><strong>3. MULTA:</strong> Em caso de quebra de contrato antes do período de 6 meses, será aplicada multa no valor de <strong>2x o valor da prestação mensal</strong>.</p>
+                <p><strong>4. MODIFICAÇÕES:</strong> Toda e qualquer alteração ou inclusão deve ser feita via WhatsApp: <strong>(79) 99997-69581</strong>.</p>
+            </div>
+        </fieldset>
+
+        <button type="button" onclick="gerarPDF()">ASSINAR E GERAR PDF</button>
+    </form>
+
+    <div class="contato-zap">
+        Dúvidas? Entre em contato: <strong>79 99997-69581</strong>
+    </div>
+</div>
+
+<script>
+    async function gerarPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Coleta de dados
+        const nome = document.getElementById('nome').value;
+        const docId = document.getElementById('documento').value;
+        const endereco = document.getElementById('endereco').value;
+        const tel = document.getElementById('tel').value;
+        const pgto = document.getElementById('pagamento').value;
+        const venc = document.getElementById('vencimento').value;
+
+        if(!nome || !docId) {
+            alert("Por favor, preencha os dados básicos.");
+            return;
+        }
+
+        // Configuração de Marca D'água
+        doc.setTextColor(240, 240, 240);
+        doc.setFontSize(40);
+        doc.text("AMARELINHAS DELIVERY", 35, 150, { angle: 45 });
+
+        // Título
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(18);
+        doc.text("CONTRATO DE PRESTAÇÃO DE SERVIÇO", 105, 20, { align: "center" });
+        doc.setFontSize(12);
+        doc.text("Amarelinhas Delivery - Bairro Luzia", 105, 28, { align: "center" });
+
+        // Conteúdo
+        doc.setFontSize(10);
+        let y = 45;
+        doc.text(`CONTRATANTE: ${nome.toUpperCase()}`, 20, y);
+        doc.text(`CPF/CNPJ: ${docId}`, 20, y+7);
+        doc.text(`ENDEREÇO: ${endereco}`, 20, y+14);
+        doc.text(`CONTATO: ${tel}`, 20, y+21);
+
+        y = 80;
+        doc.setFont(undefined, 'bold');
+        doc.text("DO VALOR E PRAZO:", 20, y);
+        doc.setFont(undefined, 'normal');
+        doc.text(`O valor da prestação é de R$ 29,90 mensais, com fidelidade de 06 meses.`, 20, y+7);
+        doc.text(`Forma de Pagamento: ${pgto} | Vencimento: Dia ${venc}`, 20, y+14);
+
+        y = 105;
+        doc.setFont(undefined, 'bold');
+        doc.text("CLÁUSULAS ESPECÍFICAS:", 20, y);
+        doc.setFont(undefined, 'normal');
+        doc.text("1. O site visa aumentar as vendas através de delivery.", 20, y+7);
+        doc.text("2. As entregas são de responsabilidade do PRESTADOR DE SERVIÇO.", 20, y+14);
+        doc.text("3. MULTA DE RESCISÃO: O descumprimento gera multa de 2x o valor da prestação.", 20, y+21);
+        doc.text("4. SUPORTE: Toda alteração via WhatsApp (79) 99997-69581.", 20, y+28);
+
+        y = 150;
+        doc.text("__________________________________________", 105, y, { align: "center" });
+        doc.text("Assinatura do Contratante", 105, y+7, { align: "center" });
+        
+        doc.text(`Data de Emissão: ${new Date().toLocaleDateString('pt-BR')}`, 20, 280);
+
+        // Salvar e aviso
+        doc.save(`Contrato_Amarelinhas_${nome}.pdf`);
+        alert("Contrato gerado com sucesso! Verifique sua pasta de downloads.");
+    }
+</script>
+
+</body>
+</html>
