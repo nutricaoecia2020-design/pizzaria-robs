@@ -74,7 +74,9 @@
     <main class="max-w-4xl mx-auto p-4 -mt-12 min-h-[500px]">
         <div id="viewMarket">
             <h2 id="tituloLista" class="font-black italic text-2xl mb-8 px-4 uppercase text-emerald-800">Lojas em Aracaju</h2>
-            <div id="listaLojas" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+            <div id="listaLojas" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <p class="col-span-full text-center py-10 font-bold text-emerald-800">Carregando lojas parceiras...</p>
+            </div>
         </div>
 
         <div id="viewProdutos" class="hidden">
@@ -138,13 +140,35 @@
     </div>
 
     <script>
-        let dbLojas = JSON.parse(localStorage.getItem('amarelinhas_db')) || [];
+        // CONFIGURAÇÃO FIREBASE
+        const FIREBASE_URL = "https://amarelinhas-d6986-default-rtdb.firebaseio.com/.json";
+
+        let dbLojas = [];
         let cart = [];
         let currentLoja = null;
 
+        // FUNÇÃO PARA CARREGAR DO FIREBASE
+        async function loadLojasFromFirebase() {
+            try {
+                const response = await fetch(FIREBASE_URL);
+                const data = await response.json();
+                
+                if (data) {
+                    // Trata o formato do Firebase (converte objeto ou array)
+                    dbLojas = Array.isArray(data) ? data : Object.values(data);
+                    // Remove possíveis itens nulos caso existam
+                    dbLojas = dbLojas.filter(item => item !== null);
+                }
+                renderLojas(dbLojas);
+            } catch (error) {
+                console.error("Erro ao carregar lojas:", error);
+                document.getElementById('listaLojas').innerHTML = `<p class="col-span-full text-center py-10 font-bold text-red-500">Erro ao carregar dados. Verifique a conexão.</p>`;
+            }
+        }
+
         function renderLojas(filtro = dbLojas) {
             const container = document.getElementById('listaLojas');
-            if(filtro.length === 0) {
+            if(!filtro || filtro.length === 0) {
                 container.innerHTML = `<p class="col-span-full text-center py-10 font-bold text-emerald-800">Nenhuma loja encontrada.</p>`;
                 return;
             }
@@ -171,15 +195,18 @@
                 const targetBtn = document.getElementById(btnId) || document.getElementById('cat-' + cat);
                 if(targetBtn) targetBtn.classList.add('active');
                 document.getElementById('tituloLista').innerText = `Lojas: ${cat}`;
+                
                 const normalize = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-                const filtradas = dbLojas.filter(l => normalize(l.categoria) === normalize(cat));
+                const filtradas = dbLojas.filter(l => l.categoria && normalize(l.categoria) === normalize(cat));
                 renderLojas(filtradas);
             }
             document.getElementById('searchInput').value = '';
         }
 
         function showLoja(id) {
-            currentLoja = dbLojas.find(l => l.id === id);
+            currentLoja = dbLojas.find(l => l.id == id);
+            if(!currentLoja) return;
+
             document.getElementById('viewMarket').classList.add('hidden');
             document.getElementById('viewProdutos').classList.remove('hidden');
             document.getElementById('infoLojaHeader').innerHTML = `
@@ -187,6 +214,7 @@
                 <h2 class="text-3xl font-black italic uppercase">${currentLoja.nome}</h2>
             `;
             renderProdutos();
+            window.scrollTo(0,0);
         }
 
         function renderProdutos() {
@@ -262,7 +290,6 @@
             document.getElementById('cat-all').classList.add('active');
         }
 
-        // --- FUNÇÃO ALTERADA COM O RASTREIO DE PEDIDOS ---
         function sendWhatsApp() {
             const nome = document.getElementById('clienteNome').value;
             const end = document.getElementById('clienteEnd').value;
@@ -272,25 +299,6 @@
 
             if(!nome || !end || !tel) return alert("Preencha Nome, Endereço e Telefone!");
 
-            // Captura dados para o caderno
-            const listaProd = cart.map(i => `${i.qtd}x ${i.nome}`).join(', ');
-            const registro = {
-                data: new Date().toLocaleString('pt-BR'),
-                loja: currentLoja.nome,
-                cliente: nome,
-                produtos: listaProd,
-                total: totalStr,
-                pagamento: pag,
-                contato: tel,
-                endereco: end
-            };
-
-            // Salva na memória do navegador (compartilhada com o caderno)
-            let logs = JSON.parse(localStorage.getItem('amarelinhas_pedidos') || "[]");
-            logs.push(registro);
-            localStorage.setItem('amarelinhas_pedidos', JSON.stringify(logs));
-
-            // Gera mensagem do WhatsApp
             let msg = `*PEDIDO: ${currentLoja.nome.toUpperCase()}*\n\n`;
             msg += `*Cliente:* ${nome}\n*Telefone:* ${tel}\n*Endereço:* ${end}\n*Pagamento:* ${pag}\n`;
             msg += `----------------------------\n`;
@@ -304,10 +312,12 @@
         function goBack() {
             document.getElementById('viewMarket').classList.remove('hidden');
             document.getElementById('viewProdutos').classList.add('hidden');
-            cart = []; updateUI();
+            cart = []; 
+            updateUI();
         }
 
-        renderLojas();
+        // INICIALIZAÇÃO
+        loadLojasFromFirebase();
     </script>
 </body>
 </html>
