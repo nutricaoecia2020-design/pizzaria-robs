@@ -3,126 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amarelinhas | Marketplace Premium</title>
+    <title>Amarelinhas | Delivery Claro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
             --amarelo: #FFD700; 
-            --verde-forte: #065f46; 
-            --verde-claro: #10b981; 
-            --branco: #ffffff;
+            --verde-claro: #22c55e; 
+            --verde-fundo: #f0fdf4;
+            --texto-escuro: #064e3b;
         }
-        body { font-family: 'Inter', sans-serif; background-color: #f0fdf4; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--verde-fundo); color: var(--texto-escuro); }
         .font-black-italic { font-family: 'Archivo Black', sans-serif; text-transform: uppercase; font-style: italic; letter-spacing: -0.05em; }
-        .hero-gradient { background: linear-gradient(180deg, var(--amarelo) 0%, #f0fdf4 100%); }
+        .hero-gradient { background: linear-gradient(180deg, var(--amarelo) 0%, var(--verde-fundo) 100%); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .btn-premium { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .btn-premium:hover { transform: translateY(-3px); box-shadow: 0 10px 15px rgba(6, 95, 70, 0.2); }
-        /* Ajuste da Tarja que estava escura */
-        .tarja-novidades { background-color: var(--verde-forte); border: 4px solid var(--branco); }
+        
+        /* Botão de Voltar Ultra Visível */
+        .btn-voltar { 
+            background-color: var(--verde-claro); 
+            color: white; 
+            padding: 12px 24px; 
+            border-radius: 20px; 
+            font-weight: 900; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        /* Botão de Finalizar Pedido */
+        .btn-finalizar {
+            background-color: var(--verde-claro);
+            color: white;
+            width: 100%;
+            padding: 20px;
+            border-radius: 30px;
+            font-family: 'Archivo Black', sans-serif;
+            font-style: italic;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+            border: 4px solid white;
+        }
+        
+        .card-branco { background: white; border-radius: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body class="pb-28">
 
-    <header class="hero-gradient pt-8 pb-12 px-6 rounded-b-[4rem] shadow-sm">
+    <header class="hero-gradient pt-8 pb-12 px-6 rounded-b-[4rem]">
         <div class="max-w-6xl mx-auto">
             <div class="flex justify-between items-center mb-8">
-                <h1 class="text-emerald-900 font-black-italic text-4xl italic tracking-tighter">AMARELINHAS</h1>
-                <div class="flex gap-2">
-                    <span class="bg-emerald-800 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase italic">Aracaju, SE</span>
-                </div>
+                <h1 class="text-emerald-900 font-black-italic text-4xl italic">AMARELINHAS</h1>
+                <span class="bg-white text-emerald-600 px-4 py-2 rounded-full text-[10px] font-black uppercase italic shadow-sm">Aracaju, SE</span>
             </div>
 
-            <div class="tarja-novidades text-white p-6 rounded-[2.5rem] mb-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+            <div class="bg-emerald-600 text-white p-6 rounded-[2.5rem] mb-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl border-4 border-white">
                 <div class="text-center md:text-left">
-                    <h2 class="text-2xl font-black italic text-amarelo leading-none mb-2 uppercase">VENDA MAIS COM O AMARELINHAS!</h2>
-                    <p class="text-emerald-100 text-xs font-bold uppercase tracking-widest">Cadastre sua loja em 2 minutos e comece a faturar hoje.</p>
+                    <h2 class="text-2xl font-black italic text-amarelo leading-none mb-1">CADASTRE SUA LOJA!</h2>
+                    <p class="text-emerald-50 text-xs font-bold uppercase">Aumente suas vendas hoje mesmo.</p>
                 </div>
-                <button onclick="window.open('https://wa.me/5579999999999?text=Quero+cadastrar+minha+loja')" class="bg-amarelo text-emerald-900 px-8 py-4 rounded-2xl font-black italic uppercase text-sm btn-premium shadow-lg">
-                    QUERO ME CADASTRAR!
+                <button onclick="window.open('https://wa.me/5579999999999')" class="bg-white text-emerald-600 px-8 py-4 rounded-2xl font-black italic uppercase text-sm shadow-lg hover:scale-105 transition">
+                    QUERO CADASTRAR
                 </button>
             </div>
             
             <div class="relative max-w-2xl mx-auto">
-                <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-emerald-600 text-lg"></i>
-                <input type="text" id="searchInput" onkeyup="searchGlobal()" placeholder="O que você procura hoje?" 
-                    class="w-full bg-white p-6 pl-16 rounded-[2.5rem] shadow-xl font-bold outline-none border-2 border-transparent focus:border-emerald-500 transition-all text-lg text-emerald-900">
+                <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-emerald-400 text-lg"></i>
+                <input type="text" id="searchInput" onkeyup="searchGlobal()" placeholder="O que você procura?" 
+                    class="w-full bg-white p-6 pl-16 rounded-[2.5rem] shadow-xl font-bold outline-none border-2 border-emerald-100 text-emerald-900">
             </div>
         </div>
     </header>
 
     <main class="max-w-6xl mx-auto p-4 -mt-6">
         
-        <section id="catSection" class="mb-12">
-            <div class="flex gap-4 overflow-x-auto no-scrollbar pb-4">
-                <button onclick="filterCat('ALIMENTAÇÃO')" class="flex-shrink-0 bg-white p-6 w-28 rounded-[2.5rem] shadow-sm hover:bg-emerald-50 border-2 border-transparent hover:border-amarelo transition group">
-                    <div class="text-3xl mb-2 group-hover:scale-110 transition">🍔</div>
-                    <span class="text-[10px] font-black uppercase italic block text-center text-emerald-900">Comida</span>
-                </button>
-                <button onclick="filterCat('ÁGUA MINERAL')" class="flex-shrink-0 bg-white p-6 w-28 rounded-[2.5rem] shadow-sm hover:bg-emerald-50 border-2 border-transparent hover:border-amarelo transition group">
-                    <div class="text-3xl mb-2 group-hover:scale-110 transition">💧</div>
-                    <span class="text-[10px] font-black uppercase italic block text-center text-emerald-900">Água</span>
-                </button>
-                <button onclick="filterCat('FARMÁCIA')" class="flex-shrink-0 bg-white p-6 w-28 rounded-[2.5rem] shadow-sm hover:bg-emerald-50 border-2 border-transparent hover:border-amarelo transition group">
-                    <div class="text-3xl mb-2 group-hover:scale-110 transition">💊</div>
-                    <span class="text-[10px] font-black uppercase italic block text-center text-emerald-900">Saúde</span>
-                </button>
-                <button onclick="filterCat('MERCADO')" class="flex-shrink-0 bg-white p-6 w-28 rounded-[2.5rem] shadow-sm hover:bg-emerald-50 border-2 border-transparent hover:border-amarelo transition group">
-                    <div class="text-3xl mb-2 group-hover:scale-110 transition">🛒</div>
-                    <span class="text-[10px] font-black uppercase italic block text-center text-emerald-900">Mercado</span>
-                </button>
-            </div>
-        </section>
-
         <section id="viewMarket">
-            <div class="flex justify-between items-end mb-8 px-2">
-                <h2 class="font-black-italic text-3xl italic text-emerald-900">LOJAS EM DESTAQUE</h2>
-            </div>
             <div id="listaLojas" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                 </div>
         </section>
 
         <section id="viewLojaInterna" class="hidden max-w-3xl mx-auto">
-            <button onclick="goBack()" class="mb-8 flex items-center gap-2 font-black italic text-emerald-700 hover:text-emerald-900 transition">
-                <i class="fas fa-chevron-left"></i> VOLTAR PARA O INÍCIO
-            </button>
-            <div id="headerLoja" class="mb-10"></div>
-            <div id="menuLoja" class="grid grid-cols-1 gap-6"></div>
+            <div class="flex justify-start mb-6">
+                <button onclick="goBack()" class="btn-voltar">
+                    <i class="fas fa-arrow-left"></i> VOLTAR PARA AS LOJAS
+                </button>
+            </div>
+            <div id="headerLoja" class="mb-8"></div>
+            <div id="menuLoja" class="grid grid-cols-1 gap-4"></div>
         </section>
     </main>
 
     <div id="cartFloat" class="fixed bottom-10 right-6 z-[100] hidden">
-        <button onclick="toggleCart()" class="bg-emerald-800 text-amarelo p-6 rounded-[2rem] shadow-2xl flex items-center gap-4 border-4 border-white btn-premium">
-            <i class="fas fa-shopping-basket text-2xl"></i>
-            <span id="cartCount" class="font-black text-2xl italic">0</span>
+        <button onclick="toggleCart()" class="bg-emerald-600 text-white p-6 rounded-[2.5rem] shadow-2xl flex items-center gap-4 border-4 border-white">
+            <i class="fas fa-shopping-cart text-2xl"></i>
+            <span id="cartCount" class="font-black text-2xl">0</span>
         </button>
     </div>
 
-    <div id="modalCart" class="hidden fixed inset-0 bg-emerald-950/95 backdrop-blur-xl z-[200] flex flex-col">
-        <div class="p-8 flex justify-between items-center bg-amarelo">
-            <h2 class="font-black-italic text-2xl text-emerald-900" id="cartStoreTitle">CARRINHO</h2>
-            <button onclick="toggleCart()" class="text-3xl text-emerald-900"><i class="fas fa-times"></i></button>
+    <div id="modalCart" class="hidden fixed inset-0 bg-white z-[200] flex flex-col">
+        <div class="p-6 flex justify-between items-center bg-emerald-50 border-b-4 border-emerald-100">
+            <h2 class="font-black-italic text-2xl text-emerald-800">MEU CARRINHO</h2>
+            <button onclick="toggleCart()" class="text-3xl text-emerald-600 p-2"><i class="fas fa-times"></i></button>
         </div>
         
-        <div class="flex-1 overflow-y-auto p-6 md:p-12">
-            <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div class="flex-1 overflow-y-auto p-6">
+            <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
                 
                 <div class="space-y-4">
-                    <h3 class="text-white font-black italic text-xl mb-6">SEUS ITENS</h3>
-                    <div id="cartItems" class="space-y-4"></div>
+                    <h3 class="text-emerald-900 font-black italic text-lg uppercase">Itens Selecionados</h3>
+                    <div id="cartItems" class="space-y-3"></div>
                 </div>
 
-                <div class="bg-emerald-900 p-8 rounded-[3rem] border border-emerald-800 shadow-2xl">
-                    <h3 class="text-amarelo font-black italic text-xl mb-6">DADOS PARA ENTREGA</h3>
-                    <div class="space-y-4">
-                        <input type="text" id="custName" placeholder="Seu Nome Completo" class="w-full bg-emerald-800 p-4 rounded-2xl text-white outline-none border-2 border-transparent focus:border-amarelo font-bold placeholder-emerald-400">
-                        <input type="text" id="custEnd" placeholder="Endereço (Rua, Número, Bairro)" class="w-full bg-emerald-800 p-4 rounded-2xl text-white outline-none border-2 border-transparent focus:border-amarelo font-bold placeholder-emerald-400">
-                        <input type="text" id="custTel" placeholder="Telefone de Contato" class="w-full bg-emerald-800 p-4 rounded-2xl text-white outline-none border-2 border-transparent focus:border-amarelo font-bold placeholder-emerald-400">
-                        <select id="custPag" class="w-full bg-emerald-800 p-4 rounded-2xl text-white outline-none border-2 border-transparent focus:border-amarelo font-bold">
-                            <option value="Pix">Forma de Pagamento: Pix</option>
-                            <option value="Cartão">Cartão (Maquininha)</option>
+                <div class="bg-emerald-50 p-6 rounded-[2.5rem] border-2 border-emerald-100">
+                    <h3 class="text-emerald-800 font-black italic text-lg mb-4 uppercase">Dados de Entrega</h3>
+                    <div class="space-y-3">
+                        <input type="text" id="custName" placeholder="Seu Nome" class="w-full bg-white p-4 rounded-2xl border-2 border-emerald-100 font-bold text-emerald-900">
+                        <input type="text" id="custEnd" placeholder="Seu Endereço Completo" class="w-full bg-white p-4 rounded-2xl border-2 border-emerald-100 font-bold text-emerald-900">
+                        <input type="text" id="custTel" placeholder="WhatsApp para Contato" class="w-full bg-white p-4 rounded-2xl border-2 border-emerald-100 font-bold text-emerald-900">
+                        <select id="custPag" class="w-full bg-white p-4 rounded-2xl border-2 border-emerald-100 font-bold text-emerald-900">
+                            <option value="Pix">Pagar com Pix</option>
+                            <option value="Cartão">Cartão na Entrega</option>
                             <option value="Dinheiro">Dinheiro</option>
                         </select>
                     </div>
@@ -130,14 +132,14 @@
             </div>
         </div>
 
-        <div class="p-8 bg-emerald-900 border-t border-emerald-800">
-            <div class="max-w-4xl mx-auto text-center">
-                <div class="flex justify-between text-amarelo font-black text-3xl mb-8 italic px-4">
-                    <span>TOTAL</span>
-                    <span id="cartTotal">R$ 0,00</span>
+        <div class="p-8 bg-white border-t-4 border-emerald-50">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex justify-between text-emerald-900 font-black text-3xl mb-6 italic">
+                    <span>TOTAL:</span>
+                    <span id="cartTotal" class="text-emerald-600">R$ 0,00</span>
                 </div>
-                <button onclick="finalizarPedido()" class="w-full bg-amarelo text-emerald-900 py-6 rounded-[2rem] font-black italic text-2xl uppercase btn-premium shadow-xl">
-                    ENVIAR PEDIDO AO WHATSAPP
+                <button onclick="finalizarPedido()" class="btn-finalizar">
+                    ENVIAR PEDIDO PELO WHATSAPP
                 </button>
             </div>
         </div>
@@ -151,12 +153,10 @@
         function renderMarketplace(data = db) {
             const container = document.getElementById('listaLojas');
             container.innerHTML = data.map(l => `
-                <div onclick="openStore('${l.id}')" class="bg-white p-6 rounded-[3rem] shadow-sm hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-amarelo group">
-                    <img src="${l.img}" class="w-32 h-32 rounded-[2.5rem] object-cover mx-auto mb-6 shadow-md group-hover:scale-105 transition">
-                    <div class="text-center">
-                        <span class="text-[9px] bg-emerald-50 px-3 py-1 rounded-full font-black uppercase text-emerald-600 mb-2 inline-block">${l.categoria}</span>
-                        <h3 class="font-black-italic text-emerald-900 text-xl italic">${l.nome}</h3>
-                    </div>
+                <div onclick="openStore('${l.id}')" class="card-branco p-6 cursor-pointer border-2 border-transparent hover:border-emerald-400 transition-all text-center">
+                    <img src="${l.img}" class="w-32 h-32 rounded-3xl object-cover mx-auto mb-4 shadow-md">
+                    <span class="text-[9px] font-black text-emerald-500 uppercase">${l.categoria}</span>
+                    <h3 class="font-black-italic text-emerald-900 text-xl italic">${l.nome}</h3>
                 </div>
             `).join('');
         }
@@ -165,16 +165,12 @@
             activeLojaId = id;
             const loja = db.find(l => l.id === id);
             document.getElementById('viewMarket').classList.add('hidden');
-            document.getElementById('catSection').classList.add('hidden');
             document.getElementById('viewLojaInterna').classList.remove('hidden');
             
             document.getElementById('headerLoja').innerHTML = `
-                <div class="flex flex-col md:flex-row items-center gap-8 bg-white p-8 rounded-[4rem] shadow-sm border border-emerald-50">
-                    <img src="${loja.img}" class="w-40 h-40 rounded-[3rem] shadow-xl border-4 border-amarelo">
-                    <div class="text-center md:text-left">
-                        <h2 class="text-4xl font-black-italic italic text-emerald-900 mb-2">${loja.nome}</h2>
-                        <span class="bg-emerald-100 text-emerald-700 px-4 py-1 rounded-full font-black text-[10px] uppercase italic">Aberto Agora</span>
-                    </div>
+                <div class="card-branco p-8 flex flex-col items-center border-b-4 border-amarelo">
+                    <img src="${loja.img}" class="w-32 h-32 rounded-full border-4 border-emerald-100 shadow-xl mb-4">
+                    <h2 class="text-3xl font-black-italic italic text-emerald-900">${loja.nome}</h2>
                 </div>
             `;
             renderMenu();
@@ -189,16 +185,16 @@
             menu.innerHTML = loja.produtos.map(p => {
                 const inCart = storeCart.find(c => c.id === p.id);
                 return `
-                    <div class="bg-white p-5 rounded-[2.5rem] flex items-center gap-6 shadow-sm">
-                        <img src="${p.img}" class="w-24 h-24 object-cover rounded-3xl border border-emerald-50">
+                    <div class="card-branco p-4 flex items-center gap-4">
+                        <img src="${p.img}" class="w-20 h-20 object-cover rounded-2xl">
                         <div class="flex-1">
-                            <h4 class="font-black italic text-emerald-800 uppercase text-sm mb-1">${p.nome}</h4>
-                            <p class="text-emerald-600 font-black text-2xl italic">R$ ${p.preco.toFixed(2)}</p>
+                            <h4 class="font-bold text-emerald-900 uppercase text-sm">${p.nome}</h4>
+                            <p class="text-emerald-600 font-black text-xl italic">R$ ${p.preco.toFixed(2)}</p>
                         </div>
-                        <div class="flex items-center gap-4 bg-emerald-50 p-2 rounded-2xl">
-                            <button onclick="updateQty(${p.id}, -1)" class="w-10 h-10 rounded-xl font-black text-xl text-emerald-900">-</button>
-                            <span class="font-black text-xl italic text-emerald-900">${inCart ? inCart.qty : 0}</span>
-                            <button onclick="updateQty(${p.id}, 1)" class="bg-amarelo w-10 h-10 rounded-xl font-black text-xl shadow-md text-emerald-900">+</button>
+                        <div class="flex items-center gap-3 bg-emerald-50 p-2 rounded-xl">
+                            <button onclick="updateQty(${p.id}, -1)" class="w-8 h-8 font-black text-emerald-700">-</button>
+                            <span class="font-black text-lg">${inCart ? inCart.qty : 0}</span>
+                            <button onclick="updateQty(${p.id}, 1)" class="bg-emerald-500 text-white w-8 h-8 rounded-lg font-black shadow-md">+</button>
                         </div>
                     </div>
                 `;
@@ -238,12 +234,12 @@
             container.innerHTML = storeCart.map(item => {
                 total += item.preco * item.qty;
                 return `
-                    <div class="flex justify-between items-center bg-emerald-800/40 p-5 rounded-3xl border border-emerald-700/30">
-                        <div class="flex items-center gap-4 text-white">
-                            <span class="bg-amarelo text-emerald-950 px-3 py-1 rounded-xl font-black italic">${item.qty}x</span>
-                            <span class="font-black italic uppercase text-xs">${item.nome}</span>
+                    <div class="flex justify-between items-center bg-white p-4 rounded-2xl border-2 border-emerald-50 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg font-black">${item.qty}x</span>
+                            <span class="font-bold text-emerald-900 text-xs">${item.nome}</span>
                         </div>
-                        <span class="text-amarelo font-black">R$ ${(item.preco * item.qty).toFixed(2)}</span>
+                        <span class="text-emerald-600 font-black">R$ ${(item.preco * item.qty).toFixed(2)}</span>
                     </div>
                 `;
             }).join('');
@@ -256,33 +252,34 @@
             const tel = document.getElementById('custTel').value;
             const pag = document.getElementById('custPag').value;
 
-            if(!nome || !end || !tel) { alert("Preencha seus dados de entrega!"); return; }
+            if(!nome || !end || !tel) { alert("Ops! Preencha seus dados de entrega primeiro."); return; }
 
             const loja = db.find(l => l.id === activeLojaId);
             const cart = allCarts[activeLojaId];
             
-            let texto = `🟡 *PEDIDO AMARELINHAS*\n\n`;
+            let texto = `✅ *PEDIDO RECEBIDO - AMARELINHAS*\n\n`;
             texto += `🏪 *LOJA:* ${loja.nome}\n`;
             texto += `👤 *CLIENTE:* ${nome}\n`;
             texto += `📍 *ENTREGA:* ${end}\n`;
+            texto += `📱 *CONTATO:* ${tel}\n`;
             texto += `💳 *PAGAMENTO:* ${pag}\n\n`;
+            texto += `🛒 *ITENS:* \n`;
             cart.forEach(i => texto += `• ${i.qty}x ${i.nome}\n`);
-            texto += `\n💰 *TOTAL: ${document.getElementById('cartTotal').innerText}*`;
+            texto += `\n💰 *VALOR TOTAL: ${document.getElementById('cartTotal').innerText}*`;
             
             window.open(`https://wa.me/55${loja.whatsapp}?text=${encodeURIComponent(texto)}`, '_blank');
         }
 
         function searchGlobal() {
             const t = document.getElementById('searchInput').value.toLowerCase();
-            renderMarketplace(db.filter(l => l.nome.toLowerCase().includes(t) || l.categoria.toLowerCase().includes(t)));
+            renderMarketplace(db.filter(l => l.nome.toLowerCase().includes(t)));
         }
 
-        function filterCat(c) { renderMarketplace(db.filter(l => l.categoria === c)); }
         function toggleCart() { document.getElementById('modalCart').classList.toggle('hidden'); }
+        
         function goBack() {
             activeLojaId = null;
             document.getElementById('viewMarket').classList.remove('hidden');
-            document.getElementById('catSection').classList.remove('hidden');
             document.getElementById('viewLojaInterna').classList.add('hidden');
             document.getElementById('cartFloat').classList.add('hidden');
         }
