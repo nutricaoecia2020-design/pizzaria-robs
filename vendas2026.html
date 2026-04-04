@@ -2,73 +2,112 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Amarelinhas - Gestão de Pedidos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; background: #f0fdf4; padding: 20px; color: #064e3b; }
         .container { max-width: 1200px; margin: auto; }
-        h1 { text-align: center; font-style: italic; text-transform: uppercase; }
+        h1 { text-align: center; font-style: italic; text-transform: uppercase; font-weight: 900; margin-bottom: 30px; }
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
         th { background-color: #064e3b; color: white; text-transform: uppercase; font-size: 12px; }
         tr:hover { background-color: #f9f9f9; }
-        .btn-limpar { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-weight: bold; }
+        .btn-limpar { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-bottom: 20px; font-weight: bold; }
+        .status-badge { background: #dcfce7; color: #166534; padding: 4px 8px; rounded: 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📋 Caderno de Notas - Todos os Pedidos</h1>
-        <button class="btn-limpar" onclick="limparHistorico()">Limpar Tudo</button>
+        <h1><i class="fas fa-clipboard-list"></i> Caderno de Notas - Todos os Pedidos</h1>
         
-        <table id="tabelaPedidos">
-            <thead>
-                <tr>
-                    <th>Data/Hora</th>
-                    <th>Loja</th>
-                    <th>Cliente</th>
-                    <th>Produtos</th>
-                    <th>Total</th>
-                    <th>Pagamento</th>
-                    <th>Contato</th>
-                    <th>Endereço</th>
-                </tr>
-            </thead>
-            <tbody id="corpoTabela">
+        <div class="flex justify-between items-center">
+            <button class="btn-limpar" onclick="limparHistoricoNuvem()">
+                <i class="fas fa-trash-alt"></i> LIMPAR TUDO NA NUVEM
+            </button>
+            <p class="text-xs font-bold opacity-50 uppercase mb-4">Atualizado em tempo real</p>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table id="tabelaPedidos">
+                <thead>
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>Loja</th>
+                        <th>Cliente</th>
+                        <th>Produtos</th>
+                        <th>Total</th>
+                        <th>Pagamento</th>
+                        <th>Contato</th>
+                        <th>Endereço</th>
+                    </tr>
+                </thead>
+                <tbody id="corpoTabela">
+                    <tr>
+                        <td colspan="8" class="text-center py-10 font-bold text-emerald-800">Buscando pedidos na nuvem...</td>
+                    </tr>
                 </tbody>
-        </table>
+            </table>
+        </div>
     </div>
 
     <script>
-        function carregarPedidos() {
-            const corpo = document.getElementById('corpoTabela');
-            const pedidos = JSON.parse(localStorage.getItem('amarelinhas_pedidos') || "[]");
-            
-            corpo.innerHTML = "";
-            // Mostra o mais recente primeiro
-            pedidos.reverse().forEach(p => {
-                const linha = corpo.insertRow();
-                linha.innerHTML = `
-                    <td>${p.data}</td>
-                    <td style="font-weight:bold; color:#059669">${p.loja}</td>
-                    <td>${p.cliente}</td>
-                    <td style="font-size:12px">${p.produtos}</td>
-                    <td style="font-weight:bold">R$ ${p.total}</td>
-                    <td>${p.pagamento}</td>
-                    <td>${p.contato}</td>
-                    <td>${p.endereco}</td>
-                `;
-            });
-        }
+        const FIREBASE_PEDIDOS_URL = "https://amarelinhas-d6986-default-rtdb.firebaseio.com/pedidos.json";
 
-        function limparHistorico() {
-            if(confirm("Deseja apagar todos os registros do caderno?")) {
-                localStorage.setItem('amarelinhas_pedidos', "[]");
-                carregarPedidos();
+        async function carregarPedidosNuvem() {
+            try {
+                const response = await fetch(FIREBASE_PEDIDOS_URL);
+                const dados = await response.json();
+                const corpo = document.getElementById('corpoTabela');
+                
+                corpo.innerHTML = "";
+
+                if (!dados) {
+                    corpo.innerHTML = `<tr><td colspan="8" class="text-center py-10 font-bold text-gray-400 uppercase">Nenhum pedido registrado até o momento.</td></tr>`;
+                    return;
+                }
+
+                // Transforma o objeto do Firebase em array e inverte para ver os novos primeiro
+                const listaPedidos = Object.keys(dados).map(key => ({
+                    id: key,
+                    ...dados[key]
+                })).reverse();
+
+                listaPedidos.forEach(p => {
+                    const linha = corpo.insertRow();
+                    linha.innerHTML = `
+                        <td class="text-[11px] font-bold">${p.data || '---'}</td>
+                        <td style="font-weight:900; color:#059669; text-transform: uppercase">${p.loja || '---'}</td>
+                        <td class="font-bold">${p.cliente || '---'}</td>
+                        <td style="font-size:11px; max-width: 250px;">${p.produtos || '---'}</td>
+                        <td style="font-weight:900" class="text-emerald-700">R$ ${p.total || '0,00'}</td>
+                        <td class="text-[11px] font-bold uppercase">${p.pagamento || '---'}</td>
+                        <td class="text-[11px] font-bold">${p.contato || '---'}</td>
+                        <td class="text-[11px]">${p.endereco || '---'}</td>
+                    `;
+                });
+            } catch (error) {
+                console.error("Erro ao carregar pedidos:", error);
             }
         }
 
-        // Atualiza a tabela sempre que abrir a página ou mudar algo
-        window.onload = carregarPedidos;
-        window.addEventListener('storage', carregarPedidos); // Atualiza se outra aba salvar pedido
+        async function limparHistoricoNuvem() {
+            if(confirm("Deseja apagar permanentemente todos os pedidos da nuvem? Isso não pode ser desfeito.")) {
+                try {
+                    await fetch(FIREBASE_PEDIDOS_URL, { method: 'DELETE' });
+                    carregarPedidosNuvem();
+                } catch (error) {
+                    alert("Erro ao limpar dados.");
+                }
+            }
+        }
+
+        // Atualiza automaticamente a cada 30 segundos
+        setInterval(carregarPedidosNuvem, 30000);
+        
+        // Carrega ao abrir
+        window.onload = carregarPedidosNuvem;
     </script>
 </body>
 </html>
