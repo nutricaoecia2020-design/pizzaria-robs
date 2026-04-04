@@ -154,7 +154,9 @@
                             <p class="text-emerald-600 font-black">R$ ${parseFloat(p.preco).toFixed(2)}</p>
                         </div>
                     </div>
-                    <button onclick="excluirProduto('${p.id}')" class="text-red-400 p-2"><i class="fas fa-times"></i></button>
+                    <button onclick="excluirProduto('${p.id}')" class="text-red-400 p-2">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
             `).join('');
         }
@@ -162,11 +164,13 @@
         function salvarProduto() {
             const index = db.findIndex(l => l.id === idLojaSelecionada);
             const novoProduto = {
-                id: Date.now(),
+                id: Date.now().toString(), // Usando String para consistência
                 nome: document.getElementById('prodNome').value,
                 preco: document.getElementById('prodPreco').value,
                 img: document.getElementById('prodImg').value || 'https://via.placeholder.com/100'
             };
+
+            if(!novoProduto.nome || !novoProduto.preco) return alert("Preencha o nome e o preço!");
 
             db[index].produtos.push(novoProduto);
             atualizarDB();
@@ -182,11 +186,15 @@
             }
         }
 
+        // FUNÇÃO CORRIGIDA: Forçando comparação de strings para garantir a exclusão
         function excluirProduto(pid) {
             const index = db.findIndex(l => l.id === idLojaSelecionada);
-            db[index].produtos = db[index].produtos.filter(p => p.id !== pid);
-            atualizarDB();
-            renderProdutos();
+            if (index !== -1) {
+                // Filtra comparando os IDs como string
+                db[index].produtos = db[index].produtos.filter(p => String(p.id) !== String(pid));
+                atualizarDB();
+                renderProdutos();
+            }
         }
 
         function atualizarDB() {
