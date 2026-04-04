@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin | Gerenciar Produtos</title>
+    <title>Admin | Gerenciar Cardápio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -13,45 +13,58 @@
         .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #ef4444; }
         input:checked + .slider:before { transform: translateX(20px); }
+        .item-off { opacity: 0.5; filter: grayscale(1); }
     </style>
 </head>
-<body class="bg-gray-100 flex h-screen overflow-hidden">
+<body class="bg-gray-100 flex h-screen overflow-hidden font-sans">
 
     <aside class="w-64 bg-gray-900 text-white flex-shrink-0 hidden md:flex flex-col">
         <div class="p-6 text-xl font-bold text-red-500">ADMIN<span class="text-white">DELIVERY</span></div>
         <nav class="flex-1 px-4 space-y-2">
-            <a href="loja.html" target="_blank" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400"><i class="fas fa-external-link-alt mr-3"></i> Ver Minha Loja</a>
-            <a href="#" class="flex items-center p-3 bg-red-600 rounded-lg text-white font-bold"><i class="fas fa-boxes mr-3"></i> Produtos</a>
+            <a href="#" class="flex items-center p-3 bg-red-600 rounded-lg text-white font-bold"><i class="fas fa-boxes mr-3"></i> Meus Produtos</a>
+            <div class="border-t border-gray-800 my-4"></div>
+            <p class="text-gray-500 text-xs px-3 uppercase font-bold mb-2">Visualização</p>
+            <a href="aju2026.html" target="_blank" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 transition"><i class="fas fa-external-link-alt mr-3"></i> Abrir Loja</a>
         </nav>
     </aside>
 
-    <main class="flex-1 flex flex-col overflow-y-auto p-6">
+    <main class="flex-1 flex flex-col overflow-y-auto p-4 md:p-8">
         <div class="max-w-5xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-gray-200 h-fit">
-                <h3 class="font-bold mb-4 text-gray-800">CADASTRAR ITEM</h3>
-                <form id="form-produto" class="space-y-3">
-                    <input type="text" id="nome" placeholder="Nome do Produto" class="w-full border p-2 rounded-lg outline-none focus:border-red-500" required>
-                    <input type="number" id="preco" placeholder="Preço (ex: 29.90)" step="0.01" class="w-full border p-2 rounded-lg outline-none focus:border-red-500" required>
-                    <input type="text" id="img" placeholder="URL da Imagem" class="w-full border p-2 rounded-lg outline-none focus:border-red-500">
-                    <select id="categoria" class="w-full border p-2 rounded-lg outline-none">
-                        <option value="Lanches">🍔 Lanches</option>
-                        <option value="Pizzas">🍕 Pizzas</option>
-                        <option value="Bebidas">🥤 Bebidas</option>
-                    </select>
-                    <button type="submit" class="w-full bg-red-600 text-white py-2 rounded-lg font-bold hover:bg-red-700">SALVAR NO CARDÁPIO</button>
-                </form>
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 sticky top-4">
+                    <h3 class="font-black text-gray-800 mb-4 uppercase tracking-tight text-sm">Novo Item no Cardápio</h3>
+                    <form id="form-produto" class="space-y-4">
+                        <input type="text" id="nome" placeholder="Nome (Ex: Pizza Calabresa)" class="w-full border p-3 rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-red-500" required>
+                        <input type="number" id="preco" placeholder="Preço (Ex: 45.90)" step="0.01" class="w-full border p-3 rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-red-500" required>
+                        <input type="text" id="img" placeholder="Link da Imagem (URL)" class="w-full border p-3 rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-red-500">
+                        <select id="categoria" class="w-full border p-3 rounded-xl bg-gray-50 outline-none">
+                            <option value="PIZZAS">🍕 PIZZAS</option>
+                            <option value="LANCHES">🍔 LANCHES</option>
+                            <option value="BEBIDAS">🥤 BEBIDAS</option>
+                        </select>
+                        <button type="submit" class="w-full bg-red-600 text-white py-4 rounded-xl font-black hover:bg-red-700 shadow-lg shadow-red-200 transition active:scale-95">CADASTRAR PRODUTO</button>
+                    </form>
+                </div>
             </div>
 
-            <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="p-4 bg-gray-50 border-b font-bold text-gray-700">Produtos no Sistema</div>
-                <div id="lista-admin" class="divide-y divide-gray-100">
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
+                        <span class="font-bold text-gray-700">Itens Cadastrados</span>
+                        <button onclick="limparTudo()" class="text-xs text-red-500 hover:underline">Limpar tudo</button>
                     </div>
+                    <div id="lista-admin" class="divide-y divide-gray-100">
+                        </div>
+                </div>
             </div>
         </div>
     </main>
 
     <script>
+        // Imagem padrão caso o link esteja quebrado
+        const IMG_DEFAULT = "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200";
+
         let db = JSON.parse(localStorage.getItem('meu_delivery_db')) || [];
 
         function salvar() {
@@ -61,46 +74,61 @@
 
         document.getElementById('form-produto').onsubmit = (e) => {
             e.preventDefault();
+            let urlInput = document.getElementById('img').value.trim();
+            
             const novo = {
                 id: Date.now(),
                 nome: document.getElementById('nome').value,
                 preco: parseFloat(document.getElementById('preco').value),
-                img: document.getElementById('img').value || 'https://via.placeholder.com/100',
+                img: urlInput === "" ? IMG_DEFAULT : urlInput,
                 cat: document.getElementById('categoria').value,
                 ativo: true
             };
-            db.push(novo);
+            db.unshift(novo);
             e.target.reset();
             salvar();
         };
 
         window.excluir = (id) => {
-            db = db.filter(p => p.id !== id);
-            salvar();
+            if(confirm("Excluir este produto?")) {
+                db = db.filter(p => p.id !== id);
+                salvar();
+            }
         };
 
-        window.toggle = (id) => {
+        window.toggleAtivo = (id) => {
             db = db.map(p => p.id === id ? {...p, ativo: !p.ativo} : p);
             salvar();
         };
 
+        window.limparTudo = () => {
+            if(confirm("Apagar todos os produtos?")) {
+                db = [];
+                salvar();
+            }
+        }
+
         function render() {
             const lista = document.getElementById('lista-admin');
+            if (db.length === 0) {
+                lista.innerHTML = `<div class="p-10 text-center text-gray-400">Nenhum produto cadastrado.</div>`;
+                return;
+            }
             lista.innerHTML = db.map(p => `
-                <div class="p-4 flex items-center justify-between ${!p.ativo ? 'opacity-50 grayscale' : ''}">
-                    <div class="flex items-center gap-3">
-                        <img src="${p.img}" class="w-10 h-10 object-cover rounded shadow-sm">
+                <div class="p-4 flex items-center justify-between hover:bg-gray-50 transition ${!p.ativo ? 'item-off' : ''}">
+                    <div class="flex items-center gap-4">
+                        <img src="${p.img}" onerror="this.src='${IMG_DEFAULT}'" class="w-12 h-12 object-cover rounded-lg shadow-sm">
                         <div>
-                            <p class="font-bold text-sm">${p.nome}</p>
-                            <p class="text-xs text-green-600 font-bold">R$ ${p.preco.toFixed(2)}</p>
+                            <p class="font-bold text-gray-800 text-sm">${p.nome}</p>
+                            <p class="text-xs text-green-600 font-bold uppercase">${p.cat} • R$ ${p.preco.toFixed(2)}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
                         <label class="switch">
-                            <input type="checkbox" ${p.ativo ? 'checked' : ''} onchange="toggle(${p.id})">
+                            <input type="checkbox" ${p.ativo ? 'checked' : ''} onchange="toggleAtivo(${p.id})">
                             <span class="slider"></span>
                         </label>
-                        <button onclick="excluir(${p.id})" class="text-gray-300 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                        <button onclick="excluir(${p.id})" class="text-gray-300 hover:text-red-600 transition"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
