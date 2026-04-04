@@ -8,83 +8,54 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --amarelo: #FFD700; 
-            --verde-suave: #22c55e; 
-            --verde-fundo: #f0fdf4;
-            --texto: #064e3b;
-        }
-        body { font-family: 'Inter', sans-serif; background-color: var(--verde-fundo); color: var(--texto); overflow-x: hidden; }
+        :root { --amarelo: #FFD700; --verde-suave: #22c55e; --verde-fundo: #f0fdf4; --texto: #064e3b; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--verde-fundo); color: var(--texto); margin: 0; }
         .font-black-italic { font-family: 'Archivo Black', sans-serif; text-transform: uppercase; font-style: italic; }
         
-        /* Estrelas Brilhando no Título */
-        @keyframes brilho {
-            0%, 100% { text-shadow: 0 0 10px #fff, 0 0 20px var(--amarelo); }
-            50% { text-shadow: 0 0 30px var(--amarelo), 0 0 40px #ffea00; }
-        }
+        /* Animações solicitadas */
+        @keyframes brilho { 0%, 100% { text-shadow: 0 0 10px #fff, 0 0 20px var(--amarelo); } 50% { text-shadow: 0 0 30px var(--amarelo), 0 0 40px #ffea00; } }
         .stars-glow { animation: brilho 2s infinite; }
 
-        /* WhatsApp Vibrando */
-        @keyframes vibrate {
-            0% { transform: translate(0); }
-            25% { transform: translate(-2px, 2px); }
-            50% { transform: translate(2px, -2px); }
-            75% { transform: translate(-2px, -2px); }
-            100% { transform: translate(0); }
-        }
+        @keyframes vibrate { 0% { transform: translate(0); } 25% { transform: translate(-2px, 2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, -2px); } 100% { transform: translate(0); } }
         .wpp-vibrate { animation: vibrate 0.4s linear infinite; }
         
-        .card { background: white; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); transition: transform 0.2s; }
-        .card:hover { transform: translateY(-5px); }
-
-        .btn-green { 
-            background-color: var(--verde-suave); 
-            color: white; 
-            font-weight: 900; 
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
-        }
+        .card { background: white; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .btn-acao { background-color: var(--verde-suave); color: white; font-weight: 900; border-radius: 20px; }
+        
+        /* Modal Carrinho Lateral */
+        #modalCart { transition: transform 0.3s ease-in-out; }
+        .hidden-cart { transform: translateX(100%); }
     </style>
 </head>
-<body class="pb-20">
+<body class="pb-24">
 
     <header class="bg-gradient-to-b from-[var(--amarelo)] to-[var(--verde-fundo)] pt-12 pb-20 px-6 rounded-b-[4rem] text-center">
-        <h1 class="font-black-italic text-4xl mb-8 stars-glow text-emerald-900">DELIVERY AMARELINHAS</h1>
+        <h1 class="font-black-italic text-4xl mb-8 stars-glow text-emerald-900 uppercase">DELIVERY AMARELINHAS</h1>
         
         <div class="max-w-4xl mx-auto bg-emerald-600 p-6 rounded-[2rem] border-4 border-white shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
-            <div class="text-left">
-                <p class="text-white font-black italic text-2xl uppercase leading-none">SEJA UM PARCEIRO!</p>
-                <p class="text-emerald-100 text-sm font-bold">Cadastre sua loja: (79) 99976-9581</p>
+            <div class="text-left text-white">
+                <p class="font-black italic text-2xl leading-none">SEJA UM PARCEIRO AMARELINHAS!</p>
+                <p class="text-sm font-bold opacity-90">Cadastre seu negócio: (79) 99976-9581</p>
             </div>
-            <button onclick="window.open('https://wa.me/5579999769581')" class="bg-white text-emerald-600 px-8 py-4 rounded-2xl font-black italic hover:bg-emerald-50 transition">
-                QUERO CADASTRAR
-            </button>
+            <button onclick="window.open('https://wa.me/5579999769581')" class="bg-white text-emerald-600 px-8 py-4 rounded-2xl font-black italic hover:scale-105 transition">CADASTRAR LOJA</button>
         </div>
 
         <div class="max-w-2xl mx-auto relative">
-            <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-emerald-500 text-xl"></i>
-            <input type="text" id="searchInput" placeholder="O que você procura hoje?" 
-                class="w-full p-6 pl-16 rounded-full shadow-xl border-none outline-none font-bold text-lg">
+            <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-emerald-500"></i>
+            <input type="text" id="searchInput" placeholder="O que você procura hoje?" class="w-full p-6 pl-16 rounded-full shadow-xl border-none outline-none font-bold text-lg">
         </div>
     </header>
 
     <main class="max-w-4xl mx-auto p-4 -mt-12 min-h-[500px]">
         <div id="viewMarket">
-            <h2 class="font-black italic text-2xl mb-8 px-4 uppercase text-emerald-800">Lojas em Destaque</h2>
-            <div id="listaLojas" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                </div>
+            <h2 class="font-black italic text-2xl mb-8 px-4 uppercase text-emerald-800">Lojas em Aracaju</h2>
+            <div id="listaLojas" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
         </div>
 
         <div id="viewProdutos" class="hidden">
-            <button onclick="goBack()" class="btn-green px-6 py-3 mb-8 flex items-center gap-2">
-                <i class="fas fa-arrow-left"></i> VOLTAR PARA LOJAS
-            </button>
-            
-            <div id="infoLojaHeader" class="card p-10 text-center mb-10 border-b-8 border-yellow-400">
-                </div>
-
-            <div id="gridProdutos" class="space-y-4">
-                </div>
+            <button onclick="goBack()" class="btn-acao px-6 py-3 mb-8 flex items-center gap-2 shadow-lg"><i class="fas fa-arrow-left"></i> VOLTAR</button>
+            <div id="infoLojaHeader" class="card p-10 text-center mb-10 border-b-8 border-yellow-400"></div>
+            <div id="gridProdutos" class="space-y-4"></div>
         </div>
     </main>
 
@@ -92,81 +63,74 @@
         <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 mb-16">
             <div>
                 <h3 class="font-black-italic text-2xl mb-6 text-yellow-400">AMARELINHAS</h3>
-                <p class="text-emerald-200 leading-relaxed font-medium">O shopping virtual que conecta você aos melhores produtos de Aracaju e região via WhatsApp.</p>
+                <p class="text-emerald-200 leading-relaxed">O shopping virtual que conecta você aos melhores estabelecimentos de Aracaju diretamente no WhatsApp.</p>
             </div>
             <div>
-                <h4 class="font-black italic text-lg mb-6 uppercase">Administração</h4>
-                <div class="space-y-4 text-emerald-100">
-                    <p class="flex items-center gap-3"><i class="fab fa-whatsapp text-xl text-emerald-400"></i> (79) 99976-9581</p>
-                    <p class="flex items-center gap-3"><i class="fas fa-map-marker-alt text-xl text-emerald-400"></i> Aracaju, Sergipe</p>
-                </div>
+                <h4 class="font-black italic text-lg mb-6 uppercase">CONTATO ADM</h4>
+                <p class="text-emerald-200"><i class="fab fa-whatsapp"></i> (79) 99976-9581</p>
+                <p class="text-emerald-200 mt-2"><i class="fas fa-map-marker-alt"></i> Aracaju, Sergipe</p>
             </div>
             <div>
-                <h4 class="font-black italic text-lg mb-6 uppercase">Seja Parceiro</h4>
-                <p class="text-emerald-200 text-sm mb-6">Aumente o faturamento da sua loja hoje mesmo com nossa plataforma.</p>
-                <button onclick="window.open('https://wa.me/5579999769581')" class="bg-emerald-500 w-full py-3 rounded-xl font-black italic hover:bg-emerald-400 transition">CONTATO COMERCIAL</button>
+                <h4 class="font-black italic text-lg mb-6 uppercase">NOSSA MISSÃO</h4>
+                <p class="text-emerald-200 italic">"Facilitar a vida do sergipano com tecnologia simples e eficiente."</p>
             </div>
         </div>
-        <div class="text-center border-t border-emerald-900 pt-10 text-emerald-500 font-bold text-[10px] tracking-[0.2em]">
-            © 2026 DELIVERY AMARELINHAS - TODOS OS DIREITOS RESERVADOS
-        </div>
+        <div class="text-center border-t border-emerald-900 pt-10 text-emerald-500 font-bold text-[10px]">© 2026 DELIVERY AMARELINHAS</div>
     </footer>
 
     <div class="fixed bottom-6 left-6 z-[100]">
         <button onclick="window.open('https://wa.me/5579999769581')" class="bg-emerald-500 text-white p-4 rounded-full shadow-2xl flex items-center gap-3 border-4 border-white">
-            <div class="wpp-vibrate bg-white text-emerald-600 w-12 h-12 rounded-full flex items-center justify-center text-2xl">
-                <i class="fab fa-whatsapp"></i>
-            </div>
-            <div class="pr-3">
-                <p class="text-[9px] font-black uppercase leading-none">Cadastre sua loja</p>
-                <p class="text-sm font-bold">79 99976-9581</p>
+            <div class="wpp-vibrate bg-white text-emerald-600 w-10 h-10 rounded-full flex items-center justify-center text-xl"><i class="fab fa-whatsapp"></i></div>
+            <div class="pr-2 text-left">
+                <p class="text-[8px] font-black uppercase leading-none">Cadastre sua loja</p>
+                <p class="text-xs font-bold">79 99976-9581</p>
             </div>
         </button>
     </div>
 
     <div id="cartBar" class="fixed bottom-6 right-6 hidden z-[100]">
-        <button onclick="openCart()" class="bg-emerald-600 text-white px-8 py-6 rounded-full shadow-2xl flex items-center gap-4 border-4 border-white hover:scale-105 transition">
+        <button onclick="openCart()" class="bg-emerald-600 text-white px-8 py-6 rounded-full shadow-2xl flex items-center gap-4 border-4 border-white">
             <i class="fas fa-shopping-basket text-3xl"></i>
             <span id="cartCount" class="text-3xl font-black">0</span>
         </button>
     </div>
 
-    <div id="modalCart" class="fixed inset-0 bg-black/60 z-[2000] hidden flex justify-end">
-        <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col animate-slide-left">
-            <div class="p-8 bg-emerald-50 flex justify-between items-center border-b-2">
-                <h2 class="font-black italic text-2xl">MEU PEDIDO</h2>
-                <button onclick="closeCart()" class="text-4xl text-emerald-900">&times;</button>
+    <div id="modalOverlay" class="fixed inset-0 bg-black/60 z-[2000] hidden" onclick="closeCart()"></div>
+    <div id="modalCart" class="fixed top-0 right-0 h-full w-full max-w-md bg-white z-[2001] shadow-2xl flex flex-col hidden-cart">
+        <div class="p-8 bg-emerald-50 flex justify-between items-center border-b">
+            <h2 class="font-black italic text-2xl uppercase">Meu Pedido</h2>
+            <button onclick="closeCart()" class="text-3xl font-black">&times;</button>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto p-6 space-y-4">
+            <div id="cartItems"></div>
+            
+            <div class="mt-8 bg-emerald-50 p-6 rounded-3xl space-y-4 border border-emerald-100">
+                <p class="font-black italic text-emerald-800 text-sm uppercase">Dados para Entrega</p>
+                <input type="text" id="clienteNome" placeholder="Seu Nome Completo" class="w-full p-4 rounded-xl border-none outline-none shadow-sm font-bold">
+                <input type="text" id="clienteEnd" placeholder="Endereço (Rua, Número, Bairro)" class="w-full p-4 rounded-xl border-none outline-none shadow-sm font-bold">
+                <input type="tel" id="clienteTel" placeholder="Telefone de Contato" class="w-full p-4 rounded-xl border-none outline-none shadow-sm font-bold">
+                <select id="clientePag" class="w-full p-4 rounded-xl border-none outline-none shadow-sm font-bold bg-white">
+                    <option value="Pix">Forma de Pagamento: Pix</option>
+                    <option value="Cartão">Cartão de Crédito/Débito</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                </select>
             </div>
-            <div id="cartItems" class="flex-1 overflow-y-auto p-6 space-y-6">
-                </div>
-            <div class="p-8 border-t bg-emerald-50">
-                <div class="flex justify-between font-black text-2xl mb-8 italic">
-                    <span>TOTAL:</span>
-                    <span id="totalPrice" class="text-emerald-700">R$ 0,00</span>
-                </div>
-                <button onclick="sendWhatsApp()" class="btn-green w-full py-6 text-xl uppercase italic tracking-wider">
-                    ENVIAR PEDIDO NO WHATSAPP
-                </button>
+        </div>
+
+        <div class="p-8 border-t bg-emerald-50">
+            <div class="flex justify-between font-black text-2xl mb-8 italic">
+                <span>TOTAL:</span>
+                <span id="totalPrice" class="text-emerald-700">R$ 0,00</span>
             </div>
+            <button onclick="sendWhatsApp()" class="btn-acao w-full py-6 text-xl uppercase italic shadow-xl">ENVIAR PEDIDO NO WHATSAPP</button>
         </div>
     </div>
 
     <script>
-        // Dados de Exemplo com Fotos
         const lojas = [
-            {
-                id: 1, nome: "PIZZARIA DO ROB", categoria: "ALIMENTAÇÃO", img: "https://via.placeholder.com/150/FFD700/064e3b?text=PIZZA", whatsapp: "5579999999999",
-                produtos: [
-                    { id: 101, nome: "Pizza de Calabresa G", preco: 45.90, img: "https://via.placeholder.com/100/FFD700/064e3b?text=Calabresa" },
-                    { id: 102, nome: "Pizza de Frango G", preco: 48.00, img: "https://via.placeholder.com/100/FFD700/064e3b?text=Frango" }
-                ]
-            },
-            {
-                id: 2, nome: "ÁGUA MINERAL AJU", categoria: "ÁGUA", img: "https://via.placeholder.com/150/22c55e/ffffff?text=AGUA", whatsapp: "5579999769581",
-                produtos: [
-                    { id: 201, nome: "Garrafão 20L (Retornável)", preco: 12.00, img: "https://via.placeholder.com/100/22c55e/ffffff?text=20L" }
-                ]
-            }
+            { id: 1, nome: "PIZZARIA DO ROB", categoria: "ALIMENTAÇÃO", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400", whatsapp: "5579999999999", produtos: [{ id: 101, nome: "Pizza de Calabresa G", preco: 45.90, img: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=200" }] },
+            { id: 2, nome: "ÁGUA MINERAL AJU", categoria: "ÁGUA", img: "https://images.unsplash.com/photo-1523362628745-0c100150b504?w=400", whatsapp: "5579999769581", produtos: [{ id: 201, nome: "Garrafão 20L", preco: 12.00, img: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=200" }] }
         ];
 
         let cart = [];
@@ -174,13 +138,13 @@
 
         function renderLojas() {
             const container = document.getElementById('listaLojas');
-            container.innerHTML = lojas.map(loja => `
-                <div onclick="showLoja(${loja.id})" class="card p-6 flex items-center gap-6 cursor-pointer border-2 border-transparent hover:border-emerald-400">
-                    <img src="${loja.img}" class="w-24 h-24 rounded-3xl object-cover shadow-lg">
+            container.innerHTML = lojas.map(l => `
+                <div onclick="showLoja(${l.id})" class="card p-6 flex items-center gap-6 cursor-pointer border-4 border-transparent hover:border-emerald-400">
+                    <img src="${l.img}" class="w-24 h-24 rounded-3xl object-cover shadow-lg bg-emerald-100">
                     <div>
-                        <span class="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full uppercase">${loja.categoria}</span>
-                        <h3 class="font-black-italic text-xl italic mt-2">${loja.nome}</h3>
-                        <p class="text-[11px] font-bold text-emerald-500 mt-1 uppercase tracking-tight">Entrega em Aracaju e Região</p>
+                        <span class="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full uppercase">${l.categoria}</span>
+                        <h3 class="font-black-italic text-xl italic mt-2">${l.nome}</h3>
+                        <p class="text-[11px] font-bold text-emerald-500 mt-1 uppercase">Entrega Grátis em Aracaju</p>
                     </div>
                 </div>
             `).join('');
@@ -190,14 +154,9 @@
             currentLoja = lojas.find(l => l.id === id);
             document.getElementById('viewMarket').classList.add('hidden');
             document.getElementById('viewProdutos').classList.remove('hidden');
-            
             document.getElementById('infoLojaHeader').innerHTML = `
-                <img src="${currentLoja.img}" class="w-32 h-32 rounded-full mx-auto mb-6 border-8 border-emerald-50 shadow-2xl">
+                <img src="${currentLoja.img}" class="w-32 h-32 rounded-full mx-auto mb-6 border-8 border-emerald-50 shadow-2xl object-cover">
                 <h2 class="text-3xl font-black italic uppercase">${currentLoja.nome}</h2>
-                <div class="mt-4 flex justify-center gap-2">
-                    <span class="bg-emerald-100 text-emerald-700 px-4 py-1 rounded-full text-xs font-black">ABERTO AGORA</span>
-                    <span class="bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full text-xs font-black">ENTREGA RÁPIDA</span>
-                </div>
             `;
             renderProdutos();
         }
@@ -205,20 +164,19 @@
         function renderProdutos() {
             const container = document.getElementById('gridProdutos');
             container.innerHTML = currentLoja.produtos.map(p => {
-                const itemNoCart = cart.find(c => c.id === p.id);
-                const qtd = itemNoCart ? itemNoCart.qtd : 0;
-                
+                const item = cart.find(c => c.id === p.id);
+                const qtd = item ? item.qtd : 0;
                 return `
                     <div class="card p-5 flex items-center gap-6">
-                        <img src="${p.img}" class="w-20 h-20 rounded-2xl object-cover shadow-sm">
+                        <img src="${p.img}" class="w-20 h-20 rounded-2xl object-cover shadow-sm bg-gray-50">
                         <div class="flex-1">
                             <h4 class="font-bold text-emerald-900 uppercase text-sm">${p.nome}</h4>
                             <p class="text-emerald-600 font-black text-2xl italic mt-1">R$ ${p.preco.toFixed(2)}</p>
                         </div>
                         <div class="flex items-center gap-4 bg-emerald-50 p-3 rounded-2xl border border-emerald-100">
-                            <button onclick="updateQty(${p.id}, -1)" class="w-8 h-8 font-black text-emerald-800 text-xl">-</button>
-                            <span class="font-black text-xl text-emerald-950">${qtd}</span>
-                            <button onclick="updateQty(${p.id}, 1)" class="bg-emerald-500 text-white w-10 h-10 rounded-xl font-black text-xl shadow-md">+</button>
+                            <button onclick="updateQty(${p.id}, -1)" class="w-8 h-8 font-black text-emerald-800">-</button>
+                            <span class="font-black text-xl">${qtd}</span>
+                            <button onclick="updateQty(${p.id}, 1)" class="bg-emerald-500 text-white w-10 h-10 rounded-xl font-black shadow-md">+</button>
                         </div>
                     </div>
                 `;
@@ -228,51 +186,51 @@
         function updateQty(pid, delta) {
             const prod = currentLoja.produtos.find(p => p.id === pid);
             const index = cart.findIndex(c => c.id === pid);
-
             if (index > -1) {
                 cart[index].qtd += delta;
                 if (cart[index].qtd <= 0) cart.splice(index, 1);
             } else if (delta > 0) {
                 cart.push({ ...prod, qtd: 1 });
             }
-
-            renderProdutos();
-            updateUI();
+            renderProdutos(); updateUI();
         }
 
         function updateUI() {
-            const totalItems = cart.reduce((acc, i) => acc + i.qtd, 0);
-            document.getElementById('cartCount').innerText = totalItems;
-            document.getElementById('cartBar').classList.toggle('hidden', totalItems === 0);
-            
-            const totalMoney = cart.reduce((acc, i) => acc + (i.preco * i.qtd), 0);
-            document.getElementById('totalPrice').innerText = `R$ ${totalMoney.toFixed(2)}`;
+            const count = cart.reduce((acc, i) => acc + i.qtd, 0);
+            document.getElementById('cartCount').innerText = count;
+            document.getElementById('cartBar').classList.toggle('hidden', count === 0);
+            const total = cart.reduce((acc, i) => acc + (i.preco * i.qtd), 0);
+            document.getElementById('totalPrice').innerText = `R$ ${total.toFixed(2)}`;
         }
 
-        function openCart() { 
-            document.getElementById('modalCart').classList.remove('hidden');
-            const container = document.getElementById('cartItems');
-            container.innerHTML = cart.map(i => `
+        function openCart() {
+            document.getElementById('modalOverlay').classList.remove('hidden');
+            document.getElementById('modalCart').classList.remove('hidden-cart');
+            document.getElementById('cartItems').innerHTML = cart.map(i => `
                 <div class="flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm border border-emerald-50">
-                    <div>
-                        <p class="font-black text-emerald-900">${i.qtd}x ${i.nome}</p>
-                        <p class="text-xs font-bold text-emerald-500">Unid: R$ ${i.preco.toFixed(2)}</p>
-                    </div>
-                    <span class="font-black text-lg text-emerald-700">R$ ${(i.preco * i.qtd).toFixed(2)}</span>
+                    <div><p class="font-black text-emerald-900">${i.qtd}x ${i.nome}</p></div>
+                    <span class="font-black text-emerald-700">R$ ${(i.preco * i.qtd).toFixed(2)}</span>
                 </div>
             `).join('');
         }
 
-        function closeCart() { document.getElementById('modalCart').classList.add('hidden'); }
+        function closeCart() {
+            document.getElementById('modalOverlay').classList.add('hidden');
+            document.getElementById('modalCart').classList.add('hidden-cart');
+        }
 
         function sendWhatsApp() {
+            const nome = document.getElementById('clienteNome').value;
+            const end = document.getElementById('clienteEnd').value;
+            const pag = document.getElementById('clientePag').value;
+            if(!nome || !end) return alert("Por favor, preencha seu nome e endereço!");
+
             let texto = `*NOVO PEDIDO - DELIVERY AMARELINHAS*\n\n`;
-            texto += `*Loja:* ${currentLoja.nome}\n`;
+            texto += `*Cliente:* ${nome}\n*Endereço:* ${end}\n*Pagamento:* ${pag}\n`;
             texto += `----------------------------\n`;
             cart.forEach(i => texto += `✅ *${i.qtd}x* ${i.nome} - R$ ${(i.preco*i.qtd).toFixed(2)}\n`);
             texto += `----------------------------\n`;
             texto += `*TOTAL:* ${document.getElementById('totalPrice').innerText}`;
-            
             window.open(`https://wa.me/${currentLoja.whatsapp}?text=${encodeURIComponent(texto)}`);
         }
 
