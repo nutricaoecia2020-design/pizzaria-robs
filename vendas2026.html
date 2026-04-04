@@ -2,79 +2,73 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Caderno de Notas - Pedidos</title>
+    <title>Painel Amarelinhas - Gestão de Pedidos</title>
     <style>
-        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #075E54; color: white; }
-        tr:nth-child(even) { background-color: #f2f2f2; }
-        .form-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        input, select { padding: 10px; margin: 5px; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 10px 20px; background: #25D366; color: white; border: none; cursor: pointer; border-radius: 4px; }
+        body { font-family: 'Inter', sans-serif; background: #f0fdf4; padding: 20px; color: #064e3b; }
+        .container { max-width: 1200px; margin: auto; }
+        h1 { text-align: center; font-style: italic; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #064e3b; color: white; text-transform: uppercase; font-size: 12px; }
+        tr:hover { background-color: #f9f9f9; }
+        .btn-limpar { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
-
-    <div class="form-box">
-        <h2>📝 Registrar Novo Pedido</h2>
-        <input type="text" id="loja" placeholder="Nome da Loja">
-        <input type="text" id="cliente" placeholder="Nome do Cliente">
-        <input type="text" id="produto" placeholder="Produto">
-        <input type="text" id="valor" placeholder="Valor (R$)">
-        <input type="text" id="pagamento" placeholder="Forma de Pagamento">
-        <input type="text" id="contato" placeholder="WhatsApp Cliente">
-        <input type="text" id="endereco" placeholder="Endereço">
-        <button onclick="adicionarPedido()">Salvar no Caderno</button>
+    <div class="container">
+        <h1>📋 Caderno de Notas - Todos os Pedidos</h1>
+        <button class="btn-limpar" onclick="limparHistorico()">Limpar Tudo</button>
+        
+        <table id="tabelaPedidos">
+            <thead>
+                <tr>
+                    <th>Data/Hora</th>
+                    <th>Loja</th>
+                    <th>Cliente</th>
+                    <th>Produtos</th>
+                    <th>Total</th>
+                    <th>Pagamento</th>
+                    <th>Contato</th>
+                    <th>Endereço</th>
+                </tr>
+            </thead>
+            <tbody id="corpoTabela">
+                </tbody>
+        </table>
     </div>
 
-    <table id="tabelaPedidos">
-        <thead>
-            <tr>
-                <th>Data</th>
-                <th>Loja</th>
-                <th>Cliente</th>
-                <th>Produto</th>
-                <th>Valor</th>
-                <th>Pagamento</th>
-                <th>Contato</th>
-                <th>Endereço</th>
-            </tr>
-        </thead>
-        <tbody>
-            </tbody>
-    </table>
-
     <script>
-        function adicionarPedido() {
-            const data = new Date().toLocaleString('pt-BR');
-            const loja = document.getElementById('loja').value;
-            const cliente = document.getElementById('cliente').value;
-            const produto = document.getElementById('produto').value;
-            const valor = document.getElementById('valor').value;
-            const pagamento = document.getElementById('pagamento').value;
-            const contato = document.getElementById('contato').value;
-            const endereco = document.getElementById('endereco').value;
-
-            if(!cliente || !loja) { alert("Preencha ao menos a Loja e o Cliente!"); return; }
-
-            const tabela = document.getElementById('tabelaPedidos').getElementsByTagName('tbody')[0];
-            const novaLinha = tabela.insertRow(0);
-
-            novaLinha.innerHTML = `
-                <td>${data}</td>
-                <td><b>${loja}</b></td>
-                <td>${cliente}</td>
-                <td>${produto}</td>
-                <td>R$ ${valor}</td>
-                <td>${pagamento}</td>
-                <td>${contato}</td>
-                <td>${endereco}</td>
-            `;
-
-            // Limpar campos após salvar
-            document.querySelectorAll('input').forEach(input => input.value = '');
+        function carregarPedidos() {
+            const corpo = document.getElementById('corpoTabela');
+            const pedidos = JSON.parse(localStorage.getItem('amarelinhas_pedidos') || "[]");
+            
+            corpo.innerHTML = "";
+            // Mostra o mais recente primeiro
+            pedidos.reverse().forEach(p => {
+                const linha = corpo.insertRow();
+                linha.innerHTML = `
+                    <td>${p.data}</td>
+                    <td style="font-weight:bold; color:#059669">${p.loja}</td>
+                    <td>${p.cliente}</td>
+                    <td style="font-size:12px">${p.produtos}</td>
+                    <td style="font-weight:bold">R$ ${p.total}</td>
+                    <td>${p.pagamento}</td>
+                    <td>${p.contato}</td>
+                    <td>${p.endereco}</td>
+                `;
+            });
         }
+
+        function limparHistorico() {
+            if(confirm("Deseja apagar todos os registros do caderno?")) {
+                localStorage.setItem('amarelinhas_pedidos', "[]");
+                carregarPedidos();
+            }
+        }
+
+        // Atualiza a tabela sempre que abrir a página ou mudar algo
+        window.onload = carregarPedidos;
+        window.addEventListener('storage', carregarPedidos); // Atualiza se outra aba salvar pedido
     </script>
 </body>
 </html>
