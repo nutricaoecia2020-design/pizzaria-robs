@@ -3,137 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin | Gerenciar Cardápio</title>
+    <title>Admin | Multi-Lojas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #ef4444; }
-        input:checked + .slider:before { transform: translateX(20px); }
-        .item-off { opacity: 0.5; filter: grayscale(1); }
+        input:checked + .slider:before { transform: translateX(16px); }
     </style>
 </head>
 <body class="bg-gray-100 flex h-screen overflow-hidden font-sans">
 
     <aside class="w-64 bg-gray-900 text-white flex-shrink-0 hidden md:flex flex-col">
-        <div class="p-6 text-xl font-bold text-red-500">ADMIN<span class="text-white">DELIVERY</span></div>
+        <div class="p-6 text-xl font-bold text-red-500 underline">MEU<span class="text-white">DELIVERY</span></div>
         <nav class="flex-1 px-4 space-y-2">
-            <a href="#" class="flex items-center p-3 bg-red-600 rounded-lg text-white font-bold"><i class="fas fa-boxes mr-3"></i> Meus Produtos</a>
-            <div class="border-t border-gray-800 my-4"></div>
-            <p class="text-gray-500 text-xs px-3 uppercase font-bold mb-2">Visualização</p>
-            <a href="aju2026.html" target="_blank" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400 transition"><i class="fas fa-external-link-alt mr-3"></i> Abrir Loja</a>
+            <button onclick="telaLojas()" class="w-full flex items-center p-3 bg-red-600 rounded-lg text-white font-bold"><i class="fas fa-store mr-3"></i> Minhas Lojas</button>
+            <a href="aju2026.html" target="_blank" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400"><i class="fas fa-external-link-alt mr-3"></i> Ir para Marketplace</a>
         </nav>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-y-auto p-4 md:p-8">
-        <div class="max-w-5xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            <div class="lg:col-span-1">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 sticky top-4">
-                    <h3 class="font-black text-gray-800 mb-4 uppercase tracking-tight text-sm">Novo Item no Cardápio</h3>
-                    <form id="form-produto" class="space-y-4">
-                        <input type="text" id="nome" placeholder="Nome (Ex: Pizza Calabresa)" class="w-full border p-3 rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-red-500" required>
-                        <input type="number" id="preco" placeholder="Preço (Ex: 45.90)" step="0.01" class="w-full border p-3 rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-red-500" required>
-                        <input type="text" id="img" placeholder="Link da Imagem (URL)" class="w-full border p-3 rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-red-500">
-                        <select id="categoria" class="w-full border p-3 rounded-xl bg-gray-50 outline-none">
-                            <option value="PIZZAS">🍕 PIZZAS</option>
-                            <option value="LANCHES">🍔 LANCHES</option>
-                            <option value="BEBIDAS">🥤 BEBIDAS</option>
-                        </select>
-                        <button type="submit" class="w-full bg-red-600 text-white py-4 rounded-xl font-black hover:bg-red-700 shadow-lg shadow-red-200 transition active:scale-95">CADASTRAR PRODUTO</button>
+        <div id="view-lojas" class="max-w-4xl mx-auto w-full">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-black text-gray-800 uppercase">Gerenciar Lojas</h2>
+                <button onclick="abrirModalLoja()" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold shadow-lg hover:bg-red-700">+ Nova Loja</button>
+            </div>
+            <div id="lista-lojas" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+
+        <div id="view-produtos" class="hidden max-w-5xl mx-auto w-full">
+            <button onclick="telaLojas()" class="text-red-600 font-bold mb-4 flex items-center"><i class="fas fa-arrow-left mr-2"></i> Voltar para Lojas</button>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border h-fit">
+                    <h3 id="nome-loja-atendida" class="font-black text-gray-800 mb-4 uppercase text-sm border-b pb-2"></h3>
+                    <form id="form-produto" class="space-y-3">
+                        <input type="text" id="p-nome" placeholder="Nome do Produto" class="w-full border p-2 rounded-lg outline-none focus:ring-1 focus:ring-red-500" required>
+                        <input type="number" id="p-preco" placeholder="Preço" step="0.01" class="w-full border p-2 rounded-lg outline-none focus:ring-1 focus:ring-red-500" required>
+                        <input type="text" id="p-img" placeholder="Link da Imagem" class="w-full border p-2 rounded-lg outline-none focus:ring-1 focus:ring-red-500">
+                        <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-lg font-bold uppercase text-xs">Adicionar Produto</button>
                     </form>
                 </div>
-            </div>
-
-            <div class="lg:col-span-2">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
-                        <span class="font-bold text-gray-700">Itens Cadastrados</span>
-                        <button onclick="limparTudo()" class="text-xs text-red-500 hover:underline">Limpar tudo</button>
-                    </div>
-                    <div id="lista-admin" class="divide-y divide-gray-100">
-                        </div>
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border overflow-hidden">
+                    <div id="lista-produtos" class="divide-y divide-gray-100"></div>
                 </div>
             </div>
         </div>
     </main>
 
+    <div id="modal-loja" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <h3 class="font-black text-gray-800 mb-4 uppercase">Configurar Nova Loja</h3>
+            <form id="form-loja" class="space-y-4">
+                <input type="text" id="l-nome" placeholder="Nome da Loja (ex: Pizzaria do Robs)" class="w-full border p-3 rounded-xl outline-none" required>
+                <input type="text" id="l-whatsapp" placeholder="WhatsApp (ex: 5579999999999)" class="w-full border p-3 rounded-xl outline-none" required>
+                <input type="text" id="l-img" placeholder="URL do Logo da Loja" class="w-full border p-3 rounded-xl outline-none">
+                <div class="flex gap-2">
+                    <button type="button" onclick="fecharModalLoja()" class="flex-1 bg-gray-200 py-3 rounded-xl font-bold">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold">Salvar Loja</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
-        // Imagem padrão caso o link esteja quebrado
-        const IMG_DEFAULT = "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200";
+        let lojas = JSON.parse(localStorage.getItem('multi_delivery_lojas')) || [];
+        let lojaAtualId = null;
 
-        let db = JSON.parse(localStorage.getItem('meu_delivery_db')) || [];
+        function salvarLojas() {
+            localStorage.setItem('multi_delivery_lojas', JSON.stringify(lojas));
+            renderLojas();
+        }
 
-        function salvar() {
-            localStorage.setItem('meu_delivery_db', JSON.stringify(db));
-            render();
+        // GERENCIAMENTO DE LOJAS
+        document.getElementById('form-loja').onsubmit = (e) => {
+            e.preventDefault();
+            const novaLoja = {
+                id: Date.now().toString(),
+                nome: document.getElementById('l-nome').value,
+                whatsapp: document.getElementById('l-whatsapp').value,
+                img: document.getElementById('l-img').value || 'https://via.placeholder.com/100',
+                produtos: []
+            };
+            lojas.push(novaLoja);
+            fecharModalLoja();
+            salvarLojas();
+        };
+
+        function renderLojas() {
+            const container = document.getElementById('lista-lojas');
+            container.innerHTML = lojas.map(l => `
+                <div class="bg-white p-4 rounded-2xl shadow-sm border flex items-center justify-between">
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="gerenciarProdutos('${l.id}')">
+                        <img src="${l.img}" class="w-12 h-12 rounded-full object-cover border">
+                        <div>
+                            <p class="font-bold text-gray-800">${l.nome}</p>
+                            <p class="text-xs text-green-600 font-bold"><i class="fab fa-whatsapp"></i> ${l.whatsapp}</p>
+                        </div>
+                    </div>
+                    <button onclick="excluirLoja('${l.id}')" class="text-gray-300 hover:text-red-600 p-2"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function excluirLoja(id) {
+            if(confirm("Excluir a loja e todos os produtos dela?")) {
+                lojas = lojas.filter(l => l.id !== id);
+                salvarLojas();
+            }
+        }
+
+        // GERENCIAMENTO DE PRODUTOS
+        function gerenciarProdutos(id) {
+            lojaAtualId = id;
+            const loja = lojas.find(l => l.id === id);
+            document.getElementById('view-lojas').classList.add('hidden');
+            document.getElementById('view-produtos').classList.remove('hidden');
+            document.getElementById('nome-loja-atendida').innerText = `Produtos: ${loja.nome}`;
+            renderProdutos();
         }
 
         document.getElementById('form-produto').onsubmit = (e) => {
             e.preventDefault();
-            let urlInput = document.getElementById('img').value.trim();
-            
-            const novo = {
+            const index = lojas.findIndex(l => l.id === lojaAtualId);
+            const novoP = {
                 id: Date.now(),
-                nome: document.getElementById('nome').value,
-                preco: parseFloat(document.getElementById('preco').value),
-                img: urlInput === "" ? IMG_DEFAULT : urlInput,
-                cat: document.getElementById('categoria').value,
+                nome: document.getElementById('p-nome').value,
+                preco: parseFloat(document.getElementById('p-preco').value),
+                img: document.getElementById('p-img').value || 'https://via.placeholder.com/100',
                 ativo: true
             };
-            db.unshift(novo);
+            lojas[index].produtos.unshift(novoP);
             e.target.reset();
-            salvar();
+            salvarLojas();
+            renderProdutos();
         };
 
-        window.excluir = (id) => {
-            if(confirm("Excluir este produto?")) {
-                db = db.filter(p => p.id !== id);
-                salvar();
-            }
-        };
-
-        window.toggleAtivo = (id) => {
-            db = db.map(p => p.id === id ? {...p, ativo: !p.ativo} : p);
-            salvar();
-        };
-
-        window.limparTudo = () => {
-            if(confirm("Apagar todos os produtos?")) {
-                db = [];
-                salvar();
-            }
-        }
-
-        function render() {
-            const lista = document.getElementById('lista-admin');
-            if (db.length === 0) {
-                lista.innerHTML = `<div class="p-10 text-center text-gray-400">Nenhum produto cadastrado.</div>`;
-                return;
-            }
-            lista.innerHTML = db.map(p => `
-                <div class="p-4 flex items-center justify-between hover:bg-gray-50 transition ${!p.ativo ? 'item-off' : ''}">
-                    <div class="flex items-center gap-4">
-                        <img src="${p.img}" onerror="this.src='${IMG_DEFAULT}'" class="w-12 h-12 object-cover rounded-lg shadow-sm">
-                        <div>
-                            <p class="font-bold text-gray-800 text-sm">${p.nome}</p>
-                            <p class="text-xs text-green-600 font-bold uppercase">${p.cat} • R$ ${p.preco.toFixed(2)}</p>
-                        </div>
+        function renderProdutos() {
+            const loja = lojas.find(l => l.id === lojaAtualId);
+            const container = document.getElementById('lista-produtos');
+            container.innerHTML = loja.produtos.map(p => `
+                <div class="p-4 flex items-center justify-between ${!p.ativo ? 'opacity-50' : ''}">
+                    <div class="flex items-center gap-3 text-sm">
+                        <img src="${p.img}" class="w-10 h-10 object-cover rounded-lg">
+                        <p class="font-bold">${p.nome} - <span class="text-green-600">R$ ${p.preco.toFixed(2)}</span></p>
                     </div>
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3">
                         <label class="switch">
-                            <input type="checkbox" ${p.ativo ? 'checked' : ''} onchange="toggleAtivo(${p.id})">
+                            <input type="checkbox" ${p.ativo ? 'checked' : ''} onchange="toggleProduto('${p.id}')">
                             <span class="slider"></span>
                         </label>
-                        <button onclick="excluir(${p.id})" class="text-gray-300 hover:text-red-600 transition"><i class="fas fa-trash"></i></button>
+                        <button onclick="excluirProduto('${p.id}')" class="text-gray-300 hover:text-red-600"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
         }
-        render();
+
+        window.toggleProduto = (pId) => {
+            const lIdx = lojas.findIndex(l => l.id === lojaAtualId);
+            lojas[lIdx].produtos = lojas[lIdx].produtos.map(p => p.id == pId ? {...p, ativo: !p.ativo} : p);
+            salvarLojas();
+            renderProdutos();
+        }
+
+        window.excluirProduto = (pId) => {
+            const lIdx = lojas.findIndex(l => l.id === lojaAtualId);
+            lojas[lIdx].produtos = lojas[lIdx].produtos.filter(p => p.id != pId);
+            salvarLojas();
+            renderProdutos();
+        }
+
+        function telaLojas() {
+            document.getElementById('view-lojas').classList.remove('hidden');
+            document.getElementById('view-produtos').classList.add('hidden');
+        }
+
+        function abrirModalLoja() { document.getElementById('modal-loja').classList.remove('hidden'); }
+        function fecharModalLoja() { document.getElementById('modal-loja').classList.add('hidden'); }
+
+        renderLojas();
     </script>
 </body>
 </html>
