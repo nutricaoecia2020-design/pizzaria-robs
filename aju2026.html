@@ -160,10 +160,8 @@
             `).join('');
         }
 
-        // FUNÇÃO DE FILTRO CORRIGIDA (IGNORA ACENTOS E CASE)
         function filterCategory(cat) {
             document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
-            
             if(cat === 'all') {
                 document.getElementById('cat-all').classList.add('active');
                 document.getElementById('tituloLista').innerText = "Lojas em Aracaju";
@@ -172,12 +170,8 @@
                 const btnId = 'cat-' + cat.replace(' Mineral', '');
                 const targetBtn = document.getElementById(btnId) || document.getElementById('cat-' + cat);
                 if(targetBtn) targetBtn.classList.add('active');
-                
                 document.getElementById('tituloLista').innerText = `Lojas: ${cat}`;
-
-                // Normaliza para comparar sem acentos e minúsculas
                 const normalize = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-                
                 const filtradas = dbLojas.filter(l => normalize(l.categoria) === normalize(cat));
                 renderLojas(filtradas);
             }
@@ -268,17 +262,42 @@
             document.getElementById('cat-all').classList.add('active');
         }
 
+        // --- FUNÇÃO ALTERADA COM O RASTREIO DE PEDIDOS ---
         function sendWhatsApp() {
             const nome = document.getElementById('clienteNome').value;
             const end = document.getElementById('clienteEnd').value;
             const tel = document.getElementById('clienteTel').value;
+            const pag = document.getElementById('clientePag').value;
+            const totalStr = document.getElementById('totalPrice').innerText.replace('R$ ', '');
+
             if(!nome || !end || !tel) return alert("Preencha Nome, Endereço e Telefone!");
+
+            // Captura dados para o caderno
+            const listaProd = cart.map(i => `${i.qtd}x ${i.nome}`).join(', ');
+            const registro = {
+                data: new Date().toLocaleString('pt-BR'),
+                loja: currentLoja.nome,
+                cliente: nome,
+                produtos: listaProd,
+                total: totalStr,
+                pagamento: pag,
+                contato: tel,
+                endereco: end
+            };
+
+            // Salva na memória do navegador (compartilhada com o caderno)
+            let logs = JSON.parse(localStorage.getItem('amarelinhas_pedidos') || "[]");
+            logs.push(registro);
+            localStorage.setItem('amarelinhas_pedidos', JSON.stringify(logs));
+
+            // Gera mensagem do WhatsApp
             let msg = `*PEDIDO: ${currentLoja.nome.toUpperCase()}*\n\n`;
-            msg += `*Cliente:* ${nome}\n*Telefone:* ${tel}\n*Endereço:* ${end}\n*Pagamento:* ${document.getElementById('clientePag').value}\n`;
+            msg += `*Cliente:* ${nome}\n*Telefone:* ${tel}\n*Endereço:* ${end}\n*Pagamento:* ${pag}\n`;
             msg += `----------------------------\n`;
             cart.forEach(i => msg += `✅ ${i.qtd}x ${i.nome} - R$ ${(i.preco*i.qtd).toFixed(2)}\n`);
             msg += `----------------------------\n`;
-            msg += `*TOTAL: ${document.getElementById('totalPrice').innerText}*`;
+            msg += `*TOTAL: R$ ${totalStr}*`;
+            
             window.open(`https://wa.me/${currentLoja.whatsapp}?text=${encodeURIComponent(msg)}`);
         }
 
