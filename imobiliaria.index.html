@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Imobiliário Pro</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #27ae60;
+            --light: #ecf0f1;
+            --dark: #34495e;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        
+        /* Menu e Abas */
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--light); padding-bottom: 10px; }
+        .tab-btn { padding: 10px 20px; cursor: pointer; border: none; background: var(--light); border-radius: 5px; font-weight: bold; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Formulários */
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button.main-btn { background: var(--secondary); color: white; border: none; padding: 12px 25px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+
+        /* Filtros e Busca */
+        .filter-section { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+
+        /* Cards de Imóveis */
+        .grid-imoveis { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .card { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .card img { width: 100%; height: 200px; object-fit: cover; }
+        .card-body { padding: 15px; }
+        .card-price { font-size: 1.25rem; color: var(--secondary); font-weight: bold; }
+        .btn-zap { background: #25d366; color: white; border: none; width: 100%; padding: 10px; border-radius: 4px; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table th, table td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        table th { background: var(--primary); color: white; }
+
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="openTab('imoveis')">Imóveis</button>
+        <button class="tab-btn" onclick="openTab('cadastro-imovel')">Novo Imóvel</button>
+        <button class="tab-btn" onclick="openTab('clientes')">Clientes</button>
+    </div>
+
+    <div id="imoveis" class="tab-content active">
+        <h3>Explorar Imóveis</h3>
+        <div class="filter-section">
+            <input type="text" id="filterBairro" placeholder="Filtrar por Bairro" onkeyup="renderImoveis()">
+            <input type="number" id="filterPreco" placeholder="Preço Máximo" onkeyup="renderImoveis()">
+            <select id="filterTipo" onchange="renderImoveis()">
+                <option value="">Todos os Tipos</option>
+                <option value="Casa">Casa</option>
+                <option value="Apartamento">Apartamento</option>
+                <option value="Terreno">Terreno</option>
+            </select>
+        </div>
+        <div id="listaImoveis" class="grid-imoveis"></div>
+    </div>
+
+    <div id="cadastro-imovel" class="tab-content">
+        <h3>Cadastrar Novo Imóvel</h3>
+        <form id="formImovel">
+            <div class="form-grid">
+                <input type="text" id="titulo" placeholder="Título do Anúncio" required>
+                <select id="tipo" required>
+                    <option value="">Tipo de Imóvel</option>
+                    <option value="Casa">Casa</option>
+                    <option value="Apartamento">Apartamento</option>
+                    <option value="Terreno">Terreno</option>
+                </select>
+                <input type="text" id="bairro" placeholder="Bairro" required>
+                <input type="text" id="endereco" placeholder="Endereço Completo">
+                <input type="number" id="valor" placeholder="Valor (R$)" required>
+                <input type="text" id="caracteristicas" placeholder="Ex: 3 quartos, suíte, piscina">
+                <input type="text" id="fotoUrl" placeholder="URL da Foto (ou use placeholder)">
+            </div>
+            <button type="submit" class="main-btn">Salvar Imóvel</button>
+        </form>
+    </div>
+
+    <div id="clientes" class="tab-content">
+        <h3>Cadastro de Clientes</h3>
+        <form id="formCliente">
+            <div class="form-grid">
+                <input type="text" id="nomeCliente" placeholder="Nome Completo" required>
+                <input type="text" id="telCliente" placeholder="WhatsApp (DDD + Número)" required>
+                <input type="email" id="emailCliente" placeholder="E-mail">
+            </div>
+            <button type="submit" class="main-btn">Cadastrar Cliente</button>
+        </form>
+        <table id="tabelaClientes">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>WhatsApp</th>
+                    <th>E-mail</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Banco de Dados Local (LocalStorage)
+    let imoveis = JSON.parse(localStorage.getItem('imoveis')) || [];
+    let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+
+    // Navegação
+    function openTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // Cadastro de Imóvel
+    document.getElementById('formImovel').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const novo = {
+            id: Date.now(),
+            titulo: document.getElementById('titulo').value,
+            tipo: document.getElementById('tipo').value,
+            bairro: document.getElementById('bairro').value,
+            endereco: document.getElementById('endereco').value,
+            valor: parseFloat(document.getElementById('valor').value),
+            caract: document.getElementById('caracteristicas').value,
+            foto: document.getElementById('fotoUrl').value || 'https://via.placeholder.com/400x250?text=Imovel'
+        };
+        imoveis.push(novo);
+        localStorage.setItem('imoveis', JSON.stringify(imoveis));
+        e.target.reset();
+        alert('Imóvel cadastrado!');
+        renderImoveis();
+        openTab('imoveis');
+    });
+
+    // Cadastro de Cliente
+    document.getElementById('formCliente').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const novo = {
+            nome: document.getElementById('nomeCliente').value,
+            tel: document.getElementById('telCliente').value,
+            email: document.getElementById('emailCliente').value
+        };
+        clientes.push(novo);
+        localStorage.setItem('clientes', JSON.stringify(clientes));
+        e.target.reset();
+        renderClientes();
+    });
+
+    // Renderizar Imóveis com Filtro
+    function renderImoveis() {
+        const lista = document.getElementById('listaImoveis');
+        const fBairro = document.getElementById('filterBairro').value.toLowerCase();
+        const fPreco = document.getElementById('filterPreco').value;
+        const fTipo = document.getElementById('filterTipo').value;
+
+        lista.innerHTML = '';
+
+        const filtrados = imoveis.filter(i => {
+            return (i.bairro.toLowerCase().includes(fBairro)) &&
+                   (!fPreco || i.valor <= fPreco) &&
+                   (!fTipo || i.tipo === fTipo);
+        });
+
+        filtrados.forEach(i => {
+            lista.innerHTML += `
+                <div class="card">
+                    <img src="${i.foto}" alt="Imóvel">
+                    <div class="card-body">
+                        <div class="card-price">R$ ${i.valor.toLocaleString('pt-BR')}</div>
+                        <strong>${i.titulo}</strong>
+                        <p style="font-size:0.9rem; color:#666">${i.tipo} - ${i.bairro}<br>${i.caract}</p>
+                        <button class="btn-zap" onclick="enviarZap('${i.id}')">
+                            Enviar p/ WhatsApp
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // Renderizar Clientes
+    function renderClientes() {
+        const tbody = document.querySelector('#tabelaClientes tbody');
+        tbody.innerHTML = '';
+        clientes.forEach(c => {
+            tbody.innerHTML += `<tr><td>${c.nome}</td><td>${c.tel}</td><td>${c.email}</td></tr>`;
+        });
+    }
+
+    // Integração WhatsApp
+    function enviarZap(id) {
+        const i = imoveis.find(item => item.id == id);
+        const mensagem = `Olá! Segue detalhe do imóvel que você buscou:%0A%0A🏠 *${i.titulo}*%0A📍 Bairro: ${i.bairro}%0A💰 Valor: R$ ${i.valor.toLocaleString('pt-BR')}%0A📝 Detalhes: ${i.caract}%0A📸 Foto: ${i.foto}`;
+        
+        // Abre o seletor de contato do WhatsApp (o usuário escolhe para quem enviar)
+        window.open(`https://wa.me/?text=${mensagem}`, '_blank');
+    }
+
+    // Inicialização
+    renderImoveis();
+    renderClientes();
+</script>
+
+</body>
+</html>
