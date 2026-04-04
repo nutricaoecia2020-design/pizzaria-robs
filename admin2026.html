@@ -3,212 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Admin | Quero Clone</title>
+    <title>ADM Amarelinhas | Gestão Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --quero-orange: #FF5E00; --quero-purple: #4B1D6E; }
-        .bg-quero { background-color: var(--quero-orange); }
-        .text-quero { color: var(--quero-orange); }
-        .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #D1D5DB; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--quero-orange); }
-        input:checked + .slider:before { transform: translateX(18px); }
+        :root { --amarelo: #FFD700; --preto: #1a1a1a; }
+        .bg-amarelo { background-color: var(--amarelo); }
+        .text-amarelo { color: var(--amarelo); }
+        .btn-amarelo { background-color: var(--amarelo); color: var(--preto); font-weight: 900; }
+        .btn-amarelo:hover { background-color: #e6c200; }
     </style>
 </head>
-<body class="bg-gray-50 flex h-screen overflow-hidden font-sans">
+<body class="bg-gray-100 flex h-screen overflow-hidden font-sans">
 
-    <aside class="w-72 bg-[#4B1D6E] text-white flex-shrink-0 hidden lg:flex flex-col">
-        <div class="p-8">
-            <img src="https://logodownload.org/wp-content/uploads/2020/09/quero-delivery-logo.png" class="w-32 brightness-200" alt="Logo">
+    <aside class="w-64 bg-zinc-900 text-white flex-shrink-0 hidden lg:flex flex-col">
+        <div class="p-6 text-center border-b border-zinc-800">
+            <h1 class="text-amarelo font-black text-2xl italic tracking-tighter">AMARELINHAS</h1>
+            <p class="text-[10px] font-bold text-zinc-500 uppercase">Painel de Controle</p>
         </div>
-        <nav class="flex-1 px-4 space-y-1">
-            <button onclick="changeTab('lojas')" class="w-full flex items-center p-4 bg-white/10 rounded-xl font-bold transition"><i class="fas fa-store mr-3"></i> Gestão de Lojas</button>
-            <a href="aju2026.html" target="_blank" class="w-full flex items-center p-4 hover:bg-white/5 rounded-xl transition text-gray-300"><i class="fas fa-external-link-alt mr-3"></i> Ver Marketplace</a>
+        <nav class="flex-1 p-4 space-y-2">
+            <button onclick="changeTab('lojas')" class="w-full flex items-center p-3 bg-zinc-800 rounded-xl text-amarelo font-bold transition"><i class="fas fa-store mr-3"></i> Lojas Parceiras</button>
+            <a href="aju2026.html" target="_blank" class="w-full flex items-center p-3 hover:bg-zinc-800 rounded-xl text-zinc-400"><i class="fas fa-external-link-alt mr-3"></i> Ver Delivery Aju</a>
         </nav>
-        <div class="p-6 border-t border-white/10 text-xs text-purple-200">Master Control v2.0</div>
     </aside>
 
     <main class="flex-1 overflow-y-auto">
-        <header class="bg-white p-6 shadow-sm flex justify-between items-center sticky top-0 z-20">
-            <h2 class="text-xl font-black text-gray-800 uppercase tracking-tighter">Painel de Controle</h2>
-            <button onclick="openModal('modalLoja')" class="bg-quero text-white px-6 py-3 rounded-xl font-black shadow-lg shadow-orange-200 hover:scale-105 transition active:scale-95 text-sm uppercase italic">+ Cadastrar Loja</button>
+        <header class="bg-white p-4 shadow-sm flex justify-between items-center sticky top-0 z-20 border-b-4 border-amarelo">
+            <h2 class="text-lg font-black text-zinc-800 uppercase italic">Gestão de Unidades</h2>
+            <button onclick="openModal('modalLoja')" class="btn-amarelo px-6 py-2 rounded-full shadow-lg transition text-xs uppercase italic">+ Nova Loja</button>
         </header>
 
-        <div class="p-8 max-w-6xl mx-auto">
-            <div id="tab-lojas">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="containerLojas">
-                    </div>
-            </div>
-
-            <div id="tab-produtos" class="hidden">
-                <button onclick="changeTab('lojas')" class="text-quero font-bold mb-6 flex items-center hover:underline"><i class="fas fa-arrow-left mr-2"></i> Voltar para Lojas</button>
-                <div class="bg-white rounded-3xl shadow-xl border overflow-hidden">
-                    <div class="p-6 bg-gray-50 border-b flex justify-between items-center">
-                        <div>
-                            <h3 id="currentStoreName" class="text-xl font-black text-gray-800 uppercase tracking-tighter">Gerenciar Cardápio</h3>
-                            <p class="text-xs text-gray-500 font-bold uppercase">Adicione itens para esta unidade</p>
-                        </div>
-                        <button onclick="openModal('modalProduto')" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold text-xs">+ NOVO PRODUTO</button>
-                    </div>
-                    <div id="containerProdutos" class="divide-y divide-gray-100"></div>
+        <div class="p-6 max-w-5xl mx-auto">
+            <div id="tab-lojas" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 </div>
+
+            <div id="tab-produtos" class="hidden bg-white rounded-3xl shadow-xl overflow-hidden border border-zinc-200">
+                <div class="p-6 bg-zinc-50 border-b flex justify-between items-center">
+                    <button onclick="changeTab('lojas')" class="font-bold text-zinc-500 hover:text-preto"><i class="fas fa-arrow-left mr-2"></i> VOLTAR</button>
+                    <h3 id="storeTitle" class="font-black italic uppercase text-zinc-800"></h3>
+                    <button onclick="openModal('modalProd')" class="bg-zinc-900 text-amarelo px-4 py-2 rounded-lg text-xs font-black">+ ADD ITEM</button>
+                </div>
+                <div id="listaProdutos" class="divide-y divide-gray-100"></div>
             </div>
         </div>
     </main>
 
-    <div id="modalLoja" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-white w-full max-w-lg rounded-3xl p-8 shadow-2xl">
-            <h3 class="text-2xl font-black text-gray-800 mb-6 uppercase italic">Configurar Loja</h3>
-            <form id="formLoja" class="space-y-4">
-                <input type="text" id="l_nome" placeholder="Nome da Loja" class="w-full border-2 border-gray-100 p-4 rounded-2xl bg-gray-50 focus:border-orange-500 outline-none font-bold" required>
-                <input type="text" id="l_wpp" placeholder="WhatsApp (DDD+Número - Apenas números)" class="w-full border-2 border-gray-100 p-4 rounded-2xl bg-gray-50 focus:border-orange-500 outline-none font-bold" required>
-                <input type="text" id="l_img" placeholder="URL da Logo (ou deixe em branco)" class="w-full border-2 border-gray-100 p-4 rounded-2xl bg-gray-50 focus:border-orange-500 outline-none">
-                <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="closeModal('modalLoja')" class="flex-1 py-4 font-bold text-gray-400">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-quero text-white py-4 rounded-2xl font-black shadow-lg">SALVAR LOJA</button>
+    <div id="modalLoja" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl">
+            <h3 class="text-xl font-black italic mb-4">CADASTRAR PARCEIRO</h3>
+            <form id="formLoja" class="space-y-3">
+                <input type="text" id="l_nome" placeholder="Nome da Loja" class="w-full border-2 border-gray-100 p-3 rounded-xl outline-none focus:border-yellow-400 font-bold" required>
+                <input type="text" id="l_wpp" placeholder="WhatsApp (ex: 79999999999)" class="w-full border-2 border-gray-100 p-3 rounded-xl outline-none focus:border-yellow-400 font-bold" required>
+                <select id="l_cat" class="w-full border-2 border-gray-100 p-3 rounded-xl outline-none font-bold">
+                    <option value="ALIMENTAÇÃO">🍔 ALIMENTAÇÃO</option>
+                    <option value="ÁGUA MINERAL">💧 ÁGUA MINERAL</option>
+                    <option value="FARMÁCIA">💊 FARMÁCIA</option>
+                    <option value="MERCADO">🛒 MERCADO</option>
+                </select>
+                <input type="text" id="l_img" placeholder="URL da Logo" class="w-full border-2 border-gray-100 p-3 rounded-xl outline-none font-bold">
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalLoja')" class="flex-1 font-bold text-gray-400">Fechar</button>
+                    <button type="submit" class="flex-1 btn-amarelo py-3 rounded-xl shadow-lg">SALVAR LOJA</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="modalProduto" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-white w-full max-w-lg rounded-3xl p-8 shadow-2xl">
-            <h3 class="text-2xl font-black text-gray-800 mb-6 uppercase italic tracking-tighter">Novo Item no Cardápio</h3>
-            <form id="formProduto" class="space-y-4">
-                <input type="text" id="p_nome" placeholder="Nome do Produto" class="w-full border-2 border-gray-100 p-4 rounded-2xl bg-gray-50 focus:border-blue-500 outline-none font-bold" required>
-                <div class="flex gap-4">
-                    <input type="number" id="p_preco" step="0.01" placeholder="R$ 0,00" class="flex-1 border-2 border-gray-100 p-4 rounded-2xl bg-gray-50 focus:border-blue-500 outline-none font-bold" required>
-                    <select id="p_cat" class="flex-1 border-2 border-gray-100 p-4 rounded-2xl bg-gray-50 outline-none font-bold">
-                        <option value="Destaques">✨ Destaques</option>
-                        <option value="Pizzas">🍕 Pizzas</option>
-                        <option value="Bebidas">🥤 Bebidas</option>
-                    </select>
-                </div>
-                <input type="text" id="p_img" placeholder="Link da Imagem do Produto" class="w-full border-2 border-gray-100 p-4 rounded-2xl bg-gray-50 focus:border-blue-500 outline-none">
-                <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="closeModal('modalProduto')" class="flex-1 py-4 font-bold text-gray-400">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-indigo-600 text-white py-4 rounded-2xl font-black shadow-lg">ADICIONAR ITEM</button>
-                </div>
+    <div id="modalProd" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border-t-8 border-amarelo">
+            <h3 class="text-xl font-black italic mb-4 uppercase">Adicionar Produto</h3>
+            <form id="formProd" class="space-y-3">
+                <input type="text" id="p_nome" placeholder="Ex: Pizza de Calabresa" class="w-full border-2 border-gray-100 p-3 rounded-xl outline-none" required>
+                <input type="number" id="p_preco" step="0.01" placeholder="Preço (R$ 0,00)" class="w-full border-2 border-gray-100 p-3 rounded-xl outline-none font-bold" required>
+                <input type="text" id="p_img" placeholder="Link da imagem do produto" class="w-full border-2 border-gray-100 p-3 rounded-xl outline-none">
+                <button type="submit" class="w-full bg-zinc-900 text-amarelo py-3 rounded-xl font-black shadow-lg uppercase">Confirmar Item</button>
+                <button type="button" onclick="closeModal('modalProd')" class="w-full text-zinc-400 font-bold text-xs uppercase">Cancelar</button>
             </form>
         </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('quero_db')) || [];
-        let currentStoreId = null;
+        let db = JSON.parse(localStorage.getItem('amarelinhas_db')) || [];
+        let currentLojaId = null;
 
         function save() { 
-            localStorage.setItem('quero_db', JSON.stringify(db)); 
+            localStorage.setItem('amarelinhas_db', JSON.stringify(db)); 
             renderLojas(); 
-            if(currentStoreId) renderProdutos();
+            if(currentLojaId) renderProdutos();
         }
 
-        // Lógica de Lojas
         document.getElementById('formLoja').onsubmit = (e) => {
             e.preventDefault();
-            const nova = {
+            db.push({
                 id: Date.now().toString(),
                 nome: document.getElementById('l_nome').value,
                 whatsapp: document.getElementById('l_wpp').value.replace(/\D/g, ''),
-                img: document.getElementById('l_img').value || 'https://via.placeholder.com/150/FF5E00/FFFFFF?text=Loja',
+                categoria: document.getElementById('l_cat').value,
+                img: document.getElementById('l_img').value || 'https://via.placeholder.com/100',
                 produtos: []
-            };
-            db.push(nova);
+            });
             closeModal('modalLoja');
             e.target.reset();
             save();
         };
 
         function renderLojas() {
-            const container = document.getElementById('containerLojas');
+            const container = document.getElementById('tab-lojas');
             container.innerHTML = db.map(loja => `
-                <div class="bg-white p-6 rounded-3xl shadow-sm border-2 border-gray-50 hover:border-orange-100 transition group relative">
-                    <div class="flex items-center gap-4 cursor-pointer" onclick="openStore('${loja.id}')">
-                        <img src="${loja.img}" class="w-16 h-16 rounded-2xl object-cover shadow-sm group-hover:scale-105 transition">
+                <div class="bg-white p-4 rounded-3xl shadow-sm border-2 border-white flex items-center justify-between hover:border-amarelo transition group">
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="openLoja('${loja.id}')">
+                        <img src="${loja.img}" class="w-14 h-14 rounded-2xl object-cover border">
                         <div>
-                            <h4 class="font-black text-gray-800 uppercase italic tracking-tighter">${loja.nome}</h4>
-                            <p class="text-xs font-bold text-green-600"><i class="fab fa-whatsapp"></i> ${loja.whatsapp}</p>
-                            <span class="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 font-bold uppercase mt-1 inline-block">${loja.produtos.length} Itens</span>
+                            <h4 class="font-black italic uppercase text-sm leading-tight">${loja.nome}</h4>
+                            <span class="text-[9px] bg-amarelo px-2 py-0.5 rounded font-black text-zinc-700">${loja.categoria}</span>
                         </div>
                     </div>
-                    <button onclick="deleteStore('${loja.id}')" class="absolute top-4 right-4 text-gray-200 hover:text-red-500 transition">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
+                    <button onclick="delLoja('${loja.id}')" class="text-zinc-200 hover:text-red-500"><i class="fas fa-trash"></i></button>
                 </div>
             `).join('');
         }
 
-        // Lógica de Produtos
-        function openStore(id) {
-            currentStoreId = id;
+        function openLoja(id) {
+            currentLojaId = id;
             const loja = db.find(l => l.id === id);
-            document.getElementById('currentStoreName').innerText = loja.nome;
-            changeTab('produtos');
+            document.getElementById('storeTitle').innerText = loja.nome;
+            document.getElementById('tab-lojas').classList.add('hidden');
+            document.getElementById('tab-produtos').classList.remove('hidden');
             renderProdutos();
         }
 
-        document.getElementById('formProduto').onsubmit = (e) => {
+        document.getElementById('formProd').onsubmit = (e) => {
             e.preventDefault();
-            const storeIdx = db.findIndex(l => l.id === currentStoreId);
-            const prod = {
+            const idx = db.findIndex(l => l.id === currentLojaId);
+            db[idx].produtos.push({
                 id: Date.now(),
                 nome: document.getElementById('p_nome').value,
                 preco: parseFloat(document.getElementById('p_preco').value),
-                cat: document.getElementById('p_cat').value,
-                img: document.getElementById('p_img').value || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=100',
+                img: document.getElementById('p_img').value || 'https://via.placeholder.com/100',
                 ativo: true
-            };
-            db[storeIdx].produtos.unshift(prod);
-            closeModal('modalProduto');
+            });
+            closeModal('modalProd');
             e.target.reset();
             save();
         };
 
         function renderProdutos() {
-            const loja = db.find(l => l.id === currentStoreId);
-            const container = document.getElementById('containerProdutos');
+            const loja = db.find(l => l.id === currentLojaId);
+            const container = document.getElementById('listaProdutos');
             container.innerHTML = loja.produtos.map(p => `
-                <div class="p-6 flex items-center justify-between hover:bg-gray-50 transition ${!p.ativo ? 'opacity-50' : ''}">
-                    <div class="flex items-center gap-4">
-                        <img src="${p.img}" class="w-14 h-14 rounded-xl object-cover border shadow-sm">
-                        <div>
-                            <p class="font-black text-gray-800 uppercase italic text-sm">${p.nome}</p>
-                            <p class="text-green-600 font-black">R$ ${p.preco.toFixed(2)}</p>
-                        </div>
+                <div class="p-4 flex items-center justify-between bg-white">
+                    <div class="flex items-center gap-3">
+                        <img src="${p.img}" class="w-12 h-12 rounded-lg object-cover">
+                        <p class="font-bold text-sm text-zinc-700">${p.nome} - <span class="text-green-600">R$ ${p.preco.toFixed(2)}</span></p>
                     </div>
-                    <div class="flex items-center gap-6">
-                        <label class="switch">
-                            <input type="checkbox" ${p.ativo ? 'checked' : ''} onchange="toggleProd(${p.id})">
-                            <span class="slider"></span>
-                        </label>
-                        <button onclick="deleteProd(${p.id})" class="text-gray-300 hover:text-red-600 transition"><i class="fas fa-trash"></i></button>
-                    </div>
+                    <button onclick="delProd(${p.id})" class="text-red-400"><i class="fas fa-times"></i></button>
                 </div>
             `).join('');
         }
 
-        // Funções de Utilidade
-        function deleteStore(id) { if(confirm("Apagar loja permanentemente?")) { db = db.filter(l => l.id !== id); save(); } }
-        function deleteProd(pid) { 
-            const idx = db.findIndex(l => l.id === currentStoreId);
+        function delLoja(id) { if(confirm("Apagar loja?")) { db = db.filter(l => l.id !== id); save(); } }
+        function delProd(pid) { 
+            const idx = db.findIndex(l => l.id === currentLojaId);
             db[idx].produtos = db[idx].produtos.filter(p => p.id !== pid);
-            save(); 
-        }
-        function toggleProd(pid) {
-            const idx = db.findIndex(l => l.id === currentStoreId);
-            db[idx].produtos = db[idx].produtos.map(p => p.id === pid ? {...p, ativo: !p.ativo} : p);
             save();
         }
+
         function changeTab(tab) {
             document.getElementById('tab-lojas').classList.toggle('hidden', tab !== 'lojas');
             document.getElementById('tab-produtos').classList.toggle('hidden', tab !== 'produtos');
         }
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-
         renderLojas();
     </script>
 </body>
