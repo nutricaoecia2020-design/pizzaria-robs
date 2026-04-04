@@ -3,94 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delivery Aju | Amarelinhas</title>
+    <title>Amarelinhas | Marketplace Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --amarelo: #FFD700; --preto: #000000; }
-        .bg-amarelo { background-color: var(--amarelo); }
-        .text-amarelo { color: var(--amarelo); }
-        .font-black-italic { font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: -0.05em; }
+        :root { --amarelo: #FFD700; --preto: #0b0b0b; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        .font-black-italic { font-family: 'Archivo Black', sans-serif; text-transform: uppercase; font-style: italic; letter-spacing: -0.05em; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(0,0,0,0.05); }
+        .hero-gradient { background: linear-gradient(180deg, var(--amarelo) 0%, #f8f9fa 100%); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        .btn-premium { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .btn-premium:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
     </style>
 </head>
-<body class="bg-zinc-50 pb-28 font-sans overflow-x-hidden">
+<body class="pb-28">
 
-    <header class="bg-amarelo p-6 sticky top-0 z-50 shadow-md rounded-b-[3rem]">
+    <header class="hero-gradient pt-8 pb-12 px-6 rounded-b-[4rem] shadow-sm">
         <div class="max-w-6xl mx-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h1 class="text-preto font-black-italic text-3xl italic tracking-tighter">AMARELINHAS</h1>
-                <div class="bg-black text-amarelo p-2 px-4 rounded-2xl text-[10px] font-black uppercase italic tracking-widest">ARACAJU, SE</div>
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-preto font-black-italic text-4xl italic tracking-tighter">AMARELINHAS</h1>
+                <div class="flex gap-2">
+                    <span class="bg-black text-amarelo px-4 py-2 rounded-full text-[10px] font-black uppercase italic">Aracaju, SE</span>
+                </div>
+            </div>
+
+            <div class="bg-black text-white p-6 rounded-[2.5rem] mb-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl border-4 border-white">
+                <div class="text-center md:text-left">
+                    <h2 class="text-2xl font-black italic text-amarelo leading-none mb-2">VENDA MAIS COM O AMARELINHAS!</h2>
+                    <p class="text-zinc-400 text-xs font-bold uppercase tracking-widest">Cadastre sua loja em 2 minutos e comece a faturar hoje.</p>
+                </div>
+                <button onclick="window.open('https://wa.me/5579999999999?text=Quero+cadastrar+minha+loja')" class="bg-amarelo text-black px-8 py-4 rounded-2xl font-black italic uppercase text-sm btn-premium">
+                    QUERO ME CADASTRAR!
+                </button>
             </div>
             
             <div class="relative max-w-2xl mx-auto">
-                <div class="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400">
-                    <i class="fas fa-search text-xl"></i> </div>
-                <input type="text" id="searchInput" onkeyup="searchGlobal()" placeholder="Buscar comida, farmácia ou mercado..." 
-                    class="w-full bg-white p-5 pl-14 rounded-[2rem] shadow-xl font-bold outline-none border-2 border-transparent focus:border-black transition-all">
+                <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 text-lg"></i>
+                <input type="text" id="searchInput" onkeyup="searchGlobal()" placeholder="O que você procura hoje?" 
+                    class="w-full bg-white p-6 pl-16 rounded-[2.5rem] shadow-xl font-bold outline-none border-2 border-transparent focus:border-black transition-all text-lg">
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto p-4 space-y-8">
+    <main class="max-w-6xl mx-auto p-4 -mt-6">
         
-        <section id="catSection">
-            <div class="flex gap-4 overflow-x-auto no-scrollbar pb-2 justify-start md:justify-center">
-                <div onclick="filterCat('ALIMENTAÇÃO')" class="flex-shrink-0 bg-white p-4 w-24 rounded-[2rem] border-2 border-zinc-100 flex flex-col items-center gap-2 shadow-sm cursor-pointer hover:border-amarelo transition">
-                    <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-xl">🍔</div>
-                    <span class="text-[9px] font-black uppercase italic">Comida</span>
-                </div>
-                <div onclick="filterCat('ÁGUA MINERAL')" class="flex-shrink-0 bg-white p-4 w-24 rounded-[2rem] border-2 border-zinc-100 flex flex-col items-center gap-2 shadow-sm cursor-pointer hover:border-amarelo transition">
-                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-xl">💧</div>
-                    <span class="text-[9px] font-black uppercase italic">Água</span>
-                </div>
-                <div onclick="filterCat('FARMÁCIA')" class="flex-shrink-0 bg-white p-4 w-24 rounded-[2rem] border-2 border-zinc-100 flex flex-col items-center gap-2 shadow-sm cursor-pointer hover:border-amarelo transition">
-                    <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-xl">💊</div>
-                    <span class="text-[9px] font-black uppercase italic">Saúde</span>
-                </div>
-                <div onclick="filterCat('MERCADO')" class="flex-shrink-0 bg-white p-4 w-24 rounded-[2rem] border-2 border-zinc-100 flex flex-col items-center gap-2 shadow-sm cursor-pointer hover:border-amarelo transition">
-                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-xl">🛒</div>
-                    <span class="text-[9px] font-black uppercase italic">Mercado</span>
-                </div>
+        <section id="catSection" class="mb-12">
+            <div class="flex gap-4 overflow-x-auto no-scrollbar pb-4">
+                <button onclick="filterCat('ALIMENTAÇÃO')" class="flex-shrink-0 bg-white p-6 w-28 rounded-[2.5rem] shadow-sm hover:bg-amarelo transition group">
+                    <div class="text-3xl mb-2 group-hover:scale-125 transition">🍔</div>
+                    <span class="text-[10px] font-black uppercase italic block text-center">Comida</span>
+                </button>
+                <button onclick="filterCat('ÁGUA MINERAL')" class="flex-shrink-0 bg-white p-6 w-28 rounded-[2.5rem] shadow-sm hover:bg-amarelo transition group">
+                    <div class="text-3xl mb-2 group-hover:scale-125 transition">💧</div>
+                    <span class="text-[10px] font-black uppercase italic block text-center">Água</span>
+                </button>
+                <button onclick="filterCat('FARMÁCIA')" class="flex-shrink-0 bg-white p-6 w-28 rounded-[2.5rem] shadow-sm hover:bg-amarelo transition group">
+                    <div class="text-3xl mb-2 group-hover:scale-125 transition">💊</div>
+                    <span class="text-[10px] font-black uppercase italic block text-center">Saúde</span>
+                </button>
+                <button onclick="filterCat('MERCADO')" class="flex-shrink-0 bg-white p-6 w-28 rounded-[2.5rem] shadow-sm hover:bg-amarelo transition group">
+                    <div class="text-3xl mb-2 group-hover:scale-125 transition">🛒</div>
+                    <span class="text-[10px] font-black uppercase italic block text-center">Mercado</span>
+                </button>
             </div>
         </section>
 
         <section id="viewMarket">
-            <h2 class="font-black-italic text-zinc-900 mb-6 text-xl italic px-2">Lojas Disponíveis</h2>
-            <div id="listaLojas" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="flex justify-between items-end mb-8 px-2">
+                <h2 class="font-black-italic text-3xl italic">LOJAS EM DESTAQUE</h2>
+                <span class="text-zinc-400 font-bold text-xs uppercase italic">Aracaju e região</span>
+            </div>
+            <div id="listaLojas" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                 </div>
         </section>
 
-        <section id="viewLojaInterna" class="hidden max-w-2xl mx-auto">
-            <button onclick="goBack()" class="mb-6 bg-zinc-200 px-6 py-2 rounded-full font-black text-xs italic text-zinc-600 flex items-center hover:bg-zinc-300 transition">
-                <i class="fas fa-arrow-left mr-2"></i> VOLTAR PARA LOJAS
+        <section id="viewLojaInterna" class="hidden max-w-3xl mx-auto">
+            <button onclick="goBack()" class="mb-8 flex items-center gap-2 font-black italic text-zinc-400 hover:text-black transition">
+                <i class="fas fa-chevron-left"></i> VOLTAR PARA O MARKETPLACE
             </button>
-            <div id="headerLoja" class="mb-8"></div>
-            <div id="menuLoja" class="grid grid-cols-1 gap-4"></div>
+            <div id="headerLoja" class="mb-10"></div>
+            <div id="menuLoja" class="grid grid-cols-1 gap-6"></div>
         </section>
     </main>
 
-    <div id="cartFloat" class="fixed bottom-24 right-4 z-[100] hidden">
-        <button onclick="toggleCart()" class="bg-black text-amarelo p-5 rounded-full shadow-2xl flex items-center gap-4 border-4 border-amarelo transform hover:scale-110 transition">
+    <div id="cartFloat" class="fixed bottom-10 right-6 z-[100] hidden">
+        <button onclick="toggleCart()" class="bg-black text-amarelo p-6 rounded-[2rem] shadow-2xl flex items-center gap-4 border-4 border-amarelo btn-premium">
             <i class="fas fa-shopping-basket text-2xl"></i>
             <span id="cartCount" class="font-black text-2xl italic">0</span>
         </button>
     </div>
 
-    <div id="modalCart" class="hidden fixed inset-0 bg-black/95 backdrop-blur-md z-[200] flex flex-col">
+    <div id="modalCart" class="hidden fixed inset-0 bg-black/95 backdrop-blur-xl z-[200] flex flex-col">
         <div class="p-8 flex justify-between items-center bg-amarelo">
             <h2 class="font-black-italic text-2xl" id="cartStoreTitle">CARRINHO</h2>
             <button onclick="toggleCart()" class="text-3xl"><i class="fas fa-times"></i></button>
         </div>
-        <div id="cartItems" class="flex-1 overflow-y-auto p-8 space-y-4 text-white"></div>
-        <div class="p-8 bg-zinc-900 border-t-2 border-amarelo">
-            <div class="flex justify-between text-amarelo font-black text-2xl mb-6 italic">
-                <span>TOTAL</span>
-                <span id="cartTotal">R$ 0,00</span>
+        
+        <div class="flex-1 overflow-y-auto p-6 md:p-12">
+            <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+                
+                <div class="space-y-4">
+                    <h3 class="text-white font-black italic text-xl mb-6">SEUS ITENS</h3>
+                    <div id="cartItems" class="space-y-4"></div>
+                </div>
+
+                <div class="bg-zinc-900 p-8 rounded-[3rem] border border-zinc-800">
+                    <h3 class="text-amarelo font-black italic text-xl mb-6">DADOS PARA ENTREGA</h3>
+                    <div class="space-y-4">
+                        <input type="text" id="custName" placeholder="Seu Nome Completo" class="w-full bg-zinc-800 p-4 rounded-2xl text-white outline-none border-2 border-transparent focus:border-amarelo font-bold">
+                        <input type="text" id="custEnd" placeholder="Endereço (Rua, Número, Bairro)" class="w-full bg-zinc-800 p-4 rounded-2xl text-white outline-none border-2 border-transparent focus:border-amarelo font-bold">
+                        <input type="text" id="custTel" placeholder="Telefone de Contato" class="w-full bg-zinc-800 p-4 rounded-2xl text-white outline-none border-2 border-transparent focus:border-amarelo font-bold">
+                        <select id="custPag" class="w-full bg-zinc-800 p-4 rounded-2xl text-white outline-none border-2 border-transparent focus:border-amarelo font-bold">
+                            <option value="Pix">Forma de Pagamento: Pix</option>
+                            <option value="Cartão">Cartão (Maquininha)</option>
+                            <option value="Dinheiro">Dinheiro</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-            <button onclick="finalizarPedido()" class="w-full bg-amarelo text-preto py-5 rounded-2xl font-black italic text-xl uppercase tracking-tighter">
-                Enviar Pedido via WhatsApp
-            </button>
+        </div>
+
+        <div class="p-8 bg-zinc-900 border-t border-zinc-800">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex justify-between text-amarelo font-black text-3xl mb-8 italic">
+                    <span>TOTAL DO PEDIDO</span>
+                    <span id="cartTotal">R$ 0,00</span>
+                </div>
+                <button onclick="finalizarPedido()" class="w-full bg-amarelo text-preto py-6 rounded-[2rem] font-black italic text-2xl uppercase btn-premium">
+                    CONCLUIR E ENVIAR PEDIDO
+                </button>
+            </div>
         </div>
     </div>
 
@@ -99,28 +143,17 @@
         let allCarts = JSON.parse(localStorage.getItem('amarelinhas_multi_carts')) || {};
         let activeLojaId = null;
 
-        // Função de Pesquisa Global (Nome e Categoria)
-        function searchGlobal() {
-            const termo = document.getElementById('searchInput').value.toLowerCase();
-            const filtrado = db.filter(loja => 
-                loja.nome.toLowerCase().includes(termo) || 
-                loja.categoria.toLowerCase().includes(termo)
-            );
-            renderMarketplace(filtrado);
-        }
-
         function renderMarketplace(data = db) {
             const container = document.getElementById('listaLojas');
-            if (data.length === 0) {
-                container.innerHTML = `<p class="col-span-full text-center text-zinc-400 font-bold py-10">Nenhuma loja encontrada para esta busca.</p>`;
-                return;
-            }
             container.innerHTML = data.map(l => `
-                <div onclick="openStore('${l.id}')" class="bg-white p-4 rounded-[2rem] border-2 border-transparent hover:border-amarelo transition shadow-sm cursor-pointer flex flex-col items-center text-center">
-                    <img src="${l.img}" class="w-24 h-24 rounded-3xl object-cover mb-3 border shadow-sm">
-                    <span class="text-[8px] bg-zinc-100 px-2 py-1 rounded font-black uppercase text-zinc-500">${l.categoria}</span>
-                    <h3 class="font-black-italic text-zinc-900 text-lg mt-1 italic">${l.nome}</h3>
-                    <div class="text-[9px] font-bold text-green-500 uppercase mt-2 italic">Aberto Agora</div>
+                <div onclick="openStore('${l.id}')" class="bg-white p-6 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-2 border-transparent hover:border-amarelo group relative overflow-hidden">
+                    <div class="absolute top-4 right-4 bg-green-500 w-3 h-3 rounded-full animate-pulse"></div>
+                    <img src="${l.img}" class="w-32 h-32 rounded-[2.5rem] object-cover mx-auto mb-6 shadow-lg group-hover:scale-110 transition">
+                    <div class="text-center">
+                        <span class="text-[9px] bg-zinc-100 px-3 py-1 rounded-full font-black uppercase text-zinc-400 mb-2 inline-block">${l.categoria}</span>
+                        <h3 class="font-black-italic text-zinc-900 text-xl italic">${l.nome}</h3>
+                        <p class="text-zinc-400 text-[10px] font-bold mt-2 italic uppercase">Entrega em 30-40 min</p>
+                    </div>
                 </div>
             `).join('');
         }
@@ -133,9 +166,15 @@
             document.getElementById('viewLojaInterna').classList.remove('hidden');
             
             document.getElementById('headerLoja').innerHTML = `
-                <div class="text-center">
-                    <img src="${loja.img}" class="w-32 h-32 rounded-[2.5rem] mx-auto border-8 border-white shadow-xl mb-4">
-                    <h2 class="text-3xl font-black-italic italic uppercase tracking-tighter">${loja.nome}</h2>
+                <div class="flex flex-col md:flex-row items-center gap-8 bg-white p-10 rounded-[4rem] shadow-sm">
+                    <img src="${loja.img}" class="w-40 h-40 rounded-[3rem] shadow-2xl border-4 border-amarelo">
+                    <div class="text-center md:text-left">
+                        <h2 class="text-5xl font-black-italic italic mb-2 tracking-tighter">${loja.nome}</h2>
+                        <div class="flex gap-4 justify-center md:justify-start">
+                            <span class="bg-zinc-100 text-zinc-500 px-4 py-1 rounded-full font-black text-[10px] uppercase italic">${loja.categoria}</span>
+                            <span class="text-green-500 font-black text-[10px] uppercase italic">● Aberto Agora</span>
+                        </div>
+                    </div>
                 </div>
             `;
             renderMenu();
@@ -150,16 +189,16 @@
             menu.innerHTML = loja.produtos.map(p => {
                 const inCart = storeCart.find(c => c.id === p.id);
                 return `
-                    <div class="bg-white p-4 rounded-3xl flex items-center gap-4 shadow-sm">
-                        <img src="${p.img}" class="w-20 h-20 object-cover rounded-2xl border">
+                    <div class="bg-white p-6 rounded-[2.5rem] flex items-center gap-6 shadow-sm hover:shadow-md transition">
+                        <img src="${p.img}" class="w-24 h-24 object-cover rounded-3xl shadow-inner border">
                         <div class="flex-1">
-                            <h4 class="font-black italic text-zinc-800 uppercase text-sm">${p.nome}</h4>
-                            <p class="text-green-600 font-black text-lg italic">R$ ${p.preco.toFixed(2)}</p>
-                            <div class="flex items-center gap-4 mt-2">
-                                <button onclick="updateQty(${p.id}, -1)" class="bg-zinc-100 w-8 h-8 rounded-lg font-black">-</button>
-                                <span class="font-black italic" id="qty-${p.id}">${inCart ? inCart.qty : 0}</span>
-                                <button onclick="updateQty(${p.id}, 1)" class="bg-amarelo w-8 h-8 rounded-lg font-black shadow-md">+</button>
-                            </div>
+                            <h4 class="font-black italic text-zinc-800 uppercase text-lg mb-1">${p.nome}</h4>
+                            <p class="text-green-600 font-black text-2xl italic">R$ ${p.preco.toFixed(2)}</p>
+                        </div>
+                        <div class="flex items-center gap-4 bg-zinc-50 p-2 rounded-2xl border">
+                            <button onclick="updateQty(${p.id}, -1)" class="w-10 h-10 rounded-xl font-black text-xl hover:bg-zinc-200 transition">-</button>
+                            <span class="font-black text-xl italic min-w-[20px] text-center">${inCart ? inCart.qty : 0}</span>
+                            <button onclick="updateQty(${p.id}, 1)" class="bg-amarelo w-10 h-10 rounded-xl font-black text-xl shadow-md btn-premium">+</button>
                         </div>
                     </div>
                 `;
@@ -189,10 +228,6 @@
             const count = storeCart.reduce((acc, i) => acc + i.qty, 0);
             document.getElementById('cartCount').innerText = count;
             document.getElementById('cartFloat').classList.toggle('hidden', count === 0);
-            if (activeLojaId) {
-                const loja = db.find(l => l.id === activeLojaId);
-                document.getElementById('cartStoreTitle').innerText = `${loja.nome}`;
-            }
             renderCartModal();
         }
 
@@ -203,39 +238,58 @@
             container.innerHTML = storeCart.map(item => {
                 total += item.preco * item.qty;
                 return `
-                    <div class="flex justify-between items-center bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
-                        <div class="flex items-center gap-3">
-                            <span class="bg-amarelo text-preto px-2 rounded font-black italic">${item.qty}x</span>
-                            <span class="font-black italic uppercase text-xs">${item.nome}</span>
+                    <div class="flex justify-between items-center bg-zinc-800/50 p-5 rounded-3xl border border-zinc-700/50">
+                        <div class="flex items-center gap-4">
+                            <span class="bg-amarelo text-black px-3 py-1 rounded-xl font-black italic">${item.qty}x</span>
+                            <span class="font-black italic text-white uppercase text-sm">${item.nome}</span>
                         </div>
-                        <span class="text-amarelo font-black">R$ ${(item.preco * item.qty).toFixed(2)}</span>
+                        <span class="text-amarelo font-black text-lg">R$ ${(item.preco * item.qty).toFixed(2)}</span>
                     </div>
                 `;
             }).join('');
             document.getElementById('cartTotal').innerText = `R$ ${total.toFixed(2)}`;
         }
 
+        function finalizarPedido() {
+            const nome = document.getElementById('custName').value;
+            const endereco = document.getElementById('custEnd').value;
+            const tel = document.getElementById('custTel').value;
+            const pag = document.getElementById('custPag').value;
+
+            if(!nome || !endereco || !tel) {
+                alert("Por favor, preencha seus dados para a entrega!");
+                return;
+            }
+
+            const loja = db.find(l => l.id === activeLojaId);
+            const storeCart = allCarts[activeLojaId];
+            
+            let msg = `🟡 *NOVO PEDIDO - AMARELINHAS*\n\n`;
+            msg += `🏪 *LOJA:* ${loja.nome}\n`;
+            msg += `👤 *CLIENTE:* ${nome}\n`;
+            msg += `📍 *ENDEREÇO:* ${endereco}\n`;
+            msg += `📞 *CONTATO:* ${tel}\n`;
+            msg += `💳 *PAGAMENTO:* ${pag}\n\n`;
+            msg += `🛒 *ITENS:* \n`;
+            storeCart.forEach(i => msg += `• ${i.qty}x ${i.nome} - R$ ${(i.preco * i.qty).toFixed(2)}\n`);
+            msg += `\n💰 *TOTAL: ${document.getElementById('cartTotal').innerText}*`;
+            
+            window.open(`https://wa.me/55${loja.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function searchGlobal() {
+            const t = document.getElementById('searchInput').value.toLowerCase();
+            renderMarketplace(db.filter(l => l.nome.toLowerCase().includes(t) || l.categoria.toLowerCase().includes(t)));
+        }
+
+        function filterCat(c) { renderMarketplace(db.filter(l => l.categoria === c)); }
+        function toggleCart() { document.getElementById('modalCart').classList.toggle('hidden'); }
         function goBack() {
             activeLojaId = null;
             document.getElementById('viewMarket').classList.remove('hidden');
             document.getElementById('catSection').classList.remove('hidden');
             document.getElementById('viewLojaInterna').classList.add('hidden');
             document.getElementById('cartFloat').classList.add('hidden');
-        }
-
-        function toggleCart() { document.getElementById('modalCart').classList.toggle('hidden'); }
-
-        function finalizarPedido() {
-            const loja = db.find(l => l.id === activeLojaId);
-            const storeCart = allCarts[activeLojaId];
-            let msg = `🟡 *NOVO PEDIDO: ${loja.nome}*\n------------------\n`;
-            storeCart.forEach(i => msg += `👉 *${i.qty}x* ${i.nome}\n`);
-            msg += `------------------\n*TOTAL: ${document.getElementById('cartTotal').innerText}*`;
-            window.open(`https://wa.me/55${loja.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
-        function filterCat(c) {
-            renderMarketplace(db.filter(l => l.categoria === c));
         }
 
         renderMarketplace();
