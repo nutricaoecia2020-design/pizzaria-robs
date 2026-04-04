@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Gerenciar Produtos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #ef4444; }
+        input:checked + .slider:before { transform: translateX(20px); }
+    </style>
+</head>
+<body class="bg-gray-100 flex h-screen overflow-hidden">
+
+    <aside class="w-64 bg-gray-900 text-white flex-shrink-0 hidden md:flex flex-col">
+        <div class="p-6 text-xl font-bold text-red-500">ADMIN<span class="text-white">DELIVERY</span></div>
+        <nav class="flex-1 px-4 space-y-2">
+            <a href="loja.html" target="_blank" class="flex items-center p-3 hover:bg-gray-800 rounded-lg text-gray-400"><i class="fas fa-external-link-alt mr-3"></i> Ver Minha Loja</a>
+            <a href="#" class="flex items-center p-3 bg-red-600 rounded-lg text-white font-bold"><i class="fas fa-boxes mr-3"></i> Produtos</a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-y-auto p-6">
+        <div class="max-w-5xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-gray-200 h-fit">
+                <h3 class="font-bold mb-4 text-gray-800">CADASTRAR ITEM</h3>
+                <form id="form-produto" class="space-y-3">
+                    <input type="text" id="nome" placeholder="Nome do Produto" class="w-full border p-2 rounded-lg outline-none focus:border-red-500" required>
+                    <input type="number" id="preco" placeholder="Preço (ex: 29.90)" step="0.01" class="w-full border p-2 rounded-lg outline-none focus:border-red-500" required>
+                    <input type="text" id="img" placeholder="URL da Imagem" class="w-full border p-2 rounded-lg outline-none focus:border-red-500">
+                    <select id="categoria" class="w-full border p-2 rounded-lg outline-none">
+                        <option value="Lanches">🍔 Lanches</option>
+                        <option value="Pizzas">🍕 Pizzas</option>
+                        <option value="Bebidas">🥤 Bebidas</option>
+                    </select>
+                    <button type="submit" class="w-full bg-red-600 text-white py-2 rounded-lg font-bold hover:bg-red-700">SALVAR NO CARDÁPIO</button>
+                </form>
+            </div>
+
+            <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-4 bg-gray-50 border-b font-bold text-gray-700">Produtos no Sistema</div>
+                <div id="lista-admin" class="divide-y divide-gray-100">
+                    </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let db = JSON.parse(localStorage.getItem('meu_delivery_db')) || [];
+
+        function salvar() {
+            localStorage.setItem('meu_delivery_db', JSON.stringify(db));
+            render();
+        }
+
+        document.getElementById('form-produto').onsubmit = (e) => {
+            e.preventDefault();
+            const novo = {
+                id: Date.now(),
+                nome: document.getElementById('nome').value,
+                preco: parseFloat(document.getElementById('preco').value),
+                img: document.getElementById('img').value || 'https://via.placeholder.com/100',
+                cat: document.getElementById('categoria').value,
+                ativo: true
+            };
+            db.push(novo);
+            e.target.reset();
+            salvar();
+        };
+
+        window.excluir = (id) => {
+            db = db.filter(p => p.id !== id);
+            salvar();
+        };
+
+        window.toggle = (id) => {
+            db = db.map(p => p.id === id ? {...p, ativo: !p.ativo} : p);
+            salvar();
+        };
+
+        function render() {
+            const lista = document.getElementById('lista-admin');
+            lista.innerHTML = db.map(p => `
+                <div class="p-4 flex items-center justify-between ${!p.ativo ? 'opacity-50 grayscale' : ''}">
+                    <div class="flex items-center gap-3">
+                        <img src="${p.img}" class="w-10 h-10 object-cover rounded shadow-sm">
+                        <div>
+                            <p class="font-bold text-sm">${p.nome}</p>
+                            <p class="text-xs text-green-600 font-bold">R$ ${p.preco.toFixed(2)}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <label class="switch">
+                            <input type="checkbox" ${p.ativo ? 'checked' : ''} onchange="toggle(${p.id})">
+                            <span class="slider"></span>
+                        </label>
+                        <button onclick="excluir(${p.id})" class="text-gray-300 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        render();
+    </script>
+</body>
+</html>
