@@ -32,7 +32,6 @@
             border: 1px solid #FFF9C4;
         }
 
-        /* CABEÇALHO COM O SLOGAN RECOLOCADO */
         .main-header {
             background-color: var(--amarelo-header);
             padding: 30px;
@@ -199,14 +198,14 @@
             • Entrega por conta exclusiva do <b>PRESTADOR DE SERVIÇO</b>.<br>
             • Fidelidade de 06 meses, podendo renovar por igual período.<br>
             • <b>QUEBRA DE CONTRATO:</b> Multa de 2x o valor da prestação (R$ 59,80).<br>
-            • Modificações/Inclusões: Contato direto via Zap <b>(79) 99975-9681</b>.
+            • Modificações/Inclusões: Contato direto via Zap <b>(79) 99976-9581</b>.
         </div>
 
         <button type="button" class="btn-gerar" onclick="gerarPDF()">Gerar Contrato e Enviar PDF</button>
     </form>
 
     <div class="footer">
-        Suporte Amarelinhas: <span class="zap-num">79 99975-9681</span>
+        Suporte Amarelinhas: <span class="zap-num">(79) 99976-9581</span>
     </div>
 </div>
 
@@ -255,7 +254,7 @@
         doc.setFont(undefined, 'normal');
         doc.text("1. Finalidade: Divulgação e aumento de vendas via delivery.", 20, 122);
         doc.text("2. Logística: Entregas realizadas pelo PRESTADOR DE SERVIÇO.", 20, 129);
-        doc.text("3. Contato/Alterações: WhatsApp (79) 99975-9681.", 20, 136);
+        doc.text("3. Contato/Alterações: WhatsApp (79) 99976-9581.", 20, 136);
 
         doc.text("Data: " + new Date().toLocaleDateString('pt-BR'), 20, 160);
         
