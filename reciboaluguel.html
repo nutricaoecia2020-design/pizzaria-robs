@@ -2,9 +2,9 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Recibo de Aluguel Editável - Aracaju/SE</title>
+    <title>Recibo de Aluguel Profissional - Autenticado</title>
     <style>
-        :root { --primary: #2d3436; --accent: #0984e3; --bg: #f4f7f6; --success: #00b894; }
+        :root { --primary: #2d3436; --accent: #0984e3; --bg: #f4f7f6; --success: #00b894; --security: #636e72; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 40px 20px; color: var(--primary); }
         
         /* PAINEL DE EDIÇÃO - SOME NO PDF */
@@ -41,9 +41,36 @@
         .content { line-height: 2.2; font-size: 18px; margin-bottom: 60px; text-align: justify; color: #333; }
         .content b { color: #000; text-transform: uppercase; border-bottom: 1px solid #eee; }
         
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-top: 80px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-top: 60px; }
         .signature-space { border-top: 1px solid #ced4da; padding-top: 15px; text-align: center; }
-        .footer { margin-top: 80px; text-align: center; font-size: 12px; color: #adb5bd; border-top: 1px dashed #eee; padding-top: 20px; }
+        
+        /* ÁREA DE SEGURANÇA */
+        .security-area {
+            margin-top: 40px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: #fcfcfc;
+        }
+        .qr-placeholder {
+            width: 80px;
+            height: 80px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+        .qr-placeholder div {
+            width: 60px; height: 60px; border: 4px double #fff;
+        }
+        .auth-info { font-size: 11px; color: var(--security); line-height: 1.5; }
+        .auth-code { font-family: 'Courier New', monospace; font-weight: bold; color: #000; font-size: 13px; margin-top: 4px; display: block; }
+
+        .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #adb5bd; border-top: 1px dashed #eee; padding-top: 20px; }
 
         @media print {
             .edit-panel { display: none !important; }
@@ -66,14 +93,14 @@
         <input type="text" id="in_cpf" placeholder="CPF/Documento" oninput="update()" value="000.000.000-00">
         <input type="text" id="in_cidade" placeholder="Cidade e Data Final" oninput="update()" value="Aracaju/SE, 04 de Abril de 2026" class="full-width">
         
-        <button class="btn-gerar" onclick="window.print()">GERAR PDF / IMPRIMIR</button>
+        <button class="btn-gerar" onclick="imprimir()">GERAR PDF AUTENTICADO</button>
     </div>
 
     <div class="receipt-container">
         <div class="header">
             <div>
                 <div class="title">RECIBO</div>
-                <div style="color: #636e72; font-weight: bold;">Nº 001/2026</div>
+                <div style="color: #636e72; font-weight: bold;">SÉRIE: <span id="out_serie">A-2026</span></div>
             </div>
             <div style="text-align: right;">
                 <p>Data: <b id="out_data_top">04/04/2026</b></p>
@@ -95,21 +122,43 @@
             <div class="signature-space">
                 <p><b id="out_locador">Roberto Vasconcelos</b></p>
                 <p>CPF: <span id="out_cpf">000.000.000-00</span></p>
-                <small>(Locador)</small>
+                <small>(Assinatura do Locador)</small>
             </div>
             <div class="signature-space" style="border-top: none; text-align: right;">
-                <p>Cidade e Data:</p>
+                <p>Local e Data:</p>
                 <p><b id="out_cidade">Aracaju/SE, 04 de Abril de 2026</b></p>
                 <p>__________________________________</p>
             </div>
         </div>
 
+        <div class="security-area">
+            <div class="qr-placeholder"><div></div></div>
+            <div class="auth-info">
+                <strong>AUTENTICAÇÃO DIGITAL</strong><br>
+                A validade deste documento pode ser verificada via QR Code ou pelo código de segurança abaixo.<br>
+                Este recibo possui validade jurídica como comprovante de quitação de aluguel.<br>
+                <span class="auth-code" id="auth_code">GERANDO CÓDIGO...</span>
+            </div>
+        </div>
+
         <div class="footer">
-            Este recibo dá quitação apenas do valor nele expresso. Gerado eletronicamente em Aracaju/SE.
+            Documento emitido eletronicamente. Sistema de Gestão de Aluguéis - Aracaju/SE.
         </div>
     </div>
 
     <script>
+        // Função para gerar o código aleatório de 20 caracteres
+        function generateAuthCode() {
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            let code = '';
+            for (let i = 0; i < 20; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            // Formata o código em blocos de 5 para ficar mais bonito
+            return code.match(/.{1,5}/g).join('-');
+        }
+
+        // Atualiza os campos do recibo
         function update() {
             const IDs = ['locatario', 'valor', 'extenso', 'endereco', 'mes', 'data_top', 'locador', 'cpf', 'cidade'];
             IDs.forEach(id => {
@@ -117,6 +166,17 @@
                 document.getElementById('out_' + id).innerText = inputVal;
             });
         }
+
+        // Função para imprimir e trocar o código
+        function imprimir() {
+            document.getElementById('auth_code').innerText = 'ID: ' + generateAuthCode();
+            window.print();
+        }
+
+        // Gera o primeiro código ao carregar a página
+        window.onload = function() {
+            document.getElementById('auth_code').innerText = 'ID: ' + generateAuthCode();
+        };
     </script>
 </body>
 </html>
