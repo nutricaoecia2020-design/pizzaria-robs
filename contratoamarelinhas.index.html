@@ -3,171 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amarelinhas Delivery - Cadastro e Contrato</title>
+    <title>Amarelinhas Delivery - Cadastro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
-            --amarelo-fundo: #fffde7;
-            --amarelo-medio: #fff59d;
-            --amarelo-forte: #fdd835;
-            --texto: #333;
+            --amarelo-fundo: #FFFDE7;
+            --amarelo-botao: #FFD54F;
+            --texto-cinza: #666;
+            --titulo-dourado: #B8860B;
         }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #fafafa;
-            color: var(--texto);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
             display: flex;
             justify-content: center;
             padding: 20px;
+            margin: 0;
         }
 
-        .card {
+        .container {
             background-color: var(--amarelo-fundo);
-            max-width: 700px;
             width: 100%;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            border: 2px solid var(--amarelo-medio);
-            overflow: hidden;
+            max-width: 800px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            padding: 40px;
+            border: 1px solid #FFF9C4;
         }
-
-        .header {
-            background-color: var(--amarelo-forte);
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 { margin: 0; font-size: 24px; color: #000; text-transform: uppercase; }
-        .header p { margin: 5px 0 0; font-size: 14px; opacity: 0.8; }
-
-        form { padding: 30px; }
 
         .section-title {
+            color: var(--titulo-dourado);
             font-weight: bold;
-            color: #d4a017;
-            border-bottom: 2px solid var(--amarelo-medio);
-            margin: 20px 0 15px;
-            padding-bottom: 5px;
-            display: flex;
-            align-items: center;
+            font-size: 14px;
+            margin: 25px 0 15px 0;
+            text-transform: uppercase;
         }
 
-        .input-group {
+        .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
-            margin-bottom: 15px;
         }
+
+        .full-width { grid-column: span 2; }
 
         .field { display: flex; flex-direction: column; }
 
-        label { font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+        label {
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
 
         input, select {
             padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 8px;
-            outline: none;
-            transition: 0.3s;
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: #fff;
         }
 
-        input:focus { border-color: var(--amarelo-forte); box-shadow: 0 0 5px rgba(253, 216, 53, 0.5); }
-
-        .full { grid-column: span 2; }
+        input[readonly] {
+            background-color: #eeeeee;
+            color: #555;
+        }
 
         .termos-box {
-            background: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 13px;
+            background-color: #fff;
             border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 13px;
+            color: #444;
             line-height: 1.6;
-            margin-bottom: 20px;
         }
 
         .btn-gerar {
-            background-color: var(--amarelo-forte);
+            background-color: var(--amarelo-botao);
             color: #000;
             border: none;
-            padding: 18px;
             width: 100%;
+            padding: 18px;
             font-weight: bold;
             font-size: 16px;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: transform 0.2s, background 0.3s;
+            margin-top: 30px;
+            text-transform: uppercase;
+            transition: background 0.3s;
         }
 
-        .btn-gerar:hover { background-color: #fbc02d; transform: translateY(-2px); }
+        .btn-gerar:hover { background-color: #FFC107; }
 
-        .footer-contato {
+        .footer {
             text-align: center;
-            padding: 15px;
+            margin-top: 30px;
             font-size: 13px;
-            background: #fdfae1;
-            border-top: 1px solid var(--amarelo-medio);
+            color: #555;
         }
 
-        .whatsapp-link { color: #25d366; font-weight: bold; text-decoration: none; }
+        .zap-destaque {
+            color: #2E7D32;
+            font-weight: bold;
+        }
 
         @media (max-width: 600px) {
-            .input-group { grid-template-columns: 1fr; }
-            .full { grid-column: span 1; }
+            .grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
         }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div class="header">
-        <h1>Amarelinhas Delivery</h1>
-        <p>Bairro Luzia | Aracaju - SE</p>
-    </div>
-
-    <form id="formCadastro">
-        <div class="section-title">DADOS DO CLIENTE</div>
-        <div class="input-group">
-            <div class="field full">
-                <label>NOME COMPLETO / RAZÃO SOCIAL</label>
-                <input type="text" id="nome" placeholder="Ex: João da Silva / Loja do Bairro" required>
+<div class="container">
+    <form id="contratoForm">
+        <div class="section-title">DADOS DO CONTRATANTE</div>
+        <div class="grid">
+            <div class="full-width">
+                <label>Nome Completo / Razão Social</label>
+                <input type="text" id="nome" required>
             </div>
             <div class="field">
                 <label>CPF / CNPJ</label>
                 <input type="text" id="documento" required>
             </div>
             <div class="field">
-                <label>CELULAR / WHATSAPP</label>
+                <label>Celular / WhatsApp</label>
                 <input type="tel" id="contato" placeholder="(79) 00000-0000" required>
             </div>
-            <div class="field full">
-                <label>ENDEREÇO COMPLETO</label>
+            <div class="field full-width">
+                <label>Endereço Completo</label>
                 <input type="text" id="endereco" placeholder="Rua, Número, Bairro" required>
             </div>
         </div>
 
         <div class="section-title">CONDIÇÕES COMERCIAIS</div>
-        <div class="input-group">
+        <div class="grid">
             <div class="field">
-                <label>VALOR DA PRESTAÇÃO</label>
-                <input type="text" value="R$ 29,90 / Mês" readonly style="background: #f0f0f0;">
+                <label>Valor da Prestação</label>
+                <input type="text" value="R$ 29,90 / Mês" readonly>
             </div>
             <div class="field">
-                <label>FORMA DE PAGAMENTO</label>
+                <label>Forma de Pagamento</label>
                 <select id="pagamento">
                     <option value="PIX">PIX</option>
-                    <option value="CARTÃO DE CRÉDITO">CARTÃO DE CRÉDITO</option>
+                    <option value="CARTÃO">CARTÃO</option>
                     <option value="BOLETO">BOLETO</option>
-                    <option value="DINHEIRO">DINHEIRO</option>
                 </select>
             </div>
             <div class="field">
-                <label>DATA DE VENCIMENTO</label>
+                <label>Data de Vencimento</label>
                 <input type="number" id="vencimento" min="1" max="31" placeholder="Dia (Ex: 10)" required>
             </div>
             <div class="field">
-                <label>PERÍODO</label>
-                <input type="text" value="06 Meses (Renovável)" readonly style="background: #f0f0f0;">
+                <label>Período</label>
+                <input type="text" value="06 Meses (Renovável)" readonly>
             </div>
         </div>
 
@@ -177,89 +170,61 @@
             • Entrega por conta exclusiva do <b>PRESTADOR DE SERVIÇO</b>.<br>
             • Fidelidade de 06 meses, podendo renovar por igual período.<br>
             • <b>QUEBRA DE CONTRATO:</b> Multa de 2x o valor da prestação (R$ 59,80).<br>
-            • Modificações/Inclusões: Contato direto via Zap <b>(79) 99997-59681</b>.
+            • Modificações/Inclusões: Contato direto via Zap <b>(79) 99975-9681</b>.
         </div>
 
-        <button type="button" class="btn-gerar" onclick="gerarContratoPDF()">GERAR CONTRATO E ENVIAR PDF</button>
+        <button type="button" class="btn-gerar" onclick="gerarPDF()">GERAR CONTRATO E ENVIAR PDF</button>
     </form>
 
-    <div class="footer-contato">
-        Suporte Amarelinhas: <a href="https://wa.me/55799999759681" class="whatsapp-link">79 99997-59681</a>
+    <div class="footer">
+        Suporte Amarelinhas: <span class="zap-destaque">79 99975-9681</span>
     </div>
 </div>
 
 <script>
-    function gerarContratoPDF() {
+    function gerarPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Dados capturados
         const nome = document.getElementById('nome').value;
         const docID = document.getElementById('documento').value;
-        const endereco = document.getElementById('endereco').value;
-        const contato = document.getElementById('contato').value;
-        const pgto = document.getElementById('pagamento').value;
-        const vencimento = document.getElementById('vencimento').value;
+        const venc = document.getElementById('vencimento').value;
 
-        if(!nome || !docID || !vencimento) {
-            alert("Por favor, preencha todos os campos obrigatórios.");
+        if(!nome || !docID || !venc) {
+            alert("Preencha todos os campos antes de gerar o PDF.");
             return;
         }
 
-        // MARCA D'ÁGUA
-        doc.setTextColor(245, 245, 200);
-        doc.setFontSize(50);
-        doc.text("AMARELINHAS DELIVERY", 20, 150, { angle: 45 });
+        // Marca d'água
+        doc.setTextColor(245, 245, 220);
+        doc.setFontSize(45);
+        doc.text("AMARELINHAS DELIVERY", 30, 150, { angle: 45 });
 
-        // CABEÇALHO
+        // Título e Conteúdo
         doc.setTextColor(0, 0, 0);
         doc.setFontSize(18);
-        doc.setFont(undefined, 'bold');
-        doc.text("CONTRATO DE ADESÃO - AMARELINHAS DELIVERY", 105, 20, { align: "center" });
+        doc.text("CONTRATO DE PRESTAÇÃO DE SERVIÇO", 105, 20, { align: "center" });
         
-        doc.setFontSize(10);
-        doc.setFont(undefined, 'normal');
-        doc.text("Bairro Luzia, Aracaju - SE | Suporte: (79) 99997-59681", 105, 27, { align: "center" });
+        doc.setFontSize(11);
+        doc.text(`CONTRATANTE: ${nome.toUpperCase()}`, 20, 40);
+        doc.text(`DOCUMENTO: ${docID}`, 20, 48);
+        doc.text(`ENDEREÇO: ${document.getElementById('endereco').value}`, 20, 56);
         
-        // CORPO
-        let y = 45;
-        doc.setFont(undefined, 'bold');
-        doc.text("1. IDENTIFICAÇÃO DO CONTRATANTE", 20, y);
-        doc.setFont(undefined, 'normal');
-        doc.text(`Nome/Razão: ${nome.toUpperCase()}`, 20, y+7);
-        doc.text(`CPF/CNPJ: ${docID}`, 20, y+14);
-        doc.text(`Endereço: ${endereco}`, 20, y+21);
-        doc.text(`Contato: ${contato}`, 20, y+28);
-
-        y = 85;
-        doc.setFont(undefined, 'bold');
-        doc.text("2. PLANO E VALORES", 20, y);
-        doc.setFont(undefined, 'normal');
-        doc.text("• Valor Mensal: R$ 29,90", 20, y+7);
-        doc.text(`• Forma de Pagamento: ${pgto}`, 20, y+14);
-        doc.text(`• Data de Vencimento: Todo dia ${vencimento}`, 20, y+21);
-        doc.text("• Vigência: 06 meses (Renovável por mais 06 meses)", 20, y+28);
-
-        y = 125;
-        doc.setFont(undefined, 'bold');
-        doc.text("3. CLAUSULAS E RESPONSABILIDADES", 20, y);
-        doc.setFont(undefined, 'normal');
-        doc.text("• O site visa o aumento das vendas delivery do estabelecimento.", 20, y+7);
-        doc.text("• A entrega dos pedidos é de total responsabilidade do PRESTADOR DE SERVIÇO.", 20, y+14);
-        doc.text("• Em caso de rescisão antecipada, aplica-se multa de 2x o valor da parcela.", 20, y+21);
-        doc.text("• Modificações devem ser solicitadas ao Zap: (79) 99997-59681.", 20, y+28);
-
-        y = 170;
-        doc.text("Aracaju/SE, " + new Date().toLocaleDateString('pt-BR'), 20, y);
+        doc.text("--------------------------------------------------------------------------------------------------", 20, 65);
+        doc.text("VALOR MENSAL: R$ 29,90", 20, 75);
+        doc.text(`VENCIMENTO: TODO DIA ${venc}`, 20, 83);
+        doc.text("MULTA POR QUEBRA: R$ 59,80 (2X O VALOR DA PRESTAÇÃO)", 20, 91);
         
-        y = 200;
-        doc.text("__________________________________________", 105, y, { align: "center" });
-        doc.text("Assinatura do Cliente", 105, y+7, { align: "center" });
+        doc.text("CLÁUSULAS:", 20, 110);
+        doc.text("1. Finalidade: Aumento de vendas via delivery.", 25, 118);
+        doc.text("2. Entregas: Responsabilidade do prestador de serviço.", 25, 126);
+        doc.text("3. Vigência: 06 meses iniciais com renovação automática.", 25, 134);
+        doc.text("4. Suporte/Alterações: WhatsApp (79) 99975-9681.", 25, 142);
 
-        // Salvar Arquivo
+        doc.text("__________________________________________", 105, 200, { align: "center" });
+        doc.text("Assinatura do Cliente", 105, 208, { align: "center" });
+
         doc.save(`Contrato_Amarelinhas_${nome}.pdf`);
-        
-        alert("Contrato PDF gerado com sucesso! Salve o arquivo e envie para o cliente.");
     }
 </script>
 
