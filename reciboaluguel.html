@@ -2,28 +2,36 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Recibo de Aluguel Profissional - Autenticado</title>
+    <title>Recibo de Aluguel Profissional - Privado</title>
     <style>
         :root { --primary: #2d3436; --accent: #0984e3; --bg: #f4f7f6; --success: #00b894; --security: #636e72; }
+        
+        /* Configuração de Impressão para remover URL do rodapé */
+        @media print {
+            @page { 
+                margin: 0.5cm; /* Margem pequena para evitar que o navegador force o rodapé */
+            }
+            .edit-panel { display: none !important; }
+            body { background: white; padding: 0; }
+            .receipt-container { box-shadow: none; border: 1px solid #eee; margin: 0 auto; width: 100%; }
+        }
+
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 40px 20px; color: var(--primary); }
         
-        /* PAINEL DE EDIÇÃO - SOME NO PDF */
+        /* PAINEL DE EDIÇÃO */
         .edit-panel {
             background: #fff; padding: 25px; border-radius: 12px; width: 100%; max-width: 800px;
             margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
             display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-left: 8px solid var(--success);
         }
-        .edit-panel h3 { grid-column: span 2; margin: 0 0 10px 0; color: var(--success); font-size: 18px; text-transform: uppercase; }
+        .edit-panel h3 { grid-column: span 2; margin: 0; color: var(--success); font-size: 18px; text-transform: uppercase; }
         .edit-panel input { padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; outline: none; }
-        .edit-panel input:focus { border-color: var(--accent); }
-        .full-width { grid-column: span 2; }
-
+        
         .btn-gerar {
             grid-column: span 2; background-color: var(--success); color: white; border: none; 
             padding: 18px; font-size: 16px; border-radius: 6px; cursor: pointer;
-            font-weight: bold; text-transform: uppercase; transition: 0.3s; margin-top: 10px;
+            font-weight: bold; text-transform: uppercase; margin-top: 10px;
         }
-        .btn-gerar:hover { background-color: #009476; transform: translateY(-2px); }
 
         /* ESTILO DO RECIBO */
         .receipt-container { 
@@ -38,62 +46,39 @@
             font-size: 28px; font-weight: bold; text-align: right; 
             margin-bottom: 40px; border: 1px solid #eee; 
         }
-        .content { line-height: 2.2; font-size: 18px; margin-bottom: 60px; text-align: justify; color: #333; }
-        .content b { color: #000; text-transform: uppercase; border-bottom: 1px solid #eee; }
+        .content { line-height: 2.2; font-size: 18px; margin-bottom: 60px; text-align: justify; }
+        .content b { color: #000; text-transform: uppercase; }
         
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-top: 60px; }
         .signature-space { border-top: 1px solid #ced4da; padding-top: 15px; text-align: center; }
         
-        /* ÁREA DE SEGURANÇA */
+        /* SEGURANÇA */
         .security-area {
-            margin-top: 40px;
-            padding: 20px;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            background-color: #fcfcfc;
+            margin-top: 40px; padding: 20px; border: 1px solid #eee; border-radius: 8px;
+            display: flex; align-items: center; gap: 20px; background-color: #fcfcfc;
         }
-        .qr-placeholder {
-            width: 80px;
-            height: 80px;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-        }
-        .qr-placeholder div {
-            width: 60px; height: 60px; border: 4px double #fff;
-        }
-        .auth-info { font-size: 11px; color: var(--security); line-height: 1.5; }
-        .auth-code { font-family: 'Courier New', monospace; font-weight: bold; color: #000; font-size: 13px; margin-top: 4px; display: block; }
+        .qr-placeholder { width: 60px; height: 60px; background: #000; border-radius: 4px; border: 4px double #fff; }
+        .auth-info { font-size: 11px; color: var(--security); }
+        .auth-code { font-family: 'Courier New', monospace; font-weight: bold; color: #000; font-size: 13px; display: block; margin-top: 4px; }
 
         .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #adb5bd; border-top: 1px dashed #eee; padding-top: 20px; }
-
-        @media print {
-            .edit-panel { display: none !important; }
-            body { background: white; padding: 0; }
-            .receipt-container { box-shadow: none; border: 1px solid #eee; margin: 0; width: 100%; }
-        }
     </style>
 </head>
 <body>
 
     <div class="edit-panel">
-        <h3>✎ Editar Informações do Recibo</h3>
-        <input type="text" id="in_locatario" placeholder="Nome do Inquilino" oninput="update()" value="Fernanda">
-        <input type="text" id="in_valor" placeholder="Valor (Ex: 750,00)" oninput="update()" value="750,00">
-        <input type="text" id="in_extenso" placeholder="Valor por extenso" oninput="update()" value="Setecentos e cinquenta reais" class="full-width">
-        <input type="text" id="in_endereco" placeholder="Endereço do Imóvel" oninput="update()" value="Avenida Doutor Francisco Moreira, 220" class="full-width">
-        <input type="text" id="in_mes" placeholder="Mês de Referência" oninput="update()" value="Abril de 2026">
-        <input type="text" id="in_data_top" placeholder="Data no topo" oninput="update()" value="04/04/2026">
-        <input type="text" id="in_locador" placeholder="Nome do Locador" oninput="update()" value="Roberto Vasconcelos">
-        <input type="text" id="in_cpf" placeholder="CPF/Documento" oninput="update()" value="000.000.000-00">
-        <input type="text" id="in_cidade" placeholder="Cidade e Data Final" oninput="update()" value="Aracaju/SE, 04 de Abril de 2026" class="full-width">
+        <h3>✎ Gerador Privado de Recibo</h3>
+        <input type="text" id="in_locatario" placeholder="Inquilino" oninput="update()" value="Fernanda">
+        <input type="text" id="in_valor" placeholder="Valor" oninput="update()" value="750,00">
+        <input type="text" id="in_extenso" placeholder="Valor por extenso" oninput="update()" value="Setecentos e cinquenta reais" style="grid-column: span 2;">
+        <input type="text" id="in_endereco" placeholder="Endereço" oninput="update()" value="Avenida Doutor Francisco Moreira, 220" style="grid-column: span 2;">
+        <input type="text" id="in_mes" placeholder="Mês" oninput="update()" value="Abril de 2026">
+        <input type="text" id="in_data_top" placeholder="Data topo" oninput="update()" value="04/04/2026">
+        <input type="text" id="in_locador" placeholder="Locador" oninput="update()" value="Roberto Vasconcelos">
+        <input type="text" id="in_cpf" placeholder="CPF" oninput="update()" value="000.000.000-00">
+        <input type="text" id="in_cidade" placeholder="Cidade/Data" oninput="update()" value="Aracaju/SE, 04 de Abril de 2026" style="grid-column: span 2;">
         
-        <button class="btn-gerar" onclick="imprimir()">GERAR PDF AUTENTICADO</button>
+        <button class="btn-gerar" onclick="gerarPDF()">GERAR PDF E BLOQUEAR LINK</button>
     </div>
 
     <div class="receipt-container">
@@ -107,15 +92,13 @@
             </div>
         </div>
 
-        <div class="amount-box">
-            Valor: R$ <span id="out_valor">750,00</span>
-        </div>
+        <div class="amount-box">Valor: R$ <span id="out_valor">750,00</span></div>
 
         <div class="content">
             Recebi(emos) de <b id="out_locatario">Fernanda</b> a quantia de 
-            <b id="out_extenso">Setecentos e cinquenta reais</b>, correspondente ao pagamento do aluguel do imóvel 
-            situado na <b id="out_endereco">Avenida Doutor Francisco Moreira, 220</b>, 
-            referente ao mês de <b id="out_mes">Abril de 2026</b>.
+            <b id="out_extenso">Setecentos e cinquenta reais</b>, referente ao aluguel do imóvel 
+            na <b id="out_endereco">Avenida Doutor Francisco Moreira, 220</b>, 
+            mes de <b id="out_mes">Abril de 2026</b>.
         </div>
 
         <div class="grid">
@@ -132,51 +115,37 @@
         </div>
 
         <div class="security-area">
-            <div class="qr-placeholder"><div></div></div>
+            <div class="qr-placeholder"></div>
             <div class="auth-info">
                 <strong>AUTENTICAÇÃO DIGITAL</strong><br>
-                A validade deste documento pode ser verificada via QR Code ou pelo código de segurança abaixo.<br>
-                Este recibo possui validade jurídica como comprovante de quitação de aluguel.<br>
-                <span class="auth-code" id="auth_code">GERANDO CÓDIGO...</span>
+                Validação via sistema interno. Código de integridade do documento:<br>
+                <span class="auth-code" id="auth_code">...</span>
             </div>
         </div>
 
-        <div class="footer">
-            Documento emitido eletronicamente. Sistema de Gestão de Aluguéis - Aracaju/SE.
-        </div>
+        <div class="footer">Documento Gerado Eletronicamente - Cópia Protegida.</div>
     </div>
 
     <script>
-        // Função para gerar o código aleatório de 20 caracteres
         function generateAuthCode() {
-            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             let code = '';
-            for (let i = 0; i < 20; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            // Formata o código em blocos de 5 para ficar mais bonito
+            for (let i = 0; i < 20; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
             return code.match(/.{1,5}/g).join('-');
         }
 
-        // Atualiza os campos do recibo
         function update() {
             const IDs = ['locatario', 'valor', 'extenso', 'endereco', 'mes', 'data_top', 'locador', 'cpf', 'cidade'];
-            IDs.forEach(id => {
-                const inputVal = document.getElementById('in_' + id).value;
-                document.getElementById('out_' + id).innerText = inputVal;
-            });
+            IDs.forEach(id => { document.getElementById('out_' + id).innerText = document.getElementById('in_' + id).value; });
         }
 
-        // Função para imprimir e trocar o código
-        function imprimir() {
+        function gerarPDF() {
             document.getElementById('auth_code').innerText = 'ID: ' + generateAuthCode();
+            // Abre o menu de impressão
             window.print();
         }
 
-        // Gera o primeiro código ao carregar a página
-        window.onload = function() {
-            document.getElementById('auth_code').innerText = 'ID: ' + generateAuthCode();
-        };
+        window.onload = () => { document.getElementById('auth_code').innerText = 'ID: ' + generateAuthCode(); };
     </script>
 </body>
 </html>
