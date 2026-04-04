@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recibo de Aluguel Profissional</title>
+    <style>
+        :root {
+            --primary: #2d3436;
+            --accent: #0984e3;
+            --bg: #f9f9f9;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            color: var(--primary);
+        }
+
+        .receipt-container {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            padding: 50px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border-top: 8px solid var(--accent);
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+        }
+
+        .receipt-number {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .amount-box {
+            background: #f1f2f6;
+            padding: 20px;
+            border-radius: 4px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: right;
+            margin-bottom: 30px;
+        }
+
+        .content {
+            line-height: 1.8;
+            font-size: 16px;
+            margin-bottom: 40px;
+        }
+
+        .content b {
+            color: #000;
+            border-bottom: 1px dotted #ccc;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .signature-space {
+            border-top: 1px solid #dfe6e9;
+            padding-top: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 12px;
+            color: #b2bec3;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .receipt-container { box-shadow: none; border: 1px solid #eee; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="receipt-container">
+        <div class="header">
+            <div>
+                <div class="title">Recibo</div>
+                <div class="receipt-number">Nº 001/2024</div>
+            </div>
+            <div style="text-align: right;">
+                <p>Data: <b>04 de Abril de 2024</b></p>
+            </div>
+        </div>
+
+        <div class="amount-box">
+            Valor: R$ 2.500,00
+        </div>
+
+        <div class="content">
+            Recebi(emos) de <b>NOME DO LOCATÁRIO</b> a quantia de <b>DOIS MIL E QUINHENTOS REAIS</b>, correspondente ao pagamento do aluguel do imóvel situado na <b>Rua Exemplo, nº 123, Bairro Elegante - Cidade/UF</b>, referente ao mês de <b>Março de 2024</b>.
+        </div>
+
+        <div class="grid">
+            <div class="signature-space">
+                <p><b>LOCADOR</b></p>
+                <p>CPF: 000.000.000-00</p>
+            </div>
+            <div class="signature-space" style="border-top: none;">
+                <p>Cidade e Data:</p>
+                <p>______________________, ___/___/___</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            Este recibo dá quitação apenas do valor nele expresso.
+        </div>
+    </div>
+
+</body>
+</html>
