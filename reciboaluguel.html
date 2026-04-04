@@ -2,129 +2,74 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recibo de Aluguel Profissional</title>
     <style>
-        :root {
-            --primary: #2d3436;
-            --accent: #0984e3;
-            --bg: #f9f9f9;
+        :root { --primary: #2d3436; --accent: #0984e3; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+        
+        /* Botão que não aparece no PDF */
+        .btn-gerar {
+            background-color: #00b894; color: white; border: none; padding: 15px 30px;
+            font-size: 16px; border-radius: 5px; cursor: pointer; margin-bottom: 20px;
+            font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
+        .btn-gerar:hover { background-color: #009476; }
 
-        body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            display: flex;
-            justify-content: center;
-            padding: 40px 20px;
-            color: var(--primary);
+        .receipt-container { 
+            background: white; width: 100%; max-width: 800px; padding: 50px; 
+            border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); 
+            border-top: 10px solid var(--accent); position: relative; 
         }
-
-        .receipt-container {
-            background: white;
-            width: 100%;
-            max-width: 800px;
-            padding: 50px;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            border-top: 8px solid var(--accent);
-            position: relative;
+        .header { display: flex; justify-content: space-between; margin-bottom: 40px; }
+        .title { font-size: 32px; font-weight: 800; color: var(--accent); letter-spacing: -1px; }
+        .amount-box { 
+            background: #f8f9fa; padding: 25px; border-radius: 8px; 
+            font-size: 26px; font-weight: bold; text-align: right; 
+            margin-bottom: 35px; border: 1px solid #eee; 
         }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 40px;
-        }
-
-        .title {
-            font-size: 28px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--accent);
-        }
-
-        .receipt-number {
-            font-size: 14px;
-            color: #999;
-        }
-
-        .amount-box {
-            background: #f1f2f6;
-            padding: 20px;
-            border-radius: 4px;
-            font-size: 24px;
-            font-weight: bold;
-            text-align: right;
-            margin-bottom: 30px;
-        }
-
-        .content {
-            line-height: 1.8;
-            font-size: 16px;
-            margin-bottom: 40px;
-        }
-
-        .content b {
-            color: #000;
-            border-bottom: 1px dotted #ccc;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-top: 50px;
-        }
-
-        .signature-space {
-            border-top: 1px solid #dfe6e9;
-            padding-top: 10px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .footer {
-            margin-top: 50px;
-            text-align: center;
-            font-size: 12px;
-            color: #b2bec3;
-        }
+        .content { line-height: 2; font-size: 17px; margin-bottom: 50px; text-align: justify; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 60px; }
+        .signature-space { border-top: 1px solid #ced4da; padding-top: 15px; text-align: center; }
+        .footer { margin-top: 60px; text-align: center; font-size: 11px; color: #adb5bd; }
 
         @media print {
+            .btn-gerar { display: none; }
             body { background: white; padding: 0; }
-            .receipt-container { box-shadow: none; border: 1px solid #eee; }
-            .no-print { display: none; }
+            .receipt-container { box-shadow: none; border: 1px solid #eee; margin: 0; }
         }
     </style>
 </head>
 <body>
 
+    <button class="btn-gerar" onclick="window.print()">CRIAR PDF AGORA</button>
+
     <div class="receipt-container">
         <div class="header">
             <div>
-                <div class="title">Recibo</div>
-                <div class="receipt-number">Nº 001/2024</div>
+                <div class="title">RECIBO</div>
+                <div style="color: #636e72;">Nº 001/2026</div>
             </div>
             <div style="text-align: right;">
-                <p>Data: <b>04 de Abril de 2024</b></p>
+                <p>Data: <b>04 de Abril de 2026</b></p>
             </div>
         </div>
 
         <div class="amount-box">
-            Valor: R$ 2.500,00
+            Valor: R$ 1.500,00
         </div>
 
         <div class="content">
-            Recebi(emos) de <b>NOME DO LOCATÁRIO</b> a quantia de <b>DOIS MIL E QUINHENTOS REAIS</b>, correspondente ao pagamento do aluguel do imóvel situado na <b>Rua Exemplo, nº 123, Bairro Elegante - Cidade/UF</b>, referente ao mês de <b>Março de 2024</b>.
+            Recebi(emos) de <b>RODRIGO SILVA DE OLIVEIRA</b> a quantia de 
+            <b>UM MIL E QUINHENTOS REAIS</b>, correspondente ao pagamento do aluguel do imóvel 
+            situado na <b>Avenida das Flores, nº 450, Apartamento 202 - Centro</b>, 
+            referente ao mês de <b>Março de 2026</b>.
         </div>
 
         <div class="grid">
             <div class="signature-space">
-                <p><b>LOCADOR</b></p>
-                <p>CPF: 000.000.000-00</p>
+                <p><b>MARCOS ANTÔNIO SOUZA</b></p>
+                <p>CPF: 123.456.789-00</p>
+                <small>(Locador)</small>
             </div>
             <div class="signature-space" style="border-top: none;">
                 <p>Cidade e Data:</p>
@@ -133,7 +78,7 @@
         </div>
 
         <div class="footer">
-            Este recibo dá quitação apenas do valor nele expresso.
+            Este recibo dá quitação apenas do valor nele expresso. Documento gerado eletronicamente.
         </div>
     </div>
 
