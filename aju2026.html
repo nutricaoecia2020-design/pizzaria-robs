@@ -24,9 +24,8 @@
         .hidden-cart { transform: translateX(100%); }
         .visible-cart { transform: translateX(0); }
 
-        /* Estilo Categorias */
-        .cat-btn { transition: all 0.3s; cursor: pointer; min-width: 80px; }
-        .cat-btn:hover { transform: scale(1.1); }
+        .cat-btn { transition: all 0.3s; cursor: pointer; min-width: 100px; }
+        .cat-btn:hover { transform: scale(1.05); }
         .cat-btn.active { background-color: #064e3b; color: white; border-color: #064e3b; }
     </style>
 </head>
@@ -61,7 +60,7 @@
                 <i class="fas fa-tint mb-1"></i>
                 <span class="text-[10px] font-black uppercase">Água</span>
             </div>
-            <div onclick="filterCategory('Farmacia')" class="cat-btn bg-white p-3 px-6 rounded-2xl shadow-md border-2 border-white flex flex-col items-center" id="cat-Farmacia">
+            <div onclick="filterCategory('Farmácia')" class="cat-btn bg-white p-3 px-6 rounded-2xl shadow-md border-2 border-white flex flex-col items-center" id="cat-Farmácia">
                 <i class="fas fa-medkit mb-1"></i>
                 <span class="text-[10px] font-black uppercase">Farmácia</span>
             </div>
@@ -122,7 +121,6 @@
                 <input type="text" id="clienteNome" placeholder="Seu Nome" class="w-full p-4 rounded-xl border-none font-bold">
                 <input type="text" id="clienteEnd" placeholder="Endereço" class="w-full p-4 rounded-xl border-none font-bold">
                 <input type="tel" id="clienteTel" placeholder="Seu Telefone / WhatsApp" class="w-full p-4 rounded-xl border-none font-bold">
-                
                 <select id="clientePag" class="w-full p-4 rounded-xl border-none font-bold bg-white">
                     <option value="Pix">Pix</option>
                     <option value="Cartão">Cartão</option>
@@ -162,9 +160,8 @@
             `).join('');
         }
 
-        // FUNÇÃO DE FILTRO POR CATEGORIA
+        // FUNÇÃO DE FILTRO CORRIGIDA (IGNORA ACENTOS E CASE)
         function filterCategory(cat) {
-            // Resetar visual dos botões
             document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
             
             if(cat === 'all') {
@@ -172,16 +169,18 @@
                 document.getElementById('tituloLista').innerText = "Lojas em Aracaju";
                 renderLojas(dbLojas);
             } else {
-                // Mapeamento simples para IDs de botões (removendo espaços)
                 const btnId = 'cat-' + cat.replace(' Mineral', '');
                 const targetBtn = document.getElementById(btnId) || document.getElementById('cat-' + cat);
                 if(targetBtn) targetBtn.classList.add('active');
                 
                 document.getElementById('tituloLista').innerText = `Lojas: ${cat}`;
-                const filtradas = dbLojas.filter(l => l.categoria === cat);
+
+                // Normaliza para comparar sem acentos e minúsculas
+                const normalize = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                
+                const filtradas = dbLojas.filter(l => normalize(l.categoria) === normalize(cat));
                 renderLojas(filtradas);
             }
-            // Limpa o campo de busca ao filtrar por categoria
             document.getElementById('searchInput').value = '';
         }
 
@@ -265,7 +264,6 @@
             const termo = document.getElementById('searchInput').value.toLowerCase();
             const filtradas = dbLojas.filter(l => l.nome.toLowerCase().includes(termo));
             renderLojas(filtradas);
-            // Reseta botões de categoria ao digitar
             document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('cat-all').classList.add('active');
         }
@@ -274,9 +272,7 @@
             const nome = document.getElementById('clienteNome').value;
             const end = document.getElementById('clienteEnd').value;
             const tel = document.getElementById('clienteTel').value;
-            
             if(!nome || !end || !tel) return alert("Preencha Nome, Endereço e Telefone!");
-
             let msg = `*PEDIDO: ${currentLoja.nome.toUpperCase()}*\n\n`;
             msg += `*Cliente:* ${nome}\n*Telefone:* ${tel}\n*Endereço:* ${end}\n*Pagamento:* ${document.getElementById('clientePag').value}\n`;
             msg += `----------------------------\n`;
