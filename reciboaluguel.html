@@ -2,17 +2,23 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Recibo de Aluguel Profissional - Validação Judicial</title>
+    <title>Recibo de Aluguel - Privado e Autenticado</title>
     <style>
         :root { --primary: #2d3436; --accent: #0984e3; --bg: #f4f7f6; --success: #00b894; --security: #636e72; }
         
-        /* BLOQUEIO DE URL E RODAPÉ DO NAVEGADOR */
+        /* COMANDO PARA OCULTAR CABEÇALHO E RODAPÉ DO NAVEGADOR */
         @media print {
-            @page { margin: 1cm; }
+            @page { 
+                margin: 0; /* Remove margens onde o navegador insere o link */
+            }
+            body { 
+                padding: 1.5cm; /* Cria a margem interna no papel */
+                background: white; 
+            }
             .edit-panel { display: none !important; }
-            body { background: white; padding: 0; }
             .receipt-container { box-shadow: none; border: 1px solid #eee; margin: 0 auto; width: 100%; }
-            /* Esconde links automáticos do navegador */
+            /* Garante que links internos não apareçam */
+            a { text-decoration: none; color: inherit; }
             a[href]:after { content: none !important; }
         }
 
@@ -60,15 +66,15 @@
         .qr-placeholder { width: 70px; height: 70px; background: #000; border-radius: 4px; border: 5px double #fff; flex-shrink: 0; }
         .auth-info { font-size: 11px; color: var(--security); line-height: 1.6; }
         .auth-code { font-family: 'Courier New', monospace; font-weight: bold; color: #000; font-size: 13px; display: block; margin-top: 5px; background: #eee; padding: 2px 5px; width: fit-content; }
-        .legal-note { margin-top: 8px; color: #2d3436; font-style: italic; font-weight: 500; }
+        .legal-note { margin-top: 10px; color: #1e272e; font-style: italic; font-weight: 600; border-top: 1px solid #eee; padding-top: 10px; }
 
-        .footer { margin-top: 40px; text-align: center; font-size: 11px; color: #adb5bd; border-top: 1px dashed #eee; padding-top: 20px; text-transform: uppercase; }
+        .footer { margin-top: 40px; text-align: center; font-size: 11px; color: #adb5bd; border-top: 1px dashed #eee; padding-top: 20px; }
     </style>
 </head>
 <body>
 
     <div class="edit-panel">
-        <h3>✎ Gerador de Recibo com Fé Pública</h3>
+        <h3>✎ Gerador Protegido</h3>
         <input type="text" id="in_locatario" placeholder="Inquilino" oninput="update()" value="Fernanda">
         <input type="text" id="in_valor" placeholder="Valor" oninput="update()" value="750,00">
         <input type="text" id="in_extenso" placeholder="Valor por extenso" oninput="update()" value="Setecentos e cinquenta reais" style="grid-column: span 2;">
@@ -79,25 +85,25 @@
         <input type="text" id="in_cpf" placeholder="CPF" oninput="update()" value="000.000.000-00">
         <input type="text" id="in_cidade" placeholder="Cidade/Data" oninput="update()" value="Aracaju/SE, 04 de Abril de 2026" style="grid-column: span 2;">
         
-        <button class="btn-gerar" onclick="gerarPDF()">GERAR PDF AUTENTICADO</button>
+        <button class="btn-gerar" onclick="gerarPDF()">GERAR PDF E OCULTAR URL</button>
     </div>
 
     <div class="receipt-container">
         <div class="header">
             <div>
                 <div class="title">RECIBO</div>
-                <div style="color: #636e72; font-weight: bold;">CÓD. DOC: <span id="out_serie">RC-2026</span></div>
+                <div style="color: #636e72; font-weight: bold;">ID DO DOCUMENTO: <span id="out_serie">RC-2026-AR</span></div>
             </div>
             <div style="text-align: right;">
-                <p>Data de Emissão: <b id="out_data_top">04/04/2026</b></p>
+                <p>Emissão: <b id="out_data_top">04/04/2026</b></p>
             </div>
         </div>
 
-        <div class="amount-box">Valor: R$ <span id="out_valor">750,00</span></div>
+        <div class="amount-box">R$ <span id="out_valor">750,00</span></div>
 
         <div class="content">
             Recebi(emos) de <b id="out_locatario">Fernanda</b> a quantia de 
-            <b id="out_extenso">Setecentos e cinquenta reais</b>, referente ao pagamento do aluguel do imóvel 
+            <b id="out_extenso">Setecentos e cinquenta reais</b>, referente ao aluguel do imóvel 
             situado na <b id="out_endereco">Avenida Doutor Francisco Moreira, 220</b>, 
             correspondente ao mês de <b id="out_mes">Abril de 2026</b>.
         </div>
@@ -118,16 +124,16 @@
         <div class="security-area">
             <div class="qr-placeholder"></div>
             <div class="auth-info">
-                <strong>PROTOCOLO DE AUTENTICIDADE DIGITAL</strong><br>
-                Este documento foi gerado eletronicamente e possui rastreabilidade de integridade única através do ID abaixo:<br>
+                <strong>PROTOCOLO DE SEGURANÇA DIGITAL</strong><br>
+                Este comprovante possui autenticação única gerada pelo sistema de gestão.<br>
                 <span class="auth-code" id="auth_code">...</span>
                 <div class="legal-note">
-                    "Este recibo possui plena validade jurídica e eficácia probatória de quitação, nos termos do Art. 320 da Lei nº 10.406/02 (Código Civil Brasileiro), servindo como prova de pagamento para fins de reconhecimento judicial."
+                    "O presente documento goza de presunção de autenticidade e validade jurídica para fins de prova de quitação, conforme preceitua o Art. 320 do Código Civil (Lei 10.406/02), sendo apto para instrução de processos judiciais."
                 </div>
             </div>
         </div>
 
-        <div class="footer">Documento de Uso Exclusivo - Autenticidade Protegida - Aracaju/SE</div>
+        <div class="footer">CÓPIA AUTENTICADA - USO EXCLUSIVO DAS PARTES - ARACAJU/SE</div>
     </div>
 
     <script>
@@ -141,18 +147,17 @@
         function update() {
             const IDs = ['locatario', 'valor', 'extenso', 'endereco', 'mes', 'data_top', 'locador', 'cpf', 'cidade'];
             IDs.forEach(id => { 
-                const val = document.getElementById('in_' + id).value;
-                document.getElementById('out_' + id).innerText = val; 
+                document.getElementById('out_' + id).innerText = document.getElementById('in_' + id).value; 
             });
         }
 
         function gerarPDF() {
-            document.getElementById('auth_code').innerText = 'ID: ' + generateAuthCode();
+            document.getElementById('auth_code').innerText = 'HASH: ' + generateAuthCode();
             window.print();
         }
 
         window.onload = () => { 
-            document.getElementById('auth_code').innerText = 'ID: ' + generateAuthCode(); 
+            document.getElementById('auth_code').innerText = 'HASH: ' + generateAuthCode(); 
         };
     </script>
 </body>
