@@ -3,59 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Loja Delivery</title>
+    <title>Marketplace Delivery</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="bg-gray-50 pb-20 font-sans">
 
     <nav class="bg-white p-4 shadow-sm sticky top-0 z-50">
-        <h1 class="text-center font-black text-red-600 text-xl tracking-tighter uppercase italic">MEU<span class="text-gray-900">DELIVERY</span></h1>
+        <h1 class="text-center font-black text-red-600 text-xl tracking-tighter uppercase">MEU<span class="text-gray-900">DELIVERY</span></h1>
     </nav>
 
-    <main class="max-w-xl mx-auto p-4">
-        <h2 class="font-black text-gray-900 text-lg mb-6 border-l-4 border-red-600 pl-3">CARDÁPIO DO DIA</h2>
-        
-        <div id="grid-loja" class="grid grid-cols-1 gap-4">
-            </div>
+    <main id="app-content" class="max-w-xl mx-auto p-4">
+        <section id="marketplace">
+            <h2 class="font-black text-gray-900 text-lg mb-6 border-l-4 border-red-600 pl-3">LOJAS DISPONÍVEIS</h2>
+            <div id="grid-lojas" class="grid grid-cols-1 gap-4"></div>
+        </section>
 
-        <div id="loja-vazia" class="hidden text-center py-20 text-gray-400">
-            <i class="fas fa-utensils text-4xl mb-4"></i>
-            <p class="font-bold">Estamos preparando as delícias...</p>
-            <p class="text-sm">Volte em instantes!</p>
-        </div>
+        <section id="cardapio-loja" class="hidden">
+            <button onclick="voltarMarketplace()" class="mb-4 text-red-600 font-bold"><i class="fas fa-arrow-left"></i> Ver outras lojas</button>
+            <div id="header-loja" class="mb-6 flex items-center gap-4 bg-white p-4 rounded-2xl border shadow-sm"></div>
+            <div id="grid-produtos" class="grid grid-cols-1 gap-4"></div>
+        </section>
     </main>
 
     <script>
-        const IMG_DEFAULT = "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200";
+        const lojas = JSON.parse(localStorage.getItem('multi_delivery_lojas')) || [];
 
-        function carregarLoja() {
-            const db = JSON.parse(localStorage.getItem('meu_delivery_db')) || [];
-            const grid = document.getElementById('grid-loja');
-            const vazia = document.getElementById('loja-vazia');
+        function renderMarketplace() {
+            const container = document.getElementById('grid-lojas');
+            if(lojas.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-400 py-10 italic">Nenhuma loja cadastrada no momento.</p>`;
+                return;
+            }
+            container.innerHTML = lojas.map(l => `
+                <div onclick="abrirLoja('${l.id}')" class="bg-white p-4 rounded-3xl border flex items-center gap-4 shadow-sm hover:shadow-md cursor-pointer transition">
+                    <img src="${l.img}" class="w-16 h-16 object-cover rounded-2xl border">
+                    <div class="flex-1">
+                        <h3 class="font-black text-gray-900 uppercase">${l.nome}</h3>
+                        <p class="text-xs text-gray-500 font-bold tracking-tight uppercase">Ver Cardápio <i class="fas fa-chevron-right ml-1"></i></p>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-            // Mostra apenas itens ATIVOS
-            const ativos = db.filter(p => p.ativo === true);
+        function abrirLoja(id) {
+            const loja = lojas.find(l => l.id === id);
+            document.getElementById('marketplace').classList.add('hidden');
+            document.getElementById('cardapio-loja').classList.remove('hidden');
 
-            if (ativos.length === 0) {
-                vazia.classList.remove('hidden');
-                grid.innerHTML = '';
+            document.getElementById('header-loja').innerHTML = `
+                <img src="${loja.img}" class="w-16 h-16 rounded-2xl object-cover">
+                <div>
+                    <h2 class="font-black text-gray-900 uppercase text-lg">${loja.nome}</h2>
+                    <p class="text-xs text-green-600 font-bold"><i class="fab fa-whatsapp"></i> Pedidos via WhatsApp</p>
+                </div>
+            `;
+
+            const containerP = document.getElementById('grid-produtos');
+            const ativos = loja.produtos.filter(p => p.ativo);
+            
+            if(ativos.length === 0) {
+                containerP.innerHTML = `<p class="text-center text-gray-400 py-10">Cardápio em atualização...</p>`;
                 return;
             }
 
-            vazia.classList.add('hidden');
-            grid.innerHTML = ativos.map(p => `
-                <div class="bg-white p-3 rounded-3xl border border-gray-100 flex items-center gap-4 shadow-sm hover:shadow-md transition">
-                    <div class="relative">
-                        <img src="${p.img}" onerror="this.src='${IMG_DEFAULT}'" class="w-24 h-24 object-cover rounded-2xl shadow-inner">
-                    </div>
+            containerP.innerHTML = ativos.map(p => `
+                <div class="bg-white p-3 rounded-3xl border flex items-center gap-4 shadow-sm">
+                    <img src="${p.img}" class="w-20 h-20 object-cover rounded-2xl">
                     <div class="flex-1">
-                        <span class="text-[9px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-black uppercase">${p.cat}</span>
-                        <h3 class="font-bold text-gray-900 py-1 text-base uppercase">${p.nome}</h3>
-                        <div class="flex justify-between items-end mt-1">
-                            <span class="text-green-600 font-black text-lg font-mono">R$ ${p.preco.toFixed(2)}</span>
-                            <button class="bg-red-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg shadow-red-200 active:scale-90 transition">
-                                <i class="fas fa-plus text-sm"></i>
+                        <h3 class="font-bold text-gray-900 uppercase text-sm">${p.nome}</h3>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-green-600 font-black">R$ ${p.preco.toFixed(2)}</span>
+                            <button onclick="pedirWpp('${loja.whatsapp}', '${p.nome}', ${p.preco})" class="bg-red-600 text-white w-9 h-9 rounded-2xl flex items-center justify-center shadow-lg shadow-red-200">
+                                <i class="fas fa-plus text-xs"></i>
                             </button>
                         </div>
                     </div>
@@ -63,9 +83,17 @@
             `).join('');
         }
 
-        // Atualiza se você trocar de aba e voltar
-        window.onfocus = carregarLoja;
-        carregarLoja();
+        function pedirWpp(wpp, produto, preco) {
+            const msg = window.encodeURIComponent(`Olá! Gostaria de pedir:\n- *${produto}* (R$ ${preco.toFixed(2)})\n\nPor favor, me confirme o tempo de entrega.`);
+            window.open(`https://wa.me/${wpp}?text=${msg}`, '_blank');
+        }
+
+        function voltarMarketplace() {
+            document.getElementById('marketplace').classList.remove('hidden');
+            document.getElementById('cardapio-loja').classList.add('hidden');
+        }
+
+        renderMarketplace();
     </script>
 </body>
 </html>
