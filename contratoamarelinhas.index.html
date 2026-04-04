@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amarelinhas Delivery - Cadastro</title>
+    <title>Amarelinhas Delivery - Cadastro e Contrato</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --amarelo-fundo: #FFFDE7;
-            --amarelo-botao: #FFD54F;
-            --texto-cinza: #666;
+            --amarelo-header: #FFD54F;
             --titulo-dourado: #B8860B;
+            --texto: #333;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
+            background-color: #f9f9f9;
             display: flex;
             justify-content: center;
             padding: 20px;
@@ -25,12 +25,37 @@
         .container {
             background-color: var(--amarelo-fundo);
             width: 100%;
-            max-width: 800px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            padding: 40px;
+            max-width: 850px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
             border: 1px solid #FFF9C4;
         }
+
+        /* CABEÇALHO COM O SLOGAN RECOLOCADO */
+        .main-header {
+            background-color: var(--amarelo-header);
+            padding: 30px;
+            text-align: center;
+            border-bottom: 2px solid #FBC02D;
+        }
+
+        .main-header h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .main-header p {
+            margin: 5px 0 0;
+            font-weight: bold;
+            color: #444;
+            font-size: 14px;
+        }
+
+        form { padding: 30px; }
 
         .section-title {
             color: var(--titulo-dourado);
@@ -38,12 +63,15 @@
             font-size: 14px;
             margin: 25px 0 15px 0;
             text-transform: uppercase;
+            border-bottom: 1px solid #FFE082;
+            padding-bottom: 5px;
         }
 
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
+            margin-bottom: 10px;
         }
 
         .full-width { grid-column: span 2; }
@@ -53,7 +81,7 @@
         label {
             font-size: 11px;
             font-weight: bold;
-            color: #333;
+            color: #555;
             margin-bottom: 5px;
             text-transform: uppercase;
         }
@@ -63,13 +91,9 @@
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
-            background-color: #fff;
         }
 
-        input[readonly] {
-            background-color: #eeeeee;
-            color: #555;
-        }
+        input[readonly] { background-color: #f0f0f0; color: #666; cursor: not-allowed; }
 
         .termos-box {
             background-color: #fff;
@@ -79,36 +103,36 @@
             font-size: 13px;
             color: #444;
             line-height: 1.6;
+            margin-top: 10px;
         }
 
         .btn-gerar {
-            background-color: var(--amarelo-botao);
+            background-color: var(--amarelo-header);
             color: #000;
             border: none;
             width: 100%;
-            padding: 18px;
+            padding: 20px;
             font-weight: bold;
             font-size: 16px;
             border-radius: 8px;
             cursor: pointer;
             margin-top: 30px;
             text-transform: uppercase;
-            transition: background 0.3s;
+            transition: all 0.3s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
         }
 
-        .btn-gerar:hover { background-color: #FFC107; }
+        .btn-gerar:hover { background-color: #FBC02D; transform: translateY(-2px); }
 
         .footer {
             text-align: center;
-            margin-top: 30px;
+            padding: 20px;
             font-size: 13px;
-            color: #555;
+            color: #666;
+            background-color: #FFFDE7;
         }
 
-        .zap-destaque {
-            color: #2E7D32;
-            font-weight: bold;
-        }
+        .zap-num { color: #2E7D32; font-weight: bold; }
 
         @media (max-width: 600px) {
             .grid { grid-template-columns: 1fr; }
@@ -119,8 +143,13 @@
 <body>
 
 <div class="container">
+    <div class="main-header">
+        <h1>Amarelinhas Delivery</h1>
+        <p>Aumentando as vendas do seu estabelecimento no Bairro Luzia</p>
+    </div>
+
     <form id="contratoForm">
-        <div class="section-title">DADOS DO CONTRATANTE</div>
+        <div class="section-title">Dados do Contratante</div>
         <div class="grid">
             <div class="full-width">
                 <label>Nome Completo / Razão Social</label>
@@ -140,7 +169,7 @@
             </div>
         </div>
 
-        <div class="section-title">CONDIÇÕES COMERCIAIS</div>
+        <div class="section-title">Condições Comerciais</div>
         <div class="grid">
             <div class="field">
                 <label>Valor da Prestação</label>
@@ -150,8 +179,8 @@
                 <label>Forma de Pagamento</label>
                 <select id="pagamento">
                     <option value="PIX">PIX</option>
-                    <option value="CARTÃO">CARTÃO</option>
-                    <option value="BOLETO">BOLETO</option>
+                    <option value="CARTÃO">CARTÃO DE CRÉDITO</option>
+                    <option value="BOLETO">BOLETO BANCÁRIO</option>
                 </select>
             </div>
             <div class="field">
@@ -159,12 +188,12 @@
                 <input type="number" id="vencimento" min="1" max="31" placeholder="Dia (Ex: 10)" required>
             </div>
             <div class="field">
-                <label>Período</label>
+                <label>Período de Fidelidade</label>
                 <input type="text" value="06 Meses (Renovável)" readonly>
             </div>
         </div>
 
-        <div class="section-title">TERMOS E CONTRATO</div>
+        <div class="section-title">Termos e Contrato</div>
         <div class="termos-box">
             • O site tem a finalidade de aumentar as vendas via delivery.<br>
             • Entrega por conta exclusiva do <b>PRESTADOR DE SERVIÇO</b>.<br>
@@ -173,11 +202,11 @@
             • Modificações/Inclusões: Contato direto via Zap <b>(79) 99975-9681</b>.
         </div>
 
-        <button type="button" class="btn-gerar" onclick="gerarPDF()">GERAR CONTRATO E ENVIAR PDF</button>
+        <button type="button" class="btn-gerar" onclick="gerarPDF()">Gerar Contrato e Enviar PDF</button>
     </form>
 
     <div class="footer">
-        Suporte Amarelinhas: <span class="zap-destaque">79 99975-9681</span>
+        Suporte Amarelinhas: <span class="zap-num">79 99975-9681</span>
     </div>
 </div>
 
@@ -191,40 +220,50 @@
         const venc = document.getElementById('vencimento').value;
 
         if(!nome || !docID || !venc) {
-            alert("Preencha todos os campos antes de gerar o PDF.");
+            alert("Preencha os dados do cliente e a data de vencimento.");
             return;
         }
 
-        // Marca d'água
-        doc.setTextColor(245, 245, 220);
-        doc.setFontSize(45);
-        doc.text("AMARELINHAS DELIVERY", 30, 150, { angle: 45 });
+        // MARCA D'ÁGUA AMARELINHAS
+        doc.setTextColor(245, 245, 200);
+        doc.setFontSize(50);
+        doc.text("AMARELINHAS DELIVERY", 25, 150, { angle: 45 });
 
-        // Título e Conteúdo
+        // CONTEÚDO DO PDF
         doc.setTextColor(0, 0, 0);
         doc.setFontSize(18);
         doc.text("CONTRATO DE PRESTAÇÃO DE SERVIÇO", 105, 20, { align: "center" });
         
         doc.setFontSize(11);
-        doc.text(`CONTRATANTE: ${nome.toUpperCase()}`, 20, 40);
-        doc.text(`DOCUMENTO: ${docID}`, 20, 48);
-        doc.text(`ENDEREÇO: ${document.getElementById('endereco').value}`, 20, 56);
+        doc.setFont(undefined, 'bold');
+        doc.text("DADOS DO CONTRATANTE:", 20, 40);
+        doc.setFont(undefined, 'normal');
+        doc.text(`Nome: ${nome.toUpperCase()}`, 20, 47);
+        doc.text(`CPF/CNPJ: ${docID}`, 20, 54);
+        doc.text(`Endereço: ${document.getElementById('endereco').value}`, 20, 61);
         
-        doc.text("--------------------------------------------------------------------------------------------------", 20, 65);
-        doc.text("VALOR MENSAL: R$ 29,90", 20, 75);
-        doc.text(`VENCIMENTO: TODO DIA ${venc}`, 20, 83);
-        doc.text("MULTA POR QUEBRA: R$ 59,80 (2X O VALOR DA PRESTAÇÃO)", 20, 91);
+        doc.setFont(undefined, 'bold');
+        doc.text("CONDIÇÕES:", 20, 75);
+        doc.setFont(undefined, 'normal');
+        doc.text("- Mensalidade: R$ 29,90", 20, 82);
+        doc.text(`- Vencimento: Todo dia ${venc}`, 20, 89);
+        doc.text("- Prazo: 06 Meses (Renovável por mais 06 meses)", 20, 96);
+        doc.text("- Multa por Rescisão Antecipada: R$ 59,80", 20, 103);
         
-        doc.text("CLÁUSULAS:", 20, 110);
-        doc.text("1. Finalidade: Aumento de vendas via delivery.", 25, 118);
-        doc.text("2. Entregas: Responsabilidade do prestador de serviço.", 25, 126);
-        doc.text("3. Vigência: 06 meses iniciais com renovação automática.", 25, 134);
-        doc.text("4. Suporte/Alterações: WhatsApp (79) 99975-9681.", 25, 142);
+        doc.setFont(undefined, 'bold');
+        doc.text("CLÁUSULAS PRINCIPAIS:", 20, 115);
+        doc.setFont(undefined, 'normal');
+        doc.text("1. Finalidade: Divulgação e aumento de vendas via delivery.", 20, 122);
+        doc.text("2. Logística: Entregas realizadas pelo PRESTADOR DE SERVIÇO.", 20, 129);
+        doc.text("3. Contato/Alterações: WhatsApp (79) 99975-9681.", 20, 136);
 
+        doc.text("Data: " + new Date().toLocaleDateString('pt-BR'), 20, 160);
+        
         doc.text("__________________________________________", 105, 200, { align: "center" });
-        doc.text("Assinatura do Cliente", 105, 208, { align: "center" });
+        doc.text("Assinatura do Cliente", 105, 207, { align: "center" });
 
         doc.save(`Contrato_Amarelinhas_${nome}.pdf`);
+        alert("Contrato gerado com sucesso!");
     }
 </script>
 
