@@ -2,39 +2,51 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Recibo de Aluguel - Aracaju/SE</title>
+    <title>Recibo de Aluguel Editável - Aracaju/SE</title>
     <style>
         :root { --primary: #2d3436; --accent: #0984e3; --bg: #f4f7f6; --success: #00b894; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 40px 20px; color: var(--primary); }
         
-        /* Botão de Impressão */
-        .btn-gerar {
-            background-color: var(--success); color: white; border: none; 
-            padding: 15px 40px; font-size: 16px; border-radius: 5px; cursor: pointer;
-            font-weight: bold; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        /* PAINEL DE EDIÇÃO - SOME NO PDF */
+        .edit-panel {
+            background: #fff; padding: 25px; border-radius: 12px; width: 100%; max-width: 800px;
+            margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-left: 8px solid var(--success);
         }
-        .btn-gerar:hover { background-color: #009476; transform: scale(1.02); }
+        .edit-panel h3 { grid-column: span 2; margin: 0 0 10px 0; color: var(--success); font-size: 18px; text-transform: uppercase; }
+        .edit-panel input { padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; outline: none; }
+        .edit-panel input:focus { border-color: var(--accent); }
+        .full-width { grid-column: span 2; }
 
+        .btn-gerar {
+            grid-column: span 2; background-color: var(--success); color: white; border: none; 
+            padding: 18px; font-size: 16px; border-radius: 6px; cursor: pointer;
+            font-weight: bold; text-transform: uppercase; transition: 0.3s; margin-top: 10px;
+        }
+        .btn-gerar:hover { background-color: #009476; transform: translateY(-2px); }
+
+        /* ESTILO DO RECIBO */
         .receipt-container { 
-            background: white; width: 100%; max-width: 800px; padding: 50px; 
-            border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); 
-            border-top: 10px solid var(--accent); position: relative; box-sizing: border-box;
+            background: white; width: 100%; max-width: 800px; padding: 60px; 
+            border-radius: 4px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); 
+            border-top: 12px solid var(--accent); box-sizing: border-box; position: relative;
         }
-        .header { display: flex; justify-content: space-between; margin-bottom: 40px; }
-        .title { font-size: 32px; font-weight: 800; color: var(--accent); letter-spacing: -1px; }
+        .header { display: flex; justify-content: space-between; margin-bottom: 50px; }
+        .title { font-size: 36px; font-weight: 900; color: var(--accent); letter-spacing: -1px; }
         .amount-box { 
-            background: #f8f9fa; padding: 25px; border-radius: 8px; 
-            font-size: 26px; font-weight: bold; text-align: right; 
-            margin-bottom: 35px; border: 1px solid #eee; 
+            background: #f8f9fa; padding: 30px; border-radius: 8px; 
+            font-size: 28px; font-weight: bold; text-align: right; 
+            margin-bottom: 40px; border: 1px solid #eee; 
         }
-        .content { line-height: 2.2; font-size: 17px; margin-bottom: 50px; text-align: justify; }
-        .content b { color: #000; text-transform: uppercase; }
-        .grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; margin-top: 60px; }
+        .content { line-height: 2.2; font-size: 18px; margin-bottom: 60px; text-align: justify; color: #333; }
+        .content b { color: #000; text-transform: uppercase; border-bottom: 1px solid #eee; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-top: 80px; }
         .signature-space { border-top: 1px solid #ced4da; padding-top: 15px; text-align: center; }
-        .footer { margin-top: 60px; text-align: center; font-size: 11px; color: #adb5bd; }
+        .footer { margin-top: 80px; text-align: center; font-size: 12px; color: #adb5bd; border-top: 1px dashed #eee; padding-top: 20px; }
 
         @media print {
-            .btn-gerar { display: none !important; }
+            .edit-panel { display: none !important; }
             body { background: white; padding: 0; }
             .receipt-container { box-shadow: none; border: 1px solid #eee; margin: 0; width: 100%; }
         }
@@ -42,47 +54,69 @@
 </head>
 <body>
 
-    <button class="btn-gerar" onclick="window.print()">CRIAR PDF AGORA</button>
+    <div class="edit-panel">
+        <h3>✎ Editar Informações do Recibo</h3>
+        <input type="text" id="in_locatario" placeholder="Nome do Inquilino" oninput="update()" value="Fernanda">
+        <input type="text" id="in_valor" placeholder="Valor (Ex: 750,00)" oninput="update()" value="750,00">
+        <input type="text" id="in_extenso" placeholder="Valor por extenso" oninput="update()" value="Setecentos e cinquenta reais" class="full-width">
+        <input type="text" id="in_endereco" placeholder="Endereço do Imóvel" oninput="update()" value="Avenida Doutor Francisco Moreira, 220" class="full-width">
+        <input type="text" id="in_mes" placeholder="Mês de Referência" oninput="update()" value="Abril de 2026">
+        <input type="text" id="in_data_top" placeholder="Data no topo" oninput="update()" value="04/04/2026">
+        <input type="text" id="in_locador" placeholder="Nome do Locador" oninput="update()" value="Roberto Vasconcelos">
+        <input type="text" id="in_cpf" placeholder="CPF/Documento" oninput="update()" value="000.000.000-00">
+        <input type="text" id="in_cidade" placeholder="Cidade e Data Final" oninput="update()" value="Aracaju/SE, 04 de Abril de 2026" class="full-width">
+        
+        <button class="btn-gerar" onclick="window.print()">GERAR PDF / IMPRIMIR</button>
+    </div>
 
     <div class="receipt-container">
         <div class="header">
             <div>
                 <div class="title">RECIBO</div>
-                <div style="color: #636e72;">Nº 001/2026</div>
+                <div style="color: #636e72; font-weight: bold;">Nº 001/2026</div>
             </div>
             <div style="text-align: right;">
-                <p>Data: <b>04/04/2026</b></p>
+                <p>Data: <b id="out_data_top">04/04/2026</b></p>
             </div>
         </div>
 
         <div class="amount-box">
-            Valor: R$ 750,00
+            Valor: R$ <span id="out_valor">750,00</span>
         </div>
 
         <div class="content">
-            Recebi(emos) de <b>FERNANDA</b> a quantia de 
-            <b>SETESENTOS E CINQUENTA REAIS</b>, correspondente ao pagamento do aluguel do imóvel 
-            situado na <b>AVENIDA DOUTOR FRANCISCO MOREIRA, 220</b>, 
-            referente ao mês de <b>ABRIL DE 2026</b>.
+            Recebi(emos) de <b id="out_locatario">Fernanda</b> a quantia de 
+            <b id="out_extenso">Setecentos e cinquenta reais</b>, correspondente ao pagamento do aluguel do imóvel 
+            situado na <b id="out_endereco">Avenida Doutor Francisco Moreira, 220</b>, 
+            referente ao mês de <b id="out_mes">Abril de 2026</b>.
         </div>
 
         <div class="grid">
             <div class="signature-space">
-                <p><b>ROBERTO VASCONCELOS</b></p>
-                <p>CPF: 0000000</p>
+                <p><b id="out_locador">Roberto Vasconcelos</b></p>
+                <p>CPF: <span id="out_cpf">000.000.000-00</span></p>
                 <small>(Locador)</small>
             </div>
             <div class="signature-space" style="border-top: none; text-align: right;">
                 <p>Cidade e Data:</p>
-                <p><b>Aracaju/SE, 04 de Abril de 2026</b></p>
+                <p><b id="out_cidade">Aracaju/SE, 04 de Abril de 2026</b></p>
                 <p>__________________________________</p>
             </div>
         </div>
 
         <div class="footer">
-            Este recibo dá quitação apenas do valor nele expresso. Gerado em Aracaju/SE.
+            Este recibo dá quitação apenas do valor nele expresso. Gerado eletronicamente em Aracaju/SE.
         </div>
     </div>
 
+    <script>
+        function update() {
+            const IDs = ['locatario', 'valor', 'extenso', 'endereco', 'mes', 'data_top', 'locador', 'cpf', 'cidade'];
+            IDs.forEach(id => {
+                const inputVal = document.getElementById('in_' + id).value;
+                document.getElementById('out_' + id).innerText = inputVal;
+            });
+        }
+    </script>
 </body>
 </html>
