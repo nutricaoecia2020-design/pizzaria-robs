@@ -63,6 +63,7 @@
             <div class="space-y-4">
                 <input type="text" id="lojaNome" placeholder="Nome da Loja" class="w-full p-3 border rounded-lg">
                 <input type="text" id="lojaImg" placeholder="URL da Logo (Link da imagem)" class="w-full p-3 border rounded-lg">
+                <input type="text" id="lojaEndereco" placeholder="Endereço (Rua, Bairro, Nº)" class="w-full p-3 border rounded-lg">
                 <input type="text" id="lojaWpp" placeholder="WhatsApp (Ex: 5579999999999)" class="w-full p-3 border rounded-lg">
                 <select id="lojaCat" class="w-full p-3 border rounded-lg">
                     <option value="ALIMENTAÇÃO">Alimentação</option>
@@ -105,7 +106,8 @@
                         <img src="${loja.img}" class="w-16 h-16 rounded-full object-cover bg-gray-100">
                         <div>
                             <h4 class="font-black uppercase">${loja.nome}</h4>
-                            <p class="text-xs text-gray-400">${loja.categoria}</p>
+                            <p class="text-[10px] text-gray-500 uppercase font-bold">${loja.endereco || 'Sem endereço'}</p>
+                            <p class="text-xs text-emerald-600 font-bold">Zap: ${loja.whatsapp}</p>
                         </div>
                     </div>
                     <button onclick="excluirLoja('${loja.id}')" class="text-red-400 hover:text-red-600 p-2">
@@ -120,17 +122,26 @@
                 id: Date.now().toString(),
                 nome: document.getElementById('lojaNome').value,
                 img: document.getElementById('lojaImg').value || 'https://via.placeholder.com/150',
+                endereco: document.getElementById('lojaEndereco').value,
                 whatsapp: document.getElementById('lojaWpp').value,
                 categoria: document.getElementById('lojaCat').value,
                 produtos: []
             };
 
-            if(!novaLoja.nome || !novaLoja.whatsapp) return alert("Preencha Nome e WhatsApp!");
+            if(!novaLoja.nome || !novaLoja.whatsapp) return alert("Preencha pelo menos Nome e WhatsApp!");
 
             db.push(novaLoja);
             atualizarDB();
             closeModalLoja();
+            limparCamposLoja();
             renderLojas();
+        }
+
+        function limparCamposLoja() {
+            document.getElementById('lojaNome').value = '';
+            document.getElementById('lojaImg').value = '';
+            document.getElementById('lojaEndereco').value = '';
+            document.getElementById('lojaWpp').value = '';
         }
 
         function abrirProdutos(id) {
@@ -164,7 +175,7 @@
         function salvarProduto() {
             const index = db.findIndex(l => l.id === idLojaSelecionada);
             const novoProduto = {
-                id: Date.now().toString(), // Usando String para consistência
+                id: Date.now().toString(),
                 nome: document.getElementById('prodNome').value,
                 preco: document.getElementById('prodPreco').value,
                 img: document.getElementById('prodImg').value || 'https://via.placeholder.com/100'
@@ -186,11 +197,9 @@
             }
         }
 
-        // FUNÇÃO CORRIGIDA: Forçando comparação de strings para garantir a exclusão
         function excluirProduto(pid) {
             const index = db.findIndex(l => l.id === idLojaSelecionada);
             if (index !== -1) {
-                // Filtra comparando os IDs como string
                 db[index].produtos = db[index].produtos.filter(p => String(p.id) !== String(pid));
                 atualizarDB();
                 renderProdutos();
