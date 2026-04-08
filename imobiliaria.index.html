@@ -3,50 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImobSystem Pro | Gestão Imobiliária</title>
+    <title>ImobSystem Pro | Gestão de Imóveis e Clientes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --primary-color: #1e293b;
-            --accent-color: #3b82f6;
-            --success-color: #10b981;
-            --bg-light: #f8fafc;
+            --primary-color: #e0f2fe; /* Azul Clarinho */
+            --accent-color: #0ea5e9;  /* Azul Destaque */
+            --success-green: #22c55e; /* Verde */
+            --text-dark: #1e293b;
+            --bg-light: #f0f9ff;
         }
 
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: var(--bg-light);
-            color: #334155;
+            color: var(--text-dark);
         }
 
         /* Sidebar Customizada */
         .sidebar {
-            background-color: var(--primary-color);
+            background-color: white;
             min-height: 100vh;
-            color: white;
+            border-right: 1px solid #e2e8f0;
             padding-top: 20px;
         }
 
         .nav-link {
-            color: #94a3b8;
+            color: #64748b;
             padding: 12px 20px;
             margin: 4px 15px;
             border-radius: 8px;
             transition: 0.3s;
+            font-weight: 500;
         }
 
         .nav-link:hover, .nav-link.active {
-            background-color: var(--accent-color);
-            color: white;
+            background-color: var(--primary-color);
+            color: var(--accent-color);
         }
 
-        /* Header e Cards */
+        /* Inputs em Verde quando focados */
+        .form-control:focus, .form-select:focus {
+            border-color: var(--success-green);
+            box-shadow: 0 0 0 0.25rem rgba(34, 197, 94, 0.25);
+        }
+
         .main-content { padding: 30px; }
-        .card { border: none; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .property-card img { height: 200px; object-fit: cover; border-top-left-radius: 12px; border-top-right-radius: 12px; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .property-card img { height: 180px; object-fit: cover; border-top-left-radius: 12px; border-top-right-radius: 12px; }
         
         .imob-header {
             background: white;
@@ -56,69 +63,75 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            border: 1px solid var(--primary-color);
         }
 
         .logo-placeholder {
-            width: 60px;
-            height: 60px;
-            background: #e2e8f0;
+            width: 50px; height: 50px;
+            background: var(--primary-color);
             border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
         }
 
         .price-badge {
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--accent-color);
+            background: #dcfce7;
+            color: #166534;
             font-weight: 700;
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 6px;
+            font-size: 0.9rem;
         }
 
-        .btn-whatsapp {
-            background-color: #25d366;
+        .btn-success-custom {
+            background-color: var(--success-green);
             color: white;
             border: none;
         }
-        .btn-whatsapp:hover { background-color: #128c7e; color: white; }
+        .btn-success-custom:hover { background-color: #16a34a; color: white; }
+
+        .btn-outline-primary-custom {
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+        }
+        .btn-outline-primary-custom:hover { background: var(--accent-color); color: white; }
     </style>
 </head>
 <body>
 
 <div class="container-fluid">
     <div class="row">
-        <nav class="col-md-2 d-none d-md-block sidebar shadow">
+        <nav class="col-md-2 d-none d-md-block sidebar">
             <div class="text-center mb-4">
-                <h5 class="fw-bold"><i class="fas fa-building me-2"></i>ImobPro</h5>
+                <h5 class="fw-bold" style="color: var(--accent-color)">
+                    <i class="fas fa-house-chimney-window me-2"></i>ImobPro
+                </h5>
             </div>
             <div class="nav flex-column">
-                <a class="nav-link active" href="#" onclick="showSection('dashboard')"><i class="fas fa-home me-2"></i> Vitrine</a>
+                <a class="nav-link active" href="#" onclick="showSection('dashboard')"><i class="fas fa-th-large me-2"></i> Vitrine</a>
                 <a class="nav-link" href="#" onclick="showSection('novo-imovel')"><i class="fas fa-plus-circle me-2"></i> Novo Imóvel</a>
-                <a class="nav-link" href="#" onclick="showSection('clientes')"><i class="fas fa-users me-2"></i> Clientes</a>
-                <a class="nav-link" href="#" onclick="showSection('configuracoes')"><i class="fas fa-cog me-2"></i> Minha Imobiliária</a>
+                <a class="nav-link" href="#" onclick="showSection('clientes')"><i class="fas fa-user-tag me-2"></i> Clientes</a>
+                <a class="nav-link" href="#" onclick="showSection('configuracoes')"><i class="fas fa-sliders me-2"></i> Ajustes</a>
             </div>
         </nav>
 
         <main class="col-md-10 main-content">
-            
-            <div class="imob-header shadow-sm">
+            <div class="imob-header">
                 <div class="d-flex align-items-center">
                     <div id="headerLogo" class="logo-placeholder me-3">
-                        <i class="fas fa-image text-muted"></i>
+                        <i class="fas fa-building text-primary"></i>
                     </div>
                     <div>
-                        <h4 id="headerNome" class="mb-0 fw-bold text-dark">Sua Imobiliária</h4>
-                        <small id="headerEndereco" class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> Configurar endereço</small>
+                        <h4 id="headerNome" class="mb-0 fw-bold">Sua Imobiliária</h4>
+                        <small id="headerEndereco" class="text-muted"><i class="fas fa-location-dot me-1"></i> Configurar endereço</small>
                     </div>
                 </div>
                 <div class="text-end">
-                    <span id="headerTelefone" class="badge bg-light text-dark border p-2"><i class="fab fa-whatsapp text-success me-1"></i> (00) 00000-0000</span>
+                    <span id="headerTelefone" class="badge bg-white text-dark border p-2"><i class="fab fa-whatsapp text-success me-1"></i> (00) 00000-0000</span>
                 </div>
             </div>
 
             <section id="sec-dashboard" class="content-section">
-                <div class="row mb-4">
+                <div class="row mb-4 g-2">
                     <div class="col-md-4">
                         <input type="text" id="buscaBairro" class="form-control" placeholder="🔍 Buscar por bairro..." onkeyup="filtrar()">
                     </div>
@@ -127,16 +140,16 @@
                             <option value="">Todos os tipos</option>
                             <option value="Casa">Casa</option>
                             <option value="Apartamento">Apartamento</option>
+                            <option value="Terreno">Terreno</option>
                         </select>
                     </div>
                 </div>
-                <div id="listaImoveis" class="row g-4">
-                    </div>
+                <div id="listaImoveis" class="row g-4"></div>
             </section>
 
             <section id="sec-novo-imovel" class="content-section d-none">
                 <div class="card p-4">
-                    <h5 class="fw-bold mb-4">Cadastrar Propriedade</h5>
+                    <h5 class="fw-bold mb-4 text-primary">Cadastrar Propriedade</h5>
                     <form id="formImovel" class="row g-3">
                         <div class="col-md-8">
                             <label class="form-label">Título do Anúncio</label>
@@ -160,40 +173,65 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">URL da Foto</label>
-                            <input type="text" id="imob_foto" class="form-control" placeholder="https://linkdaimagem.com/foto.jpg">
+                            <input type="text" id="imob_foto" class="form-control" placeholder="Link da imagem">
                         </div>
                         <div class="col-12">
-                            <label class="form-label">Descrição Curta (Características)</label>
+                            <label class="form-label">Descrição Curta</label>
                             <textarea id="imob_desc" class="form-control" rows="2"></textarea>
                         </div>
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary px-5">Publicar Imóvel</button>
+                        <div class="col-12 text-end">
+                            <button type="submit" class="btn btn-success-custom px-5">Publicar Imóvel</button>
                         </div>
                     </form>
                 </div>
             </section>
 
             <section id="sec-clientes" class="content-section d-none">
-                <div class="card p-4">
-                    <h5 class="fw-bold mb-4">Base de Contatos</h5>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Nome</th>
-                                    <th>WhatsApp</th>
-                                    <th>Interesse</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelaClientes"></tbody>
-                        </table>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card p-4 mb-4">
+                            <h5 class="fw-bold mb-3 text-primary">Novo Cliente</h5>
+                            <form id="formCliente">
+                                <div class="mb-3">
+                                    <label class="form-label">Nome Completo</label>
+                                    <input type="text" id="cli_nome" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">WhatsApp</label>
+                                    <input type="text" id="cli_tel" class="form-control" placeholder="Ex: 79999999999" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Interesse</label>
+                                    <input type="text" id="cli_interesse" class="form-control" placeholder="Ex: Apartamento no Centro">
+                                </div>
+                                <button type="submit" class="btn btn-success-custom w-100">Cadastrar Cliente</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card p-4">
+                            <h5 class="fw-bold mb-3 text-primary">Base de Contatos</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>WhatsApp</th>
+                                            <th>Interesse</th>
+                                            <th>Ação</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabelaClientes"></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
             <section id="sec-configuracoes" class="content-section d-none">
                 <div class="card p-4">
-                    <h5 class="fw-bold mb-4">Dados da Minha Imobiliária</h5>
+                    <h5 class="fw-bold mb-4 text-primary">Dados da Minha Imobiliária</h5>
                     <form id="formConfig" class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Nome Fantasia</label>
@@ -201,23 +239,22 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">WhatsApp de Vendas</label>
-                            <input type="text" id="conf_tel" class="form-control" placeholder="5579999999999">
+                            <input type="text" id="conf_tel" class="form-control">
                         </div>
                         <div class="col-md-12">
                             <label class="form-label">Endereço Físico</label>
                             <input type="text" id="conf_end" class="form-control">
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label">URL da Logo (PNG transparente preferencialmente)</label>
+                            <label class="form-label">URL da Logo</label>
                             <input type="text" id="conf_logo" class="form-control">
                         </div>
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-dark px-5">Salvar Configurações</button>
+                        <div class="col-12 text-end">
+                            <button type="submit" class="btn btn-outline-primary-custom px-5">Salvar Alterações</button>
                         </div>
                     </form>
                 </div>
             </section>
-
         </main>
     </div>
 </div>
@@ -225,22 +262,20 @@
 <script>
     // Inicialização de Dados
     let imoveis = JSON.parse(localStorage.getItem('imob_dados')) || [];
+    let clientes = JSON.parse(localStorage.getItem('imob_clientes')) || [];
     let config = JSON.parse(localStorage.getItem('imob_config')) || {
-        nome: "Sua Imobiliária",
-        tel: "",
-        end: "Aracaju, SE",
-        logo: ""
+        nome: "Sua Imobiliária", tel: "", end: "Endereço não configurado", logo: ""
     };
 
-    // Função para trocar abas
     function showSection(id) {
         document.querySelectorAll('.content-section').forEach(s => s.classList.add('d-none'));
         document.getElementById('sec-' + id).classList.remove('d-none');
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        event.currentTarget.classList.add('active');
+        if(event) event.currentTarget.classList.add('active');
+        if(id === 'clientes') renderClientes();
     }
 
-    // Salvar Configuração da Imobiliária
+    // Configurações
     document.getElementById('formConfig').addEventListener('submit', (e) => {
         e.preventDefault();
         config = {
@@ -251,19 +286,19 @@
         };
         localStorage.setItem('imob_config', JSON.stringify(config));
         aplicarConfig();
-        alert('Dados atualizados com sucesso!');
+        alert('Configurações salvas!');
     });
 
     function aplicarConfig() {
         document.getElementById('headerNome').innerText = config.nome;
-        document.getElementById('headerEndereco').innerHTML = `<i class="fas fa-map-marker-alt me-1"></i> ${config.end}`;
+        document.getElementById('headerEndereco').innerHTML = `<i class="fas fa-location-dot me-1"></i> ${config.end}`;
         document.getElementById('headerTelefone').innerHTML = `<i class="fab fa-whatsapp text-success me-1"></i> ${config.tel}`;
         if(config.logo) {
             document.getElementById('headerLogo').innerHTML = `<img src="${config.logo}" style="width:100%; height:100%; object-fit:contain">`;
         }
     }
 
-    // Salvar Imóvel
+    // Gestão de Imóveis
     document.getElementById('formImovel').addEventListener('submit', (e) => {
         e.preventDefault();
         const novo = {
@@ -272,7 +307,7 @@
             preco: parseFloat(document.getElementById('imob_preco').value),
             tipo: document.getElementById('imob_tipo').value,
             bairro: document.getElementById('imob_bairro').value,
-            foto: document.getElementById('imob_foto').value || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&q=80',
+            foto: document.getElementById('imob_foto').value || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400',
             desc: document.getElementById('imob_desc').value
         };
         imoveis.push(novo);
@@ -282,54 +317,79 @@
         showSection('dashboard');
     });
 
-    // Renderizar Imóveis (Vitrine)
     function filtrar() {
         const grid = document.getElementById('listaImoveis');
         const termo = document.getElementById('buscaBairro').value.toLowerCase();
         const tipo = document.getElementById('buscaTipo').value;
-
         grid.innerHTML = '';
         
-        imoveis.filter(i => {
-            return i.bairro.toLowerCase().includes(termo) && (!tipo || i.tipo === tipo);
-        }).forEach(i => {
+        imoveis.filter(i => i.bairro.toLowerCase().includes(termo) && (!tipo || i.tipo === tipo)).forEach(i => {
             grid.innerHTML += `
                 <div class="col-md-4 col-lg-3">
-                    <div class="card property-card shadow-sm h-100">
+                    <div class="card property-card h-100">
                         <img src="${i.foto}" class="card-img-top">
                         <div class="card-body">
                             <span class="price-badge">R$ ${i.preco.toLocaleString('pt-BR')}</span>
                             <h6 class="fw-bold mt-2 mb-1">${i.titulo}</h6>
                             <p class="small text-muted mb-2"><i class="fas fa-map-marker-alt"></i> ${i.bairro}</p>
-                            <p class="small text-secondary" style="height: 40px; overflow: hidden;">${i.desc}</p>
-                            <button onclick="compartilhar('${i.id}')" class="btn btn-whatsapp w-100 btn-sm mt-2">
+                            <button onclick="compartilhar('${i.id}')" class="btn btn-success-custom w-100 btn-sm mt-2">
                                 <i class="fab fa-whatsapp me-1"></i> Enviar p/ Cliente
                             </button>
                         </div>
                     </div>
-                </div>
-            `;
+                </div>`;
         });
     }
 
-    // Link do WhatsApp
+    // Gestão de Clientes
+    document.getElementById('formCliente').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const cliente = {
+            id: Date.now(),
+            nome: document.getElementById('cli_nome').value,
+            tel: document.getElementById('cli_tel').value,
+            interesse: document.getElementById('cli_interesse').value
+        };
+        clientes.push(cliente);
+        localStorage.setItem('imob_clientes', JSON.stringify(clientes));
+        e.target.reset();
+        renderClientes();
+    });
+
+    function renderClientes() {
+        const lista = document.getElementById('tabelaClientes');
+        lista.innerHTML = '';
+        clientes.forEach(c => {
+            lista.innerHTML += `
+                <tr>
+                    <td>${c.nome}</td>
+                    <td><a href="https://wa.me/${c.tel}" target="_blank" class="text-success text-decoration-none"><i class="fab fa-whatsapp"></i> ${c.tel}</a></td>
+                    <td><span class="badge bg-light text-dark border">${c.interesse}</span></td>
+                    <td><button onclick="removerCliente(${c.id})" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td>
+                </tr>`;
+        });
+    }
+
+    function removerCliente(id) {
+        clientes = clientes.filter(c => c.id !== id);
+        localStorage.setItem('imob_clientes', JSON.stringify(clientes));
+        renderClientes();
+    }
+
     function compartilhar(id) {
         const i = imoveis.find(item => item.id == id);
-        const msg = `🏠 *IMÓVEL DISPONÍVEL - ${config.nome}*%0A%0A*${i.titulo}*%0A📍 Bairro: ${i.bairro}%0A💰 Valor: R$ ${i.preco.toLocaleString('pt-BR')}%0A📝 Detalhes: ${i.desc}%0A%0A📸 Veja a foto: ${i.foto}%0A%0A📞 Contato: ${config.tel}`;
+        const msg = `🏠 *${i.titulo}*%0A📍 Bairro: ${i.bairro}%0A💰 Valor: R$ ${i.preco.toLocaleString('pt-BR')}%0A%0A📲 Contato: ${config.nome}`;
         window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
 
-    // Init
+    // Inicialização
     aplicarConfig();
     filtrar();
-    
-    // Preencher campos de config se já existirem
     document.getElementById('conf_nome').value = config.nome;
     document.getElementById('conf_tel').value = config.tel;
     document.getElementById('conf_end').value = config.end;
     document.getElementById('conf_logo').value = config.logo;
 </script>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
