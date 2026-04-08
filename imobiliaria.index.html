@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImobSystem Pro | Gestão Completa</title>
+    <title>ImobSystem Pro | Gestão de Imóveis</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -44,11 +44,6 @@
             color: var(--accent-color);
         }
 
-        .form-control:focus, .form-select:focus {
-            border-color: var(--success-green);
-            box-shadow: 0 0 0 0.25rem rgba(34, 197, 94, 0.25);
-        }
-
         .main-content { padding: 30px; }
         .card { border: none; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         
@@ -77,13 +72,11 @@
             font-weight: 700;
             padding: 4px 10px;
             border-radius: 6px;
-            font-size: 0.9rem;
         }
 
         .btn-success-custom { background-color: var(--success-green); color: white; border: none; }
         .btn-success-custom:hover { background-color: #16a34a; color: white; }
 
-        /* Preview de Fotos Acumulativas */
         #previewContainer {
             display: flex;
             flex-wrap: wrap;
@@ -109,15 +102,14 @@
         }
 
         .property-img-container {
-            position: relative;
             height: 200px;
             overflow: hidden;
             border-top-left-radius: 12px;
             border-top-right-radius: 12px;
+            background: #eee;
+            position: relative;
         }
-        .property-img-container img {
-            width: 100%; height: 100%; object-fit: cover;
-        }
+        .property-img-container img { width: 100%; height: 100%; object-fit: cover; }
         .photo-counter {
             position: absolute; bottom: 10px; right: 10px;
             background: rgba(0,0,0,0.6); color: white;
@@ -136,10 +128,10 @@
                 </h5>
             </div>
             <div class="nav flex-column">
-                <a class="nav-link active" href="#" onclick="showSection('dashboard')"><i class="fas fa-th-large me-2"></i> Vitrine</a>
-                <a class="nav-link" href="#" onclick="showSection('novo-imovel')"><i class="fas fa-plus-circle me-2"></i> Novo Imóvel</a>
-                <a class="nav-link" href="#" onclick="showSection('clientes')"><i class="fas fa-user-tag me-2"></i> Clientes</a>
-                <a class="nav-link" href="#" onclick="showSection('configuracoes')"><i class="fas fa-sliders me-2"></i> Ajustes</a>
+                <a class="nav-link active" id="nav-dashboard" href="#" onclick="showSection('dashboard')"><i class="fas fa-th-large me-2"></i> Vitrine</a>
+                <a class="nav-link" id="nav-novo-imovel" href="#" onclick="showSection('novo-imovel')"><i class="fas fa-plus-circle me-2"></i> Novo Imóvel</a>
+                <a class="nav-link" id="nav-clientes" href="#" onclick="showSection('clientes')"><i class="fas fa-user-tag me-2"></i> Clientes</a>
+                <a class="nav-link" id="nav-configuracoes" href="#" onclick="showSection('configuracoes')"><i class="fas fa-sliders me-2"></i> Ajustes</a>
             </div>
         </nav>
 
@@ -179,7 +171,7 @@
                     <form id="formImovel" class="row g-3">
                         <div class="col-md-8">
                             <label class="form-label">Título do Anúncio</label>
-                            <input type="text" id="imob_titulo" class="form-control" required placeholder="Ex: Casa Duplex com Piscina">
+                            <input type="text" id="imob_titulo" class="form-control" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Preço (R$)</label>
@@ -198,19 +190,19 @@
                             <input type="text" id="imob_bairro" class="form-control" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label text-success fw-bold">Fotos do Imóvel (Até 20)</label>
+                            <label class="form-label text-success fw-bold">Fotos (Até 20 selecionadas)</label>
                             <input type="file" id="imob_fotos_input" class="form-control" accept="image/*" multiple onchange="handleFiles(this.files)">
                         </div>
                         <div class="col-12">
                             <div id="previewContainer"></div>
-                            <small class="text-muted" id="countLabel">Fotos selecionadas: 0/20</small>
+                            <small class="text-muted" id="countLabel">Fotos: 0/20</small>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">Descrição Curta</label>
-                            <textarea id="imob_desc" class="form-control" rows="2"></textarea>
+                            <label class="form-label">Descrição</label>
+                            <textarea id="imob_desc" class="form-control" rows="3"></textarea>
                         </div>
                         <div class="col-12 text-end">
-                            <button type="submit" class="btn btn-success-custom px-5">Publicar Imóvel</button>
+                            <button type="submit" class="btn btn-success-custom px-5 py-2 fw-bold">Publicar Imóvel</button>
                         </div>
                     </form>
                 </div>
@@ -231,7 +223,7 @@
                     </div>
                     <div class="col-md-8">
                         <div class="card p-4">
-                            <h5 class="fw-bold mb-3 text-primary">Base de Contatos</h5>
+                            <h5 class="fw-bold mb-3 text-primary">Contatos</h5>
                             <div class="table-responsive"><table class="table table-hover"><thead><tr><th>Nome</th><th>WhatsApp</th><th>Interesse</th><th>Ação</th></tr></thead><tbody id="tabelaClientes"></tbody></table></div>
                         </div>
                     </div>
@@ -240,15 +232,12 @@
 
             <section id="sec-configuracoes" class="content-section d-none">
                 <div class="card p-4">
-                    <h5 class="fw-bold mb-4 text-primary">Configurações da Imobiliária</h5>
+                    <h5 class="fw-bold mb-4 text-primary">Configurações</h5>
                     <form id="formConfig" class="row g-3">
                         <div class="col-md-6"><label class="form-label">Nome Fantasia</label><input type="text" id="conf_nome" class="form-control"></div>
-                        <div class="col-md-6"><label class="form-label">WhatsApp Vendas</label><input type="text" id="conf_tel" class="form-control"></div>
+                        <div class="col-md-6"><label class="form-label">WhatsApp</label><input type="text" id="conf_tel" class="form-control"></div>
                         <div class="col-md-12"><label class="form-label">Endereço</label><input type="text" id="conf_end" class="form-control"></div>
-                        <div class="col-md-12">
-                            <label class="form-label">Logo da Imobiliária (Upload)</label>
-                            <input type="file" id="conf_logo_input" class="form-control" accept="image/*" onchange="handleLogo(this.files)">
-                        </div>
+                        <div class="col-md-12"><label class="form-label">Logo (Upload)</label><input type="file" class="form-control" accept="image/*" onchange="handleLogo(this.files)"></div>
                         <div class="col-12 text-end"><button type="submit" class="btn btn-outline-primary px-5">Salvar</button></div>
                     </form>
                 </div>
@@ -260,7 +249,7 @@
 <script>
     let imoveis = JSON.parse(localStorage.getItem('imob_dados')) || [];
     let clientes = JSON.parse(localStorage.getItem('imob_clientes')) || [];
-    let config = JSON.parse(localStorage.getItem('imob_config')) || { nome: "Sua Imobiliária", tel: "", end: "Aracaju, SE", logo: "" };
+    let config = JSON.parse(localStorage.getItem('imob_config')) || { nome: "Sua Imobiliária", tel: "5579", end: "Aracaju, SE", logo: "" };
     
     let tempFotos = []; 
     let tempLogo = config.logo;
@@ -269,23 +258,42 @@
         document.querySelectorAll('.content-section').forEach(s => s.classList.add('d-none'));
         document.getElementById('sec-' + id).classList.remove('d-none');
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        if(event) event.currentTarget.classList.add('active');
+        document.getElementById('nav-' + id).classList.add('active');
         if(id === 'clientes') renderClientes();
     }
 
-    // CORREÇÃO: Função para ACUMULAR arquivos
+    // Função para REDIMENSIONAR imagens e não travar o navegador
     function handleFiles(files) {
         Array.from(files).forEach(file => {
             if (tempFotos.length < 20) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    tempFotos.push(e.target.result);
-                    renderPreviews();
-                }
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 800; // Reduz para largura máxima de 800px
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Salva a imagem comprimida
+                        tempFotos.push(canvas.toDataURL('image/jpeg', 0.7)); 
+                        renderPreviews();
+                    };
+                    img.src = e.target.result;
+                };
                 reader.readAsDataURL(file);
             }
         });
-        document.getElementById('imob_fotos_input').value = ""; // Limpa o input para permitir selecionar os mesmos arquivos
+        document.getElementById('imob_fotos_input').value = "";
     }
 
     function renderPreviews() {
@@ -294,13 +302,10 @@
         tempFotos.forEach((src, index) => {
             const div = document.createElement("div");
             div.className = "preview-item";
-            div.innerHTML = `
-                <img src="${src}" class="preview-img">
-                <button type="button" class="remove-photo" onclick="removePhoto(${index})">&times;</button>
-            `;
+            div.innerHTML = `<img src="${src}" class="preview-img"><button type="button" class="remove-photo" onclick="removePhoto(${index})">&times;</button>`;
             container.appendChild(div);
         });
-        document.getElementById('countLabel').innerText = `Fotos selecionadas: ${tempFotos.length}/20`;
+        document.getElementById('countLabel').innerText = `Fotos: ${tempFotos.length}/20`;
     }
 
     function removePhoto(index) {
@@ -311,29 +316,37 @@
     function handleLogo(files) {
         if(files[0]) {
             const reader = new FileReader();
-            reader.onload = function(e) { tempLogo = e.target.result; }
+            reader.onload = function(e) { tempLogo = e.target.result; };
             reader.readAsDataURL(files[0]);
         }
     }
 
+    // PUBLICAÇÃO DO IMÓVEL
     document.getElementById('formImovel').addEventListener('submit', (e) => {
         e.preventDefault();
-        const novo = {
+        
+        const novoImovel = {
             id: Date.now(),
             titulo: document.getElementById('imob_titulo').value,
             preco: parseFloat(document.getElementById('imob_preco').value),
             tipo: document.getElementById('imob_tipo').value,
             bairro: document.getElementById('imob_bairro').value,
-            fotos: tempFotos.length > 0 ? [...tempFotos] : ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400'],
+            fotos: tempFotos.length > 0 ? [...tempFotos] : [],
             desc: document.getElementById('imob_desc').value
         };
-        imoveis.push(novo);
+
+        imoveis.unshift(novoImovel); // Adiciona no início da lista
         localStorage.setItem('imob_dados', JSON.stringify(imoveis));
+        
+        // Limpar tudo
         e.target.reset();
         tempFotos = [];
         renderPreviews();
+        
+        // Atualizar vitrine e mudar de aba
         filtrar();
         showSection('dashboard');
+        alert("Imóvel publicado com sucesso!");
     });
 
     function filtrar() {
@@ -342,23 +355,37 @@
         const tipo = document.getElementById('buscaTipo').value;
         grid.innerHTML = '';
         
-        imoveis.filter(i => i.bairro.toLowerCase().includes(termo) && (!tipo || i.tipo === tipo)).forEach(i => {
-            const mainFoto = i.fotos[0];
+        const filtrados = imoveis.filter(i => 
+            (i.bairro.toLowerCase().includes(termo)) && 
+            (!tipo || i.tipo === tipo)
+        );
+
+        if(filtrados.length === 0) {
+            grid.innerHTML = '<div class="col-12 text-center text-muted">Nenhum imóvel encontrado.</div>';
+            return;
+        }
+
+        filtrados.forEach(i => {
+            const fotoPrincipal = i.fotos.length > 0 ? i.fotos[0] : 'https://via.placeholder.com/400x300?text=Sem+Foto';
             grid.innerHTML += `
                 <div class="col-md-4 col-lg-3">
-                    <div class="card h-100">
+                    <div class="card h-100 shadow-sm border-0">
                         <div class="property-img-container">
-                            <img src="${mainFoto}">
+                            <img src="${fotoPrincipal}">
                             <div class="photo-counter"><i class="fas fa-camera"></i> ${i.fotos.length}</div>
                         </div>
                         <div class="card-body">
                             <span class="price-badge">R$ ${i.preco.toLocaleString('pt-BR')}</span>
                             <h6 class="fw-bold mt-2 mb-1">${i.titulo}</h6>
                             <p class="small text-muted mb-2"><i class="fas fa-map-marker-alt"></i> ${i.bairro}</p>
-                            <button onclick="compartilhar('${i.id}')" class="btn btn-success-custom w-100 btn-sm">
-                                <i class="fab fa-whatsapp me-1"></i> Enviar p/ Cliente
-                            </button>
-                            <button onclick="removerImovel(${i.id})" class="btn btn-link btn-sm text-danger w-100 mt-1">Excluir</button>
+                            <div class="d-flex gap-2">
+                                <button onclick="compartilhar(${i.id})" class="btn btn-success-custom flex-grow-1 btn-sm">
+                                    <i class="fab fa-whatsapp"></i> Enviar
+                                </button>
+                                <button onclick="removerImovel(${i.id})" class="btn btn-outline-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>`;
@@ -366,13 +393,14 @@
     }
 
     function removerImovel(id) {
-        if(confirm("Deseja excluir este imóvel?")) {
+        if(confirm("Excluir este imóvel permanentemente?")) {
             imoveis = imoveis.filter(i => i.id !== id);
             localStorage.setItem('imob_dados', JSON.stringify(imoveis));
             filtrar();
         }
     }
 
+    // CLIENTES
     document.getElementById('formCliente').addEventListener('submit', (e) => {
         e.preventDefault();
         clientes.push({
@@ -401,6 +429,7 @@
         renderClientes();
     }
 
+    // CONFIG
     document.getElementById('formConfig').addEventListener('submit', (e) => {
         e.preventDefault();
         config = {
@@ -411,7 +440,7 @@
         };
         localStorage.setItem('imob_config', JSON.stringify(config));
         aplicarConfig();
-        alert('Configurações salvas!');
+        alert('Dados salvos!');
     });
 
     function aplicarConfig() {
@@ -425,10 +454,11 @@
 
     function compartilhar(id) {
         const i = imoveis.find(item => item.id == id);
-        const msg = `🏠 *${i.titulo}*%0A📍 Bairro: ${i.bairro}%0A💰 Valor: R$ ${i.preco.toLocaleString('pt-BR')}%0A📝 ${i.desc}%0A%0A📲 Contato: ${config.nome} ${config.tel}`;
+        const msg = `🏠 *${i.titulo}*%0A📍 Bairro: ${i.bairro}%0A💰 Valor: R$ ${i.preco.toLocaleString('pt-BR')}%0A%0A📲 Falar com: ${config.nome}`;
         window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
 
+    // Inicialização
     aplicarConfig();
     filtrar();
     document.getElementById('conf_nome').value = config.nome;
