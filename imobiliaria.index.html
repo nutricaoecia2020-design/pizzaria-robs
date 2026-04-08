@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImobSystem Pro | Gestão de Imóveis e Clientes</title>
+    <title>ImobSystem Pro | Gestão Completa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --primary-color: #e0f2fe; /* Azul Clarinho */
-            --accent-color: #0ea5e9;  /* Azul Destaque */
-            --success-green: #22c55e; /* Verde */
+            --primary-color: #e0f2fe;
+            --accent-color: #0ea5e9;
+            --success-green: #22c55e;
             --text-dark: #1e293b;
             --bg-light: #f0f9ff;
         }
@@ -23,7 +23,6 @@
             color: var(--text-dark);
         }
 
-        /* Sidebar Customizada */
         .sidebar {
             background-color: white;
             min-height: 100vh;
@@ -45,7 +44,6 @@
             color: var(--accent-color);
         }
 
-        /* Inputs em Verde quando focados */
         .form-control:focus, .form-select:focus {
             border-color: var(--success-green);
             box-shadow: 0 0 0 0.25rem rgba(34, 197, 94, 0.25);
@@ -53,7 +51,6 @@
 
         .main-content { padding: 30px; }
         .card { border: none; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .property-card img { height: 180px; object-fit: cover; border-top-left-radius: 12px; border-top-right-radius: 12px; }
         
         .imob-header {
             background: white;
@@ -71,6 +68,7 @@
             background: var(--primary-color);
             border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
         }
 
         .price-badge {
@@ -82,18 +80,39 @@
             font-size: 0.9rem;
         }
 
-        .btn-success-custom {
-            background-color: var(--success-green);
-            color: white;
-            border: none;
-        }
+        .btn-success-custom { background-color: var(--success-green); color: white; border: none; }
         .btn-success-custom:hover { background-color: #16a34a; color: white; }
 
-        .btn-outline-primary-custom {
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
+        /* Preview de Fotos no Cadastro */
+        #previewContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
         }
-        .btn-outline-primary-custom:hover { background: var(--accent-color); color: white; }
+        .preview-img {
+            width: 80px; height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+        }
+
+        /* Estilo da Imagem na Vitrine */
+        .property-img-container {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .property-img-container img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .photo-counter {
+            position: absolute; bottom: 10px; right: 10px;
+            background: rgba(0,0,0,0.6); color: white;
+            padding: 2px 8px; border-radius: 20px; font-size: 0.75rem;
+        }
     </style>
 </head>
 <body>
@@ -122,7 +141,7 @@
                     </div>
                     <div>
                         <h4 id="headerNome" class="mb-0 fw-bold">Sua Imobiliária</h4>
-                        <small id="headerEndereco" class="text-muted"><i class="fas fa-location-dot me-1"></i> Configurar endereço</small>
+                        <small id="headerEndereco" class="text-muted"><i class="fas fa-location-dot me-1"></i> Aracaju, SE</small>
                     </div>
                 </div>
                 <div class="text-end">
@@ -132,15 +151,12 @@
 
             <section id="sec-dashboard" class="content-section">
                 <div class="row mb-4 g-2">
-                    <div class="col-md-4">
-                        <input type="text" id="buscaBairro" class="form-control" placeholder="🔍 Buscar por bairro..." onkeyup="filtrar()">
-                    </div>
+                    <div class="col-md-4"><input type="text" id="buscaBairro" class="form-control" placeholder="🔍 Buscar por bairro..." onkeyup="filtrar()"></div>
                     <div class="col-md-3">
                         <select id="buscaTipo" class="form-select" onchange="filtrar()">
                             <option value="">Todos os tipos</option>
                             <option value="Casa">Casa</option>
                             <option value="Apartamento">Apartamento</option>
-                            <option value="Terreno">Terreno</option>
                         </select>
                     </div>
                 </div>
@@ -172,8 +188,11 @@
                             <input type="text" id="imob_bairro" class="form-control" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">URL da Foto</label>
-                            <input type="text" id="imob_foto" class="form-control" placeholder="Link da imagem">
+                            <label class="form-label text-success fw-bold">Fotos do Imóvel (Até 20)</label>
+                            <input type="file" id="imob_fotos_input" class="form-control" accept="image/*" multiple onchange="handleFiles(this.files)">
+                        </div>
+                        <div class="col-12">
+                            <div id="previewContainer"></div>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Descrição Curta</label>
@@ -189,41 +208,20 @@
             <section id="sec-clientes" class="content-section d-none">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4 mb-4">
+                        <div class="card p-4">
                             <h5 class="fw-bold mb-3 text-primary">Novo Cliente</h5>
                             <form id="formCliente">
-                                <div class="mb-3">
-                                    <label class="form-label">Nome Completo</label>
-                                    <input type="text" id="cli_nome" class="form-control" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">WhatsApp</label>
-                                    <input type="text" id="cli_tel" class="form-control" placeholder="Ex: 79999999999" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Interesse</label>
-                                    <input type="text" id="cli_interesse" class="form-control" placeholder="Ex: Apartamento no Centro">
-                                </div>
-                                <button type="submit" class="btn btn-success-custom w-100">Cadastrar Cliente</button>
+                                <div class="mb-3"><label class="form-label">Nome</label><input type="text" id="cli_nome" class="form-control" required></div>
+                                <div class="mb-3"><label class="form-label">WhatsApp</label><input type="text" id="cli_tel" class="form-control" required></div>
+                                <div class="mb-3"><label class="form-label">Interesse</label><input type="text" id="cli_interesse" class="form-control"></div>
+                                <button type="submit" class="btn btn-success-custom w-100">Cadastrar</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
                         <div class="card p-4">
                             <h5 class="fw-bold mb-3 text-primary">Base de Contatos</h5>
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Nome</th>
-                                            <th>WhatsApp</th>
-                                            <th>Interesse</th>
-                                            <th>Ação</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tabelaClientes"></tbody>
-                                </table>
-                            </div>
+                            <div class="table-responsive"><table class="table table-hover"><thead><tr><th>Nome</th><th>WhatsApp</th><th>Interesse</th><th>Ação</th></tr></thead><tbody id="tabelaClientes"></tbody></table></div>
                         </div>
                     </div>
                 </div>
@@ -231,27 +229,16 @@
 
             <section id="sec-configuracoes" class="content-section d-none">
                 <div class="card p-4">
-                    <h5 class="fw-bold mb-4 text-primary">Dados da Minha Imobiliária</h5>
+                    <h5 class="fw-bold mb-4 text-primary">Configurações da Imobiliária</h5>
                     <form id="formConfig" class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Nome Fantasia</label>
-                            <input type="text" id="conf_nome" class="form-control" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">WhatsApp de Vendas</label>
-                            <input type="text" id="conf_tel" class="form-control">
-                        </div>
+                        <div class="col-md-6"><label class="form-label">Nome Fantasia</label><input type="text" id="conf_nome" class="form-control"></div>
+                        <div class="col-md-6"><label class="form-label">WhatsApp Vendas</label><input type="text" id="conf_tel" class="form-control"></div>
+                        <div class="col-md-12"><label class="form-label">Endereço</label><input type="text" id="conf_end" class="form-control"></div>
                         <div class="col-md-12">
-                            <label class="form-label">Endereço Físico</label>
-                            <input type="text" id="conf_end" class="form-control">
+                            <label class="form-label">Logo da Imobiliária (Upload)</label>
+                            <input type="file" id="conf_logo_input" class="form-control" accept="image/*" onchange="handleLogo(this.files)">
                         </div>
-                        <div class="col-md-12">
-                            <label class="form-label">URL da Logo</label>
-                            <input type="text" id="conf_logo" class="form-control">
-                        </div>
-                        <div class="col-12 text-end">
-                            <button type="submit" class="btn btn-outline-primary-custom px-5">Salvar Alterações</button>
-                        </div>
+                        <div class="col-12 text-end"><button type="submit" class="btn btn-outline-primary px-5">Salvar</button></div>
                     </form>
                 </div>
             </section>
@@ -260,12 +247,12 @@
 </div>
 
 <script>
-    // Inicialização de Dados
     let imoveis = JSON.parse(localStorage.getItem('imob_dados')) || [];
     let clientes = JSON.parse(localStorage.getItem('imob_clientes')) || [];
-    let config = JSON.parse(localStorage.getItem('imob_config')) || {
-        nome: "Sua Imobiliária", tel: "", end: "Endereço não configurado", logo: ""
-    };
+    let config = JSON.parse(localStorage.getItem('imob_config')) || { nome: "Sua Imobiliária", tel: "", end: "Aracaju, SE", logo: "" };
+    
+    let tempFotos = []; // Array temporário para guardar Base64 das fotos
+    let tempLogo = config.logo;
 
     function showSection(id) {
         document.querySelectorAll('.content-section').forEach(s => s.classList.add('d-none'));
@@ -275,6 +262,122 @@
         if(id === 'clientes') renderClientes();
     }
 
+    // Processar Upload de Fotos do Imóvel
+    function handleFiles(files) {
+        tempFotos = [];
+        document.getElementById('previewContainer').innerHTML = "";
+        const limit = Math.min(files.length, 20);
+        
+        for (let i = 0; i < limit; i++) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                tempFotos.push(e.target.result);
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.className = "preview-img";
+                document.getElementById('previewContainer').appendChild(img);
+            }
+            reader.readAsDataURL(files[i]);
+        }
+    }
+
+    // Processar Upload da Logo
+    function handleLogo(files) {
+        if(files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) { tempLogo = e.target.result; }
+            reader.readAsDataURL(files[0]);
+        }
+    }
+
+    // Salvar Imóvel
+    document.getElementById('formImovel').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const novo = {
+            id: Date.now(),
+            titulo: document.getElementById('imob_titulo').value,
+            preco: parseFloat(document.getElementById('imob_preco').value),
+            tipo: document.getElementById('imob_tipo').value,
+            bairro: document.getElementById('imob_bairro').value,
+            fotos: tempFotos.length > 0 ? tempFotos : ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400'],
+            desc: document.getElementById('imob_desc').value
+        };
+        imoveis.push(novo);
+        localStorage.setItem('imob_dados', JSON.stringify(imoveis));
+        e.target.reset();
+        tempFotos = [];
+        document.getElementById('previewContainer').innerHTML = "";
+        filtrar();
+        showSection('dashboard');
+    });
+
+    // Renderizar Vitrine
+    function filtrar() {
+        const grid = document.getElementById('listaImoveis');
+        const termo = document.getElementById('buscaBairro').value.toLowerCase();
+        const tipo = document.getElementById('buscaTipo').value;
+        grid.innerHTML = '';
+        
+        imoveis.filter(i => i.bairro.toLowerCase().includes(termo) && (!tipo || i.tipo === tipo)).forEach(i => {
+            const mainFoto = i.fotos[0];
+            grid.innerHTML += `
+                <div class="col-md-4 col-lg-3">
+                    <div class="card h-100">
+                        <div class="property-img-container">
+                            <img src="${mainFoto}">
+                            <div class="photo-counter"><i class="fas fa-camera"></i> ${i.fotos.length}</div>
+                        </div>
+                        <div class="card-body">
+                            <span class="price-badge">R$ ${i.preco.toLocaleString('pt-BR')}</span>
+                            <h6 class="fw-bold mt-2 mb-1">${i.titulo}</h6>
+                            <p class="small text-muted mb-2"><i class="fas fa-map-marker-alt"></i> ${i.bairro}</p>
+                            <button onclick="compartilhar('${i.id}')" class="btn btn-success-custom w-100 btn-sm">
+                                <i class="fab fa-whatsapp me-1"></i> Enviar p/ Cliente
+                            </button>
+                            <button onclick="removerImovel(${i.id})" class="btn btn-link btn-sm text-danger w-100 mt-1">Excluir</button>
+                        </div>
+                    </div>
+                </div>`;
+        });
+    }
+
+    function removerImovel(id) {
+        if(confirm("Deseja excluir este imóvel?")) {
+            imoveis = imoveis.filter(i => i.id !== id);
+            localStorage.setItem('imob_dados', JSON.stringify(imoveis));
+            filtrar();
+        }
+    }
+
+    // Clientes
+    document.getElementById('formCliente').addEventListener('submit', (e) => {
+        e.preventDefault();
+        clientes.push({
+            id: Date.now(),
+            nome: document.getElementById('cli_nome').value,
+            tel: document.getElementById('cli_tel').value,
+            interesse: document.getElementById('cli_interesse').value
+        });
+        localStorage.setItem('imob_clientes', JSON.stringify(clientes));
+        e.target.reset();
+        renderClientes();
+    });
+
+    function renderClientes() {
+        const lista = document.getElementById('tabelaClientes');
+        lista.innerHTML = '';
+        clientes.forEach(c => {
+            lista.innerHTML += `<tr><td>${c.nome}</td><td>${c.tel}</td><td>${c.interesse}</td>
+            <td><button onclick="removerCliente(${c.id})" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td></tr>`;
+        });
+    }
+
+    function removerCliente(id) {
+        clientes = clientes.filter(c => c.id !== id);
+        localStorage.setItem('imob_clientes', JSON.stringify(clientes));
+        renderClientes();
+    }
+
     // Configurações
     document.getElementById('formConfig').addEventListener('submit', (e) => {
         e.preventDefault();
@@ -282,7 +385,7 @@
             nome: document.getElementById('conf_nome').value,
             tel: document.getElementById('conf_tel').value,
             end: document.getElementById('conf_end').value,
-            logo: document.getElementById('conf_logo').value
+            logo: tempLogo
         };
         localStorage.setItem('imob_config', JSON.stringify(config));
         aplicarConfig();
@@ -294,102 +397,22 @@
         document.getElementById('headerEndereco').innerHTML = `<i class="fas fa-location-dot me-1"></i> ${config.end}`;
         document.getElementById('headerTelefone').innerHTML = `<i class="fab fa-whatsapp text-success me-1"></i> ${config.tel}`;
         if(config.logo) {
-            document.getElementById('headerLogo').innerHTML = `<img src="${config.logo}" style="width:100%; height:100%; object-fit:contain">`;
+            document.getElementById('headerLogo').innerHTML = `<img src="${config.logo}" style="width:100%; height:100%; object-fit:cover">`;
         }
-    }
-
-    // Gestão de Imóveis
-    document.getElementById('formImovel').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const novo = {
-            id: Date.now(),
-            titulo: document.getElementById('imob_titulo').value,
-            preco: parseFloat(document.getElementById('imob_preco').value),
-            tipo: document.getElementById('imob_tipo').value,
-            bairro: document.getElementById('imob_bairro').value,
-            foto: document.getElementById('imob_foto').value || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400',
-            desc: document.getElementById('imob_desc').value
-        };
-        imoveis.push(novo);
-        localStorage.setItem('imob_dados', JSON.stringify(imoveis));
-        e.target.reset();
-        filtrar();
-        showSection('dashboard');
-    });
-
-    function filtrar() {
-        const grid = document.getElementById('listaImoveis');
-        const termo = document.getElementById('buscaBairro').value.toLowerCase();
-        const tipo = document.getElementById('buscaTipo').value;
-        grid.innerHTML = '';
-        
-        imoveis.filter(i => i.bairro.toLowerCase().includes(termo) && (!tipo || i.tipo === tipo)).forEach(i => {
-            grid.innerHTML += `
-                <div class="col-md-4 col-lg-3">
-                    <div class="card property-card h-100">
-                        <img src="${i.foto}" class="card-img-top">
-                        <div class="card-body">
-                            <span class="price-badge">R$ ${i.preco.toLocaleString('pt-BR')}</span>
-                            <h6 class="fw-bold mt-2 mb-1">${i.titulo}</h6>
-                            <p class="small text-muted mb-2"><i class="fas fa-map-marker-alt"></i> ${i.bairro}</p>
-                            <button onclick="compartilhar('${i.id}')" class="btn btn-success-custom w-100 btn-sm mt-2">
-                                <i class="fab fa-whatsapp me-1"></i> Enviar p/ Cliente
-                            </button>
-                        </div>
-                    </div>
-                </div>`;
-        });
-    }
-
-    // Gestão de Clientes
-    document.getElementById('formCliente').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const cliente = {
-            id: Date.now(),
-            nome: document.getElementById('cli_nome').value,
-            tel: document.getElementById('cli_tel').value,
-            interesse: document.getElementById('cli_interesse').value
-        };
-        clientes.push(cliente);
-        localStorage.setItem('imob_clientes', JSON.stringify(clientes));
-        e.target.reset();
-        renderClientes();
-    });
-
-    function renderClientes() {
-        const lista = document.getElementById('tabelaClientes');
-        lista.innerHTML = '';
-        clientes.forEach(c => {
-            lista.innerHTML += `
-                <tr>
-                    <td>${c.nome}</td>
-                    <td><a href="https://wa.me/${c.tel}" target="_blank" class="text-success text-decoration-none"><i class="fab fa-whatsapp"></i> ${c.tel}</a></td>
-                    <td><span class="badge bg-light text-dark border">${c.interesse}</span></td>
-                    <td><button onclick="removerCliente(${c.id})" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td>
-                </tr>`;
-        });
-    }
-
-    function removerCliente(id) {
-        clientes = clientes.filter(c => c.id !== id);
-        localStorage.setItem('imob_clientes', JSON.stringify(clientes));
-        renderClientes();
     }
 
     function compartilhar(id) {
         const i = imoveis.find(item => item.id == id);
-        const msg = `🏠 *${i.titulo}*%0A📍 Bairro: ${i.bairro}%0A💰 Valor: R$ ${i.preco.toLocaleString('pt-BR')}%0A%0A📲 Contato: ${config.nome}`;
+        const msg = `🏠 *${i.titulo}*%0A📍 Bairro: ${i.bairro}%0A💰 Valor: R$ ${i.preco.toLocaleString('pt-BR')}%0A📝 ${i.desc}%0A%0A📲 Contato: ${config.nome} ${config.tel}`;
         window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
 
-    // Inicialização
+    // Init
     aplicarConfig();
     filtrar();
     document.getElementById('conf_nome').value = config.nome;
     document.getElementById('conf_tel').value = config.tel;
     document.getElementById('conf_end').value = config.end;
-    document.getElementById('conf_logo').value = config.logo;
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
