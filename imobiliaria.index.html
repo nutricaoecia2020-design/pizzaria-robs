@@ -3,43 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Roberto Vasconcelos - Oficial</title>
+    <title>SISTEMA IMOBPRO - Roberto Vasconcelos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .input-box { width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 16px; outline: none; transition: 0.3s; background: white; }
-        .input-box:focus { border-color: #0ea5e9; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1); }
-        .foto-card { position: relative; width: 90px; height: 90px; }
-        .foto-card img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; border: 2px solid #0ea5e9; }
-        .btn-remove { position: absolute; -top: 8px; -right: 8px; background: #ef4444; color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; border: 2px solid white; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; }
+        .input-form { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; outline: none; transition: 0.3s; }
+        .input-form:focus { border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+        .foto-preview { position: relative; width: 85px; height: 85px; }
+        .foto-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; border: 2px solid #0ea5e9; }
+        .btn-del { position: absolute; -top: 6px; -right: 6px; background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid white; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 md:p-10">
 
-    <div class="max-w-4xl mx-auto bg-white rounded-[40px] shadow-2xl overflow-hidden border border-slate-100">
+    <div class="max-w-4xl mx-auto bg-white rounded-[32px] shadow-2xl overflow-hidden border border-slate-100">
         <div class="bg-slate-900 p-8 text-white flex justify-between items-center">
             <div>
-                <h1 class="text-2xl font-extrabold">Gerenciador de Imóveis</h1>
-                <p class="text-sky-400 text-xs font-bold uppercase tracking-widest">Sistema ImobPro v7.0</p>
+                <h1 class="text-2xl font-bold">Painel Administrativo v8.0</h1>
+                <p class="text-sky-400 text-xs font-black uppercase tracking-widest">Controle de Imóveis & 20 Fotos</p>
             </div>
-            <i class="fas fa-house-chimney text-3xl text-sky-500"></i>
+            <i class="fas fa-database text-3xl text-sky-500"></i>
         </div>
 
-        <form id="form-imovel" class="p-8 space-y-8">
+        <form id="form-cadastro" class="p-8 space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="md:col-span-2">
-                    <label class="block text-xs font-black text-slate-500 mb-2 uppercase">Título do Anúncio</label>
-                    <input type="text" id="titulo" class="input-box" placeholder="Ex: Casa no Luzia com Piscina" required>
+                    <label class="block text-xs font-black text-slate-500 mb-2 uppercase">Título do Imóvel</label>
+                    <input type="text" id="titulo" class="input-form" placeholder="Ex: Casa Duplex no Luzia" required>
                 </div>
                 <div>
-                    <label class="block text-xs font-black text-slate-500 mb-2 uppercase">Referência (REF)</label>
-                    <input type="text" id="ref" class="input-box" placeholder="Ex: RV-01" required>
+                    <label class="block text-xs font-black text-slate-500 mb-2 uppercase">Referência (Cód/REF)</label>
+                    <input type="text" id="ref" class="input-form" placeholder="Ex: RV01" required>
                 </div>
                 <div>
                     <label class="block text-xs font-black text-slate-500 mb-2 uppercase">Tipo</label>
-                    <select id="tipo" class="input-box font-bold">
+                    <select id="tipo" class="input-form font-bold">
                         <option value="Casa">Casa</option>
                         <option value="Apartamento">Apartamento</option>
                         <option value="Terreno">Terreno</option>
@@ -47,140 +47,137 @@
                 </div>
                 <div>
                     <label class="block text-xs font-black text-slate-500 mb-2 uppercase">Preço (R$)</label>
-                    <input type="number" id="preco" class="input-box font-bold text-sky-600" placeholder="0.00" required>
+                    <input type="number" id="preco" class="input-form font-bold text-sky-600" placeholder="Ex: 450000" required>
                 </div>
                 <div>
                     <label class="block text-xs font-black text-slate-500 mb-2 uppercase">Bairro</label>
-                    <input type="text" id="bairro" class="input-box" placeholder="Ex: Luzia" required>
+                    <input type="text" id="bairro" class="input-form" placeholder="Ex: Atalaia" required>
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-black text-slate-500 mb-2 uppercase">Características / Descrição</label>
-                <textarea id="caracteristicas" rows="4" class="input-box" placeholder="Descreva quartos, suítes, vagas e diferenciais..."></textarea>
+                <label class="block text-xs font-black text-slate-500 mb-2 uppercase">Características Detalhadas</label>
+                <textarea id="caracteristicas" rows="4" class="input-form" placeholder="Descreva quartos, suítes, lazer, etc."></textarea>
             </div>
 
-            <div class="bg-sky-50 p-8 rounded-[32px] border-4 border-dashed border-sky-200 text-center">
-                <h3 class="font-black text-sky-900 mb-4 uppercase">Fotos do Imóvel (Máximo 20)</h3>
+            <div class="bg-sky-50 p-6 rounded-2xl border-2 border-dashed border-sky-200 text-center">
+                <label class="block text-sky-900 font-black mb-4 uppercase">Fotos (Adicione até 20 fotos uma por uma ou várias)</label>
                 
-                <input type="file" id="input-file" multiple accept="image/*" class="hidden">
-                <button type="button" onclick="document.getElementById('input-file').click()" class="bg-sky-500 hover:bg-sky-600 text-white font-black px-8 py-3 rounded-2xl transition shadow-lg flex items-center mx-auto space-x-2">
-                    <i class="fas fa-images"></i>
-                    <span>ADICIONAR FOTOS</span>
+                <input type="file" id="input-foto" multiple accept="image/*" class="hidden">
+                <button type="button" onclick="document.getElementById('input-foto').click()" class="bg-sky-500 text-white font-bold px-6 py-3 rounded-xl hover:bg-sky-600 transition shadow-lg">
+                    <i class="fas fa-plus-circle mr-2"></i> SELECIONAR FOTOS
                 </button>
 
-                <div id="preview-container" class="flex flex-wrap justify-center gap-4 mt-8">
-                    </div>
-                <p id="total-fotos" class="mt-4 text-xs font-extrabold text-slate-400 uppercase italic">Nenhuma foto adicionada</p>
+                <div id="container-fotos" class="flex flex-wrap justify-center gap-4 mt-6"></div>
+                <p id="info-fotos" class="text-[10px] font-black text-slate-400 mt-4 uppercase">0 de 20 Fotos</p>
             </div>
 
-            <button type="submit" id="btn-publicar" class="w-full bg-slate-900 hover:bg-black text-white font-black py-6 rounded-[24px] shadow-xl transition-all flex items-center justify-center space-x-3">
-                <i class="fas fa-paper-plane"></i>
-                <span class="text-lg">PUBLICAR IMÓVEL COMPLETO</span>
+            <button type="submit" id="btn-enviar" class="w-full bg-slate-900 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-black transition flex items-center justify-center space-x-3">
+                <i class="fas fa-cloud-upload-alt text-xl"></i>
+                <span>PUBLICAR NO SITE COM TODAS AS FOTOS</span>
             </button>
         </form>
 
-        <div class="p-8 bg-slate-50 border-t" id="lista-ativa"></div>
+        <div class="p-8 bg-slate-50 border-t border-slate-100">
+            <h2 class="text-xl font-bold text-slate-800 mb-6 italic">Imóveis Publicados</h2>
+            <div id="lista-imoveis" class="space-y-4"></div>
+        </div>
     </div>
 
     <script>
-        const API_URL = "https://imobiliaria-ad836-default-rtdb.firebaseio.com/imoveis.json";
-        let bancoDeFotos = []; // Aqui as fotos ficam salvas antes de enviar
+        const DB_URL = "https://imobiliaria-ad836-default-rtdb.firebaseio.com/imoveis.json";
+        let listaFotosTemporaria = []; // Sacola de fotos
 
-        // Captura e acumula as fotos
-        document.getElementById('input-file').onchange = function(e) {
-            const novosArquivos = Array.from(e.target.files);
+        // Quando selecionar fotos no botão
+        document.getElementById('input-foto').onchange = function(e) {
+            const selecionados = Array.from(e.target.files);
             
-            novosArquivos.forEach(file => {
-                if(bancoDeFotos.length < 20) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        bancoDeFotos.push(event.target.result);
-                        atualizarTelaFotos();
+            selecionados.forEach(arquivo => {
+                if(listaFotosTemporaria.length < 20) {
+                    const leitor = new FileReader();
+                    leitor.onload = (event) => {
+                        listaFotosTemporaria.push(event.target.result);
+                        desenharFotos();
                     };
-                    reader.readAsDataURL(file);
+                    leitor.readAsDataURL(arquivo);
                 }
             });
-            this.value = ""; // Limpa o seletor para permitir novas adições
+            this.value = ""; // Limpa o botão para poder clicar de novo
         };
 
-        function atualizarTelaFotos() {
-            const container = document.getElementById('preview-container');
-            const texto = document.getElementById('total-fotos');
+        function desenharFotos() {
+            const container = document.getElementById('container-fotos');
+            const info = document.getElementById('info-fotos');
             container.innerHTML = "";
             
-            bancoDeFotos.forEach((img, idx) => {
+            listaFotosTemporaria.forEach((img, index) => {
                 container.innerHTML += `
-                    <div class="foto-card">
+                    <div class="foto-preview">
                         <img src="${img}">
-                        <div class="btn-remove" onclick="removerFoto(${idx})">×</div>
+                        <div class="btn-del" onclick="removerFoto(${index})">×</div>
                     </div>
                 `;
             });
-            texto.innerText = `Total: ${bancoDeFotos.length} de 20 fotos`;
+            info.innerText = `${listaFotosTemporaria.length} de 20 Fotos`;
         }
 
-        function removerFoto(idx) {
-            bancoDeFotos.splice(idx, 1);
-            atualizarTelaFotos();
+        function removerFoto(index) {
+            listaFotosTemporaria.splice(index, 1);
+            desenharFotos();
         }
 
-        // ENVIO PARA O FIREBASE
-        document.getElementById('form-imovel').onsubmit = async (e) => {
+        // SALVAR NO BANCO
+        document.getElementById('form-cadastro').onsubmit = async (e) => {
             e.preventDefault();
-            if(bancoDeFotos.length === 0) return alert("Selecione ao menos 1 foto.");
+            if(listaFotosTemporaria.length === 0) return alert("Selecione fotos primeiro!");
 
-            const btn = document.getElementById('btn-publicar');
+            const btn = document.getElementById('btn-enviar');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>ENVIANDO DADOS...</span>';
+            btn.innerHTML = "PUBLICANDO NO FIREBASE...";
 
-            const payload = {
+            const dadosObjeto = {
                 titulo: document.getElementById('titulo').value,
                 ref: document.getElementById('ref').value,
                 tipo: document.getElementById('tipo').value,
                 preco: document.getElementById('preco').value,
                 bairro: document.getElementById('bairro').value,
                 desc: document.getElementById('caracteristicas').value,
-                fotos: bancoDeFotos // Envia o conjunto completo de fotos
+                fotos: listaFotosTemporaria // Aqui enviamos a LISTA (Array) para as setas funcionarem
             };
 
-            try {
-                await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-                alert("Imóvel publicado com sucesso!");
-                location.reload();
-            } catch (err) {
-                alert("Erro ao salvar. Tente novamente.");
-                btn.disabled = false;
-            }
+            await fetch(DB_URL, { method: 'POST', body: JSON.stringify(dadosObjeto) });
+            alert("Imóvel Publicado!");
+            location.reload();
         };
 
         // CARREGAR LISTA
         async function carregar() {
-            const div = document.getElementById('lista-ativa');
-            const res = await fetch(API_URL);
+            const grid = document.getElementById('lista-imoveis');
+            const res = await fetch(DB_URL);
             const data = await res.json();
-            if(!data) return div.innerHTML = "<p class='text-center text-slate-400'>Nenhum imóvel online.</p>";
+            if(!data) return;
 
-            div.innerHTML = Object.keys(data).map(key => `
-                <div class="flex items-center justify-between bg-white p-4 mb-3 rounded-2xl shadow-sm border border-slate-100">
+            grid.innerHTML = Object.keys(data).map(key => `
+                <div class="bg-white p-4 rounded-2xl flex items-center justify-between border border-slate-200 shadow-sm">
                     <div class="flex items-center space-x-4">
-                        <img src="${data[key].fotos ? data[key].fotos[0] : ''}" class="w-12 h-12 rounded-lg object-cover">
+                        <img src="${data[key].fotos ? data[key].fotos[0] : ''}" class="w-14 h-14 rounded-xl object-cover">
                         <div>
                             <p class="font-bold text-slate-800">${data[key].titulo}</p>
-                            <p class="text-[10px] font-black text-sky-500 uppercase">REF: ${data[key].ref} | ${data[key].fotos ? data[key].fotos.length : 0} fotos</p>
+                            <p class="text-[10px] font-black text-sky-500 uppercase">REF: ${data[key].ref} | ${data[key].fotos ? data[key].fotos.length : 0} Fotos</p>
                         </div>
                     </div>
-                    <button onclick="apagar('${key}')" class="text-red-400 hover:text-red-600 p-2"><i class="fas fa-trash-alt"></i></button>
+                    <button onclick="excluir('${key}')" class="text-red-500 p-2"><i class="fas fa-trash"></i></button>
                 </div>
             `).join('');
         }
 
-        async function apagar(id) {
-            if(confirm("Excluir este imóvel?")) {
+        async function excluir(id) {
+            if(confirm("Apagar imóvel?")) {
                 await fetch(`https://imobiliaria-ad836-default-rtdb.firebaseio.com/imoveis/${id}.json`, { method: 'DELETE' });
                 carregar();
             }
         }
+
         window.onload = carregar;
     </script>
 </body>
