@@ -3,187 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo v3.0 - Roberto Vasconcelos</title>
+    <title>Painel ImobPro – Sistema de 20 Fotos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; }
-        .input-form { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; outline: none; transition: 0.3s; }
-        .input-form:focus { border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+        .input-form { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; outline: none; }
+        .input-form:focus { border-color: #0ea5e9; ring: 2px ring #bae6fd; }
     </style>
 </head>
 <body class="p-4 md:p-10">
 
-    <div class="max-w-5xl mx-auto bg-white rounded-[32px] shadow-2xl overflow-hidden">
+    <div class="max-w-4xl mx-auto bg-white rounded-[32px] shadow-2xl overflow-hidden">
         <div class="bg-slate-900 p-8 text-white flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold">Gerenciador ImobPro</h1>
-                <p class="text-sky-400 text-sm font-semibold">Roberto Vasconcelos – Aracaju/SE</p>
-            </div>
-            <i class="fas fa-house-chimney-window text-3xl text-sky-500"></i>
+            <h1 class="text-2xl font-bold">Cadastro de Imóveis v4.0</h1>
+            <span class="bg-sky-500 px-4 py-1 rounded-full text-xs font-bold">CONECTADO AO FIREBASE</span>
         </div>
 
         <form id="form-cadastro" class="p-8 space-y-6">
-            <h2 class="text-xl font-extrabold text-slate-800">Cadastrar Novo Imóvel (Até 20 fotos)</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Título do Anúncio</label>
-                    <input type="text" id="titulo" class="input-form" placeholder="Ex: Casa Duplex no Luzia" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Referência (Cód/REF)</label>
-                    <input type="text" id="ref" class="input-form" placeholder="Ex: RV01" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Tipo de Imóvel</label>
-                    <select id="tipo" class="input-form">
-                        <option value="Casa">Casa</option>
-                        <option value="Apartamento">Apartamento</option>
-                        <option value="Terreno">Terreno</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Preço (R$)</label>
-                    <input type="number" id="preco" class="input-form" placeholder="Ex: 500000" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Bairro</label>
-                    <input type="text" id="bairro" class="input-form" placeholder="Ex: Luzia" required>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input type="text" id="titulo" class="input-form" placeholder="Título do Imóvel" required>
+                <input type="text" id="ref" class="input-form" placeholder="Referência (Ex: RV01)" required>
+                <select id="tipo" class="input-form">
+                    <option value="Casa">Casa</option>
+                    <option value="Apartamento">Apartamento</option>
+                </select>
+                <input type="number" id="preco" class="input-form" placeholder="Preço (Apenas números)" required>
+                <input type="text" id="bairro" class="input-form" placeholder="Bairro" required>
             </div>
 
             <div>
-                <label class="block text-sm font-bold text-slate-700 mb-2">Descrição Detalhada</label>
-                <textarea id="desc" rows="4" class="input-form" placeholder="Descreva os cômodos, área de lazer, etc."></textarea>
+                <textarea id="desc" rows="3" class="input-form" placeholder="Descrição Detalhada"></textarea>
             </div>
 
-            <div class="bg-sky-50 p-6 rounded-2xl border-2 border-dashed border-sky-200">
-                <label class="block text-sm font-bold text-sky-700 mb-2">Selecionar Fotos (Clique e selecione até 20 fotos de uma vez)</label>
-                <input type="file" id="fotos" multiple accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-500 file:text-white hover:file:bg-sky-600">
-                <p class="text-xs text-slate-400 mt-2 italic">* Se estiver no celular, pressione e segure as fotos para marcar várias. No PC, use o Ctrl.</p>
+            <div class="bg-sky-50 p-6 rounded-2xl border-2 border-dashed border-sky-300">
+                <label class="block text-sm font-bold text-sky-800 mb-2 underline">FOTOS DO IMÓVEL (SELECIONE ATÉ 20):</label>
+                <input type="file" id="fotos" multiple accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-sky-500 file:text-white font-bold">
+                <div id="status-fotos" class="mt-2 text-xs font-bold text-slate-500"></div>
             </div>
 
-            <button type="submit" id="btn-salvar" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-black py-5 rounded-2xl shadow-lg transition-all flex items-center justify-center space-x-3">
-                <i class="fas fa-cloud-arrow-up text-xl"></i>
-                <span>PUBLICAR IMÓVEL COM TODAS AS FOTOS</span>
+            <button type="submit" id="btn-salvar" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-black py-5 rounded-2xl shadow-lg transition flex items-center justify-center space-x-2">
+                <i class="fas fa-cloud-upload-alt text-xl"></i>
+                <span>PUBLICAR IMÓVEL</span>
             </button>
         </form>
 
-        <div class="p-8 bg-slate-50 border-t">
-            <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center">
-                <i class="fas fa-list-check mr-3 text-sky-500"></i> Imóveis Publicados no Site
-            </h2>
-            <div id="lista-imoveis" class="grid grid-cols-1 gap-4">
-                <p class="text-slate-400 italic">Carregando lista...</p>
-            </div>
+        <div class="p-8 bg-slate-50 border-t border-slate-100">
+            <h2 class="text-xl font-bold text-slate-800 mb-4">Gerenciar Imóveis Ativos</h2>
+            <div id="lista-imoveis" class="space-y-3"></div>
         </div>
     </div>
 
     <script>
-        // CONFIGURAÇÃO DO SEU FIREBASE (Visto em image_63db24.png)
         const DB_URL = "https://imobiliaria-ad836-default-rtdb.firebaseio.com/imoveis.json";
         const DELETE_URL = "https://imobiliaria-ad836-default-rtdb.firebaseio.com/imoveis/";
 
-        // FUNÇÃO PARA PROCESSAR TODAS AS FOTOS EM UMA LISTA
-        async function processarTodasFotos(arquivos) {
-            const promessas = Array.from(arquivos).slice(0, 20).map(arquivo => {
-                return new Promise((resolve) => {
+        // FUNÇÃO QUE REALMENTE PEGA TODAS AS FOTOS SEM SUBSTITUIR
+        async function converterTodasAsFotos(files) {
+            const arrayDeFotos = [];
+            const filesArray = Array.from(files).slice(0, 20); // Pega no máximo 20
+
+            for (const file of filesArray) {
+                const base64 = await new Promise((resolve) => {
                     const reader = new FileReader();
                     reader.onload = (e) => resolve(e.target.result);
-                    reader.readAsDataURL(arquivo);
+                    reader.readAsDataURL(file);
                 });
-            });
-            return Promise.all(promessas);
+                arrayDeFotos.push(base64); // Adiciona cada foto na lista
+            }
+            return arrayDeFotos;
         }
 
-        // AÇÃO DE SALVAR
         document.getElementById('form-cadastro').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-salvar');
-            
-            const arquivos = document.getElementById('fotos').files;
-            if (arquivos.length === 0) {
-                alert("Selecione pelo menos uma foto!");
-                return;
-            }
+            const fotosInput = document.getElementById('fotos').files;
+
+            if (fotosInput.length === 0) return alert("Selecione fotos!");
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>ENVIANDO ' + arquivos.length + ' FOTOS... AGUARDE</span>';
+            btn.innerHTML = `LENDO ${fotosInput.length} FOTOS... AGUARDE`;
 
-            // 1. Converte todas as fotos selecionadas em uma única lista
-            const listaFotosBase64 = await processarTodasFotos(arquivos);
+            // 1. Gera a lista completa de fotos primeiro
+            const listaFotosFinal = await converterTodasAsFotos(fotosInput);
 
-            // 2. Monta o objeto do imóvel com a lista de fotos
-            const dadosImovel = {
+            // 2. Cria o objeto completo para o Firebase
+            const imovel = {
                 titulo: document.getElementById('titulo').value,
                 ref: document.getElementById('ref').value,
                 tipo: document.getElementById('tipo').value,
                 preco: parseFloat(document.getElementById('preco').value),
                 bairro: document.getElementById('bairro').value,
                 desc: document.getElementById('desc').value,
-                fotos: listaFotosBase64 // Salva o Array completo de fotos
+                fotos: listaFotosFinal // Aqui vai a LISTA com as fotos (Array)
             };
 
             try {
-                // 3. Usa o método POST para criar um NOVO registro (sem apagar os antigos)
+                // 3. Usa POST para criar um novo registro único no Firebase
                 await fetch(DB_URL, {
                     method: 'POST',
-                    body: JSON.stringify(dadosImovel)
+                    body: JSON.stringify(imovel)
                 });
-                alert("Imóvel cadastrado com sucesso!");
-                location.reload(); 
-            } catch (error) {
-                alert("Erro ao salvar. Verifique sua conexão.");
+                alert("Sucesso! Imóvel com " + listaFotosFinal.length + " fotos publicado.");
+                location.reload();
+            } catch (err) {
+                alert("Erro ao enviar.");
                 btn.disabled = false;
-                btn.innerHTML = '<span>PUBLICAR IMÓVEL</span>';
             }
         };
 
-        // CARREGAR LISTA
-        async function carregarImoveis() {
-            const listaElemento = document.getElementById('lista-imoveis');
-            try {
-                const res = await fetch(DB_URL);
-                const data = await res.json();
-                
-                if (!data) {
-                    listaElemento.innerHTML = '<p class="text-slate-400">Nenhum imóvel cadastrado.</p>';
-                    return;
-                }
+        async function carregar() {
+            const lista = document.getElementById('lista-imoveis');
+            const res = await fetch(DB_URL);
+            const data = await res.json();
+            if(!data) { lista.innerHTML = "Nenhum imóvel."; return; }
 
-                listaElemento.innerHTML = Object.keys(data).map(id => {
-                    const imob = data[id];
-                    const totalFotos = imob.fotos ? imob.fotos.length : 0;
-                    return `
-                        <div class="bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between shadow-sm">
-                            <div class="flex items-center space-x-4">
-                                <img src="${imob.fotos ? imob.fotos[0] : ''}" class="w-20 h-20 rounded-xl object-cover bg-slate-100">
-                                <div>
-                                    <h4 class="font-extrabold text-slate-800">${imob.titulo}</h4>
-                                    <p class="text-xs text-slate-500 uppercase font-bold">CÓD: ${imob.ref} | ${totalFotos} FOTOS SALVAS</p>
-                                </div>
-                            </div>
-                            <button onclick="excluirImovel('${id}')" class="bg-red-50 hover:bg-red-500 text-red-500 hover:text-white w-12 h-12 rounded-full transition-all flex items-center justify-center">
-                                <i class="fas fa-trash-can"></i>
-                            </button>
+            lista.innerHTML = Object.keys(data).map(id => `
+                <div class="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <div class="flex items-center space-x-3">
+                        <img src="${data[id].fotos ? data[id].fotos[0] : ''}" class="w-12 h-12 object-cover rounded-lg">
+                        <div>
+                            <p class="font-bold text-slate-800">${data[id].titulo}</p>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase">REF: ${data[id].ref} | ${data[id].fotos ? data[id].fotos.length : 0} FOTOS</p>
                         </div>
-                    `;
-                }).join('');
-            } catch (e) {
-                listaElemento.innerHTML = 'Erro ao carregar lista.';
-            }
+                    </div>
+                    <button onclick="excluir('${id}')" class="text-red-500 hover:bg-red-50 p-2 rounded-full transition"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
         }
 
-        async function excluirImovel(id) {
-            if (confirm("Deseja apagar este imóvel do site?")) {
+        async function excluir(id) {
+            if(confirm("Apagar imóvel?")) {
                 await fetch(`${DELETE_URL}${id}.json`, { method: 'DELETE' });
-                carregarImoveis();
+                carregar();
             }
         }
 
-        window.onload = carregarImoveis;
+        window.onload = carregar;
     </script>
 </body>
 </html>
