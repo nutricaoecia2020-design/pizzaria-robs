@@ -3,223 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Imóveis | Encontre seu Lar</title>
+    <title>Portal de Imóveis | Vitrine Pública</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        :root {
-            --primary: #0ea5e9;
-            --dark: #0f172a;
-            --light-bg: #f8fafc;
-        }
-
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--light-bg); 
-            color: var(--dark);
-        }
-
-        .navbar { background: white; border-bottom: 1px solid #e2e8f0; }
-        
-        .hero-section {
-            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), 
-                        url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
-            padding: 80px 0;
-            color: white;
-            margin-bottom: 40px;
-        }
-
-        .search-box {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            margin-top: -60px;
-            position: relative;
-            z-index: 10;
-        }
-
-        .property-card {
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: transform 0.3s ease;
-            cursor: pointer;
-            background: white;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            height: 100%;
-        }
-
-        .property-card:hover { transform: translateY(-5px); }
-
-        .img-wrapper {
-            position: relative;
-            height: 220px;
-        }
-
+        :root { --primary: #0ea5e9; --dark: #0f172a; --bg: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--dark); }
+        .hero { background: linear-gradient(rgba(15,23,42,0.8), rgba(15,23,42,0.8)), url('https://images.unsplash.com/photo-1582408921715-18e7806367c1?q=80&w=2070&auto=format&fit=crop'); background-size: cover; padding: 100px 0; color: white; text-align: center; }
+        .property-card { border: none; border-radius: 20px; overflow: hidden; transition: 0.3s; background: white; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); height: 100%; }
+        .property-card:hover { transform: translateY(-10px); }
+        .img-wrapper { height: 250px; position: relative; }
         .img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-
-        .badge-type {
-            position: absolute; top: 15px; left: 15px;
-            background: var(--primary); color: white;
-            padding: 5px 12px; border-radius: 20px; font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .price-tag { color: var(--primary); font-weight: 700; font-size: 1.25rem; }
-
-        #galleryCarousel .carousel-item { height: 450px; background: #000; }
+        .badge-tipo { position: absolute; top: 15px; left: 15px; background: var(--primary); color: white; padding: 5px 15px; border-radius: 50px; font-weight: 600; font-size: 0.8rem; }
+        .price-tag { color: #22c55e; font-weight: 800; font-size: 1.4rem; }
+        #galleryCarousel .carousel-item { height: 500px; background: #000; }
         #galleryCarousel img { height: 100%; object-fit: contain; width: 100%; }
-        
-        .contact-btn {
-            background-color: #25d366; color: white; border: none;
-            padding: 12px; border-radius: 8px; width: 100%; font-weight: 600;
-            transition: 0.3s;
-        }
-        .contact-btn:hover { background-color: #1eb956; color: white; }
+        .btn-whats { background: #25d366; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 700; width: 100%; display: block; text-align: center; text-decoration: none; transition: 0.3s; }
+        .btn-whats:hover { background: #1eb956; color: white; }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg py-3">
+<nav class="navbar navbar-expand-lg bg-white py-3 shadow-sm">
     <div class="container">
-        <a class="navbar-brand fw-bold text-primary" href="#">
-            <i class="fas fa-house-chimney me-2"></i><span id="brandName">...</span>
-        </a>
-        <div class="d-flex align-items-center">
-            <span id="navTel" class="text-muted small"></span>
-        </div>
+        <a class="navbar-brand fw-bold text-primary" href="#"><i class="fas fa-house-laptop me-2"></i><span id="txt-nome-imobiliaria">Imobiliária</span></a>
+        <span id="txt-topo-whats" class="small fw-bold text-muted"></span>
     </div>
 </nav>
 
-<section class="hero-section text-center">
+<header class="hero">
     <div class="container">
-        <h1 class="display-5 fw-bold">Encontre o imóvel dos seus sonhos</h1>
-        <p class="lead">As melhores oportunidades em um só lugar.</p>
+        <h1 class="display-4 fw-bold mb-3">Seu novo lar está aqui</h1>
+        <p class="lead">Consulte nossa vitrine atualizada de imóveis exclusivos.</p>
     </div>
-</section>
+</header>
 
-<div class="container">
-    <div class="search-box">
+<div class="container" style="margin-top: -50px;">
+    <div class="bg-white p-4 rounded-4 shadow-lg mb-5">
         <div class="row g-3">
-            <div class="col-md-7">
-                <label class="small fw-bold text-muted">BAIRRO OU TÍTULO</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
-                    <input type="text" id="filtroTexto" class="form-control border-start-0 shadow-none" placeholder="O que você procura?" onkeyup="renderizarVitrine()">
-                </div>
+            <div class="col-md-8">
+                <input type="text" id="filtro-busca" class="form-control form-control-lg border-0 bg-light" placeholder="Buscar por bairro ou título..." onkeyup="filtrar()">
             </div>
-            <div class="col-md-5">
-                <label class="small fw-bold text-muted">CATEGORIA</label>
-                <select id="filtroTipo" class="form-select shadow-none" onchange="renderizarVitrine()">
-                    <option value="">Todos os tipos</option>
+            <div class="col-md-4">
+                <select id="filtro-tipo" class="form-select form-select-lg border-0 bg-light" onchange="filtrar()">
+                    <option value="">Todas as categorias</option>
                     <option>Casa</option>
                     <option>Apartamento</option>
                     <option>Terreno</option>
-                    <option>Comercial</option>
                 </select>
             </div>
         </div>
     </div>
 
-    <div class="row mt-5 mb-5" id="vitrine"></div>
+    <div id="vitrine-publica" class="row g-4"></div>
 </div>
 
 <div class="modal fade" id="modalImovel" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content border-0 rounded-4 shadow">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 overflow-hidden">
             <div class="modal-body p-0">
                 <button type="button" class="btn-close position-absolute top-0 end-0 m-3 z-3 bg-white p-2 rounded-circle" data-bs-dismiss="modal"></button>
-                
-                <div id="galleryCarousel" class="carousel slide">
-                    <div class="carousel-inner" id="carouselImages"></div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#galleryCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#galleryCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon"></span>
-                    </button>
+                <div id="galleryCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner" id="lista-fotos-modal"></div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#galleryCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#galleryCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
                 </div>
-
                 <div class="p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="d-flex justify-content-between">
                         <div>
-                            <span class="badge bg-primary mb-2" id="modalTipo"></span>
-                            <h3 id="modalTitulo" class="fw-bold mb-1"></h3>
-                            <p id="modalEndereco" class="text-muted small"></p>
+                            <h3 id="m-titulo" class="fw-bold mb-0"></h3>
+                            <p id="m-bairro" class="text-muted"><i class="fas fa-map-marker-alt me-2"></i></p>
                         </div>
                         <div class="text-end">
-                            <span class="price-tag d-block" id="modalPreco"></span>
-                            <span class="text-muted x-small" id="modalRef"></span>
+                            <span id="m-preco" class="price-tag d-block"></span>
+                            <small id="m-ref" class="text-muted fw-bold"></small>
                         </div>
                     </div>
                     <hr>
-                    <h6 class="fw-bold">Sobre este imóvel</h6>
-                    <p id="modalDesc" class="text-muted mb-4" style="white-space: pre-wrap;"></p>
-                    <a id="btnWhats" href="#" target="_blank" class="btn contact-btn text-decoration-none d-block text-center">
-                        <i class="fab fa-whatsapp me-2"></i> Tenho Interesse / Agendar Visita
-                    </a>
+                    <h6 class="fw-bold">Descrição</h6>
+                    <p id="m-desc" class="text-muted" style="white-space: pre-wrap;"></p>
+                    <a id="m-btn-whats" href="#" target="_blank" class="btn-whats mt-3"><i class="fab fa-whatsapp me-2"></i> QUERO MAIS INFORMAÇÕES</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<footer class="bg-white py-4 mt-5 border-top">
-    <div class="container text-center">
-        <p class="text-muted mb-0" id="footerInfo"></p>
-    </div>
-</footer>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-    // Conexão com as mesmas chaves do Painel de Gestão
-    let db_imoveis = JSON.parse(localStorage.getItem('imob_v3_data')) || [];
-    let db_config = JSON.parse(localStorage.getItem('imob_v3_config')) || {
-        nome: "Imobiliária",
-        zap: "",
-        end: "Brasil"
-    };
+    // PEGA EXATAMENTE AS CHAVES DO SEU PAINEL DE 542 LINHAS
+    let imoveis = JSON.parse(localStorage.getItem('imob_v3_data')) || [];
+    let config = JSON.parse(localStorage.getItem('imob_v3_config')) || { nome: "Minha Imobiliária", zap: "55" };
 
-    const modalBS = new Bootstrap.Modal('#modalImovel');
+    const modalUI = new Bootstrap.Modal('#modalImovel');
 
-    function renderizarVitrine() {
-        const vitrine = document.getElementById('vitrine');
-        const buscaTexto = document.getElementById('filtroTexto').value.toLowerCase();
-        const buscaTipo = document.getElementById('filtroTipo').value;
+    function carregarVitrine() {
+        const container = document.getElementById('vitrine-publica');
+        const busca = document.getElementById('filtro-busca').value.toLowerCase();
+        const tipo = document.getElementById('filtro-tipo').value;
 
-        const filtrados = db_imoveis.filter(i => 
-            (i.bairro.toLowerCase().includes(buscaTexto) || i.titulo.toLowerCase().includes(buscaTexto)) &&
-            (buscaTipo === "" || i.tipo === buscaTipo)
+        const lista = imoveis.filter(i => 
+            (i.titulo.toLowerCase().includes(busca) || i.bairro.toLowerCase().includes(busca)) &&
+            (tipo === "" || i.tipo === tipo)
         );
 
-        vitrine.innerHTML = '';
+        container.innerHTML = lista.length ? '' : '<div class="text-center py-5"><h4>Nenhum imóvel encontrado.</h4></div>';
 
-        if(filtrados.length === 0) {
-            vitrine.innerHTML = '<div class="col-12 text-center py-5 text-muted"><h5>Nenhum imóvel disponível no momento.</h5></div>';
-            return;
-        }
-
-        filtrados.forEach(i => {
-            const capa = (i.fotos && i.fotos.length > 0) ? i.fotos[0] : 'https://via.placeholder.com/600x400?text=Sem+Imagem';
-            vitrine.innerHTML += `
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="property-card shadow-sm" onclick="abrirDetalhes(${i.id})">
+        lista.forEach(i => {
+            const capa = i.fotos && i.fotos.length > 0 ? i.fotos[0] : 'https://via.placeholder.com/600x400?text=Sem+Imagem';
+            container.innerHTML += `
+                <div class="col-md-6 col-lg-4">
+                    <div class="property-card" onclick="abrir(${i.id})">
                         <div class="img-wrapper">
-                            <span class="badge-type">${i.tipo}</span>
-                            <img src="${capa}" alt="${i.titulo}">
+                            <span class="badge-tipo">${i.tipo}</span>
+                            <img src="${capa}">
                         </div>
-                        <div class="p-3">
+                        <div class="p-4">
                             <span class="price-tag">R$ ${i.preco.toLocaleString('pt-BR')}</span>
-                            <h6 class="fw-bold mt-2 mb-1 text-truncate">${i.titulo}</h6>
-                            <p class="small text-muted mb-0"><i class="fas fa-map-marker-alt me-1"></i> ${i.bairro}</p>
-                            <div class="mt-3 text-end">
-                                <span class="btn btn-sm btn-outline-primary rounded-pill">Ver Detalhes</span>
+                            <h5 class="fw-bold text-truncate mt-2">${i.titulo}</h5>
+                            <p class="text-muted small mb-0"><i class="fas fa-map-marker-alt me-1"></i> ${i.bairro}</p>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="small text-muted fw-bold">REF: ${i.ref}</span>
+                                <span class="text-primary fw-bold small">Ver Detalhes +</span>
                             </div>
                         </div>
                     </div>
@@ -227,49 +134,43 @@
         });
     }
 
-    function abrirDetalhes(id) {
-        const i = db_imoveis.find(x => x.id === id);
+    function abrir(id) {
+        const i = imoveis.find(x => x.id === id);
         if(!i) return;
 
-        document.getElementById('modalTitulo').innerText = i.titulo;
-        document.getElementById('modalEndereco').innerHTML = `<i class="fas fa-location-dot me-2"></i> ${i.bairro}`;
-        document.getElementById('modalPreco').innerText = `R$ ${i.preco.toLocaleString('pt-BR')}`;
-        document.getElementById('modalDesc').innerText = i.desc || "Sem descrição adicional.";
-        document.getElementById('modalRef').innerText = `REF: ${i.ref}`;
-        document.getElementById('modalTipo').innerText = i.tipo;
+        document.getElementById('m-titulo').innerText = i.titulo;
+        document.getElementById('m-bairro').innerHTML = `<i class="fas fa-map-marker-alt me-2"></i> ${i.bairro}`;
+        document.getElementById('m-preco').innerText = `R$ ${i.preco.toLocaleString('pt-BR')}`;
+        document.getElementById('m-desc').innerText = i.desc || "Consulte-nos para mais informações.";
+        document.getElementById('m-ref').innerText = `REF: ${i.ref}`;
 
-        // Galeria de Fotos
-        const carouselInner = document.getElementById('carouselImages');
-        carouselInner.innerHTML = '';
+        // Carregar Fotos no Carrossel
+        const carrossel = document.getElementById('lista-fotos-modal');
+        carrossel.innerHTML = i.fotos && i.fotos.length ? '' : '<div class="carousel-item active"><img src="https://via.placeholder.com/600x400?text=Sem+Fotos"></div>';
         
-        if(i.fotos && i.fotos.length > 0) {
+        if(i.fotos) {
             i.fotos.forEach((foto, index) => {
-                carouselInner.innerHTML += `
-                    <div class="carousel-item ${index === 0 ? 'active' : ''}">
-                        <img src="${foto}" class="d-block">
-                    </div>`;
+                carrossel.innerHTML += `<div class="carousel-item ${index === 0 ? 'active' : ''}"><img src="${foto}"></div>`;
             });
-        } else {
-            carouselInner.innerHTML = `<div class="carousel-item active"><img src="https://via.placeholder.com/600x400?text=Sem+Fotos"></div>`;
         }
 
-        // Botão WhatsApp
-        const msg = encodeURIComponent(`Olá! Vi o imóvel "${i.titulo}" (REF: ${i.ref}) no seu portal e gostaria de mais informações.`);
-        document.getElementById('btnWhats').href = `https://wa.me/${db_config.zap}?text=${msg}`;
+        // Configurar Botão WhatsApp
+        const textoZap = encodeURIComponent(`Olá! Vi o imóvel "${i.titulo}" (REF: ${i.ref}) no site e gostaria de saber mais.`);
+        document.getElementById('m-btn-whats').href = `https://wa.me/${config.zap}?text=${textoZap}`;
 
-        modalBS.show();
+        modalUI.show();
     }
 
-    function carregarConfig() {
-        document.getElementById('brandName').innerText = db_config.nome;
-        document.getElementById('navTel').innerHTML = `<i class="fab fa-whatsapp text-success me-1"></i> ${db_config.zap}`;
-        document.getElementById('footerInfo').innerText = `© 2026 ${db_config.nome} - ${db_config.end}`;
+    function aplicarConfig() {
+        document.getElementById('txt-nome-imobiliaria').innerText = config.nome;
+        document.getElementById('txt-topo-whats').innerHTML = `<i class="fab fa-whatsapp text-success me-1"></i> ${config.zap}`;
     }
 
-    // Inicialização
-    carregarConfig();
-    renderizarVitrine();
+    function filtrar() { carregarVitrine(); }
+
+    // Init
+    aplicarConfig();
+    carregarVitrine();
 </script>
-
 </body>
 </html>
