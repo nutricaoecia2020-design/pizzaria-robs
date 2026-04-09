@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImobPro v3.0 | Sistema Completo de Gestão</title>
+    <title>ImobPro v3.0 | Gestão Profissional</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --primary-blue: #0ea5e9; --dark-slate: #1e293b; --success-green: #22c55e; --bg-light: #f8fafc; --sidebar-width: 280px; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); color: var(--dark-slate); overflow-x: hidden; }
-        .sidebar { width: var(--sidebar-width); background-color: #ffffff; height: 100vh; position: fixed; left: 0; top: 0; border-right: 1px solid #e2e8f0; padding: 30px 0; z-index: 1000; transition: all 0.3s ease; }
+        .sidebar { width: var(--sidebar-width); background-color: #ffffff; height: 100vh; position: fixed; left: 0; top: 0; border-right: 1px solid #e2e8f0; padding: 30px 0; z-index: 1000; }
         .sidebar-brand { padding: 0 30px 40px; display: flex; align-items: center; color: var(--primary-blue); font-weight: 700; font-size: 1.5rem; }
         .nav-menu { list-style: none; padding: 0; margin: 0; }
         .nav-item { margin: 4px 15px; }
@@ -19,20 +19,14 @@
         .nav-link:hover, .nav-link.active { background-color: #f0f9ff; color: var(--primary-blue); }
         .main-wrapper { margin-left: var(--sidebar-width); padding: 40px; min-height: 100vh; }
         .imob-banner { background: #ffffff; border-radius: 20px; padding: 30px; margin-bottom: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(14, 165, 233, 0.1); }
-        .logo-container { width: 80px; height: 80px; background: #f1f5f9; border-radius: 18px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid #e2e8f0; }
-        .logo-container img { width: 100%; height: 100%; object-fit: cover; }
         .property-card { background: #fff; border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04); transition: 0.3s; height: 100%; }
-        .property-card:hover { transform: translateY(-8px); }
-        .img-zoom-container { height: 240px; overflow: hidden; position: relative; }
+        .img-zoom-container { height: 220px; overflow: hidden; position: relative; }
         .property-img { width: 100%; height: 100%; object-fit: cover; }
-        .ref-tag { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; color: #475569; }
-        .price-label { font-size: 1.3rem; font-weight: 700; color: var(--success-green); }
-        #preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; margin-top: 20px; }
-        .preview-box { position: relative; width: 110px; height: 110px; }
-        .preview-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
-        .btn-del-img { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; z-index: 10; }
-        .table-custom { background: white; border-radius: 15px; overflow: hidden; }
-        .table-custom th { background: #f1f5f9; color: #64748b; font-weight: 600; border: none; }
+        .ref-tag { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; }
+        #preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 15px; }
+        .preview-box { position: relative; width: 100px; height: 100px; }
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+        .btn-del-img { position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; z-index: 10; }
     </style>
 </head>
 <body>
@@ -42,66 +36,71 @@
     <ul class="nav-menu">
         <li class="nav-item"><a href="#" class="nav-link active" onclick="navegar('sec-vitrine')"><i class="fas fa-home"></i> Vitrine</a></li>
         <li class="nav-item"><a href="#" class="nav-link" onclick="navegar('sec-cadastro')"><i class="fas fa-plus-circle"></i> Novo Imóvel</a></li>
-        <li class="nav-item"><a href="#" class="nav-link" onclick="navegar('sec-clientes')"><i class="fas fa-user-friends"></i> Clientes</a></li>
         <li class="nav-item"><a href="#" class="nav-link" onclick="navegar('sec-ajustes')"><i class="fas fa-sliders-h"></i> Ajustes</a></li>
     </ul>
 </aside>
 
 <main class="main-wrapper">
     <header class="imob-banner">
-        <div class="d-flex align-items-center">
-            <div id="headerLogo" class="logo-container me-4"><i class="fas fa-building fa-2x text-muted"></i></div>
-            <div>
-                <h3 id="headerNome" class="mb-0 fw-bold">...</h3>
-                <p id="headerEnd" class="text-muted mb-0 small"><i class="fas fa-map-marker-alt me-1"></i> ...</p>
-            </div>
+        <div>
+            <h3 id="headerNome" class="mb-0 fw-bold">Carregando...</h3>
+            <p id="headerEnd" class="text-muted mb-0 small">...</p>
         </div>
-        <div class="text-end">
-            <a id="headerWhatsLink" href="#" target="_blank" class="btn btn-outline-success rounded-pill fw-bold">
-                <i class="fab fa-whatsapp me-2"></i> <span id="headerWhatsTxt">...</span>
-            </a>
-        </div>
+        <div id="headerWhatsTxt" class="fw-bold text-success"></div>
     </header>
 
     <section id="sec-vitrine" class="content-section">
-        <div class="row mb-5 g-3">
-            <div class="col-md-5"><div class="input-group"><span class="input-group-text bg-white"><i class="fas fa-search"></i></span><input type="text" id="f-texto" class="form-control" placeholder="Bairro ou título..." onkeyup="filtrarImoveis()"></div></div>
-            <div class="col-md-3"><input type="text" id="f-ref" class="form-control" placeholder="REF: 5021" onkeyup="filtrarImoveis()"></div>
-            <div class="col-md-4"><select id="f-tipo" class="form-select" onchange="filtrarImoveis()"><option value="">Todas Categorias</option><option>Casa</option><option>Apartamento</option><option>Terreno</option></select></div>
-        </div>
         <div id="vitrineGrid" class="row g-4"></div>
     </section>
 
     <section id="sec-cadastro" class="content-section d-none">
         <div class="card p-4 border-0 shadow-sm">
-            <h4 class="fw-bold mb-4 text-primary">Publicar Propriedade</h4>
-            <form id="formImovel" class="row g-4">
-                <div class="col-md-8"><label class="form-label fw-bold">Título</label><input type="text" id="imob-titulo" class="form-control" required></div>
-                <div class="col-md-4"><label class="form-label fw-bold">Preço (R$)</label><input type="number" id="imob-preco" class="form-control" required></div>
-                <div class="col-md-4"><label class="form-label fw-bold">Tipo</label><select id="imob-tipo" class="form-select"><option>Casa</option><option>Apartamento</option><option>Terreno</option></select></div>
-                <div class="col-md-4"><label class="form-label fw-bold">Bairro</label><input type="text" id="imob-bairro" class="form-control" required></div>
-                <div class="col-md-4"><label class="form-label fw-bold text-primary">Fotos (Até 20)</label><input type="file" id="imob-fotos-input" class="form-control" multiple accept="image/*" onchange="processarFotos(this.files)"></div>
-                <div class="col-12"><div id="preview-grid"></div><p class="small text-muted mt-2" id="msg-fotos">0 fotos selecionadas.</p></div>
-                <div class="col-12"><label class="form-label fw-bold">Descrição</label><textarea id="imob-desc" class="form-control" rows="4"></textarea></div>
-                <div class="col-12 text-end"><button type="submit" class="btn btn-primary btn-lg rounded-pill px-5">Publicar Agora</button></div>
+            <h4 class="fw-bold mb-4">Cadastrar Imóvel</h4>
+            <form id="formImovel" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">CÓDIGO (REF)</label>
+                    <input type="text" id="imob-ref" class="form-control" placeholder="Ex: 101" required>
+                </div>
+                <div class="col-md-9">
+                    <label class="form-label fw-bold">Título do Anúncio</label>
+                    <input type="text" id="imob-titulo" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Preço (R$)</label>
+                    <input type="number" id="imob-preco" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Tipo</label>
+                    <select id="imob-tipo" class="form-select"><option>Casa</option><option>Apartamento</option><option>Terreno</option></select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Bairro</label>
+                    <input type="text" id="imob-bairro" class="form-control" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-bold text-primary">Fotos (Até 20)</label>
+                    <input type="file" id="imob-fotos-input" class="form-control" multiple accept="image/*" onchange="processarFotos(this.files)">
+                    <div id="preview-grid"></div>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-bold">Descrição</label>
+                    <textarea id="imob-desc" class="form-control" rows="4"></textarea>
+                </div>
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-primary px-5 rounded-pill">PUBLICAR NO SITE</button>
+                </div>
             </form>
-        </div>
-    </section>
-
-    <section id="sec-clientes" class="content-section d-none">
-        <div class="row">
-            <div class="col-md-4"><div class="card p-4 shadow-sm border-0"><form id="formCliente"><h5>Novo Cliente</h5><input type="text" id="cli-nome" class="form-control mb-2" placeholder="Nome" required><input type="text" id="cli-zap" class="form-control mb-2" placeholder="Zap" required><textarea id="cli-nota" class="form-control mb-2" placeholder="Notas"></textarea><button class="btn btn-primary w-100">Cadastrar</button></form></div></div>
-            <div class="col-md-8"><div class="table-custom shadow-sm"><table class="table mb-0"><thead><tr><th>Nome</th><th>Zap</th><th>Ação</th></tr></thead><tbody id="listaClientes"></tbody></table></div></div>
         </div>
     </section>
 
     <section id="sec-ajustes" class="content-section d-none">
         <div class="card p-4 border-0 shadow-sm">
+            <h5>Configurações</h5>
             <form id="formConfig" class="row g-3">
-                <div class="col-md-6"><label>Nome Fantasia</label><input type="text" id="conf-nome" class="form-control"></div>
-                <div class="col-md-6"><label>WhatsApp</label><input type="text" id="conf-zap" class="form-control"></div>
+                <div class="col-md-6"><label>Nome da Imobiliária</label><input type="text" id="conf-nome" class="form-control"></div>
+                <div class="col-md-6"><label>WhatsApp (Com DDD)</label><input type="text" id="conf-zap" class="form-control"></div>
                 <div class="col-12"><label>Endereço</label><input type="text" id="conf-end" class="form-control"></div>
-                <div class="col-12"><button class="btn btn-primary px-4">Salvar</button></div>
+                <div class="col-12"><button class="btn btn-primary">Salvar Ajustes</button></div>
             </form>
         </div>
     </section>
@@ -109,15 +108,12 @@
 
 <script>
     let db_imoveis = JSON.parse(localStorage.getItem('imob_v3_data')) || [];
-    let db_clientes = JSON.parse(localStorage.getItem('imob_v3_clients')) || [];
-    let db_config = JSON.parse(localStorage.getItem('imob_v3_config')) || { nome: "Sua Imobiliária", zap: "5579", end: "Aracaju - SE", logo: "" };
+    let db_config = JSON.parse(localStorage.getItem('imob_v3_config')) || { nome: "Sua Imobiliária", zap: "5579", end: "Aracaju - SE" };
     let tempFotos = [];
 
     function navegar(id) {
         document.querySelectorAll('.content-section').forEach(s => s.classList.add('d-none'));
         document.getElementById(id).classList.remove('d-none');
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        if(event) event.currentTarget.classList.add('active');
         if(id === 'sec-vitrine') renderVitrine();
     }
 
@@ -133,12 +129,7 @@
 
     function renderPreviews() {
         const grid = document.getElementById('preview-grid');
-        grid.innerHTML = tempFotos.map((img, i) => `
-            <div class="preview-box">
-                <img src="${img}">
-                <button type="button" class="btn-del-img" onclick="removerFoto(${i})">&times;</button>
-            </div>`).join('');
-        document.getElementById('msg-fotos').innerText = `${tempFotos.length} de 20 fotos.`;
+        grid.innerHTML = tempFotos.map((img, i) => `<div class="preview-box"><img src="${img}"><button type="button" class="btn-del-img" onclick="removerFoto(${i})">&times;</button></div>`).join('');
     }
 
     function removerFoto(i) { tempFotos.splice(i, 1); renderPreviews(); }
@@ -147,45 +138,44 @@
         e.preventDefault();
         const novo = {
             id: Date.now(),
-            ref: Math.floor(1000 + Math.random() * 9000),
+            ref: document.getElementById('imob-ref').value,
             titulo: document.getElementById('imob-titulo').value,
             preco: parseFloat(document.getElementById('imob-preco').value),
             tipo: document.getElementById('imob-tipo').value,
             bairro: document.getElementById('imob-bairro').value,
             desc: document.getElementById('imob-desc').value,
-            fotos: [...tempFotos],
-            data: new Date().toLocaleDateString()
+            fotos: [...tempFotos]
         };
         db_imoveis.unshift(novo);
         localStorage.setItem('imob_v3_data', JSON.stringify(db_imoveis));
         tempFotos = []; e.target.reset(); renderPreviews();
-        alert("Publicado!"); navegar('sec-vitrine');
+        alert("Imóvel Cadastrado com Sucesso!"); navegar('sec-vitrine');
     };
 
     function renderVitrine() {
         const grid = document.getElementById('vitrineGrid');
         grid.innerHTML = db_imoveis.map(i => `
-            <div class="col-md-6 col-xl-4">
+            <div class="col-md-4">
                 <div class="property-card">
                     <div class="img-zoom-container">
-                        <img src="${i.fotos[0] || 'https://via.placeholder.com/400'}" class="property-img">
+                        <img src="${i.fotos[0] || ''}" class="property-img">
                         <span class="ref-tag">REF: ${i.ref}</span>
                     </div>
-                    <div class="p-4">
-                        <p class="price-label mb-1">R$ ${i.preco.toLocaleString('pt-BR')}</p>
-                        <h5 class="fw-bold text-truncate">${i.titulo}</h5>
-                        <button onclick="removerImob(${i.id})" class="btn btn-sm btn-outline-danger w-100 mt-2">Excluir</button>
+                    <div class="p-3">
+                        <h6 class="fw-bold">${i.titulo}</h6>
+                        <p class="text-success fw-bold">R$ ${i.preco.toLocaleString('pt-BR')}</p>
+                        <button onclick="removerImob(${i.id})" class="btn btn-sm btn-danger w-100">Excluir</button>
                     </div>
                 </div>
             </div>`).join('');
     }
 
-    function removerImob(id) { if(confirm("Excluir?")) { db_imoveis = db_imoveis.filter(x => x.id !== id); localStorage.setItem('imob_v3_data', JSON.stringify(db_imoveis)); renderVitrine(); } }
+    function removerImob(id) { if(confirm("Remover?")) { db_imoveis = db_imoveis.filter(x => x.id !== id); localStorage.setItem('imob_v3_data', JSON.stringify(db_imoveis)); renderVitrine(); } }
 
     function aplicarConfig() {
         document.getElementById('headerNome').innerText = db_config.nome;
         document.getElementById('headerEnd').innerText = db_config.end;
-        document.getElementById('headerWhatsTxt').innerText = db_config.zap;
+        document.getElementById('headerWhatsTxt').innerText = "WhatsApp: " + db_config.zap;
     }
 
     document.getElementById('formConfig').onsubmit = (e) => {
