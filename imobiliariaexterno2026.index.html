@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImobPro | Encontre o Lar dos Seus Sonhos</title>
+    <title>Roberto Vasconcelos – Corretor de Imóveis</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,7 +21,7 @@
         }
 
         .glass-header {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
@@ -63,6 +63,12 @@
             70% { box-shadow: 0 0 0 20px rgba(34, 197, 94, 0); }
             100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
         }
+
+        .filter-btn.active {
+            background-color: #0ea5e9;
+            color: white;
+            border-color: #0ea5e9;
+        }
     </style>
 </head>
 <body>
@@ -73,31 +79,28 @@
                 <div class="bg-sky-500 p-2 rounded-lg text-white">
                     <i class="fas fa-city text-xl"></i>
                 </div>
-                <span id="nav-empresa" class="text-2xl font-extrabold tracking-tight text-slate-800">ImobPro</span>
+                <span id="nav-empresa" class="text-xl md:text-2xl font-extrabold tracking-tight text-slate-800">Roberto Vasconcelos</span>
             </div>
             
-            <nav class="hidden md:flex space-x-8 font-semibold text-slate-600">
-                <a href="#home" class="hover:text-sky-500 transition">Início</a>
-                <a href="#catalogo" class="hover:text-sky-500 transition">Imóveis</a>
-                <a href="#servicos" class="hover:text-sky-500 transition">Serviços</a>
-                <a href="tel:00000000" class="bg-slate-900 text-white px-6 py-2 rounded-full hover:bg-sky-600 transition shadow-lg">Ligar Agora</a>
+            <nav class="flex space-x-6 font-semibold text-slate-600">
+                <a href="#catalogo" class="hover:text-sky-500 transition">Ver Imóveis</a>
             </nav>
         </div>
     </header>
 
-    <section id="home" class="hero-section min-h-screen flex items-center justify-center text-center px-4 pt-20">
+    <section class="hero-section min-h-screen flex items-center justify-center text-center px-4 pt-20">
         <div class="max-w-4xl" data-aos="zoom-in">
             <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6">
                 Descubra o lugar onde sua <span class="text-sky-400">vida floresce.</span>
             </h1>
             <p class="text-xl text-slate-200 mb-10 max-w-2xl mx-auto leading-relaxed">
-                A curadoria mais refinada de imóveis urbanos e litorâneos, direto na palma da sua mão.
+                Corretagem exclusiva no Bairro Luzia e toda Aracaju.
             </p>
             
             <div class="bg-white p-2 rounded-2xl md:rounded-full shadow-2xl flex flex-col md:flex-row gap-2 max-w-3xl mx-auto">
-                <input type="text" id="input-busca" placeholder="Bairro, cidade ou código..." 
+                <input type="text" id="input-busca" placeholder="O que você procura em Aracaju?" 
                        class="flex-grow px-6 py-4 rounded-full outline-none text-slate-700 font-medium">
-                <button onclick="filtrar()" class="bg-sky-500 hover:bg-sky-600 text-white px-10 py-4 rounded-full font-bold transition flex items-center justify-center space-x-2">
+                <button onclick="filtrarBusca()" class="bg-sky-500 hover:bg-sky-600 text-white px-10 py-4 rounded-full font-bold transition flex items-center justify-center space-x-2">
                     <i class="fas fa-search"></i>
                     <span>BUSCAR AGORA</span>
                 </button>
@@ -108,12 +111,13 @@
     <section id="catalogo" class="max-w-7xl mx-auto px-4 py-24">
         <div class="flex flex-col md:flex-row justify-between items-end mb-16" data-aos="fade-right">
             <div>
-                <span class="text-sky-500 font-bold uppercase tracking-widest text-sm">Oportunidades</span>
-                <h2 class="text-4xl font-extrabold text-slate-800 mt-2">Destaques em Evidência</h2>
+                <span class="text-sky-500 font-bold uppercase tracking-widest text-sm">Destaques</span>
+                <h2 class="text-4xl font-extrabold text-slate-800 mt-2">Imóveis Disponíveis</h2>
             </div>
-            <div class="mt-4 md:mt-0 flex space-x-2">
-                <button class="px-5 py-2 rounded-full border border-slate-200 hover:bg-sky-50 transition text-slate-600">Casas</button>
-                <button class="px-5 py-2 rounded-full border border-slate-200 hover:bg-sky-50 transition text-slate-600">Apartamentos</button>
+            <div class="mt-6 md:mt-0 flex flex-wrap gap-2">
+                <button onclick="filtrarPorTipo('Todos', this)" class="filter-btn active px-6 py-2 rounded-full border border-slate-200 hover:bg-sky-50 transition font-bold">Todos</button>
+                <button onclick="filtrarPorTipo('Casa', this)" class="filter-btn px-6 py-2 rounded-full border border-slate-200 hover:bg-sky-50 transition font-bold">Casas</button>
+                <button onclick="filtrarPorTipo('Apartamento', this)" class="filter-btn px-6 py-2 rounded-full border border-slate-200 hover:bg-sky-50 transition font-bold">Apartamentos</button>
             </div>
         </div>
 
@@ -129,7 +133,7 @@
                 <i class="fas fa-times text-xl"></i>
             </button>
 
-            <div class="lg:w-3/5 h-[400px] lg:h-auto bg-slate-100">
+            <div class="lg:w-3/5 h-[350px] lg:h-auto bg-slate-100">
                 <div class="swiper mySwiper h-full">
                     <div class="swiper-wrapper" id="modal-galeria"></div>
                     <div class="swiper-button-next text-white"></div>
@@ -140,60 +144,55 @@
 
             <div class="lg:w-2/5 p-8 lg:p-12 overflow-y-auto custom-scrollbar">
                 <div class="flex justify-between items-start mb-4">
-                    <span id="modal-ref" class="bg-sky-100 text-sky-600 px-3 py-1 rounded-md font-bold text-xs uppercase tracking-tighter">REF: 1001</span>
+                    <span id="modal-ref" class="bg-sky-100 text-sky-600 px-3 py-1 rounded-md font-bold text-xs">REF: 1001</span>
                     <span id="modal-tipo" class="text-slate-400 font-medium text-sm">Apartamento</span>
                 </div>
                 
-                <h2 id="modal-titulo" class="text-3xl font-extrabold text-slate-800 mb-2 leading-tight">Título do Imóvel</h2>
-                <p id="modal-bairro" class="text-slate-500 flex items-center mb-6 text-lg">
-                    <i class="fas fa-map-marker-alt text-sky-500 mr-2"></i> Localização do Imóvel
+                <h2 id="modal-titulo" class="text-3xl font-extrabold text-slate-800 mb-2 leading-tight">Título</h2>
+                <p id="modal-bairro" class="text-slate-500 flex items-center mb-6 text-lg font-medium">
+                    <i class="fas fa-map-marker-alt text-sky-500 mr-2"></i> Localização
                 </p>
 
-                <div class="bg-slate-50 rounded-2xl p-6 mb-8 border border-slate-100">
-                    <p class="text-slate-400 text-sm font-bold uppercase mb-1">Preço Sugerido</p>
+                <div class="bg-slate-50 rounded-2xl p-6 mb-8 border border-slate-100 text-center lg:text-left">
+                    <p class="text-slate-400 text-sm font-bold uppercase mb-1">Valor do Investimento</p>
                     <h3 id="modal-preco" class="text-4xl font-black text-sky-600">R$ 0,00</h3>
                 </div>
 
                 <div class="mb-10">
-                    <h4 class="font-bold text-slate-800 mb-3 flex items-center">
-                        <i class="fas fa-info-circle mr-2 text-sky-500"></i> Sobre este imóvel
+                    <h4 class="font-bold text-slate-800 mb-3 flex items-center uppercase text-xs tracking-widest">
+                        Sobre o imóvel
                     </h4>
-                    <p id="modal-desc" class="text-slate-600 leading-relaxed text-lg italic">Descrição...</p>
+                    <p id="modal-desc" class="text-slate-600 leading-relaxed text-lg whitespace-pre-wrap"></p>
                 </div>
 
                 <a id="btn-whats-modal" href="#" target="_blank" class="block w-full bg-green-500 hover:bg-green-600 text-white font-extrabold py-5 rounded-2xl text-center shadow-xl transition transform hover:scale-[1.02] flex items-center justify-center space-x-3">
                     <i class="fab fa-whatsapp text-2xl"></i>
-                    <span>QUERO MAIS INFORMAÇÕES</span>
+                    <span>SOLICITAR ATENDIMENTO</span>
                 </a>
             </div>
         </div>
     </div>
 
-    <a id="float-zap" href="#" target="_blank" class="btn-whatsapp-float bg-green-500 w-16 h-16 rounded-full flex items-center justify-center text-white text-3xl shadow-2xl">
+    <a id="float-zap" href="https://wa.me/5579991063656" target="_blank" class="btn-whatsapp-float bg-green-500 w-16 h-16 rounded-full flex items-center justify-center text-white text-3xl shadow-2xl">
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <footer class="bg-slate-900 text-slate-400 py-16 px-4">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 border-b border-slate-800 pb-12">
-            <div>
-                <h3 class="text-white text-2xl font-bold mb-6">ImobPro</h3>
-                <p class="leading-relaxed">Excelência no mercado imobiliário com foco em tecnologia e transparência. Encontre seu próximo lar com segurança.</p>
+    <footer class="bg-slate-900 text-white py-12 px-4">
+        <div class="max-w-7xl mx-auto text-center">
+            <h3 class="text-2xl font-bold mb-4">Roberto Vasconcelos – Corretor de Imóveis</h3>
+            <p class="text-slate-400 mb-6">Especialista em Bairro Luzia e Aracaju/SE</p>
+            
+            <div class="flex flex-col items-center space-y-3">
+                <a href="https://wa.me/5579991063656" class="text-sky-400 font-bold text-xl hover:text-white transition">
+                    <i class="fab fa-whatsapp mr-2"></i> (79) 99106-3656
+                </a>
+                <p class="text-slate-500 text-sm">Aracaju - Sergipe</p>
             </div>
-            <div>
-                <h4 class="text-white font-bold mb-6">Navegação</h4>
-                <ul class="space-y-4">
-                    <li><a href="#" class="hover:text-sky-400 transition">Política de Privacidade</a></li>
-                    <li><a href="#" class="hover:text-sky-400 transition">Termos de Uso</a></li>
-                    <li><a href="#" class="hover:text-sky-400 transition">Anuncie Conosco</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-white font-bold mb-6">Contatos</h4>
-                <p class="flex items-center mb-4"><i class="fas fa-envelope text-sky-500 mr-3"></i> contato@imobpro.com.br</p>
-                <p class="flex items-center"><i class="fas fa-phone text-sky-500 mr-3"></i> (79) 99999-9999</p>
+            
+            <div class="mt-10 pt-8 border-t border-slate-800 text-slate-500 text-xs uppercase tracking-widest">
+                &copy; 2026 Roberto Vasconcelos Imóveis. Todos os direitos reservados.
             </div>
         </div>
-        <p class="text-center mt-8 text-sm">&copy; 2026 ImobPro - Desenvolvido para corretores de elite.</p>
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -202,27 +201,25 @@
     <script>
         AOS.init({ duration: 1000, once: true });
 
-        // Banco de Dados
+        // BANCO DE DADOS (Consumindo o que você cadastrou no administrativo)
         let imoveis = JSON.parse(localStorage.getItem('imob_db')) || [];
-        let config = JSON.parse(localStorage.getItem('imob_cfg')) || { nome: "ImobPro", zap: "" };
+        const MEU_WHATS = "5579991063656";
 
-        // UI Setup
-        document.getElementById('nav-empresa').innerText = config.nome;
-        document.getElementById('float-zap').href = `https://wa.me/55${config.zap}`;
-
+        // Renderização Inicial
         function renderizar(dados = imoveis) {
             const grid = document.getElementById('grid-publico');
+            
             if(dados.length === 0) {
-                grid.innerHTML = `<div class="col-span-full py-20 text-center text-slate-400">Nenhum imóvel disponível no momento.</div>`;
+                grid.innerHTML = `<div class="col-span-full py-20 text-center text-slate-400">Nenhum imóvel encontrado nesta categoria.</div>`;
                 return;
             }
 
             grid.innerHTML = dados.map(i => `
                 <div class="property-card bg-white rounded-[32px] overflow-hidden border border-slate-100 shadow-sm cursor-pointer" 
                      onclick="abrirModal(${i.id})" data-aos="fade-up">
-                    <div class="relative h-72">
+                    <div class="relative h-64">
                         <img src="${i.fotos[0] || 'https://via.placeholder.com/600x400'}" class="w-full h-full object-cover">
-                        <div class="absolute top-5 left-5 bg-white/90 backdrop-blur px-4 py-1 rounded-full font-bold text-sky-600 text-xs shadow-sm uppercase">
+                        <div class="absolute top-5 left-5 bg-white/95 px-4 py-1 rounded-full font-bold text-sky-600 text-xs uppercase shadow-sm">
                             ${i.tipo}
                         </div>
                         <div class="absolute bottom-5 right-5 bg-slate-900/80 backdrop-blur text-white px-3 py-1 rounded-lg text-xs font-bold uppercase">
@@ -230,13 +227,13 @@
                         </div>
                     </div>
                     <div class="p-8">
-                        <h4 class="text-2xl font-bold text-slate-800 mb-2 truncate">${i.titulo}</h4>
-                        <p class="text-slate-500 mb-6 flex items-center">
+                        <h4 class="text-xl font-bold text-slate-800 mb-2 truncate">${i.titulo}</h4>
+                        <p class="text-slate-500 mb-6 flex items-center text-sm font-medium">
                             <i class="fas fa-map-marker-alt text-sky-500 mr-2"></i> ${i.bairro}
                         </p>
                         <div class="flex justify-between items-center">
                             <span class="text-2xl font-black text-slate-900">R$ ${i.preco.toLocaleString('pt-BR')}</span>
-                            <div class="bg-sky-50 text-sky-500 w-10 h-10 rounded-full flex items-center justify-center hover:bg-sky-500 hover:text-white transition">
+                            <div class="bg-sky-50 text-sky-500 w-10 h-10 rounded-full flex items-center justify-center">
                                 <i class="fas fa-chevron-right"></i>
                             </div>
                         </div>
@@ -245,6 +242,34 @@
             `).join('');
         }
 
+        // LÓGICA DE FILTRO POR TIPO (Casa / Apartamento)
+        function filtrarPorTipo(tipo, btn) {
+            // Ajustar visual dos botões
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if(tipo === 'Todos') {
+                renderizar(imoveis);
+            } else {
+                const filtrados = imoveis.filter(x => x.tipo === tipo);
+                renderizar(filtrados);
+            }
+        }
+
+        // BUSCA TEXTUAL
+        function filtrarBusca() {
+            const termo = document.getElementById('input-busca').value.toLowerCase();
+            const res = imoveis.filter(x => 
+                x.titulo.toLowerCase().includes(termo) || 
+                x.bairro.toLowerCase().includes(termo) || 
+                x.ref.toLowerCase().includes(termo)
+            );
+            renderizar(res);
+            window.location.href = "#catalogo";
+        }
+
+        // MODAL
+        let swiperInstance = null;
         function abrirModal(id) {
             const i = imoveis.find(x => x.id === id);
             if(!i) return;
@@ -256,21 +281,17 @@
             document.getElementById('modal-desc').innerText = i.desc;
             document.getElementById('modal-tipo').innerText = i.tipo;
 
-            // Galeria Swiper
             const galeria = document.getElementById('modal-galeria');
-            galeria.innerHTML = i.fotos.map(f => `
-                <div class="swiper-slide"><img src="${f}"></div>
-            `).join('');
+            galeria.innerHTML = i.fotos.map(f => `<div class="swiper-slide"><img src="${f}"></div>`).join('');
 
-            // Link Whats
-            const msg = `Olá! Tenho interesse no imóvel: ${i.titulo} (REF: ${i.ref}). Gostaria de mais detalhes.`;
-            document.getElementById('btn-whats-modal').href = `https://wa.me/55${config.zap}?text=${encodeURIComponent(msg)}`;
+            const msg = `Olá Roberto! Vi o imóvel "${i.titulo}" (REF: ${i.ref}) no site e gostaria de agendar uma visita.`;
+            document.getElementById('btn-whats-modal').href = `https://wa.me/${MEU_WHATS}?text=${encodeURIComponent(msg)}`;
 
             document.getElementById('modal-imovel').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
 
-            // Init Swiper após renderizar
-            new Swiper(".mySwiper", {
+            if (swiperInstance) swiperInstance.destroy();
+            swiperInstance = new Swiper(".mySwiper", {
                 navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
                 pagination: { el: ".swiper-pagination", clickable: true },
                 loop: true,
@@ -281,17 +302,6 @@
         function fecharModal() {
             document.getElementById('modal-imovel').classList.add('hidden');
             document.body.style.overflow = 'auto';
-        }
-
-        function filtrar() {
-            const termo = document.getElementById('input-busca').value.toLowerCase();
-            const res = imoveis.filter(x => 
-                x.titulo.toLowerCase().includes(termo) || 
-                x.bairro.toLowerCase().includes(termo) || 
-                x.ref.toLowerCase().includes(termo)
-            );
-            renderizar(res);
-            window.location.href = "#catalogo";
         }
 
         renderizar();
