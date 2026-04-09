@@ -74,13 +74,15 @@
             border-radius: 6px;
         }
 
+        /* Badge do Código de Referência */
         .ref-badge {
             background: #f1f5f9;
             color: #475569;
-            font-size: 0.7rem;
-            padding: 2px 6px;
+            font-weight: 700;
+            padding: 2px 8px;
             border-radius: 4px;
-            text-transform: uppercase;
+            font-size: 0.75rem;
+            border: 1px solid #e2e8f0;
         }
 
         .btn-success-custom { background-color: var(--success-green); color: white; border: none; }
@@ -162,8 +164,8 @@
 
             <section id="sec-dashboard" class="content-section">
                 <div class="row mb-4 g-2">
-                    <div class="col-md-3"><input type="text" id="buscaBairro" class="form-control" placeholder="🔍 Bairro ou Título..." onkeyup="filtrar()"></div>
-                    <div class="col-md-3"><input type="text" id="buscaCodigo" class="form-control" placeholder="🆔 Código REF..." onkeyup="filtrar()"></div>
+                    <div class="col-md-4"><input type="text" id="buscaBairro" class="form-control" placeholder="🔍 Buscar por bairro ou título..." onkeyup="filtrar()"></div>
+                    <div class="col-md-3"><input type="text" id="buscaCodigo" class="form-control" placeholder="🆔 Buscar por Código (Ex: 1234)" onkeyup="filtrar()"></div>
                     <div class="col-md-3">
                         <select id="buscaTipo" class="form-select" onchange="filtrar()">
                             <option value="">Todos os tipos</option>
@@ -273,7 +275,7 @@
         if(id === 'clientes') renderClientes();
     }
 
-    // Função para REDIMENSIONAR imagens
+    // Redimensionamento de imagens
     function handleFiles(files) {
         Array.from(files).forEach(file => {
             if (tempFotos.length < 20) {
@@ -285,7 +287,6 @@
                         const MAX_WIDTH = 800;
                         let width = img.width;
                         let height = img.height;
-
                         if (width > MAX_WIDTH) {
                             height *= MAX_WIDTH / width;
                             width = MAX_WIDTH;
@@ -330,13 +331,16 @@
         }
     }
 
-    // PUBLICAÇÃO DO IMÓVEL
+    // PUBLICAÇÃO COM GERAÇÃO AUTOMÁTICA DE CÓDIGO
     document.getElementById('formImovel').addEventListener('submit', (e) => {
         e.preventDefault();
-        const timestamp = Date.now();
+        
+        // Gera um código baseado no tempo (Últimos 4 dígitos)
+        const codigoGerado = Math.floor(1000 + Math.random() * 9000);
+
         const novoImovel = {
-            id: timestamp,
-            codigo: "REF" + timestamp.toString().slice(-6), // Gera código baseado nos últimos 6 dígitos do tempo
+            id: Date.now(),
+            codigo: codigoGerado, // Aqui salvamos o código único
             titulo: document.getElementById('imob_titulo').value,
             preco: parseFloat(document.getElementById('imob_preco').value),
             tipo: document.getElementById('imob_tipo').value,
@@ -347,24 +351,26 @@
 
         imoveis.unshift(novoImovel);
         localStorage.setItem('imob_dados', JSON.stringify(imoveis));
+        
         e.target.reset();
         tempFotos = [];
         renderPreviews();
         filtrar();
         showSection('dashboard');
-        alert("Imóvel publicado com sucesso! Código: " + novoImovel.codigo);
+        alert("Imóvel cadastrado com sucesso! CÓDIGO: " + codigoGerado);
     });
 
+    // FILTRO QUE BUSCA POR BAIRRO OU PELO CÓDIGO GERADO
     function filtrar() {
         const grid = document.getElementById('listaImoveis');
         const termo = document.getElementById('buscaBairro').value.toLowerCase();
-        const codigoBusca = document.getElementById('buscaCodigo').value.toUpperCase();
+        const codBusca = document.getElementById('buscaCodigo').value;
         const tipo = document.getElementById('buscaTipo').value;
         grid.innerHTML = '';
         
         const filtrados = imoveis.filter(i => 
             (i.bairro.toLowerCase().includes(termo) || i.titulo.toLowerCase().includes(termo)) && 
-            (i.codigo.includes(codigoBusca)) &&
+            (codBusca === "" || i.codigo.toString().includes(codBusca)) &&
             (!tipo || i.tipo === tipo)
         );
 
@@ -383,11 +389,11 @@
                             <div class="photo-counter"><i class="fas fa-camera"></i> ${i.fotos.length}</div>
                         </div>
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="price-badge">R$ ${i.preco.toLocaleString('pt-BR')}</span>
-                                <span class="ref-badge">#${i.codigo}</span>
+                                <span class="ref-badge">REF: ${i.codigo}</span>
                             </div>
-                            <h6 class="fw-bold mb-1 text-truncate">${i.titulo}</h6>
+                            <h6 class="fw-bold mt-2 mb-1">${i.titulo}</h6>
                             <p class="small text-muted mb-2"><i class="fas fa-map-marker-alt"></i> ${i.bairro}</p>
                             <div class="d-flex gap-2">
                                 <button onclick="compartilhar(${i.id})" class="btn btn-success-custom flex-grow-1 btn-sm">
@@ -411,14 +417,14 @@
         }
     }
 
+    // ENVIA MENSAGEM COM O CÓDIGO PARA O WHATSAPP
     function compartilhar(id) {
         const i = imoveis.find(item => item.id == id);
-        // Mensagem agora inclui o CÓDIGO REF
-        const msg = `🏠 *${i.titulo}*%0A🆔 *CÓDIGO: ${i.codigo}*%0A📍 Bairro: ${i.bairro}%0A💰 Valor: R$ ${i.preco.toLocaleString('pt-BR')}%0A%0A📲 Olá, tenho interesse neste imóvel!`;
+        const msg = `🏠 *${i.titulo}*%0A🆔 *CÓDIGO: ${i.codigo}*%0A📍 Bairro: ${i.bairro}%0A💰 Valor: R$ ${i.preco.toLocaleString('pt-BR')}%0A%0A📲 Olá! Gostaria de mais informações sobre este imóvel.`;
         window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
 
-    // CLIENTES & CONFIG (Mesma lógica anterior)
+    // CLIENTES
     document.getElementById('formCliente').addEventListener('submit', (e) => {
         e.preventDefault();
         clientes.push({
@@ -447,6 +453,7 @@
         renderClientes();
     }
 
+    // CONFIGURAÇÕES
     document.getElementById('formConfig').addEventListener('submit', (e) => {
         e.preventDefault();
         config = {
