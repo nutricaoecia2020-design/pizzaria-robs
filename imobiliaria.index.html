@@ -3,293 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA IMOBPRO COMPLETO</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Painel Administrativo - ImobPro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary: #0ea5e9; --dark: #1e293b; --bg: #f8fafc; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--dark); }
-        
-        /* Menu Lateral */
-        .sidebar { width: 260px; height: 100vh; position: fixed; background: #fff; border-right: 1px solid #e2e8f0; padding: 20px; z-index: 100; }
-        .main-content { margin-left: 260px; padding: 30px; }
-        
-        /* Cards e Estilo */
-        .card-imovel { background: #fff; border-radius: 15px; overflow: hidden; border: none; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: 0.3s; height: 100%; position: relative; }
-        .img-container { height: 200px; overflow: hidden; position: relative; }
-        .img-container img { width: 100%; height: 100%; object-fit: cover; }
-        .ref-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: #fff; padding: 3px 8px; border-radius: 5px; font-size: 12px; font-weight: bold; }
-        
-        /* Previsualização de fotos no cadastro */
-        #preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 10px; }
-        .preview-item { position: relative; width: 80px; height: 80px; }
-        .preview-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
-        .btn-remove-foto { position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; }
-
-        /* Botão WhatsApp */
-        .btn-whats { background: #25d366; color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-weight: bold; text-decoration: none; display: inline-block; text-align: center; }
-        
-        @media (max-width: 768px) {
-            .sidebar { width: 100%; height: auto; position: relative; }
-            .main-content { margin-left: 0; }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; }
+        .input-field { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; outline: none; transition: 0.3s; }
+        .input-field:focus { border-color: #0ea5e9; ring: 2px ring #bae6fd; }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-10">
 
-<aside class="sidebar">
-    <h3 class="fw-bold text-primary mb-4"><i class="fas fa-city"></i> ImobPro</h3>
-    <div class="list-group list-group-flush">
-        <button onclick="mudarTela('vitrine')" class="list-group-item list-group-item-action border-0 py-3"><i class="fas fa-th-large me-2"></i> Vitrine (Portal)</button>
-        <button onclick="mudarTela('cadastro')" class="list-group-item list-group-item-action border-0 py-3"><i class="fas fa-plus-circle me-2"></i> Cadastrar Imóvel</button>
-        <button onclick="mudarTela('config')" class="list-group-item list-group-item-action border-0 py-3"><i class="fas fa-cog me-2"></i> Configurações</button>
-    </div>
-</aside>
-
-<main class="main-content">
-
-    <section id="tela-vitrine">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold" id="label-empresa">Carregando...</h2>
-        </div>
-        <div id="grid-imoveis" class="row g-4">
+    <div class="max-w-4xl mx-auto bg-white rounded-[32px] shadow-xl overflow-hidden">
+        <div class="bg-slate-900 p-8 text-white flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold">Painel ImobPro</h1>
+                <p class="text-slate-400 text-sm">Cadastro de Imóveis - Roberto Vasconcelos</p>
             </div>
-    </section>
+            <i class="fas fa-user-shield text-3xl text-sky-500"></i>
+        </div>
 
-    <section id="tela-cadastro" style="display: none;">
-        <div class="card p-4 border-0 shadow-sm">
-            <h2 class="fw-bold mb-4">Publicar Novo Imóvel</h2>
-            <form id="form-cadastro" class="row g-3">
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">CÓDIGO (REF)</label>
-                    <input type="text" id="cad-ref" class="form-control" placeholder="Ex: 1001" required>
+        <form id="form-cadastro" class="p-8 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Título do Anúncio</label>
+                    <input type="text" id="titulo" class="input-field" placeholder="Ex: Casa Duplex no Luzia" required>
                 </div>
-                <div class="col-md-9">
-                    <label class="form-label fw-bold">Título do Anúncio</label>
-                    <input type="text" id="cad-titulo" class="form-control" placeholder="Ex: Apartamento de Luxo na Praia" required>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Referência (Cód/REF)</label>
+                    <input type="text" id="ref" class="input-field" placeholder="Ex: RV1001" required>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Preço (R$)</label>
-                    <input type="number" id="cad-preco" class="form-control" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Bairro</label>
-                    <input type="text" id="cad-bairro" class="form-control" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Tipo</label>
-                    <select id="cad-tipo" class="form-select">
-                        <option>Apartamento</option>
-                        <option>Casa</option>
-                        <option>Terreno</option>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Tipo de Imóvel</label>
+                    <select id="tipo" class="input-field">
+                        <option value="Apartamento">Apartamento</option>
+                        <option value="Casa">Casa</option>
+                        <option value="Terreno">Terreno</option>
                     </select>
                 </div>
-                <div class="col-12">
-                    <label class="form-label fw-bold text-primary">Fotos do Imóvel (Até 20)</label>
-                    <input type="file" id="input-fotos" class="form-control" multiple accept="image/*">
-                    <div id="preview-grid"></div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Valor (R$)</label>
+                    <input type="number" id="preco" class="input-field" placeholder="Apenas números" required>
                 </div>
-                <div class="col-12">
-                    <label class="form-label fw-bold">Descrição Completa</label>
-                    <textarea id="cad-desc" class="form-control" rows="5" placeholder="Detalhes do imóvel..."></textarea>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Bairro</label>
+                    <input type="text" id="bairro" class="input-field" placeholder="Ex: Luzia" required>
                 </div>
-                <div class="col-12 text-end">
-                    <button type="submit" class="btn btn-primary btn-lg px-5">CADASTRAR E PUBLICAR</button>
-                </div>
-            </form>
-        </div>
-    </section>
-
-    <section id="tela-config" style="display: none;">
-        <div class="card p-4 border-0 shadow-sm" style="max-width: 600px;">
-            <h2 class="fw-bold mb-4">Configurar Sistema</h2>
-            <div class="mb-3">
-                <label class="form-label">Nome da Sua Imobiliária</label>
-                <input type="text" id="conf-nome" class="form-control">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Seu WhatsApp (Somente números com DDD)</label>
-                <input type="text" id="conf-zap" class="form-control" placeholder="79999999999">
-            </div>
-            <button onclick="salvarConfig()" class="btn btn-success w-100">SALVAR CONFIGURAÇÕES</button>
-        </div>
-    </section>
-
-</main>
-
-<div class="modal fade" id="modalImovel" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content rounded-4 border-0">
-            <div class="modal-body p-0">
-                <div id="carouselFotos" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner" id="fotos-modal"></div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselFotos" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselFotos" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
-                </div>
-                <div class="p-4">
-                    <h3 id="view-titulo" class="fw-bold mb-1"></h3>
-                    <h4 id="view-preco" class="text-success fw-bold mb-3"></h4>
-                    <p id="view-ref" class="text-muted small fw-bold mb-2"></p>
-                    <p id="view-bairro" class="text-muted small mb-3"></p>
-                    <p id="view-desc" style="white-space: pre-wrap; color: #555;"></p>
-                    <hr>
-                    <a id="btn-enviar-whats" href="#" target="_blank" class="btn-whats"><i class="fab fa-whatsapp me-2"></i> TENHO INTERESSE (ENVIAR TUDO NO WHATSAPP)</a>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Cidade</label>
+                    <input type="text" id="cidade" class="input-field" value="Aracaju" required>
                 </div>
             </div>
+
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">Descrição Completa</label>
+                <textarea id="desc" rows="4" class="input-field" placeholder="Detalhes do imóvel..."></textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">Fotos do Imóvel (Até 20 fotos)</label>
+                <input type="file" id="fotos" multiple accept="image/*" class="input-field">
+                <p class="text-xs text-slate-400 mt-2 italic">* Selecione várias imagens de uma vez.</p>
+            </div>
+
+            <button type="submit" id="btn-salvar" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-black py-4 rounded-xl shadow-lg transition flex items-center justify-center space-x-2">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>PUBLICAR NO SITE</span>
+            </button>
+        </form>
+
+        <div class="border-t border-slate-100 p-8">
+            <h2 class="text-xl font-bold text-slate-800 mb-6">Imóveis Ativos no Firebase</h2>
+            <div id="lista-imoveis" class="space-y-4">
+                </div>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    let db_imoveis = JSON.parse(localStorage.getItem('imob_db')) || [];
-    let db_config = JSON.parse(localStorage.getItem('imob_cfg')) || { nome: "Meu Portal de Imóveis", zap: "" };
-    let temp_fotos = [];
+    <script>
+        // CONFIGURAÇÃO DO SEU FIREBASE (O link que você criou)
+        const DB_URL = "https://imobiliaria-ad836-default-rtdb.firebaseio.com/imoveis";
 
-    // Gerenciar Telas
-    function mudarTela(id) {
-        document.getElementById('tela-vitrine').style.display = id === 'vitrine' ? 'block' : 'none';
-        document.getElementById('tela-cadastro').style.display = id === 'cadastro' ? 'block' : 'none';
-        document.getElementById('tela-config').style.display = id === 'config' ? 'block' : 'none';
-        if(id === 'vitrine') renderVitrine();
-    }
+        const form = document.getElementById('form-cadastro');
+        const lista = document.getElementById('lista-imoveis');
 
-    // Processar Fotos
-    document.getElementById('input-fotos').addEventListener('change', function(e) {
-        const files = e.target.files;
-        Array.from(files).forEach(file => {
-            if(temp_fotos.length < 20) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    temp_fotos.push(ev.target.result);
-                    renderPreviews();
-                };
-                reader.readAsDataURL(file);
+        // Função para converter imagens em Base64 (para salvar no banco)
+        async function converterImagens(files) {
+            const promises = Array.from(files).map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.readAsDataURL(file);
+                });
+            });
+            return Promise.all(promises);
+        }
+
+        // SALVAR NO FIREBASE
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-salvar');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>ENVIANDO...</span>';
+
+            const fotosFiles = document.getElementById('fotos').files;
+            const fotosBase64 = await converterImagens(fotosFiles);
+
+            const novoImovel = {
+                id: Date.now(),
+                titulo: document.getElementById('titulo').value,
+                ref: document.getElementById('ref').value,
+                tipo: document.getElementById('tipo').value,
+                preco: parseFloat(document.getElementById('preco').value),
+                bairro: document.getElementById('bairro').value,
+                cidade: document.getElementById('cidade').value,
+                desc: document.getElementById('desc').value,
+                fotos: fotosBase64
+            };
+
+            try {
+                await fetch(`${DB_URL}.json`, {
+                    method: 'POST',
+                    body: JSON.stringify(novoImovel)
+                });
+                alert("Imóvel publicado com sucesso!");
+                form.reset();
+                carregarImoveis();
+            } catch (error) {
+                alert("Erro ao salvar no Firebase.");
+                console.error(error);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> <span>PUBLICAR NO SITE</span>';
             }
-        });
-    });
-
-    function renderPreviews() {
-        const grid = document.getElementById('preview-grid');
-        grid.innerHTML = temp_fotos.map((img, i) => `
-            <div class="preview-item">
-                <img src="${img}">
-                <button type="button" class="btn-remove-foto" onclick="removerFoto(${i})">&times;</button>
-            </div>
-        `).join('');
-    }
-
-    function removerFoto(i) {
-        temp_fotos.splice(i, 1);
-        renderPreviews();
-    }
-
-    // Cadastro do Imóvel
-    document.getElementById('form-cadastro').onsubmit = (e) => {
-        e.preventDefault();
-        const novo = {
-            id: Date.now(),
-            ref: document.getElementById('cad-ref').value,
-            titulo: document.getElementById('cad-titulo').value,
-            preco: parseFloat(document.getElementById('cad-preco').value),
-            bairro: document.getElementById('cad-bairro').value,
-            tipo: document.getElementById('cad-tipo').value,
-            desc: document.getElementById('cad-desc').value,
-            fotos: [...temp_fotos]
         };
-        db_imoveis.unshift(novo);
-        localStorage.setItem('imob_db', JSON.stringify(db_imoveis));
-        alert("Imóvel publicado com sucesso!");
-        e.target.reset();
-        temp_fotos = [];
-        renderPreviews();
-        mudarTela('vitrine');
-    };
 
-    // Renderizar Vitrine
-    function renderVitrine() {
-        const grid = document.getElementById('grid-imoveis');
-        document.getElementById('label-empresa').innerText = db_config.nome;
-        
-        if(db_imoveis.length === 0) {
-            grid.innerHTML = `<p class="text-center p-5">Nenhum imóvel cadastrado ainda.</p>`;
-            return;
+        // CARREGAR LISTA PARA GERENCIAR (EXCLUIR)
+        async function carregarImoveis() {
+            try {
+                const response = await fetch(`${DB_URL}.json`);
+                const data = await response.json();
+                lista.innerHTML = "";
+
+                if (!data) {
+                    lista.innerHTML = "<p class='text-slate-400'>Nenhum imóvel cadastrado.</p>";
+                    return;
+                }
+
+                Object.keys(data).forEach(key => {
+                    const imob = data[key];
+                    lista.innerHTML += `
+                        <div class="flex items-center justify-between bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <div class="flex items-center space-x-4">
+                                <img src="${imob.fotos[0]}" class="w-16 h-16 rounded-lg object-cover">
+                                <div>
+                                    <p class="font-bold text-slate-800">${imob.titulo}</p>
+                                    <p class="text-xs text-slate-500">REF: ${imob.ref} | R$ ${imob.preco.toLocaleString('pt-BR')}</p>
+                                </div>
+                            </div>
+                            <button onclick="excluirImovel('${key}')" class="text-red-500 hover:text-red-700 p-2">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error("Erro ao carregar lista:", error);
+            }
         }
 
-        grid.innerHTML = db_imoveis.map(i => `
-            <div class="col-md-6 col-lg-4">
-                <div class="card-imovel" onclick="abrirDetalhes(${i.id})">
-                    <div class="img-container">
-                        <img src="${i.fotos[0] || 'https://via.placeholder.com/400x300'}">
-                        <span class="ref-badge">REF: ${i.ref}</span>
-                    </div>
-                    <div class="p-3">
-                        <h5 class="fw-bold mb-1">${i.titulo}</h5>
-                        <h6 class="text-success fw-bold">R$ ${i.preco.toLocaleString('pt-BR')}</h6>
-                        <p class="text-muted small mb-0"><i class="fas fa-map-marker-alt"></i> ${i.bairro}</p>
-                        <button onclick="excluirImovel(${i.id}, event)" class="btn btn-sm btn-outline-danger mt-3 border-0"><i class="fas fa-trash"></i> Excluir</button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // Abrir Modal e Preparar WhatsApp com TODOS os dados
-    const modalBoostrap = new bootstrap.Modal(document.getElementById('modalImovel'));
-    function abrirDetalhes(id) {
-        const i = db_imoveis.find(x => x.id === id);
-        if(!i) return;
-
-        document.getElementById('view-titulo').innerText = i.titulo;
-        document.getElementById('view-preco').innerText = `R$ ${i.preco.toLocaleString('pt-BR')}`;
-        document.getElementById('view-ref').innerText = `CÓDIGO (REF): ${i.ref}`;
-        document.getElementById('view-bairro').innerText = `LOCALIZAÇÃO: ${i.bairro}`;
-        document.getElementById('view-desc').innerText = i.desc;
-
-        // Fotos do carrossel
-        const carouselInner = document.getElementById('fotos-modal');
-        carouselInner.innerHTML = i.fotos.map((f, idx) => `
-            <div class="carousel-item ${idx === 0 ? 'active' : ''}">
-                <img src="${f}" class="d-block w-100" style="height: 400px; object-fit: contain; background: #eee;">
-            </div>
-        `).join('');
-
-        // Gerar Mensagem completa para o Zap
-        const textoZap = `Olá, tenho interesse no imóvel!%0A%0A` + 
-                         `*COD:* ${i.ref}%0A` +
-                         `*TÍTULO:* ${i.titulo}%0A` +
-                         `*VALOR:* R$ ${i.preco.toLocaleString('pt-BR')}%0A` +
-                         `*BAIRRO:* ${i.bairro}%0A` +
-                         `*DESCRIÇÃO:* ${i.desc}`;
-        
-        document.getElementById('btn-enviar-whats').href = `https://wa.me/55${db_config.zap}?text=${textoZap}`;
-        
-        modalBoostrap.show();
-    }
-
-    function excluirImovel(id, e) {
-        e.stopPropagation();
-        if(confirm("Deseja realmente apagar este imóvel?")) {
-            db_imoveis = db_imoveis.filter(x => x.id !== id);
-            localStorage.setItem('imob_db', JSON.stringify(db_imoveis));
-            renderVitrine();
+        // EXCLUIR DO FIREBASE
+        async function excluirImovel(key) {
+            if (confirm("Deseja realmente excluir este imóvel do site?")) {
+                await fetch(`${DB_URL}/${key}.json`, { method: 'DELETE' });
+                carregarImoveis();
+            }
         }
-    }
 
-    // Configurações
-    function salvarConfig() {
-        db_config.nome = document.getElementById('conf-nome').value;
-        db_config.zap = document.getElementById('conf-zap').value.replace(/\D/g, ''); // limpa caracteres
-        localStorage.setItem('imob_cfg', JSON.stringify(db_config));
-        alert("Configurações salvas!");
-        mudarTela('vitrine');
-    }
-
-    // Iniciar carregando dados salvos
-    document.getElementById('conf-nome').value = db_config.nome;
-    document.getElementById('conf-zap').value = db_config.zap;
-    renderVitrine();
-</script>
-
+        window.onload = carregarImoveis;
+    </script>
 </body>
 </html>
