@@ -2,100 +2,191 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Simulador de Prova - Estável</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado Estácio - Teoria do Direito e da Norma</title>
     <style>
-        :root { --p: #004a8d; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; }
-        .sidebar { width: 300px; background: #fff; padding: 20px; border-right: 1px solid #ddd; }
-        .main { flex: 1; padding: 20px; overflow-y: auto; }
-        .card { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .opt { padding: 10px; border: 1px solid #eee; margin-top: 5px; cursor: pointer; border-radius: 4px; }
-        .opt.sel { background: #d1e7ff; border-color: var(--p); }
-        .correct { background: #d4edda !important; font-weight: bold; }
-        button { width: 100%; padding: 15px; background: var(--p); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        #loader { display: none; color: #d35400; font-weight: bold; text-align: center; margin-top: 10px; }
+        :root {
+            --primary-color: #004691;
+            --secondary-color: #f4f4f4;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            background-color: #e9ecef;
+            color: var(--text-color);
+        }
+
+        /* Sidebar - Quadro de Questões */
+        #sidebar {
+            width: 300px;
+            height: 100vh;
+            background: white;
+            border-right: 1px solid #ccc;
+            position: fixed;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .timer-box {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .grid-item {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 4px;
+            background: #fff;
+            font-weight: bold;
+        }
+
+        .grid-item.answered {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .grid-item.current {
+            border: 3px solid var(--accent-color);
+        }
+
+        /* Área de Conteúdo */
+        #main-content {
+            margin-left: 300px;
+            padding: 40px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .question-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: none; /* Esconde todas, mostra uma por vez */
+        }
+
+        .question-card.active {
+            display: block;
+        }
+
+        h2 { color: var(--primary-color); margin-top: 0; }
+
+        .options label {
+            display: block;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .options label:hover { background-color: #f0f7ff; }
+
+        input[type="radio"] { margin-right: 15px; transform: scale(1.2); }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .btn-next { background: var(--primary-color); color: white; }
+        .btn-prev { background: #6c757d; color: white; }
+        .btn-finish { background: var(--success-color); color: white; width: 100%; margin-top: 20px; }
+
+        /* Resultado */
+        #result-screen {
+            display: none;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .score-circle {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <h2 style="color:var(--p)">IA Estácio</h2>
-    <input type="password" id="key" placeholder="Cole sua API Key aqui" style="width:90%; padding:10px; margin-bottom:10px;">
-    <input type="file" id="pdf" accept="application/pdf">
-    <button onclick="gerar()">GERAR 50 QUESTÕES</button>
-    <div id="loader">⌛ A IA está lendo... Aguarde.</div>
+<div id="sidebar">
+    <div class="timer-box" id="timer">60:00</div>
+    <h3>Quadro de Questões</h3>
+    <div class="question-grid" id="grid">
+        </div>
+    <button class="btn-finish" onclick="finishQuiz()">Finalizar Prova</button>
 </div>
 
-<div class="main" id="quizArea">
-    <div style="text-align:center; color:#888; margin-top:100px;">Suba o arquivo para gerar a prova.</div>
+<div id="main-content">
+    <div id="quiz-container">
+        </div>
+
+    <div id="result-screen">
+        <h2>Resultado da Prova</h2>
+        <div class="score-circle" id="score-display">0/10</div>
+        <p id="feedback-text"></p>
+        <button onclick="location.reload()" class="btn-next">Refazer Simulado</button>
+    </div>
 </div>
 
 <script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-    let questoes = [];
-
-    async function gerar() {
-        const key = document.getElementById('key').value.trim();
-        const file = document.getElementById('pdf').files[0];
-        if(!key || !file) return alert("Insira a chave e o PDF!");
-
-        document.getElementById('loader').style.display = "block";
-
-        try {
-            const doc = await pdfjsLib.getDocument({data: await file.arrayBuffer()}).promise;
-            let texto = "";
-            for(let i=1; i<=Math.min(doc.numPages, 10); i++){
-                const p = await doc.getPage(i);
-                const c = await p.getTextContent();
-                texto += c.items.map(s => s.str).join(" ") + " ";
-            }
-
-            // Usando o modelo Pro (mais inteligente e estável)
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${key}`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: `Analise: "${texto.substring(0, 15000)}". Gere 50 questões de múltipla escolha. Retorne APENAS um JSON: [{"q":"pergunta","options":["a","b","c","d"],"correct":0}]` }] }]
-                })
-            });
-
-            const data = await res.json();
-            if(data.error) throw new Error(data.error.message);
-
-            let raw = data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
-            questoes = JSON.parse(raw);
-            render();
-        } catch(e) {
-            alert("Erro: " + e.message);
-        } finally { document.getElementById('loader').style.display = "none"; }
-    }
-
-    function render() {
-        const area = document.getElementById('quizArea'); area.innerHTML = "";
-        questoes.forEach((q, i) => {
-            const d = document.createElement('div');
-            d.className = 'card';
-            d.innerHTML = `<p><strong>${i+1}.</strong> ${q.q}</p>`;
-            q.options.forEach((o, idx) => {
-                const opt = document.createElement('div');
-                opt.className = 'opt'; opt.id = `q${i}o${idx}`;
-                opt.innerText = o;
-                opt.onclick = () => {
-                    d.querySelectorAll('.opt').forEach(x => x.classList.remove('sel'));
-                    opt.classList.add('sel');
-                };
-                d.appendChild(opt);
-            });
-            area.appendChild(d);
-        });
-        const btn = document.createElement('button');
-        btn.innerText = "VER GABARITO";
-        btn.onclick = () => {
-            questoes.forEach((q, i) => document.getElementById(`q${i}o${q.correct}`).classList.add('correct'));
-        };
-        area.appendChild(btn);
-    }
-</script>
-</body>
-</html>
+    const questions = [
+        { q: "O termo 'Direito' é polissêmico e analógico. O que define uma palavra analógica?", a: ["Sentidos totalmente desconexos", "Vários sentidos que mantêm relação de semelhança entre si", "Apenas um sentido absoluto", "Termo que caiu em desuso"], correct: 1 },
+        { q: "Qual a função da linguagem predominante nas normas jurídicas?", a: ["Informativa", "Expressiva", "Prescritiva/Diretiva", "Interrogativa"], correct: 2 },
+        { q: "A característica que permite ao Estado impor sanções pelo descumprimento da norma é a:", a: ["Bilateralidade", "Coercitividade", "Abstração", "Generalidade"], correct: 1 },
+        { q: "Segundo Kelsen, a validade de uma norma jurídica decorre de:", a: ["Sua justiça intrínseca", "Estar em conformidade com uma norma superior", "Vontade popular direta", "Aprovação religiosa"], correct: 1 },
+        { q: "Platão, em 'A República', fundamentava o Direito Ideal no:", a: ["Mundo das Ideias", "Contrato Social", "Direito Positivo", "Código de Hamurabi"], correct: 0 },
+        { q: "Para Aristóteles, a justiça política divide-se em:", a: ["Justiça Divina e Humana", "Direito Natural e Direito Legal/Positivo", "Regras e Princípios", "Ética e Estética"], correct: 1 },
+        { q: "Quem é o autor da obra 'Teoria Pura do Direito'?", a: ["Herbert Hart", "Miguel Reale", "Hans Kelsen", "Robert Alexy"], correct: 2 },
+        { q: "O que é a 'Norma Hipotética Fundamental' para Kelsen?", a: ["A Constituição escrita", "Um pressuposto lógico de validade do sistema", "Uma lei votada pelo congresso", "O direito à vida"], correct: 1 },
+        { q: "Herbert Hart define o Direito como a união de:", a: ["Leis e Moral", "Regras Primárias e Secundárias", "Poder e Força", "Costumes e Religião"], correct: 1 },
+        { q: "Qual regra secundária de Hart serve para identificar a validade das normas?", a: ["Regra de Mudança", "Regra de Julgamento", "Regra de Reconhecimento", "Regra de Punição"], correct: 2 },
+        { q: "Robert Alexy define princípios como:", a: ["Regras de aplicação 'tudo ou nada'", "Mandamentos de otimização", "Sugestões não obrigatórias", "Normas hierarquicamente inferiores"], correct: 1 },
+        { q: "Como se resolvem conflitos entre princípios segundo Alexy?", a: ["Pela revogação de um deles", "Pelo critério cronológico", "Pela ponderação e proporcionalidade", "Pelo critério hierárquico"], correct: 2 },
+        { q: "A característica da 'Completude' do ordenamento jurídico significa que:", a: ["O sistema não possui lacunas insolúveis", "Existem leis para absolutamente tudo", "O sistema é estático", "O juiz não pode criar normas"], correct: 0 },
+        { q: "Antinomia jurídica ocorre quando:", a: ["Há falta de leis", "Há duas normas conflitantes para o mesmo caso", "A norma é injusta", "O réu confessa o crime"], correct: 1 },
+        { q: "Qual critério resolve o conflito entre uma Lei Federal e uma Lei Estadual?", a: ["Critério Cronológico", "Critério da Especialidade", "Critério Hierárquico", "Critério da Amizade"], correct: 2 },
+        { q: "O Direito Natural Moderno (Racionalista) baseia-se na:", a: ["Vontade de Deus", "Razão Humana", "Ordem do Cosmos", "Tradição dos antepassados"], correct: 1 },
+        { q: "A 'Bilateralidade Atributiva' significa que a norma jurídica:", a: ["Vale para duas pessoas", "Impõe um dever a um e atribui um direito a outro", "Só vale se houver acordo", "Pode ser interpretada de duas formas"], correct: 1 },
+        { q: "A característica da 'Generalidade' da norma jurídica indica que ela:", a: ["É dirigida a um caso específico", "É dirigida a todos os que se encontram na mesma situação", "É confusa e genérica", "Só vale para o governo"], correct: 1 },
+        { q: "O Jusnaturalismo Teológico da Idade Média teve como expoente:", a: ["Platão", "Santo Tomás de Aquino", "John Locke", "Norberto Bobbio"], correct: 1 },
+        { q: "O Positivismo Jurídico defende a:", a: ["Separação entre Direito e Moral", "União absoluta entre Direito e Ética", "Subordinação da lei à Bíblia", "Primazia do Direito Natural"], correct: 0 },
+        { q: "Para Norberto Bobbio, a 'Unidade' do ordenamento advém de:", a: ["Todas as normas derivarem da mesma base/Constituição", "Haver apenas um código civil", "O povo ser unido", "Não haver brigas entre juízes"],
