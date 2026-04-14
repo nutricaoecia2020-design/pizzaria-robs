@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulador Estácio - Versão Final</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <style>
+        :root { --p: #004a8d; --s: #27ae60; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 320px; background: #fff; border-right: 1px solid #ddd; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .main { flex: 1; display: flex; flex-direction: column; }
+        header { background: var(--p); color: white; padding: 15px; display: flex; justify-content: space-between; font-weight: bold; }
+        .container { flex: 1; padding: 20px; overflow-y: auto; }
+        .card { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; border-left: 5px solid var(--p); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .opt { padding: 10px; border: 1px solid #eee; margin-top: 5px; border-radius: 4px; cursor: pointer; }
+        .opt.sel { background: #d1e7ff; border-color: var(--p); }
+        .correct { background: #d4edda !important; }
+        .wrong { background: #f8d7da !important; }
+        #status { font-weight: bold; color: var(--p); display: none; text-align: center; }
+        button { padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <h2 style="color:var(--p)">IA Estácio</h2>
+    <p>Sua chave já está configurada internamente.</p>
+    
+    <label><strong>Selecione o PDF:</strong></label>
+    <input type="file" id="pdfFile" accept="application/pdf" multiple>
+    
+    <button style="background:var(--p)" onclick="gerar()">GERAR 50 QUESTÕES</button>
+    <div id="status">⌛ Processando material...</div>
+    
+    <button style="background:#666; margin-top: auto;" onclick="location.reload()">REINICIAR</button>
+</aside>
+
+<main class="main">
+    <header>
+        <span>SIMULADOR AUTOMÁTICO</span>
+        <span>60:00</span>
+    </header>
+    <div class="container" id="quizArea">
+        <div style="text-align:center; color:#999; margin-top:100px;">Suba os arquivos para começar.</div>
+    </div>
+    <button style="background:var(--s); padding:20px;" onclick="corrigir()">FINALIZAR E CORRIGIR</button>
+</main>
+
+<script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+    
+    // A chave que você me enviou no print
+    const MINHA_CHAVE = "AlzaSyBq4N0dzn9-9_qn-sXOpmGy38zgkN29E80";
+    let questoes = [];
+    let respostas = [];
+
+    async function extrair(f) {
+        const doc = await pdfjsLib.getDocument({data: await f.arrayBuffer()}).promise;
+        let t = "";
+        for(let i=1; i<=doc.numPages; i++){
+            const p = await doc.getPage(i);
+            const c = await p.getTextContent();
+            t += c.items.map(s => s.str).join(" ") + " ";
+        }
+        return t;
+    }
+
+    async function gerar() {
+        const f = document.getElementById('pdfFile').files;
+        const st = document.getElementById('status');
+        if(f.length === 0) return alert("Selecione um PDF!");
+
+        st.style.display = "block";
+        try {
+            let txt = "";
+            for(let file of f) txt += await extrair(file);
+
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${MINHA_CHAVE}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    contents: [{parts: [{text: `Com base no texto: "${txt.substring(0,20000)}". Gere 50 questões de múltipla escolha com 4 opções. Responda apenas o JSON: [{"q":"...","options":["..."],"correct":0}]`}]}]
+                })
+            });
+
+            const data = await res.json();
+            const raw = data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
+            questoes = JSON.parse(raw);
+            render();
+        } catch(e) {
+            alert("Erro: A IA demorou ou o PDF é inválido. Tente novamente.");
+        } finally { st.style.display = "none"; }
+    }
+
+    function render() {
+        const area = document.getElementById('quizArea');
+        area.innerHTML = "";
+        respostas = new Array(questoes.length).fill(null);
+        questoes.forEach((q, i) => {
+            const d = document.createElement('div');
+            d.className = 'card';
+            d.innerHTML = `<p><strong>${i+1}.</strong> ${q.q}</p>`;
+            q.options.forEach((o, idx) => {
+                const opt = document.createElement('div');
+                opt.className = 'opt';
+                opt.id = `q${i}o${idx}`;
+                opt.innerText = o;
+                opt.onclick = () => {
+                    respostas[i] = idx;
+                    d.querySelectorAll('.opt').forEach(x => x.classList.remove('sel'));
+                    opt.classList.add('sel');
+                };
+                d.appendChild(opt);
+            });
+            area.appendChild(d);
+        });
+    }
+
+    function corrigir() {
+        questoes.forEach((q, i) => {
+            const u = respostas[i];
+            const c = q.correct;
+            document.getElementById(`q${i}o${c}`).classList.add('correct');
+            if(u !== null && u !== c) document.getElementById(`q${i}o${u}`).classList.add('wrong');
+        });
+        alert("Simulado corrigido!");
+    }
+</script>
+</body>
+</html>
