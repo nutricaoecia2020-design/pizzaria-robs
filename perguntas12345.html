@@ -3,199 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prova Digital - Teoria do Direito</title>
+    <title>Simulado Completo - Teoria do Direito</title>
     <style>
-        :root {
-            --estacio-blue: #004691;
-            --sidebar-bg: #ffffff;
-            --main-bg: #f5f7f9;
-            --accent: #e74c3c;
-        }
-
-        body { font-family: 'Open Sans', sans-serif; margin: 0; background: var(--main-bg); display: flex; height: 100vh; }
-
-        /* Sidebar Lateral */
-        #sidebar {
-            width: 320px;
-            background: var(--sidebar-bg);
-            border-right: 1px solid #d1d5db;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .timer-container {
-            background: var(--estacio-blue);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .grid-title { font-weight: bold; margin-bottom: 10px; font-size: 14px; color: #666; }
+        :root { --blue: #004691; --bg: #f0f2f5; --text: #1c1e21; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background: var(--bg); height: 100vh; overflow: hidden; }
         
-        .question-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            overflow-y: auto;
-            padding-bottom: 20px;
-        }
+        /* Lateral */
+        #sidebar { width: 300px; background: white; border-right: 1px solid #ccc; padding: 20px; display: flex; flex-direction: column; }
+        .timer { background: var(--blue); color: white; padding: 15px; border-radius: 8px; text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
+        .grid-item { aspect-ratio: 1; border: 1px solid #ddd; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .grid-item.done { background: var(--blue); color: white; }
+        .grid-item.active { border: 2px solid #e74c3c; color: #e74c3c; }
 
-        .grid-btn {
-            aspect-ratio: 1;
-            border: 1px solid #ccc;
-            background: white;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
-        }
-
-        .grid-btn.answered { background: var(--estacio-blue); color: white; border-color: var(--estacio-blue); }
-        .grid-btn.current { border: 2px solid var(--accent); color: var(--accent); }
-
-        /* Área da Questão */
-        #content { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
-        
-        .card {
-            background: white;
-            width: 100%;
-            max-width: 800px;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            display: none;
-        }
-
-        .card.active { display: block; }
-
-        .question-text { font-size: 18px; line-height: 1.6; margin-bottom: 25px; color: #1f2937; }
-
-        .options label {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border: 1px solid #e5e7eb;
-            margin-bottom: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .options label:hover { background: #f9fafb; }
-        .options input { margin-right: 15px; width: 18px; height: 18px; cursor: pointer; }
-
-        .controls {
-            width: 100%;
-            max-width: 800px;
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-        }
-
-        button.nav-btn {
-            padding: 12px 30px;
-            border-radius: 6px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .btn-prev { background: #e5e7eb; color: #374151; }
-        .btn-next { background: var(--estacio-blue); color: white; }
-        .btn-finish { background: #10b981; color: white; width: 100%; margin-top: auto; }
+        /* Conteúdo */
+        #main { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+        .q-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; max-width: 800px; display: none; }
+        .q-card.active { display: block; }
+        .options label { display: block; padding: 12px; border: 1px solid #eee; margin: 8px 0; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .options label:hover { background: #f7f9fc; }
+        .nav-btns { display: flex; justify-content: space-between; margin-top: 20px; width: 100%; max-width: 800px; }
+        button { padding: 10px 25px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; }
+        .btn-next { background: var(--blue); color: white; }
+        .btn-finish { background: #27ae60; color: white; width: 100%; margin-top: auto; }
 
         /* Resultado */
-        #result { display: none; text-align: center; background: white; padding: 50px; border-radius: 12px; max-width: 600px; }
-        .score-big { font-size: 64px; font-weight: bold; color: var(--estacio-blue); margin: 20px 0; }
+        #result { display: none; text-align: center; background: white; padding: 50px; border-radius: 15px; }
+        .final-score { font-size: 72px; color: var(--blue); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="sidebar">
-    <div class="timer-container" id="timer">60:00</div>
-    <div class="grid-title">QUADRO DE QUESTÕES</div>
-    <div class="question-grid" id="question-grid"></div>
-    <button class="nav-btn btn-finish" onclick="finishExam()">FINALIZAR PROVA</button>
+    <div class="timer" id="timer">60:00</div>
+    <div style="font-weight: bold; margin-bottom: 10px;">QUADRO DE QUESTÕES</div>
+    <div class="grid" id="q-grid"></div>
+    <button class="btn-finish" onclick="finish()">FINALIZAR PROVA</button>
 </div>
 
-<div id="content">
-    <div id="quiz-area"></div>
-    
-    <div id="result">
-        <h1>Avaliação Concluída</h1>
-        <p>Sua nota final é:</p>
-        <div class="score-big" id="final-score">0.0</div>
-        <p id="stats"></p>
-        <button class="nav-btn btn-next" onclick="location.reload()">Refazer Simulado</button>
+<div id="main">
+    <div id="quiz-box"></div>
+    <div class="nav-btns" id="nav-box">
+        <button onclick="move(-1)">Anterior</button>
+        <button class="btn-next" onclick="move(1)">Próxima</button>
     </div>
-
-    <div class="controls" id="nav-controls">
-        <button class="nav-btn btn-prev" onclick="changeQ(-1)">Anterior</button>
-        <button class="nav-btn btn-next" onclick="changeQ(1)">Próxima</button>
+    <div id="result">
+        <h1>Resultado Final</h1>
+        <div class="final-score" id="score-val">0.0</div>
+        <p id="details"></p>
+        <button class="btn-next" onclick="location.reload()">Reiniciar</button>
     </div>
 </div>
 
 <script>
-    const examData = [
-        { q: "O termo 'Direito' é polissêmico. Diferente das palavras equívocas (como 'manga'), o Direito é uma palavra analógica porque:", a: ["Seus sentidos são totalmente independentes.", "Seus sentidos possuem uma relação de semelhança ou interdependência.", "Possui apenas um sentido técnico imutável.", "Refere-se apenas à norma escrita do Estado."], c: 1 },
-        { q: "Qual o uso da linguagem predominante nas normas jurídicas, visando dirigir comportamentos?", a: ["Informativo", "Expressivo", "Prescritivo", "Interrogativo"], c: 2 },
-        { q: "A característica da 'Coercitividade' no Direito refere-se à:", a: ["Adesão espontânea do cidadão.", "Inexistência de punição.", "Possibilidade do uso da força estatal para garantir o cumprimento.", "Natureza religiosa da norma."], c: 2 },
-        { q: "A 'Bilateralidade Atributiva' significa que a norma jurídica:", a: ["Só vale para duas pessoas.", "Impõe um dever a alguém e atribui a outrem o poder de exigir o cumprimento.", "Pode ser revogada por duas leis.", "Depende da vontade de duas partes."], c: 1 },
-        { q: "Segundo Hans Kelsen, o que isola a Ciência do Direito de outras disciplinas como Sociologia e Política?", a: ["O princípio da justiça social.", "O princípio da pureza metódica.", "A vontade do legislador.", "A ética cristã."], c: 1 },
-        { q: "Para Kelsen, a validade de uma norma provém de:", a: ["Sua justiça interna.", "Sua eficácia social absoluta.", "Estar em conformidade com uma norma superior no ordenamento.", "Um contrato social entre os cidadãos."], c: 2 },
-        { q: "O que fundamenta a primeira Constituição e fecha o sistema jurídico de Kelsen?", a: ["A vontade divina.", "A Norma Hipotética Fundamental.", "O voto popular.", "O Direito Natural."], c: 1 },
-        { q: "H.L.A. Hart critica o modelo de Austin (ordens sob ameaça) e define o Direito como a união de:", a: ["Leis e Costumes.", "Regras Primárias e Regras Secundárias.", "Justiça e Equidade.", "Poder e Moral."], c: 1 },
-        { q: "Segundo Hart, qual regra secundária estabelece os critérios para identificar quais normas são válidas no sistema?", a: ["Regra de Mudança.", "Regra de Adjudicação.", "Regra de Reconhecimento.", "Regra de Punição."], c: 2 },
-        { q: "Robert Alexy, no pós-positivismo, define princípios como:", a: ["Sugestões sem força normativa.", "Regras de aplicação direta 'tudo ou nada'.", "Mandamentos de otimização.", "Normas de hierarquia inferior."], c: 2 },
-        { q: "Como Alexy propõe resolver o conflito entre dois princípios?", a: ["Eliminando um deles do sistema.", "Através da ponderação e proporcionalidade.", "Pelo critério da antiguidade (lei anterior).", "Pela decisão arbitrária do magistrado."], c: 1 },
-        { q: "Na Antiguidade Grega, o Jusnaturalismo baseava-se na:", a: ["Vontade de Deus.", "Razão do Estado.", "Ordem natural do Cosmos (Physis).", "Legislação escrita."], c: 2 },
-        { q: "Quem é o autor medieval que dividiu as leis em Eterna, Natural, Divina e Humana?", a: ["Santo Agostinho.", "Santo Tomás de Aquino.", "Guilherme de Ockham.", "Platão."], c: 1 },
-        { q: "O Jusnaturalismo Racionalista (Idade Moderna) fundamenta o Direito na:", a: ["Vontade do soberano absoluto.", "Revelação divina.", "Razão Humana.", "Força da natureza bruta."], c: 2 },
-        { q: "A característica da 'Generalidade' da norma jurídica significa que ela:", a: ["Aplica-se a casos individuais específicos.", "Prescreve condutas para todos que se encontrem em situação idêntica.", "É confusa em sua redação.", "Não tem validade territorial."], c: 1 },
-        { q: "O Ordenamento Jurídico é um sistema. A 'Unidade' do sistema significa que:", a: ["Só existe uma lei.", "Todas as normas têm o mesmo fundamento de validade (Constituição).", "O povo é unido sob uma língua.", "Não há tribunais diferentes."], c: 1 },
-        { q: "Uma 'Antinomia' jurídica ocorre quando:", a: ["Não existe lei para o caso.", "Há um conflito entre duas normas para o mesmo fato.", "A norma é muito antiga.", "O juiz é impedido de julgar."], c: 1 },
-        { q: "Qual critério resolve o conflito entre uma norma Superior e uma Inferior?", a: ["Critério Cronológico.", "Critério da Especialidade.", "Critério Hierárquico.", "Critério da Justiça."], c: 2 },
-        { q: "Se uma lei Geral e uma lei Especial conflitam, qual prevalece pelo critério da especialidade?", a: ["A Lei Geral.", "A Lei Especial.", "Ambas são anuladas.", "A que for mais recente."], c: 1 },
-        { q: "A 'Completude' do ordenamento (Norberto Bobbio) defende que:", a: ["O sistema não possui lacunas insolúveis por mecanismos de integração.", "Existem leis para todos os comportamentos humanos.", "O sistema é estático.", "O juiz nunca erra."], c: 0 },
-        { q: "Segundo a LINDB, na ausência de lei, o juiz decidirá de acordo com:", a: ["Sua vontade própria e moral.", "Analogia, costumes e princípios gerais do direito.", "Sorteio entre as partes.", "O parecer do réu."], c: 1 },
-        { q: "A 'Heteronomia' do Direito significa que a norma:", a: ["É criada pelo próprio destinatário.", "É imposta por uma vontade externa (Estado).", "Não pode ser alterada.", "É idêntica à norma moral."], c: 1 },
-        { q: "A 'Natureza Dupla' do Direito de Robert Alexy é composta por:", a: ["Direito Público e Privado.", "Dimensão Fática (Legalidade) e Dimensão Ideal (Justiça/Correção).", "Leis Federais e Estaduais.", "Ética e Religião."], c: 1 },
-        { q: "O período entre a publicação de uma lei e sua entrada em vigor chama-se:", a: ["Vigência plena.", "Vacatio legis.", "Prazus juris.", "Caducidade."], c: 1 },
-        { q: "Para Norberto Bobbio, o ordenamento jurídico é:", a: ["Um amontoado de leis sem ordem.", "Um sistema unitário, coerente e completo.", "Um código único imutável.", "Uma sugestão de conduta social."], c: 1 },
-        { q: "O Positivismo Jurídico clássico defende a 'Tese da Separação', que separa:", a: ["Poder Legislativo do Judiciário.", "Direito e Moral.", "Igreja e Estado.", "Ricos e Pobres."], c: 1 },
-        { q: "A 'Analogia' como método de integração consiste em:", a: ["Ignorar a lei.", "Aplicar a um caso sem lei uma norma de um caso semelhante.", "Consultar a opinião pública.", "Esperar o legislador criar uma nova lei."], c: 1 },
-        { q: "As 'Regras de Mudança' de Hart permitem:", a: ["Mudar a sentença do juiz.", "Introduzir novas regras e revogar as antigas.", "Mudar o nome do sistema.", "Alterar o sentido das palavras."], c: 1 },
-        { q: "A 'Proporcionalidade' em Alexy envolve três sub-regras. Quais são?", a: ["Lei, Ordem e Progresso.", "Poder, Força e Glória.", "Adequação, Necessidade e Proporcionalidade em sentido estrito.", "Paz, Justiça e Liberdade."], c: 2 },
-        { q: "Uma norma que é tecnicamente perfeita mas não é seguida pela sociedade é considerada:", a: ["Inválida.", "Nula.", "Válida, mas Ineficaz.", "Inexistente."], c: 2 }
+    const data = [
+        { q: "O Direito utiliza a linguagem para influenciar condutas. Qual função da linguagem estabelece o 'dever-ser'?", a: ["Informativa", "Expressiva", "Prescritiva", "Interrogativa"], c: 2 },
+        { q: "A palavra 'Direito' é analógica porque:", a: ["Possui sentidos totalmente desconexos", "Seus vários sentidos mantêm relação de semelhança entre si", "É unívoca e técnica", "É um termo equívoco"], c: 1 },
+        { q: "A característica que permite o uso da força estatal para garantir o cumprimento da norma é a:", a: ["Bilateralidade", "Coercitividade", "Abstração", "Generalidade"], c: 1 },
+        { q: "O Direito é 'Heterônomo' porque:", a: ["É criado pelo próprio indivíduo", "É imposto por uma vontade externa (Estado)", "Depende da aceitação de todos", "É imutável"], c: 1 },
+        { q: "Segundo Hans Kelsen, o que garante a 'Pureza' da Ciência Jurídica?", a: ["A análise da justiça social", "A exclusão de elementos morais, políticos e sociológicos", "O foco na religião", "O estudo dos costumes"], c: 1 },
+        { q: "A validade de uma norma em Kelsen depende de:", a: ["Sua justiça interna", "Estar em conformidade com uma norma superior", "Sua eficácia absoluta", "Voto popular"], c: 1 },
+        { q: "O fundamento lógico que fecha o sistema de Kelsen é a:", a: ["Constituição Federal", "Norma Hipotética Fundamental", "Lei de Introdução", "Vontade de Deus"], c: 1 },
+        { q: "H.L.A. Hart define o Direito como a união de:", a: ["Moral e Lei", "Regras Primárias e Secundárias", "Poder e Coação", "Justiça e Equidade"], c: 1 },
+        { q: "A 'Regra de Reconhecimento' de Hart serve para:", a: ["Punir criminosos", "Identificar as normas válidas no sistema", "Mudar a Constituição", "Criar novas leis"], c: 1 },
+        { q: "Para Robert Alexy, os Princípios são:", a: ["Regras absolutas", "Mandamentos de otimização", "Sugestões não obrigatórias", "Normas sem valor jurídico"], c: 1 },
+        { q: "O conflito entre princípios é resolvido por Alexy através da:", a: ["Revogação da norma", "Subsunção", "Ponderação e Proporcionalidade", "Analogia"], c: 2 },
+        { q: "A 'Natureza Dupla' do Direito (Alexy) compreende as dimensões:", a: ["Pública e Privada", "Fática (legalidade) e Ideal (justiça/correção)", "Escrita e Oral", "Nacional e Internacional"], c: 1 },
+        { q: "A característica da 'Bilateralidade Atributiva' significa que:", a: ["O Direito vale para duas pessoas", "Uma norma impõe um dever e atribui um poder de exigência a outrem", "A lei tem dois sentidos", "O juiz ouve as duas partes"], c: 1 },
+        { q: "O Jusnaturalismo Grego (Physis) baseava-se na:", a: ["Vontade divina revelada", "Razão do Estado", "Ordem natural do Cosmos", "Decisão do soberano"], c: 2 },
+        { q: "Quem dividiu as leis em Eterna, Natural, Divina e Humana?", a: ["Platão", "Santo Tomás de Aquino", "Hans Kelsen", "Hugo Grócio"], c: 1 },
+        { q: "O Jusnaturalismo Racionalista baseia-se na:", a: ["Fé cristã", "Razão humana e contratualismo", "Natureza biológica", "Tradição medieval"], c: 1 },
+        { q: "Qual a principal característica do Ordenamento Jurídico para Bobbio?", a: ["Ser um conjunto desordenado de leis", "Ser um sistema unitário, coerente e completo", "Ser mutável diariamente", "Ser meramente sugestivo"], c: 1 },
+        { q: "A 'Unidade' do ordenamento jurídico decorre de:", a: ["Haver apenas uma lei", "Todas as normas derivarem da mesma base (Constituição)", "O povo ser unido", "O território ser um só"], c: 1 },
+        { q: "Antinomia é o termo técnico para:", a: ["Falta de leis", "Conflito entre duas normas", "Norma injusta", "Revogação total"], c: 1 },
+        { q: "O critério que diz que a 'lei superior revoga a inferior' é o:", a: ["Cronológico", "Especialidade", "Hierárquico", "Social"], c: 2 },
+        { q: "A 'Completude' do sistema jurídico significa que:", a: ["Existem leis para tudo", "O sistema tem meios (integração) para suprir lacunas", "O sistema não muda", "O juiz é obrigado a criar leis"], c: 1 },
+        { q: "Segundo a LINDB, são meios de integração na omissão da lei:", a: ["Vontade do juiz e sorteio", "Analogia, costumes e princípios gerais do direito", "Doutrina e jurisprudência apenas", "Referendo popular"], c: 1 },
+        { q: "A 'Vacatio Legis' é o tempo entre:", a: ["O crime e a pena", "A publicação e a vigência da lei", "O projeto e a votação", "O início e o fim do mandato"], c: 1 },
+        { q: "Normas de 'Adjudicação' em Hart servem para:", a: ["Criar leis", "Identificar quem tem poder para julgar violações", "Mudar a lei", "Punir o réu"], c: 1 },
+        { q: "O 'Pós-Positivismo' caracteriza-se pela:", a: ["Separação total entre Direito e Moral", "Reaproximação entre Direito e Ética através de princípios", "Negação das leis escritas", "Subordinação ao Direito Natural Divino"], c: 1 },
+        { q: "A generalidade da norma jurídica indica que ela:", a: ["É vaga e imprecisa", "Aplica-se a todos que estão na mesma situação", "Só vale para o governo", "Muda conforme a pessoa"], c: 1 },
+        { q: "Para Kelsen, uma norma é válida mesmo se for injusta?", a: ["Sim, a validade é formal e técnica", "Não, justiça é requisito de validade", "Depende da vontade do juiz", "Apenas se for uma lei penal"], c: 0 },
+        { q: "O critério da especialidade resolve conflitos entre:", a: ["Lei nova e antiga", "Lei geral e lei específica", "Constituição e decreto", "Moral e Direito"], c: 1 },
+        { q: "A 'Institucionalização' diferencia o Direito da Moral por:", a: ["Ter sanções mais leves", "Possuir órgãos organizados para criar e aplicar normas", "Basear-se apenas no coração", "Ser opcional"], c: 1 },
+        { q: "Para Alexy, o exame de Proporcionalidade inclui:", a: ["Sorteio e votação", "Adequação, Necessidade e Proporcionalidade em sentido estrito", "Custo e benefício apenas", "A opinião da maioria"], c: 1 }
     ];
 
-    let currentQIdx = 0;
-    const userAnswers = new Array(examData.length).fill(null);
-    let timeLeft = 3600;
+    let current = 0;
+    const answers = new Array(30).fill(null);
+    let time = 3600;
 
     function init() {
-        const grid = document.getElementById('question-grid');
-        const quizArea = document.getElementById('quiz-area');
-
-        examData.forEach((data, i) => {
-            const btn = document.createElement('button');
-            btn.className = 'grid-btn';
-            btn.id = `btn-${i}`;
-            btn.innerText = i + 1;
-            btn.onclick = () => showQ(i);
-            grid.appendChild(btn);
-
+        const quizBox = document.getElementById('quiz-box');
+        const grid = document.getElementById('q-grid');
+        data.forEach((item, i) => {
             const card = document.createElement('div');
-            card.className = `card ${i === 0 ? 'active' : ''}`;
-            card.id = `card-${i}`;
-            card.innerHTML = `
-                <div class="question-text"><strong>Questão ${i+1}:</strong><br>${data.q}</div>
-                <div class="options">
-                    ${data.a.
+            card.className = `q-card ${i===0?'active':''}`;
+            card.id = `q-${i}`;
+            card.innerHTML = `<h3>Questão ${i+1}</h3><p>${item.q}</p><div class="options">${item.a.map((opt, idx)=>`<label><input type="radio" name="r${i}" onclick="save(${i},${idx})"> ${opt}</label>`).join('')}</div>`;
+            quizBox.appendChild(card);
+            const gi = document.createElement('div');
+            gi.className = 'grid-item';
+            gi.id = `gi-${i}`;
+            gi.innerText = i+1;
+            gi.onclick = () => move(i, true);
+            grid.appendChild(gi);
+        });
+        updateGrid();
+    }
+
+    function save(q, a) { answers[q] = a; updateGrid(); }
+    function move(step, direct=false) {
+        document.querySelector('.q-card.active').classList.remove('active');
+        current = direct ? step : current + step;
+        if(current < 0) current = 0; if(current > 29) current = 29;
+        document.getElementById(`q-${current}`).classList.add('active');
+        updateGrid();
+    }
+
+    function updateGrid() {
+        data.forEach((_, i) => {
+            const el = document.getElementById(`gi-${i}`);
+            el.className = 'grid-item';
+            if(answers[i] !== null) el.classList.add('done');
+            if(i === current) el.classList.add('active');
+        });
+    }
+
+    setInterval(() => {
+        time--;
+        const m = Math.floor(time/60); const s = time%60;
+        document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+        if(time <= 0) finish();
+    }, 1000);
+
+    function finish() {
+        if(!confirm("Deseja finalizar?")) return;
+        let score = 0;
+        answers.forEach((ans, i) => { if(ans === data[i].c) score++; });
+        document.getElementById('quiz-box').style.display = 'none';
+        document.getElementById('nav-box').style.display = 'none';
+        document.getElementById('sidebar').style.display = 'none';
+        const res = document.getElementById('result');
+        res.style.display = 'block';
+        const final = (score / 30 * 10).toFixed(1);
+        document.getElementById('score-val').innerText = final;
+        document.getElementById('details').innerText = `Acertos: ${score} de 30`;
+    }
+
+    init();
+</script>
+</body>
+</html>
