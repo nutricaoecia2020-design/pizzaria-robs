@@ -2,148 +2,99 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Simulador IA Estácio - Versão 5.0</title>
+    <title>Simulador de Prova - Estável</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
-        :root { --p: #004a8d; --s: #27ae60; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        .sidebar { width: 320px; background: #fff; border-right: 1px solid #ddd; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .main { flex: 1; display: flex; flex-direction: column; }
-        header { background: var(--p); color: white; padding: 15px; display: flex; justify-content: space-between; font-weight: bold; }
-        .container { flex: 1; padding: 20px; overflow-y: auto; }
-        .card { background: #fff; padding: 25px; margin-bottom: 25px; border-radius: 8px; border-left: 8px solid var(--p); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .opt { padding: 12px; border: 1px solid #eee; margin-top: 8px; border-radius: 4px; cursor: pointer; }
-        .opt.sel { background: #d1e7ff; border-color: var(--p); font-weight: bold; }
-        .correct { background: #d4edda !important; border-color: #28a745 !important; }
-        #status { font-weight: bold; color: #d35400; display: none; text-align: center; padding: 10px; background: #fff3e0; border-radius: 5px; }
-        input, button { padding: 12px; border-radius: 6px; border: 1px solid #ccc; }
-        button { background: var(--p); color: white; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
-        button:hover { background: #003366; }
+        :root { --p: #004a8d; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; }
+        .sidebar { width: 300px; background: #fff; padding: 20px; border-right: 1px solid #ddd; }
+        .main { flex: 1; padding: 20px; overflow-y: auto; }
+        .card { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .opt { padding: 10px; border: 1px solid #eee; margin-top: 5px; cursor: pointer; border-radius: 4px; }
+        .opt.sel { background: #d1e7ff; border-color: var(--p); }
+        .correct { background: #d4edda !important; font-weight: bold; }
+        button { width: 100%; padding: 15px; background: var(--p); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        #loader { display: none; color: #d35400; font-weight: bold; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<aside class="sidebar">
-    <h2 style="color:var(--p); margin:0;">IA Estácio</h2>
-    <p style="font-size: 0.8rem; color: #666;">Gerador de questões inteligente</p>
-    
-    <label><strong>Sua API Key:</strong></label>
-    <input type="password" id="userKey" placeholder="Cole a chave do Gemini">
-    
-    <label><strong>Arquivo PDF:</strong></label>
-    <input type="file" id="pdfFile" accept="application/pdf">
-    
-    <button onclick="gerarSimulado()">CRIAR 50 QUESTÕES</button>
-    
-    <div id="status">⌛ Processando material...</div>
-</aside>
+<div class="sidebar">
+    <h2 style="color:var(--p)">IA Estácio</h2>
+    <input type="password" id="key" placeholder="Cole sua API Key aqui" style="width:90%; padding:10px; margin-bottom:10px;">
+    <input type="file" id="pdf" accept="application/pdf">
+    <button onclick="gerar()">GERAR 50 QUESTÕES</button>
+    <div id="loader">⌛ A IA está lendo... Aguarde.</div>
+</div>
 
-<main class="main">
-    <header><span>SIMULADOR DINÂMICO</span><span>60:00</span></header>
-    <div class="container" id="quizArea">
-        <div style="text-align:center; color:#999; margin-top:100px;">
-            <h3>Pronto para começar.</h3>
-            <p>Cole sua chave e suba o PDF da disciplina.</p>
-        </div>
-    </div>
-    <button style="background:var(--s); padding:20px; font-size: 1.1rem;" onclick="corrigirProva()">FINALIZAR E CORRIGIR</button>
-</main>
+<div class="main" id="quizArea">
+    <div style="text-align:center; color:#888; margin-top:100px;">Suba o arquivo para gerar a prova.</div>
+</div>
 
 <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-    let bancoQuestoes = [];
+    let questoes = [];
 
-    async function extrairTextoPDF(arquivo) {
-        const arrayBuffer = await arquivo.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
-        let textoCompleto = "";
-        // Lemos até 15 páginas para garantir qualidade e não estourar limites
-        let paginas = Math.min(pdf.numPages, 15);
-        for(let i=1; i<=paginas; i++){
-            const pagina = await pdf.getPage(i);
-            const conteudo = await pagina.getTextContent();
-            textoCompleto += conteudo.items.map(s => s.str).join(" ") + " ";
-        }
-        return textoCompleto;
-    }
+    async function gerar() {
+        const key = document.getElementById('key').value.trim();
+        const file = document.getElementById('pdf').files[0];
+        if(!key || !file) return alert("Insira a chave e o PDF!");
 
-    async function gerarSimulado() {
-        const chave = document.getElementById('userKey').value.trim();
-        const arquivo = document.getElementById('pdfFile').files[0];
-        const loader = document.getElementById('status');
-
-        if(!chave || !arquivo) return alert("Por favor, insira a chave e o PDF!");
-
-        loader.style.display = "block";
-        loader.innerText = "⌛ Lendo PDF e consultando IA...";
+        document.getElementById('loader').style.display = "block";
 
         try {
-            const textoExtraido = await extrairTextoPDF(arquivo);
-            
-            // ENDPOINT ATUALIZADO PARA O MODELO FLASH LATEST NA V1BETA
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${chave}`;
+            const doc = await pdfjsLib.getDocument({data: await file.arrayBuffer()}).promise;
+            let texto = "";
+            for(let i=1; i<=Math.min(doc.numPages, 10); i++){
+                const p = await doc.getPage(i);
+                const c = await p.getTextContent();
+                texto += c.items.map(s => s.str).join(" ") + " ";
+            }
 
-            const resposta = await fetch(endpoint, {
+            // Usando o modelo Pro (mais inteligente e estável)
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${key}`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `Com base neste conteúdo: "${textoExtraido.substring(0, 20000)}". Gere exatamente 50 questões de múltipla escolha com 4 alternativas cada. Responda APENAS o código JSON puro, sem comentários, no formato: [{"q":"pergunta","options":["A","B","C","D"],"correct":0}]`
-                        }]
-                    }]
+                    contents: [{ parts: [{ text: `Analise: "${texto.substring(0, 15000)}". Gere 50 questões de múltipla escolha. Retorne APENAS um JSON: [{"q":"pergunta","options":["a","b","c","d"],"correct":0}]` }] }]
                 })
             });
 
-            const dados = await resposta.json();
-            
-            if(dados.error) {
-                throw new Error(dados.error.message);
-            }
+            const data = await res.json();
+            if(data.error) throw new Error(data.error.message);
 
-            let textoLimpo = dados.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
-            bancoQuestoes = JSON.parse(textoLimpo);
-            renderizarQuestoes();
-            
-        } catch (erro) {
-            console.error(erro);
-            alert("ERRO: " + erro.message);
-        } finally {
-            loader.style.display = "none";
-        }
+            let raw = data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
+            questoes = JSON.parse(raw);
+            render();
+        } catch(e) {
+            alert("Erro: " + e.message);
+        } finally { document.getElementById('loader').style.display = "none"; }
     }
 
-    function renderizarQuestoes() {
-        const area = document.getElementById('quizArea');
-        area.innerHTML = "";
-        bancoQuestoes.forEach((item, i) => {
-            const div = document.createElement('div');
-            div.className = 'card';
-            div.innerHTML = `<p><strong>${i+1}.</strong> ${item.q}</p>`;
-            
-            item.options.forEach((opt, idx) => {
-                const botaoOpt = document.createElement('div');
-                botaoOpt.className = 'opt';
-                botaoOpt.id = `q${i}opt${idx}`;
-                botaoOpt.innerText = opt;
-                botaoOpt.onclick = () => {
-                    div.querySelectorAll('.opt').forEach(el => el.classList.remove('sel'));
-                    botaoOpt.classList.add('sel');
+    function render() {
+        const area = document.getElementById('quizArea'); area.innerHTML = "";
+        questoes.forEach((q, i) => {
+            const d = document.createElement('div');
+            d.className = 'card';
+            d.innerHTML = `<p><strong>${i+1}.</strong> ${q.q}</p>`;
+            q.options.forEach((o, idx) => {
+                const opt = document.createElement('div');
+                opt.className = 'opt'; opt.id = `q${i}o${idx}`;
+                opt.innerText = o;
+                opt.onclick = () => {
+                    d.querySelectorAll('.opt').forEach(x => x.classList.remove('sel'));
+                    opt.classList.add('sel');
                 };
-                div.appendChild(botaoOpt);
+                d.appendChild(opt);
             });
-            area.appendChild(div);
+            area.appendChild(d);
         });
-        area.scrollTo(0,0);
-    }
-
-    function corrigirProva() {
-        bancoQuestoes.forEach((item, i) => {
-            const correta = item.correct;
-            const elementoCorreto = document.getElementById(`q${i}opt${correta}`);
-            if(elementoCorreto) elementoCorreto.classList.add('correct');
-        });
-        alert("Correção concluída! As alternativas em verde são as corretas.");
+        const btn = document.createElement('button');
+        btn.innerText = "VER GABARITO";
+        btn.onclick = () => {
+            questoes.forEach((q, i) => document.getElementById(`q${i}o${q.correct}`).classList.add('correct'));
+        };
+        area.appendChild(btn);
     }
 </script>
 </body>
