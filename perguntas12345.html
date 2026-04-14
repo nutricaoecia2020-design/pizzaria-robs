@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Simulador IA Estácio - Estável</title>
+    <title>Simulador IA Estácio - Versão 5.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
         :root { --p: #004a8d; --s: #27ae60; --bg: #f4f7f6; }
@@ -15,105 +15,135 @@
         .opt { padding: 12px; border: 1px solid #eee; margin-top: 8px; border-radius: 4px; cursor: pointer; }
         .opt.sel { background: #d1e7ff; border-color: var(--p); font-weight: bold; }
         .correct { background: #d4edda !important; border-color: #28a745 !important; }
-        #status { font-weight: bold; color: var(--p); display: none; text-align: center; padding: 10px; background: #eef6ff; }
+        #status { font-weight: bold; color: #d35400; display: none; text-align: center; padding: 10px; background: #fff3e0; border-radius: 5px; }
         input, button { padding: 12px; border-radius: 6px; border: 1px solid #ccc; }
-        button { background: var(--p); color: white; font-weight: bold; cursor: pointer; border: none; }
+        button { background: var(--p); color: white; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
+        button:hover { background: #003366; }
     </style>
 </head>
 <body>
 
 <aside class="sidebar">
     <h2 style="color:var(--p); margin:0;">IA Estácio</h2>
+    <p style="font-size: 0.8rem; color: #666;">Gerador de questões inteligente</p>
     
-    <label><strong>1. API Key:</strong></label>
-    <input type="password" id="userKey" placeholder="Cole sua chave aqui">
+    <label><strong>Sua API Key:</strong></label>
+    <input type="password" id="userKey" placeholder="Cole a chave do Gemini">
     
-    <label><strong>2. Material (PDF):</strong></label>
+    <label><strong>Arquivo PDF:</strong></label>
     <input type="file" id="pdfFile" accept="application/pdf">
     
-    <button onclick="gerar()">GERAR SIMULADO</button>
+    <button onclick="gerarSimulado()">CRIAR 50 QUESTÕES</button>
     
-    <div id="status">⌛ Conectando ao Google IA...</div>
+    <div id="status">⌛ Processando material...</div>
 </aside>
 
 <main class="main">
-    <header><span>SIMULADOR DE QUESTÕES</span><span>60:00</span></header>
+    <header><span>SIMULADOR DINÂMICO</span><span>60:00</span></header>
     <div class="container" id="quizArea">
-        <div style="text-align:center; color:#999; margin-top:100px;">Insira a chave e selecione o PDF para começar.</div>
+        <div style="text-align:center; color:#999; margin-top:100px;">
+            <h3>Pronto para começar.</h3>
+            <p>Cole sua chave e suba o PDF da disciplina.</p>
+        </div>
     </div>
-    <button style="background:var(--s); padding:20px;" onclick="corrigir()">FINALIZAR E CORRIGIR</button>
+    <button style="background:var(--s); padding:20px; font-size: 1.1rem;" onclick="corrigirProva()">FINALIZAR E CORRIGIR</button>
 </main>
 
 <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-    let questoes = [];
+    let bancoQuestoes = [];
 
-    async function gerar() {
-        const key = document.getElementById('userKey').value.trim();
-        const file = document.getElementById('pdfFile').files[0];
-        if(!key || !file) return alert("Erro: Chave ou arquivo faltando!");
+    async function extrairTextoPDF(arquivo) {
+        const arrayBuffer = await arquivo.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+        let textoCompleto = "";
+        // Lemos até 15 páginas para garantir qualidade e não estourar limites
+        let paginas = Math.min(pdf.numPages, 15);
+        for(let i=1; i<=paginas; i++){
+            const pagina = await pdf.getPage(i);
+            const conteudo = await pagina.getTextContent();
+            textoCompleto += conteudo.items.map(s => s.str).join(" ") + " ";
+        }
+        return textoCompleto;
+    }
 
+    async function gerarSimulado() {
+        const chave = document.getElementById('userKey').value.trim();
+        const arquivo = document.getElementById('pdfFile').files[0];
         const loader = document.getElementById('status');
+
+        if(!chave || !arquivo) return alert("Por favor, insira a chave e o PDF!");
+
         loader.style.display = "block";
+        loader.innerText = "⌛ Lendo PDF e consultando IA...";
 
         try {
-            const doc = await pdfjsLib.getDocument({data: await file.arrayBuffer()}).promise;
-            let texto = "";
-            for(let i=1; i<=Math.min(doc.numPages, 12); i++){
-                const p = await doc.getPage(i);
-                const c = await p.getTextContent();
-                texto += c.items.map(s => s.str).join(" ") + " ";
-            }
+            const textoExtraido = await extrairTextoPDF(arquivo);
+            
+            // ENDPOINT ATUALIZADO PARA O MODELO FLASH LATEST NA V1BETA
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${chave}`;
 
-            // URL PARA VERSÃO ESTÁVEL V1
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`;
-
-            const res = await fetch(url, {
+            const resposta = await fetch(endpoint, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: `Gere 50 questões de múltipla escolha (4 alternativas) sobre o seguinte conteúdo técnico: "${texto.substring(0, 18000)}". Retorne APENAS o JSON no formato: [{"q":"pergunta","options":["a","b","c","d"],"correct":0}]` }] }]
+                    contents: [{
+                        parts: [{
+                            text: `Com base neste conteúdo: "${textoExtraido.substring(0, 20000)}". Gere exatamente 50 questões de múltipla escolha com 4 alternativas cada. Responda APENAS o código JSON puro, sem comentários, no formato: [{"q":"pergunta","options":["A","B","C","D"],"correct":0}]`
+                        }]
+                    }]
                 })
             });
 
-            const data = await res.json();
-            if(data.error) throw new Error(data.error.message);
-
-            let raw = data.candidates[0].content.parts[0].text;
-            raw = raw.replace(/```json|```/g, '').trim();
+            const dados = await resposta.json();
             
-            questoes = JSON.parse(raw);
-            render();
-        } catch(e) {
-            alert("ERRO TÉCNICO: " + e.message);
-        } finally { loader.style.display = "none"; }
+            if(dados.error) {
+                throw new Error(dados.error.message);
+            }
+
+            let textoLimpo = dados.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
+            bancoQuestoes = JSON.parse(textoLimpo);
+            renderizarQuestoes();
+            
+        } catch (erro) {
+            console.error(erro);
+            alert("ERRO: " + erro.message);
+        } finally {
+            loader.style.display = "none";
+        }
     }
 
-    function render() {
-        const area = document.getElementById('quizArea'); area.innerHTML = "";
-        questoes.forEach((q, i) => {
-            const d = document.createElement('div');
-            d.className = 'card';
-            d.innerHTML = `<p><strong>${i+1}.</strong> ${q.q}</p>`;
-            q.options.forEach((o, idx) => {
-                const opt = document.createElement('div');
-                opt.className = 'opt'; opt.id = `q${i}o${idx}`;
-                opt.innerText = o;
-                opt.onclick = () => {
-                    d.querySelectorAll('.opt').forEach(x => x.classList.remove('sel'));
-                    opt.classList.add('sel');
+    function renderizarQuestoes() {
+        const area = document.getElementById('quizArea');
+        area.innerHTML = "";
+        bancoQuestoes.forEach((item, i) => {
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `<p><strong>${i+1}.</strong> ${item.q}</p>`;
+            
+            item.options.forEach((opt, idx) => {
+                const botaoOpt = document.createElement('div');
+                botaoOpt.className = 'opt';
+                botaoOpt.id = `q${i}opt${idx}`;
+                botaoOpt.innerText = opt;
+                botaoOpt.onclick = () => {
+                    div.querySelectorAll('.opt').forEach(el => el.classList.remove('sel'));
+                    botaoOpt.classList.add('sel');
                 };
-                d.appendChild(opt);
+                div.appendChild(botaoOpt);
             });
-            area.appendChild(d);
+            area.appendChild(div);
         });
+        area.scrollTo(0,0);
     }
 
-    function corrigir() {
-        questoes.forEach((q, i) => {
-            document.getElementById(`q${i}o${q.correct}`).classList.add('correct');
+    function corrigirProva() {
+        bancoQuestoes.forEach((item, i) => {
+            const correta = item.correct;
+            const elementoCorreto = document.getElementById(`q${i}opt${correta}`);
+            if(elementoCorreto) elementoCorreto.classList.add('correct');
         });
-        alert("Simulado Corrigido! As respostas corretas estão em verde.");
+        alert("Correção concluída! As alternativas em verde são as corretas.");
     }
 </script>
 </body>
