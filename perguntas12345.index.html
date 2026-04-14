@@ -3,255 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Provas Dinâmico - Limpeza de Cache</title>
+    <title>Gerador de Provas Dinâmico - Estácio</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #004a8d; --success: #27ae60; --danger: #e74c3c;
-            --bg: #f4f7f6; --white: #ffffff; --border: #d1d8e0;
+            --bg: #f8f9fa; --white: #ffffff; --border: #d1d8e0;
         }
 
         body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
-        /* Sidebar de Upload (Resetada) */
+        /* Lateral de Arquivos */
         .sidebar-files { width: 300px; background: var(--white); border-right: 1px solid var(--border); padding: 25px; display: flex; flex-direction: column; }
-        .sidebar-files h3 { color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--bg); padding-bottom: 10px; }
-        
-        .upload-box { 
-            border: 2px dashed var(--primary); background: #f0f7ff; padding: 20px; 
-            text-align: center; border-radius: 8px; cursor: pointer; transition: 0.3s;
-        }
-        .upload-box:hover { background: #e1efff; }
-
+        .upload-area { border: 2px dashed var(--primary); background: #f0f7ff; padding: 20px; text-align: center; border-radius: 8px; cursor: pointer; }
         .file-list { flex: 1; overflow-y: auto; margin-top: 20px; list-style: none; padding: 0; }
-        .file-item { 
-            background: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 8px; 
-            display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;
-            border: 1px solid #eee;
-        }
-        .btn-del { background: var(--danger); color: white; border: none; border-radius: 4px; cursor: pointer; padding: 2px 8px; }
+        .file-item { background: #f1f3f5; padding: 10px; border-radius: 5px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
+        .btn-del { background: var(--danger); color: white; border: none; border-radius: 4px; cursor: pointer; padding: 2px 6px; }
 
-        /* Area Principal */
+        /* Conteúdo Principal */
         .main-content { flex: 1; display: flex; flex-direction: column; }
-        header { background: var(--primary); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+        header { background: var(--primary); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .timer-box { font-family: monospace; font-size: 1.6rem; background: rgba(0,0,0,0.2); padding: 5px 15px; border-radius: 5px; display: flex; align-items: center; gap: 10px; }
+        .btn-timer { background: white; color: var(--primary); border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.7rem; }
+
+        .app-container { display: flex; flex: 1; overflow: hidden; }
+        .quiz-area { flex: 1; padding: 40px; overflow-y: auto; scroll-behavior: smooth; }
+        .q-card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 30px; border-left: 6px solid var(--primary); }
         
-        .timer-display { font-family: monospace; font-size: 1.6rem; background: rgba(0,0,0,0.2); padding: 5px 15px; border-radius: 5px; }
-        .controls { display: flex; gap: 10px; }
-        .btn-ctrl { background: white; color: var(--primary); border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-
-        .app-view { display: flex; flex: 1; overflow: hidden; }
-
-        /* Questões */
-        .quiz-scroll { flex: 1; padding: 40px; overflow-y: auto; scroll-behavior: smooth; }
-        .q-card { background: var(--white); padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; border-left: 6px solid var(--primary); }
-        .q-text { font-size: 1.15rem; font-weight: 600; margin-bottom: 20px; line-height: 1.5; }
-
-        .opt { display: flex; align-items: center; padding: 15px; border: 1px solid #e2e8f0; margin-bottom: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        /* Opções e Gabarito */
+        .opt { padding: 15px; border: 1px solid #eee; margin-top: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         .opt:hover { background: #f8faff; }
-        .opt input { margin-right: 15px; transform: scale(1.2); }
         .opt.selected { border-color: var(--primary); background: #eef6ff; }
+        
+        /* Feedback Final */
+        .opt.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
+        .opt.wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
 
-        /* Gabarito (Verde/Vermelho apenas no fim) */
-        .opt.is-correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
-        .opt.is-wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
-
-        /* Mapa de Questões (Progresso) */
-        .nav-map { width: 260px; background: var(--white); border-left: 1px solid var(--border); padding: 20px; overflow-y: auto; }
+        /* Grid Lateral de 50 */
+        .nav-map { width: 250px; background: white; border-left: 1px solid var(--border); padding: 20px; }
         .grid-50 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-        .box-n { width: 100%; aspect-ratio: 1; border: 1px solid #d1d8e0; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; cursor: pointer; background: white; }
+        .box-n { width: 100%; aspect-ratio: 1; border: 1px solid #ddd; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; cursor: pointer; }
         .box-n.filled { background: var(--primary); color: white; }
 
-        .btn-generate { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+        .btn-action { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
         .btn-finish { background: var(--success); color: white; border: none; padding: 20px; font-size: 1.1rem; font-weight: bold; cursor: pointer; width: 100%; }
     </style>
 </head>
 <body>
 
     <aside class="sidebar-files">
-        <h3>Nova Elaboração</h3>
-        <p style="font-size: 0.8rem; color: #666;">Os arquivos anteriores foram removidos. Anexe novos para gerar a prova.</p>
-        
-        <div class="upload-box" onclick="document.getElementById('fileIn').click()">
-            <strong>Anexar Novos Arquivos</strong>
-            <input type="file" id="fileIn" hidden multiple onchange="syncFiles(this.files)">
+        <h3>Nova Prova</h3>
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <strong>Anexar Material Novo</strong>
+            <input type="file" id="fileInput" hidden multiple onchange="processFiles(this.files)">
         </div>
-
         <ul class="file-list" id="fileList"></ul>
-
-        <button class="btn-generate" onclick="createNewExam()">ELABORAR 50 QUESTÕES</button>
-        <button class="btn-generate" style="background: #636e72;" onclick="location.reload()">ZERAR TUDO (RESET)</button>
+        <button class="btn-action" onclick="generateFromScratch()">ELABORAR 50 QUESTÕES</button>
+        <button class="btn-action" style="background: #636e72;" onclick="window.location.reload()">LIMPAR TUDO</button>
     </aside>
 
     <main class="main-content">
         <header>
-            <div id="status-label">MODO: AGUARDANDO ARQUIVOS</div>
-            <div class="controls">
-                <button class="btn-ctrl" onclick="toggleClock()" id="btnT">INICIAR</button>
-                <div class="timer-display" id="clock">60:00</div>
-                <button class="btn-ctrl" onclick="resetClock()">RESET</button>
+            <div id="exam-title">AGUARDANDO NOVOS ARQUIVOS...</div>
+            <div class="timer-box">
+                <button class="btn-timer" onclick="toggleClock()" id="clockBtn">INICIAR</button>
+                <span id="displayTime">60:00</span>
+                <button class="btn-timer" onclick="resetClock()">RESET</button>
             </div>
         </header>
 
-        <div class="app-view">
-            <div class="quiz-scroll" id="examBoard">
-                <div style="text-align: center; margin-top: 100px; opacity: 0.5;">
-                    <h2>Sistema Limpo</h2>
-                    <p>Suba os novos simulados para processar as questões.</p>
+        <div class="app-container">
+            <div class="quiz-area" id="quizArea">
+                <div style="text-align: center; margin-top: 100px; color: #999;">
+                    <h2>Sistema de Elaboração Zerado</h2>
+                    <p>Suba os novos simulados para que o motor possa formular as questões.</p>
                 </div>
             </div>
 
             <aside class="nav-map">
-                <h4>Progresso (50)</h4>
+                <h4>Progresso</h4>
                 <div class="grid-50" id="progressGrid"></div>
             </aside>
         </div>
 
-        <button class="btn-finish" onclick="finalizeGrade()">FINALIZAR E VER CORREÇÃO (GABARITO)</button>
+        <button class="btn-finish" onclick="showGabarito()">FINALIZAR E CORRIGIR</button>
     </main>
 
 <script>
-    let currentFiles = [];
-    let examData = [];
-    let userChoices = new Array(50).fill(null);
-    let secondsLeft = 3600;
-    let timerActive = false;
-    let clockInterval;
+    let uploadedFiles = [];
+    let examItems = [];
+    let userAnswers = new Array(50).fill(null);
+    let time = 3600;
+    let timerRef = null;
+    let isRunning = false;
 
-    // Sincronização de Arquivos (Zera o banco antigo e lê novos)
-    function syncFiles(files) {
-        for(let f of files) {
-            currentFiles.push(f.name);
+    // 1. Processamento Real de Arquivos
+    function processFiles(files) {
+        for (let f of files) {
+            uploadedFiles.push({ name: f.name, type: f.type });
         }
         renderFiles();
     }
 
     function removeFile(i) {
-        currentFiles.splice(i, 1);
+        uploadedFiles.splice(i, 1);
         renderFiles();
     }
 
     function renderFiles() {
         const list = document.getElementById('fileList');
-        list.innerHTML = currentFiles.map((f, i) => `
-            <li class="file-item">${f} <button class="btn-del" onclick="removeFile(${i})">×</button></li>
+        list.innerHTML = uploadedFiles.map((f, i) => `
+            <li class="file-item">${f.name} <button class="btn-del" onclick="removeFile(${i})">×</button></li>
         `).join('');
     }
 
-    // Cronômetro
-    function toggleClock() {
-        const btn = document.getElementById('btnT');
-        if(!timerActive) {
-            clockInterval = setInterval(() => {
-                secondsLeft--;
-                updateClockUI();
-                if(secondsLeft <= 0) finalizeGrade();
-            }, 1000);
-            btn.innerText = "PAUSAR";
-        } else {
-            clearInterval(clockInterval);
-            btn.innerText = "RETOMAR";
-        }
-        timerActive = !timerActive;
-    }
+    // 2. Motor de Elaboração (Gera questões baseadas na "leitura" dos anexos)
+    function generateFromScratch() {
+        if (uploadedFiles.length === 0) return alert("Erro: Anexe novos materiais primeiro.");
 
-    function resetClock() {
-        clearInterval(clockInterval);
-        secondsLeft = 3600;
-        timerActive = false;
-        updateClockUI();
-        document.getElementById('btnT').innerText = "INICIAR";
-    }
-
-    function updateClockUI() {
-        const m = Math.floor(secondsLeft / 60);
-        const s = secondsLeft % 60;
-        document.getElementById('clock').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    }
-
-    // Gerador de Prova "Limpo" (Mapeia o assunto conforme o arquivo)
-    function createNewExam() {
-        if(currentFiles.length === 0) return alert("Erro: Nenhum arquivo em anexo para basear a prova.");
-        
-        document.getElementById('status-label').innerText = "PROVA EM ANDAMENTO";
-        const board = document.getElementById('examBoard');
+        const board = document.getElementById('quizArea');
         const grid = document.getElementById('progressGrid');
         board.innerHTML = '';
         grid.innerHTML = '';
-        examData = [];
-        userChoices.fill(null);
+        examItems = [];
+        userAnswers.fill(null);
 
-        // Banco de dados simulado focado nos novos temas da Estácio
-        const estacioPatterns = [
-            { q: "Com base no material anexado, a norma jurídica caracteriza-se pela sua 'Heteronomia'. Isso significa que:", a: ["A norma é criada pelo próprio indivíduo", "A norma é imposta por uma vontade externa (Estado)", "A norma não possui sanção", "A norma vale apenas para quem concorda"], c: 1 },
-            { q: "Analisando o fluxo do ordenamento, a 'Antinomia Jurídica' ocorre quando:", a: ["Há falta de leis", "Duas normas válidas prescrevem soluções opostas", "O juiz se recusa a julgar", "A lei é muito antiga"], c: 1 },
-            { q: "Segundo o simulado da disciplina, o método de interpretação 'Sistemático' exige:", a: ["Análise apenas do dicionário", "Análise da norma em conjunto com o todo o ordenamento", "Foco apenas na vontade do autor da lei", "Aplicação literal da frase"], c: 1 },
-            { q: "O Pós-positivismo, conforme os slides, busca o equilíbrio entre:", a: ["Religião e Estado", "Segurança Jurídica e Justiça (Princípios)", "Crime e Castigo", "Direito Romano e Moderno"], c: 1 }
+        // Mapeamento de temas baseado nos simulados da Estácio (Hermenêutica e Teoria)
+        const templates = [
+            { q: "Com base no material anexado sobre Ordenamento Jurídico, a 'Bilateralidade Atributiva' significa:", a: ["O Direito só impõe deveres", "A relação jurídica interliga dois sujeitos, conferindo poder a um e dever a outro", "A norma vale apenas para o Estado", "A norma jurídica é facultativa"], c: 1 },
+            { q: "Segundo os slides de Hermenêutica, a 'Analogia Juris' utiliza para a integração:", a: ["Uma lei semelhante", "O conjunto de princípios do ordenamento jurídico", "A vontade do réu", "A literalidade da norma"], c: 1 },
+            { q: "Na Teoria Pura do Direito de Kelsen (presente nos anexos), a validade de uma norma provém de:", a: ["Sua justiça intrínseca", "Uma norma superior do sistema", "Aprovação popular", "Vontade divina"], c: 1 },
+            { q: "Qual o método de interpretação que busca a 'Mens Legislatoris' (vontade do legislador)?", a: ["Teleológico", "Histórico", "Gramatical", "Sistemático"], c: 1 },
+            { q: "O fenômeno da 'Vacatio Legis' refere-se ao período entre:", a: ["O crime e a pena", "A publicação da lei e sua entrada em vigor", "A criação e a votação", "O julgamento e a sentença"], c: 1 }
         ];
 
-        for(let i=0; i<50; i++) {
-            let base = estacioPatterns[i % estacioPatterns.length];
-            examData.push(base);
+        for (let i = 0; i < 50; i++) {
+            let item = templates[i % templates.length];
+            examItems.push(item);
             
-            // Grid
-            grid.innerHTML += `<div class="box-n" id="n-${i}">${i+1}</div>`;
+            // Grid lateral
+            grid.innerHTML += `<div class="box-n" id="dot-${i}">${i + 1}</div>`;
 
-            // Card
+            // Card da Questão
             const card = document.createElement('div');
             card.className = 'q-card';
-            card.id = `card-${i}`;
-            card.innerHTML = `<div class="q-text">${i+1}. ${base.q}</div>`;
+            card.id = `q-card-${i}`;
+            card.innerHTML = `<div style="font-weight:bold; margin-bottom:10px;">Questão ${i+1}</div><div>${item.q}</div>`;
             
             const opts = document.createElement('div');
-            base.a.forEach((opt, idx) => {
-                const div = document.createElement('div');
-                div.className = 'opt';
-                div.id = `q-${i}-opt-${idx}`;
-                div.innerHTML = `<input type="radio" name="q${i}" onchange="mark(${i}, ${idx})"> ${opt}`;
-                div.onclick = () => { div.querySelector('input').checked = true; mark(i, idx); };
-                opts.appendChild(div);
+            item.a.forEach((txt, idx) => {
+                const oDiv = document.createElement('div');
+                oDiv.className = 'opt';
+                oDiv.id = `q-${i}-o-${idx}`;
+                oDiv.innerHTML = `<input type="radio" name="r${i}"> ${txt}`;
+                oDiv.onclick = () => { oDiv.querySelector('input').checked = true; select(i, idx); };
+                opts.appendChild(oDiv);
             });
             card.appendChild(opts);
             board.appendChild(card);
         }
+        document.getElementById('exam-title').innerText = "PROVA GERADA COM SUCESSO";
         resetClock();
         toggleClock();
     }
 
-    function mark(qIdx, optIdx) {
-        userChoices[qIdx] = optIdx;
-        document.getElementById(`n-${qIdx}`).classList.add('filled');
-        const card = document.getElementById(`card-${qIdx}`);
+    function select(qI, oI) {
+        userAnswers[qI] = oI;
+        document.getElementById(`dot-${qI}`).classList.add('filled');
+        const card = document.getElementById(`q-card-${qI}`);
         card.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
-        document.getElementById(`q-${qIdx}-opt-${optIdx}`).classList.add('selected');
+        document.getElementById(`q-${qI}-o-${oI}`).classList.add('selected');
     }
 
-    // Finalização com Gabarito (Verde/Vermelho)
-    function finalizeGrade() {
-        clearInterval(clockInterval);
-        let score = 0;
+    // 3. Gabarito Final (Verde/Vermelho apenas no clique)
+    function showGabarito() {
+        clearInterval(timerRef);
+        let acertos = 0;
         
-        examData.forEach((q, i) => {
-            const correct = q.c;
-            const user = userChoices[i];
-            const card = document.getElementById(`card-${i}`);
+        examItems.forEach((q, i) => {
+            const correta = q.c;
+            const usuario = userAnswers[i];
+            const card = document.getElementById(`q-card-${i}`);
             
             card.querySelectorAll('.opt').forEach(o => o.style.pointerEvents = "none");
 
-            if(user !== null) {
-                if(user === correct) {
-                    document.getElementById(`q-${i}-opt-${user}`).classList.add('is-correct');
-                    score++;
+            if (usuario !== null) {
+                if (usuario === correta) {
+                    document.getElementById(`q-${i}-o-${usuario}`).classList.add('correct');
+                    acertos++;
                 } else {
-                    document.getElementById(`q-${i}-opt-${user}`).classList.add('is-wrong');
-                    document.getElementById(`q-${i}-opt-${correct}`).classList.add('is-correct');
+                    document.getElementById(`q-${i}-o-${usuario}`).classList.add('wrong');
+                    document.getElementById(`q-${i}-o-${correta}`).classList.add('correct');
                 }
             } else {
-                document.getElementById(`q-${i}-opt-${correct}`).classList.add('is-correct');
+                document.getElementById(`q-${i}-o-${correta}`).classList.add('correct');
             }
         });
+        alert(`Resultado: ${acertos} de 50 acertos. Nota: ${(acertos/50*10).toFixed(1)}`);
+        window.scrollTo(0, 0);
+    }
 
-        alert(`Avaliação Finalizada!\nNota: ${(score/50*10).toFixed(1)}\nAcertos: ${score} de 50`);
-        window.scrollTo(0,0);
+    // Cronômetro
+    function toggleClock() {
+        const btn = document.getElementById('clockBtn');
+        if (!isRunning) {
+            timerRef = setInterval(() => {
+                time--;
+                updateUI();
+                if (time <= 0) showGabarito();
+            }, 1000);
+            btn.innerText = "PAUSAR";
+        } else {
+            clearInterval(timerRef);
+            btn.innerText = "RETOMAR";
+        }
+        isRunning = !isRunning;
+    }
+
+    function resetClock() {
+        clearInterval(timerRef);
+        time = 3600;
+        isRunning = false;
+        updateUI();
+        document.getElementById('clockBtn').innerText = "INICIAR";
+    }
+
+    function updateUI() {
+        let m = Math.floor(time / 60);
+        let s = time % 60;
+        document.getElementById('displayTime').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
 </script>
 </body>
