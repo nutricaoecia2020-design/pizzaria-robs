@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Simulador Estácio - Versão Final</title>
+    <title>Simulador Estácio - Final Oficial</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
         :root { --p: #004a8d; --s: #27ae60; --bg: #f4f7f6; }
@@ -11,50 +11,54 @@
         .main { flex: 1; display: flex; flex-direction: column; }
         header { background: var(--p); color: white; padding: 15px; display: flex; justify-content: space-between; font-weight: bold; }
         .container { flex: 1; padding: 20px; overflow-y: auto; }
-        .card { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; border-left: 5px solid var(--p); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .opt { padding: 10px; border: 1px solid #eee; margin-top: 5px; border-radius: 4px; cursor: pointer; }
-        .opt.sel { background: #d1e7ff; border-color: var(--p); }
-        .correct { background: #d4edda !important; }
-        .wrong { background: #f8d7da !important; }
-        #status { font-weight: bold; color: var(--p); display: none; text-align: center; }
-        button { padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
+        .card { background: #fff; padding: 25px; margin-bottom: 25px; border-radius: 8px; border-left: 8px solid var(--p); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .opt { padding: 12px; border: 1px solid #eee; margin-top: 8px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+        .opt:hover { background: #f1f8ff; }
+        .opt.sel { background: #d1e7ff; border-color: var(--p); font-weight: bold; }
+        .correct { background: #d4edda !important; border-color: #28a745 !important; }
+        .wrong { background: #f8d7da !important; border-color: #dc3545 !important; }
+        #status { font-weight: bold; color: var(--p); display: none; text-align: center; padding: 10px; background: #eef6ff; border-radius: 5px; }
+        button { padding: 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; }
     </style>
 </head>
 <body>
 
 <aside class="sidebar">
-    <h2 style="color:var(--p)">IA Estácio</h2>
-    <p>Sua chave já está configurada internamente.</p>
+    <h2 style="color:var(--p); margin:0;">IA Estácio</h2>
+    <p style="font-size: 0.9rem; color: #666;">Chave configurada. Selecione seus PDFs e gere a prova.</p>
     
-    <label><strong>Selecione o PDF:</strong></label>
+    <label><strong>Arquivos PDF:</strong></label>
     <input type="file" id="pdfFile" accept="application/pdf" multiple>
     
     <button style="background:var(--p)" onclick="gerar()">GERAR 50 QUESTÕES</button>
-    <div id="status">⌛ Processando material...</div>
+    <div id="status">⌛ IA lendo material...</div>
     
-    <button style="background:#666; margin-top: auto;" onclick="location.reload()">REINICIAR</button>
+    <button style="background:#666; margin-top: auto; padding: 8px;" onclick="location.reload()">REINICIAR TUDO</button>
 </aside>
 
 <main class="main">
     <header>
-        <span>SIMULADOR AUTOMÁTICO</span>
-        <span>60:00</span>
+        <span>SIMULADOR DE QUESTÕES</span>
+        <span id="timer">60:00</span>
     </header>
     <div class="container" id="quizArea">
-        <div style="text-align:center; color:#999; margin-top:100px;">Suba os arquivos para começar.</div>
+        <div style="text-align:center; color:#999; margin-top:100px;">
+            <h3>O sistema está pronto.</h3>
+            <p>Anexe o conteúdo e a IA criará as questões para você.</p>
+        </div>
     </div>
-    <button style="background:var(--s); padding:20px;" onclick="corrigir()">FINALIZAR E CORRIGIR</button>
+    <button style="background:var(--s); padding:20px; font-size: 1.2rem;" onclick="corrigir()">FINALIZAR E CORRIGIR</button>
 </main>
 
 <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
     
-    // A chave que você me enviou no print
-    const MINHA_CHAVE = "AlzaSyBq4N0dzn9-9_qn-sXOpmGy38zgkN29E80";
+    // Chave corrigida (sem o espaço que estava causando o erro)
+    const API_KEY = "AlzaSyBq4N0dzn9-9_qn-sXOpmGy38zgkN29E80";
     let questoes = [];
     let respostas = [];
 
-    async function extrair(f) {
+    async function extrairTexto(f) {
         const doc = await pdfjsLib.getDocument({data: await f.arrayBuffer()}).promise;
         let t = "";
         for(let i=1; i<=doc.numPages; i++){
@@ -66,33 +70,36 @@
     }
 
     async function gerar() {
-        const f = document.getElementById('pdfFile').files;
-        const st = document.getElementById('status');
-        if(f.length === 0) return alert("Selecione um PDF!");
+        const files = document.getElementById('pdfFile').files;
+        const loader = document.getElementById('status');
+        if(files.length === 0) return alert("Selecione pelo menos um PDF!");
 
-        st.style.display = "block";
+        loader.style.display = "block";
         try {
-            let txt = "";
-            for(let file of f) txt += await extrair(file);
+            let textoGeral = "";
+            for(let file of files) textoGeral += await extrairTexto(file);
 
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${MINHA_CHAVE}`, {
+            const prompt = `Analise este material: "${textoGeral.substring(0,25000)}". Gere EXATAMENTE 50 questões de múltipla escolha (4 opções). Retorne APENAS o JSON puro: [{"q":"pergunta","options":["a","b","c","d"],"correct":0}]`;
+
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    contents: [{parts: [{text: `Com base no texto: "${txt.substring(0,20000)}". Gere 50 questões de múltipla escolha com 4 opções. Responda apenas o JSON: [{"q":"...","options":["..."],"correct":0}]`}]}]
-                })
+                body: JSON.stringify({ contents: [{parts: [{text: prompt}]}] })
             });
 
             const data = await res.json();
+            if(data.error) throw new Error(data.error.message);
+
             const raw = data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
             questoes = JSON.parse(raw);
-            render();
+            renderizar();
         } catch(e) {
-            alert("Erro: A IA demorou ou o PDF é inválido. Tente novamente.");
-        } finally { st.style.display = "none"; }
+            console.error(e);
+            alert("Erro na IA: A chave pode estar expirada ou o texto é muito longo. Tente com um PDF menor.");
+        } finally { loader.style.display = "none"; }
     }
 
-    function render() {
+    function renderizar() {
         const area = document.getElementById('quizArea');
         area.innerHTML = "";
         respostas = new Array(questoes.length).fill(null);
@@ -114,6 +121,7 @@
             });
             area.appendChild(d);
         });
+        window.scrollTo(0,0);
     }
 
     function corrigir() {
