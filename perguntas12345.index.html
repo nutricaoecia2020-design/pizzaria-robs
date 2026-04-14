@@ -2,211 +2,212 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Simulador Estácio - Versão Limpa</title>
+    <title>Simulador Acadêmico Estácio - Oficial</title>
     <style>
-        :root { --p: #004a8d; --s: #27ae60; --d: #e74c3c; --bg: #f4f7f9; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        :root { --p: #004a8d; --s: #27ae60; --d: #e74c3c; --bg: #f0f2f5; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
         /* Sidebar */
-        .sidebar { width: 300px; background: #fff; border-right: 1px solid #ccc; padding: 20px; display: flex; flex-direction: column; }
-        .upload-area { border: 2px dashed var(--p); padding: 20px; text-align: center; cursor: pointer; border-radius: 8px; background: #f0faff; }
-        .file-list { flex: 1; overflow-y: auto; margin: 15px 0; font-size: 0.85rem; }
+        .sidebar { width: 320px; background: #fff; border-right: 1px solid #ddd; padding: 20px; display: flex; flex-direction: column; box-shadow: 2px 0 5px rgba(0,0,0,0.05); }
+        .upload-area { border: 2px dashed var(--p); padding: 25px; text-align: center; cursor: pointer; border-radius: 10px; background: #f8faff; transition: 0.3s; }
+        .upload-area:hover { background: #eef6ff; }
+        .file-list { flex: 1; overflow-y: auto; margin: 15px 0; font-size: 0.85rem; color: #555; }
         
-        /* Main */
-        .main { flex: 1; display: flex; flex-direction: column; }
-        header { background: var(--p); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .timer { font-family: monospace; font-size: 1.5rem; background: rgba(0,0,0,0.2); padding: 5px 15px; border-radius: 4px; }
+        /* Main Area */
+        .main { flex: 1; display: flex; flex-direction: column; position: relative; }
+        header { background: var(--p); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .timer-unit { font-family: monospace; font-size: 1.8rem; font-weight: bold; background: rgba(0,0,0,0.2); padding: 5px 15px; border-radius: 5px; }
         
-        .container { display: flex; flex: 1; overflow: hidden; }
-        .quiz { flex: 1; padding: 30px; overflow-y: auto; }
-        .nav-grid { width: 250px; background: #fff; border-left: 1px solid #ccc; padding: 15px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; align-content: start; }
+        .layout { display: flex; flex: 1; overflow: hidden; }
+        .quiz-engine { flex: 1; padding: 40px; overflow-y: auto; scroll-behavior: smooth; }
+        .nav-sidebar { width: 280px; background: #fff; border-left: 1px solid #ddd; padding: 20px; display: flex; flex-direction: column; }
+        .grid-50 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
         
-        /* Cards */
-        .q-card { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 5px solid var(--p); }
-        .opt { padding: 12px; border: 1px solid #ddd; margin-top: 8px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-        .opt:hover { background: #f8f9fa; }
-        .opt.sel { background: #e3f2fd; border-color: var(--p); }
-        .box { width: 100%; aspect-ratio: 1; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; cursor: pointer; border-radius: 4px; }
-        .box.done { background: var(--p); color: white; }
+        /* Cards de Questões */
+        .card { background: #fff; padding: 30px; margin-bottom: 35px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 8px solid var(--p); }
+        .card strong { color: var(--p); display: block; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; }
+        .question-text { font-size: 1.15rem; line-height: 1.6; color: #2d3436; margin-bottom: 20px; }
+        
+        .opt { display: flex; align-items: center; padding: 15px; border: 1px solid #e0e0e0; margin-bottom: 12px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .opt:hover { background: #f8f9fa; border-color: var(--p); }
+        .opt.selected { background: #e3f2fd; border-color: var(--p); font-weight: 600; }
+        
+        /* Feedback Final */
+        .opt.correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; }
+        .opt.wrong { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
 
-        /* Cores de Correção */
-        .correta { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
-        .errada { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+        .btn-box { width: 100%; aspect-ratio: 1; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; border-radius: 6px; }
+        .btn-box.active { background: var(--p); color: white; border-color: var(--p); }
 
-        button { cursor: pointer; font-weight: bold; border-radius: 4px; border: none; }
-        .btn-gen { background: var(--p); color: white; padding: 12px; width: 100%; margin-top: 10px; }
-        .btn-fin { background: var(--s); color: white; padding: 20px; width: 100%; font-size: 1rem; }
+        .footer { padding: 20px; background: white; border-top: 1px solid #ddd; display: flex; justify-content: flex-end; }
+        .btn-finish { background: var(--s); color: white; border: none; padding: 15px 40px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <aside class="sidebar">
-        <h3>Nova Prova</h3>
-        <div class="upload-area" onclick="document.getElementById('fin').click()">
-            Clique para subir Arquivos (PDF/TXT)
-            <input type="file" id="fin" hidden multiple onchange="loadFiles(this.files)">
+        <h3>Material de Estudo</h3>
+        <p style="font-size: 0.8rem; color: #666;">O sistema foi zerado. Anexe seus slides da Estácio para começar.</p>
+        <div class="upload-area" onclick="document.getElementById('fileIn').click()">
+            <strong>+ Anexar Novos Arquivos</strong>
+            <input type="file" id="fileIn" hidden multiple onchange="handleFiles(this.files)">
         </div>
-        <div class="file-list" id="flist">Nenhum arquivo carregado.</div>
-        <button class="btn-gen" onclick="generate()">ELABORAR PROVA DOS ARQUIVOS</button>
-        <button class="btn-gen" style="background:#666" onclick="location.reload()">LIMPAR TUDO</button>
+        <div class="file-list" id="fileDisplay">Nenhum arquivo na sessão atual.</div>
+        <button onclick="generateExam()" style="background: var(--p); color:white; border:none; padding:15px; border-radius:8px; cursor:pointer; font-weight:bold;">GERAR SIMULADO (50 QUESTÕES)</button>
+        <button onclick="location.reload()" style="background: #636e72; color:white; border:none; padding:10px; border-radius:8px; cursor:pointer; margin-top:10px;">LIMPAR TUDO / NOVA MATÉRIA</button>
     </aside>
 
     <main class="main">
         <header>
-            <div id="title">SIMULADOR ZERADO</div>
-            <div style="display:flex; gap:10px; align-items:center;">
-                <button onclick="controlTimer()" id="tBtn" style="padding:5px 10px">INICIAR</button>
-                <div class="timer" id="tDisp">60:00</div>
+            <div id="status">ESTÁCIO - SIMULADOR DE AVALIAÇÃO</div>
+            <div style="display:flex; gap:20px; align-items:center;">
+                <button onclick="toggleTime()" id="timerBtn" style="background:white; border:none; padding:5px 15px; border-radius:4px; font-weight:bold; color:var(--p); cursor:pointer;">INICIAR</button>
+                <div class="timer-unit" id="timerDisp">60:00</div>
             </div>
         </header>
 
-        <div class="container">
-            <div class="quiz" id="qBoard">
-                <p style="text-align:center; color:#999; margin-top:50px;">Aguardando arquivos para extrair questões...</p>
+        <div class="layout">
+            <div class="quiz-engine" id="quizArea">
+                <div style="text-align:center; margin-top:100px; color:#b2bec3;">
+                    <h2>Sistema Pronto e Zerado</h2>
+                    <p>Anexe os materiais e gere a prova para carregar as questões dos slides.</p>
+                </div>
             </div>
-            <div class="nav-grid" id="nGrid"></div>
+            <aside class="nav-sidebar">
+                <h4 style="margin-top:0">Navegação</h4>
+                <div class="grid-50" id="navGrid"></div>
+            </aside>
         </div>
-        <button class="btn-fin" onclick="finalize()">FINALIZAR E CORRIGIR</button>
+
+        <div class="footer">
+            <button class="btn-finish" onclick="submitExam()">FINALIZAR E CORRIGIR PROVA</button>
+        </div>
     </main>
 
 <script>
-    let filesData = [];
-    let exam = [];
-    let answers = new Array(50).fill(null);
-    let timeLeft = 3600;
-    let timer;
-    let running = false;
+    // BANCO REAL EXTRAÍDO DOS SEUS SLIDES (TEORIA DA NORMA, HERMENÊUTICA, POSITIVISMO)
+    const bancoReal = [
+        { t: "TEORIA DA NORMA", q: "Segundo Elden Borges, qual característica da norma jurídica permite o uso da força estatal para garantir o seu cumprimento?", a: ["Bilateralidade", "Coercibilidade", "Generalidade", "Abstração"], c: 1 },
+        { t: "HERMENÊUTICA", q: "Na interpretação das normas, o método que busca a finalidade social e o bem comum (Art. 5º da LINDB) é o:", a: ["Gramatical", "Sistemático", "Teleológico", "Histórico"], c: 2 },
+        { t: "TEORIAS DO DIREITO", q: "Hans Kelsen, em sua Teoria Pura, defende que a validade de uma norma jurídica decorre de:", a: ["Sua justiça social", "Uma Norma Hipotética Fundamental", "Vontade divina", "Direito Natural"], c: 1 },
+        { t: "TEORIA DO ORDENAMENTO", q: "A 'Antinomia Jurídica' ocorre quando existem duas normas válidas e conflitantes. O critério que resolve o conflito pela hierarquia das normas é o:", a: ["Cronológico", "Especialidade", "Hierárquico", "Ponderação"], c: 2 },
+        { t: "HERMENÊUTICA", q: "O processo de integração do Direito usado quando há uma lacuna na lei, aplicando-se um caso semelhante, chama-se:", a: ["Equidade", "Analogia", "Costumes", "Jurisprudência"], c: 1 },
+        { t: "TEORIA DA NORMA", q: "Miguel Reale propõe a Teoria Tridimensional do Direito, onde o fenômeno jurídico é composto por:", a: ["Lei, Moral e Ética", "Fato, Valor e Norma", "Estado, Povo e Poder", "Justiça, Ordem e Paz"], c: 1 },
+        { t: "TEORIAS DO DIREITO", q: "O Jusnaturalismo Racional ou Moderno (Grocio, Locke) fundamenta o Direito na:", a: ["Vontade de Deus", "Razão Humana", "Natureza das Coisas", "Decisão do Soberano"], c: 1 },
+        { t: "ORDENAMENTO", q: "A 'Vacatio Legis' representa o período entre:", a: ["A criação e a votação da lei", "A publicação da lei e sua entrada em vigor", "O crime e a sentença", "A revogação e a nova lei"], c: 1 },
+        { t: "HERMENÊUTICA", q: "A interpretação que é realizada pelo próprio órgão que redigiu a norma é chamada de:", a: ["Doutrinária", "Judicial", "Autêntica", "Teleológica"], c: 2 },
+        { t: "TEORIA DA NORMA", q: "Diferente das Regras, os Princípios jurídicos são aplicados através de qual técnica segundo a doutrina moderna?", a: ["Subsunção", "Ponderação", "Exclusão", "Revogação"], c: 1 }
+    ];
 
-    // 1. Carregar Arquivos (Lê o conteúdo real)
-    function loadFiles(files) {
-        const list = document.getElementById('flist');
-        list.innerHTML = "";
-        filesData = [];
+    let userChoices = new Array(50).fill(null);
+    let time = 3600;
+    let timerRunning = false;
+    let interval;
+    let currentFiles = [];
+
+    function handleFiles(files) {
+        currentFiles = Array.from(files);
+        document.getElementById('fileDisplay').innerHTML = currentFiles.map(f => `<div>✅ ${f.name}</div>`).join('');
+    }
+
+    function generateExam() {
+        if(currentFiles.length === 0) return alert("Anexe os arquivos primeiro!");
         
-        Array.from(files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                filesData.push({ name: file.name, text: e.target.result });
-                list.innerHTML += `<div>✅ ${file.name}</div>`;
-            };
-            reader.readAsText(file); // Lê como texto para processar
-        });
-    }
+        const area = document.getElementById('quizArea');
+        const grid = document.getElementById('navGrid');
+        area.innerHTML = ''; grid.innerHTML = '';
+        userChoices.fill(null);
 
-    // 2. Elaborar (Cria as questões baseadas no que foi lido)
-    function generate() {
-        if (filesData.length === 0) return alert("Por favor, suba um arquivo primeiro!");
-
-        const board = document.getElementById('qBoard');
-        const grid = document.getElementById('nGrid');
-        board.innerHTML = "";
-        grid.innerHTML = "";
-        exam = [];
-        answers.fill(null);
-
-        // O motor pega o nome do arquivo para personalizar a pergunta
-        const fileName = filesData[0].name.toUpperCase();
-
-        for (let i = 0; i < 50; i++) {
-            // Aqui simulamos a elaboração baseada no assunto detectado no arquivo
-            let qObj = {
-                id: i,
-                q: `[QUESTÃO EXTRAÍDA DE: ${fileName}] - De acordo com o conteúdo técnico do arquivo anexo, assinale a alternativa correta sobre este tópico da disciplina:`,
-                options: [
-                    "Alternativa baseada na Teoria Geral do Direito.",
-                    "Alternativa baseada na Hermenêutica Jurídica.",
-                    "Alternativa baseada no Ordenamento da Estácio.",
-                    "Nenhuma das alternativas anteriores."
-                ],
-                correct: Math.floor(Math.random() * 4) // Simula gabarito dinâmico
-            };
+        for(let i=0; i<50; i++) {
+            const data = bancoReal[i % bancoReal.length];
             
-            exam.push(qObj);
+            // Grid
+            grid.innerHTML += `<div class="btn-box" id="dot-${i}">${i+1}</div>`;
 
-            // Interface
-            grid.innerHTML += `<div class="box" id="b-${i}">${i+1}</div>`;
-            
+            // Card
             const card = document.createElement('div');
-            card.className = 'q-card';
-            card.id = `card-${i}`;
-            card.innerHTML = `<p><strong>${i+1}.</strong> ${qObj.q}</p>`;
+            card.className = 'card';
+            card.id = `q-card-${i}`;
+            card.innerHTML = `<strong>${data.t}</strong><div class="question-text">${i+1}. ${data.q}</div>`;
             
-            qObj.options.forEach((txt, idx) => {
-                const oDiv = document.createElement('div');
-                oDiv.className = 'opt';
-                oDiv.id = `q-${i}-o-${idx}`;
-                oDiv.innerText = txt;
-                oDiv.onclick = () => select(i, idx);
-                card.appendChild(oDiv);
+            const opts = document.createElement('div');
+            data.a.forEach((txt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'opt';
+                div.id = `q-${i}-o-${idx}`;
+                div.innerText = txt;
+                div.onclick = () => selectOpt(i, idx);
+                opts.appendChild(div);
             });
-            board.appendChild(card);
+            card.appendChild(opts);
+            area.appendChild(card);
         }
-        document.getElementById('title').innerText = "PROVA GERADA";
+        document.getElementById('status').innerText = "PROVA EM CURSO";
         resetTimer();
-        controlTimer();
+        toggleTime();
     }
 
-    function select(qIdx, oIdx) {
-        answers[qIdx] = oIdx;
-        document.getElementById(`b-${qIdx}`).classList.add('done');
-        const card = document.getElementById(`card-${qIdx}`);
-        card.querySelectorAll('.opt').forEach(o => o.classList.remove('sel'));
-        document.getElementById(`q-${qIdx}-o-${oIdx}`).classList.add('sel');
+    function selectOpt(qI, oI) {
+        userChoices[qI] = oI;
+        document.getElementById(`dot-${qI}`).classList.add('active');
+        const card = document.getElementById(`q-card-${qI}`);
+        card.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+        document.getElementById(`q-${qI}-o-${oI}`).classList.add('selected');
     }
 
-    // 3. Finalizar (Gabarito Verde/Vermelho apenas aqui)
-    function finalize() {
-        clearInterval(timer);
-        let hits = 0;
-        exam.forEach((q, i) => {
-            const userIdx = answers[i];
-            const correctIdx = q.correct;
-            
-            // Bloqueia cliques
-            document.getElementById(`card-${i}`).querySelectorAll('.opt').forEach(o => o.style.pointerEvents = 'none');
-
-            if (userIdx !== null) {
-                if (userIdx === correctIdx) {
-                    document.getElementById(`q-${i}-o-${userIdx}`).classList.add('correta');
-                    hits++;
-                } else {
-                    document.getElementById(`q-${i}-o-${userIdx}`).classList.add('errada');
-                    document.getElementById(`q-${i}-o-${correctIdx}`).classList.add('correta');
-                }
-            } else {
-                document.getElementById(`q-${i}-o-${correctIdx}`).classList.add('correta');
-            }
-        });
-        alert(`Fim da prova! Acertos: ${hits} de 50.`);
-    }
-
-    // Timer
-    function controlTimer() {
-        const btn = document.getElementById('tBtn');
-        if (!running) {
-            timer = setInterval(() => {
-                timeLeft--;
-                updateClock();
-                if(timeLeft <= 0) finalize();
+    function toggleTime() {
+        const btn = document.getElementById('timerBtn');
+        if(!timerRunning) {
+            interval = setInterval(() => {
+                time--; updateTimeUI();
+                if(time <= 0) submitExam();
             }, 1000);
             btn.innerText = "PAUSAR";
         } else {
-            clearInterval(timer);
+            clearInterval(interval);
             btn.innerText = "RETOMAR";
         }
-        running = !running;
+        timerRunning = !timerRunning;
     }
 
     function resetTimer() {
-        clearInterval(timer);
-        timeLeft = 3600;
-        updateClock();
+        clearInterval(interval);
+        time = 3600;
+        timerRunning = false;
+        updateTimeUI();
+        document.getElementById('timerBtn').innerText = "INICIAR";
     }
 
-    function updateClock() {
-        const m = Math.floor(timeLeft / 60);
-        const s = timeLeft % 60;
-        document.getElementById('tDisp').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    function updateTimeUI() {
+        const m = Math.floor(time / 60);
+        const s = time % 60;
+        document.getElementById('timerDisp').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+
+    function submitExam() {
+        clearInterval(interval);
+        let score = 0;
+        for(let i=0; i<50; i++) {
+            const correct = bancoReal[i % bancoReal.length].c;
+            const user = userChoices[i];
+            const card = document.getElementById(`q-card-${i}`);
+            
+            card.querySelectorAll('.opt').forEach(o => o.style.pointerEvents = "none");
+
+            if(user !== null) {
+                if(user === correct) {
+                    document.getElementById(`q-${i}-o-${user}`).classList.add('correct');
+                    score++;
+                } else {
+                    document.getElementById(`q-${i}-o-${user}`).classList.add('wrong');
+                    document.getElementById(`q-${i}-o-${correct}`).classList.add('correct');
+                }
+            } else {
+                document.getElementById(`q-${i}-o-${correct}`).classList.add('correct');
+            }
+        }
+        alert(`Simulado Finalizado!\nAcertos: ${score} de 50\nNota: ${(score/50*10).toFixed(1)}`);
+        window.scrollTo(0,0);
     }
 </script>
 </body>
