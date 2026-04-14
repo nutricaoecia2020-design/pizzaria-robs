@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>IA Simulador - Ajuste de Chave</title>
+    <title>Simulador IA Estácio - Estável</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
         :root { --p: #004a8d; --s: #27ae60; --bg: #f4f7f6; }
@@ -14,7 +14,7 @@
         .card { background: #fff; padding: 25px; margin-bottom: 25px; border-radius: 8px; border-left: 8px solid var(--p); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .opt { padding: 12px; border: 1px solid #eee; margin-top: 8px; border-radius: 4px; cursor: pointer; }
         .opt.sel { background: #d1e7ff; border-color: var(--p); font-weight: bold; }
-        .correct { background: #d4edda !important; }
+        .correct { background: #d4edda !important; border-color: #28a745 !important; }
         #status { font-weight: bold; color: var(--p); display: none; text-align: center; padding: 10px; background: #eef6ff; }
         input, button { padding: 12px; border-radius: 6px; border: 1px solid #ccc; }
         button { background: var(--p); color: white; font-weight: bold; cursor: pointer; border: none; }
@@ -23,67 +23,74 @@
 <body>
 
 <aside class="sidebar">
-    <h2 style="color:var(--p); margin:0;">Simulador Estácio</h2>
+    <h2 style="color:var(--p); margin:0;">IA Estácio</h2>
     
-    <label><strong>1. Cole sua API Key aqui:</strong></label>
-    <input type="password" id="userKey" placeholder="AlzaSy...">
+    <label><strong>1. API Key:</strong></label>
+    <input type="password" id="userKey" placeholder="Cole sua chave aqui">
     
-    <label><strong>2. Selecione o PDF:</strong></label>
+    <label><strong>2. Material (PDF):</strong></label>
     <input type="file" id="pdfFile" accept="application/pdf">
     
-    <button onclick="gerar()">CRIAR QUESTÕES</button>
+    <button onclick="gerar()">GERAR SIMULADO</button>
     
-    <div id="status">⌛ Processando...</div>
+    <div id="status">⌛ Conectando ao Google IA...</div>
 </aside>
 
 <main class="main">
-    <header><span>ÁREA DE ESTUDO</span><span>60:00</span></header>
+    <header><span>SIMULADOR DE QUESTÕES</span><span>60:00</span></header>
     <div class="container" id="quizArea">
-        <div style="text-align:center; color:#999; margin-top:100px;">Insira a chave e suba o PDF.</div>
+        <div style="text-align:center; color:#999; margin-top:100px;">Insira a chave e selecione o PDF para começar.</div>
     </div>
-    <button style="background:var(--s); padding:20px;" onclick="corrigir()">CORRIGIR</button>
+    <button style="background:var(--s); padding:20px;" onclick="corrigir()">FINALIZAR E CORRIGIR</button>
 </main>
 
 <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-    let questoes = []; let respostas = [];
+    let questoes = [];
 
     async function gerar() {
         const key = document.getElementById('userKey').value.trim();
-        const files = document.getElementById('pdfFile').files;
-        if(!key || files.length === 0) return alert("Preencha a chave e o arquivo!");
+        const file = document.getElementById('pdfFile').files[0];
+        if(!key || !file) return alert("Erro: Chave ou arquivo faltando!");
 
-        document.getElementById('status').style.display = "block";
+        const loader = document.getElementById('status');
+        loader.style.display = "block";
 
         try {
-            const doc = await pdfjsLib.getDocument({data: await files[0].arrayBuffer()}).promise;
+            const doc = await pdfjsLib.getDocument({data: await file.arrayBuffer()}).promise;
             let texto = "";
-            for(let i=1; i<=Math.min(doc.numPages, 10); i++){
+            for(let i=1; i<=Math.min(doc.numPages, 12); i++){
                 const p = await doc.getPage(i);
                 const c = await p.getTextContent();
                 texto += c.items.map(s => s.str).join(" ") + " ";
             }
 
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+            // URL PARA VERSÃO ESTÁVEL V1
+            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`;
+
+            const res = await fetch(url, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ contents: [{parts: [{text: `Gere 50 questões múltipla escolha sobre: "${texto.substring(0, 15000)}". Retorne apenas JSON: [{"q":"...","options":["..."],"correct":0}]`}]}] })
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: `Gere 50 questões de múltipla escolha (4 alternativas) sobre o seguinte conteúdo técnico: "${texto.substring(0, 18000)}". Retorne APENAS o JSON no formato: [{"q":"pergunta","options":["a","b","c","d"],"correct":0}]` }] }]
+                })
             });
 
             const data = await res.json();
             if(data.error) throw new Error(data.error.message);
 
-            const raw = data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
+            let raw = data.candidates[0].content.parts[0].text;
+            raw = raw.replace(/```json|```/g, '').trim();
+            
             questoes = JSON.parse(raw);
             render();
         } catch(e) {
-            alert("Erro: " + e.message);
-        } finally { document.getElementById('status').style.display = "none"; }
+            alert("ERRO TÉCNICO: " + e.message);
+        } finally { loader.style.display = "none"; }
     }
 
     function render() {
         const area = document.getElementById('quizArea'); area.innerHTML = "";
-        respostas = new Array(questoes.length).fill(null);
         questoes.forEach((q, i) => {
             const d = document.createElement('div');
             d.className = 'card';
@@ -93,7 +100,6 @@
                 opt.className = 'opt'; opt.id = `q${i}o${idx}`;
                 opt.innerText = o;
                 opt.onclick = () => {
-                    respostas[i] = idx;
                     d.querySelectorAll('.opt').forEach(x => x.classList.remove('sel'));
                     opt.classList.add('sel');
                 };
@@ -105,9 +111,9 @@
 
     function corrigir() {
         questoes.forEach((q, i) => {
-            const c = q.correct;
-            document.getElementById(`q${i}o${c}`).classList.add('correct');
+            document.getElementById(`q${i}o${q.correct}`).classList.add('correct');
         });
+        alert("Simulado Corrigido! As respostas corretas estão em verde.");
     }
 </script>
 </body>
