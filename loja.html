@@ -101,7 +101,7 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
-        .banner-pascoa {
+        .banner-promo {
             background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
             color: white; padding: 25px; border-radius: 20px; margin-bottom: 20px;
             text-align: center; border: 3px solid #fff; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
@@ -142,13 +142,13 @@
         .combo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .btn-pascoa { background: #ff79c6; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; }
 
-        .campanha-sorteio {
+        .campanha-insta {
             background: #ffffff; border-radius: 20px; padding: 20px; margin-bottom: 30px;
-            border: 2px solid var(--accent); display: flex; align-items: center; gap: 20px;
+            border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; gap: 20px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
-        .sorteio-info h3 { margin: 0; color: var(--accent); font-size: 18px; }
-        .sorteio-info p { margin: 5px 0; font-size: 13px; color: var(--text-dim); }
+        .insta-info h3 { margin: 0; color: var(--accent); font-size: 18px; }
+        .insta-info p { margin: 5px 0; font-size: 13px; color: var(--text-dim); }
         .btn-insta { 
             background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
             color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none;
@@ -205,7 +205,7 @@
         @media(max-width: 600px) { 
             .cart-sidebar { width: 100%; } 
             .combo-grid { grid-template-columns: 1fr; }
-            .campanha-sorteio { flex-direction: column; text-align: center; }
+            .campanha-insta { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
@@ -237,7 +237,7 @@
         </div>
     </div>
 
-    <section class="banner-pascoa">
+    <section class="banner-promo">
         <div class="animacao-agendar"><i class="fas fa-clock"></i> AGENDE AGORA!</div>
         <h2>
             PROMO PARA AS QUINTAS E SEXTAS
@@ -253,15 +253,13 @@
         </button>
     </section>
 
-    <section class="campanha-sorteio">
-        <div style="font-size: 40px;">🎁</div>
-        <div class="sorteio-info">
-            <h3>SORTEIO: 1 PIZZA GRÁTIS NO DOMINGO!</h3>
-            <p>1. Compartilhe o link do site com 5 amigos no WhatsApp.<br>
-               2. Mande o print para <b>@robs_pizzaria</b> no Instagram.<br>
-               3. Siga nossa página para validar sua participação!</p>
+    <section class="campanha-insta">
+        <div style="font-size: 40px;">📸</div>
+        <div class="insta-info">
+            <h3>SIGA-NOS NO INSTAGRAM</h3>
+            <p>Fique por dentro das novidades e promoções diárias!</p>
             <a href="https://www.instagram.com/robs_pizzaria" target="_blank" class="btn-insta">
-                <i class="fab fa-instagram"></i> SEGUIR & PARTICIPAR
+                <i class="fab fa-instagram"></i> SEGUIR @robs_pizzaria
             </a>
         </div>
     </section>
