@@ -59,6 +59,17 @@
             text-transform: uppercase;
         }
 
+        .parceria-delivery {
+            background: #ef4444;
+            color: white;
+            font-size: 11px;
+            padding: 2px 10px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
         .logo h1 { color: white; margin: 0; font-size: 22px; text-transform: uppercase; letter-spacing: 2px; }
 
         .cart-trigger {
@@ -202,6 +213,8 @@
 
 <div class="destaque-topo">
     <i class="fas fa-star"></i> PIZZARIA DELIVERY - BAIRRO LUZIA <i class="fas fa-star"></i>
+    <br>
+    <span class="parceria-delivery"><i class="fas fa-handshake"></i> Loja Parceira Quero Delivery</span>
 </div>
 
 <header>
@@ -227,7 +240,7 @@
     <section class="banner-pascoa">
         <div class="animacao-agendar"><i class="fas fa-clock"></i> AGENDE AGORA!</div>
         <h2>
-            🐰 PIZZA DE PÁSCOA (30cm): 2 SABORES 🐰
+            PROMO PARA AS QUINTAS E SEXTAS
             <span class="aviso-limitado">⚠️ Quantidades Limitadas ⚠️<br><small>Devido a muitos agendamentos</small></span>
         </h2>
         <p>Escolha dois sabores (meio a meio) por apenas <b>R$ 29,90</b></p>
@@ -441,7 +454,7 @@ window.addComboPascoa = () => {
     const sab1 = document.getElementById("comboSabor1").value;
     const sab2 = document.getElementById("comboSabor2").value;
     if(!sab1 || !sab2) return alert("Escolha os dois sabores para sua pizza meio a meio!");
-    const itemCombo = { nome: `🎁 PIZZA PÁSCOA (30cm): ½ ${sab1} / ½ ${sab2}`, preco: 29.90 };
+    const itemCombo = { nome: `🍕 PROMO QUINTA/SEXTA (30cm): ½ ${sab1} / ½ ${sab2}`, preco: 29.90 };
     feedback(document.getElementById("btnCombo"));
     carrinho.push(itemCombo);
     window.renderCarrinho();
@@ -623,7 +636,6 @@ carregarProdutos();
 </script>
 </body>
 </html>
-
 
 
 
