@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vera Empreendedora | Fluxo Pro</title>
+    <title>Vera Empreendedora | Cloud Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -131,7 +131,7 @@
 
 <div class="modal fade" id="modalVen" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content border-0 shadow">
             <div class="modal-header bg-info text-white"><h5 class="modal-title">Venda para <span id="v-nome"></span></h5></div>
             <form id="f-ven">
                 <div class="modal-body row g-3">
@@ -196,18 +196,34 @@
     </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    let db_cli = JSON.parse(localStorage.getItem('v5_cli')) || [];
-    let db_ven = JSON.parse(localStorage.getItem('v5_ven')) || [];
+    // CONFIGURAÇÃO FIREBASE (Baseada na sua imagem)
+    const firebaseConfig = {
+        databaseURL: "https://veraempreendedora-default-rtdb.firebaseio.com/"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    let db_cli = {};
+    let db_ven = {};
     let cli_atual = "";
+
+    // Sincronização em tempo real com Firebase
+    database.ref().on('value', (snapshot) => {
+        const data = snapshot.val();
+        db_cli = data?.clientes || {};
+        db_ven = data?.vendas || {};
+        renderAll();
+    });
 
     function showSec(id) {
         document.querySelectorAll('section').forEach(s => s.classList.add('d-none'));
         document.getElementById('sec-'+id).classList.remove('d-none');
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        
-        // Ajuste para pegar o elemento correto no clique
         if(event) {
             const link = event.currentTarget;
             link.classList.add('active');
@@ -220,8 +236,9 @@
         if (input.files && input.files[0]) {
             let reader = new FileReader();
             reader.onload = e => {
-                document.getElementById('p-img').src = e.target.result;
-                document.getElementById('p-img').classList.remove('d-none');
+                const img = document.getElementById('p-img');
+                img.src = e.target.result;
+                img.classList.remove('d-none');
                 document.getElementById('p-icon').classList.add('d-none');
             };
             reader.readAsDataURL(input.files[0]);
@@ -237,24 +254,24 @@
 
     document.getElementById('f-cli').onsubmit = function(e) {
         e.preventDefault();
-        db_cli.push({
-            id: Date.now(),
+        const id = Date.now();
+        const novoCli = {
+            id: id,
             nome: document.getElementById('n-cli').value,
             tel: document.getElementById('t-cli').value,
             doc: document.getElementById('d-cli').value,
             end: document.getElementById('e-cli').value,
             nasc: document.getElementById('na-cli').value,
             dependentes: document.getElementById('dep-cli').value,
-            foto: document.getElementById('p-img').src
-        });
-        localStorage.setItem('v5_cli', JSON.stringify(db_cli));
+            foto: document.getElementById('p-img').src || ""
+        };
+        database.ref('clientes/' + id).set(novoCli);
         this.reset();
         bootstrap.Modal.getInstance(document.getElementById('modalCli')).hide();
-        renderAll();
     };
 
     function verFicha(id) {
-        const c = db_cli.find(x => x.id == id);
+        const c = db_cli[id];
         if(!c) return;
         const corpo = document.getElementById('detalhe-cliente-corpo');
         corpo.innerHTML = `
@@ -281,8 +298,9 @@
 
     document.getElementById('f-ven').onsubmit = function(e) {
         e.preventDefault();
-        db_ven.push({
-            id: Date.now(),
+        const id = Date.now();
+        const novaVen = {
+            id: id,
             cliente: cli_atual,
             plano: document.getElementById('pv').value,
             tipo: document.getElementById('tv').value,
@@ -290,10 +308,9 @@
             data: document.getElementById('dv').value,
             receber: document.getElementById('rv').value,
             forma: document.getElementById('fv').value
-        });
-        localStorage.setItem('v5_ven', JSON.stringify(db_ven));
+        };
+        database.ref('vendas/' + id).set(novaVen);
         bootstrap.Modal.getInstance(document.getElementById('modalVen')).hide();
-        renderAll();
     };
 
     function renderAll() {
@@ -303,7 +320,7 @@
         // Render Livro
         const lista = document.getElementById('lista-vendas');
         lista.innerHTML = '';
-        db_ven.filter(v => v.data.split('-')[1] === mes).forEach(v => {
+        Object.values(db_ven).filter(v => v.data.split('-')[1] === mes).forEach(v => {
             const isFuturo = v.receber > hoje;
             lista.innerHTML += `
             <tr>
@@ -315,14 +332,14 @@
                 </td>
                 <td><span class="badge bg-light text-dark border">${v.forma}</span></td>
                 <td class="${isFuturo ? 'text-danger fw-bold' : ''}">${v.receber.split('-').reverse().join('/')}</td>
-                <td class="text-end pe-4"><button class="btn-excluir" onclick="delVenda(${v.id})"><i class="fas fa-trash"></i></button></td>
+                <td class="text-end pe-4"><button class="btn-excluir" onclick="delVenda('${v.id}')"><i class="fas fa-trash"></i></button></td>
             </tr>`;
         });
 
         // Render Receber
         const gridRec = document.getElementById('lista-cards-receber');
         gridRec.innerHTML = '';
-        db_ven.filter(v => v.receber > hoje).forEach(v => {
+        Object.values(db_ven).filter(v => v.receber > hoje).forEach(v => {
             gridRec.innerHTML += `
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm p-3 border-start border-danger border-4">
@@ -342,32 +359,31 @@
         // Render Clientes
         const gridCli = document.getElementById('grid-clientes');
         gridCli.innerHTML = '';
-        db_cli.forEach(c => {
+        Object.values(db_cli).forEach(c => {
             gridCli.innerHTML += `
             <div class="col-md-4 col-lg-3">
                 <div class="card border-0 shadow-sm p-3 text-center h-100">
-                    <img src="${c.foto || 'https://via.placeholder.com/80'}" class="foto-perfil mx-auto mb-3 shadow-sm cursor-pointer" onclick="verFicha(${c.id})">
-                    <h6 class="fw-bold mb-1 cursor-pointer" onclick="verFicha(${c.id})">${c.nome}</h6>
+                    <img src="${c.foto || 'https://via.placeholder.com/80'}" class="foto-perfil mx-auto mb-3 shadow-sm cursor-pointer" onclick="verFicha('${c.id}')">
+                    <h6 class="fw-bold mb-1 cursor-pointer" onclick="verFicha('${c.id}')">${c.nome}</h6>
                     <p class="text-muted small mb-3">${c.tel}</p>
                     <div class="d-grid gap-2">
                         <button class="btn btn-sm btn-outline-info" onclick="abrirVenda('${c.nome}')">NOVA VENDA</button>
-                        <button class="btn btn-sm btn-light text-danger border-0" onclick="delCli(${c.id})"><i class="fas fa-user-minus me-1"></i> APAGAR CLIENTE</button>
+                        <button class="btn btn-sm btn-light text-danger border-0" onclick="delCli('${c.id}')"><i class="fas fa-user-minus me-1"></i> APAGAR CLIENTE</button>
                     </div>
                 </div>
             </div>`;
         });
     }
 
-    function delVenda(id) { if(confirm("Apagar esta venda do histórico?")) { db_ven = db_ven.filter(v => v.id !== id); localStorage.setItem('v5_ven', JSON.stringify(db_ven)); renderAll(); } }
+    function delVenda(id) { if(confirm("Apagar esta venda do histórico?")) { database.ref('vendas/' + id).remove(); } }
     
     function delCli(id) { 
         if(confirm("ATENÇÃO: Isso apagará o cliente e TODO o histórico dele. Confirma?")) { 
-            db_cli = db_cli.filter(c => c.id !== id); 
-            localStorage.setItem('v5_cli', JSON.stringify(db_cli)); 
-            renderAll(); 
+            database.ref('clientes/' + id).remove(); 
         } 
     }
 
+    // Inicialização
     window.onload = renderAll;
 </script>
 </body>
