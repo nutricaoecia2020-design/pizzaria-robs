@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vera Empreendedora | CRM & Vendas Pro</title>
+    <title>Vera Empreendedora | CRM Pro V3</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --primary: #2c3e50; --accent: #3498db; --success: #27ae60; --light: #f8f9fa; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f7; color: #333; }
+        :root { --primary: #2c3e50; --accent: #3498db; --success: #27ae60; --danger: #e74c3c; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; color: #333; }
         
-        /* Sidebar */
-        .sidebar { background: var(--primary); min-height: 100vh; color: white; width: 260px; position: fixed; transition: all 0.3s; z-index: 1000; }
-        .sidebar .nav-link { color: rgba(255,255,255,0.7); border-radius: 8px; margin: 5px 15px; transition: 0.3s; }
+        .sidebar { background: var(--primary); min-height: 100vh; color: white; width: 260px; position: fixed; z-index: 1000; }
+        .sidebar .nav-link { color: rgba(255,255,255,0.7); margin: 5px 15px; border-radius: 8px; transition: 0.3s; cursor: pointer; }
         .sidebar .nav-link:hover, .sidebar .nav-link.active { background: var(--accent); color: white; }
         
-        /* Layout */
         .main-content { margin-left: 260px; padding: 30px; }
-        .card { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .card-header { background: white; border-bottom: 1px solid #eee; font-weight: bold; color: var(--primary); }
+        .card { border: none; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         
-        /* Foto de Perfil */
-        #preview-foto { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); display: none; }
-        .avatar-placeholder { width: 100px; height: 100px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 40px; color: #999; }
+        #preview-foto { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); display: none; margin: 0 auto; }
+        .avatar-placeholder { width: 100px; height: 100px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 30px; color: #999; margin: 0 auto; }
+        
+        .badge-plano { background: #e1f5fe; color: #0288d1; font-weight: 600; padding: 5px 12px; border-radius: 20px; }
+        .btn-delete { color: var(--danger); cursor: pointer; transition: 0.3s; }
+        .btn-delete:hover { transform: scale(1.2); }
     </style>
 </head>
 <body>
@@ -33,81 +33,72 @@
         <small class="text-uppercase opacity-50">Empreendedora</small>
     </div>
     <ul class="nav flex-column mt-3">
-        <li class="nav-item"><a href="#" class="nav-link active" onclick="showSection('dash')"><i class="fas fa-chart-pie me-2"></i> Painel</a></li>
-        <li class="nav-item"><a href="#" class="nav-link" onclick="showSection('cli')"><i class="fas fa-user-plus me-2"></i> Novo Cliente</a></li>
-        <li class="nav-item"><a href="#" class="nav-link" onclick="showSection('list-cli')"><i class="fas fa-users me-2"></i> Fichas Clientes</a></li>
-        <li class="nav-item"><a href="#" class="nav-link" onclick="showSection('hist')"><i class="fas fa-file-invoice-dollar me-2"></i> Histórico Mensal</a></li>
+        <li class="nav-item"><a class="nav-link active" onclick="showSection('dash')"><i class="fas fa-home me-2"></i> Painel</a></li>
+        <li class="nav-item"><a class="nav-link" onclick="showSection('cli')"><i class="fas fa-user-plus me-2"></i> Novo Cliente</a></li>
+        <li class="nav-item"><a class="nav-link" onclick="showSection('list-cli')"><i class="fas fa-users me-2"></i> Fichas Clientes</a></li>
+        <li class="nav-item"><a class="nav-link" onclick="showSection('hist')"><i class="fas fa-calendar-alt me-2"></i> Histórico Mensal</a></li>
     </ul>
 </div>
 
 <div class="main-content">
     <header class="d-flex justify-content-between align-items-center mb-4">
-        <h2 id="page-title" class="fw-bold">Dashboard</h2>
-        <div class="dropdown">
-            <button class="btn btn-white shadow-sm rounded-pill px-4" type="button">
-                Olá, Vera! <i class="fas fa-circle-user ms-2 text-primary"></i>
-            </button>
-        </div>
+        <h2 id="page-title" class="fw-bold">Painel de Controle</h2>
+        <div class="bg-white px-4 py-2 rounded-pill shadow-sm">Olá, <b>Vera!</b> <i class="fas fa-user-circle text-primary ms-2"></i></div>
     </header>
 
     <section id="sec-dash">
-        <div class="row">
+        <div class="row g-4">
             <div class="col-md-4">
                 <div class="card p-4 border-start border-primary border-5">
-                    <small class="text-muted fw-bold">TOTAL VENDAS</small>
-                    <h3 id="dash-total" class="fw-bold mb-0">R$ 0,00</h3>
+                    <small class="text-muted fw-bold">VENDAS TOTAIS</small>
+                    <h3 id="dash-total" class="fw-bold text-dark">R$ 0,00</h3>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card p-4 border-start border-success border-5">
-                    <small class="text-muted fw-bold">CLIENTES</small>
-                    <h3 id="dash-clientes" class="fw-bold mb-0">0</h3>
+                    <small class="text-muted fw-bold">CLIENTES ATIVOS</small>
+                    <h3 id="dash-clientes" class="fw-bold text-dark">0</h3>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card p-4 border-start border-warning border-5">
-                    <small class="text-muted fw-bold">A RECEBER</small>
-                    <h3 id="dash-receber" class="fw-bold mb-0 text-warning">R$ 0,00</h3>
+                    <small class="text-muted fw-bold text-warning">A RECEBER</small>
+                    <h3 id="dash-receber" class="fw-bold text-warning">R$ 0,00</h3>
                 </div>
             </div>
         </div>
     </section>
 
     <section id="sec-cli" class="d-none">
-        <div class="card">
-            <div class="card-header">FICHA CADASTRAL COMPLETA</div>
-            <div class="card-body">
-                <form id="form-cliente">
-                    <div class="row g-3">
-                        <div class="col-md-3 text-center border-end">
-                            <div class="avatar-placeholder mx-auto mb-2" id="placeholder-img"><i class="fas fa-camera"></i></div>
-                            <img src="" id="preview-foto" class="mx-auto mb-2">
-                            <input type="file" id="foto-input" class="form-control form-control-sm" accept="image/*" onchange="handleFoto(this)">
-                        </div>
-                        <div class="col-md-9 row g-3">
-                            <div class="col-md-8"><label class="form-label">Nome Completo</label><input type="text" id="c-nome" class="form-control" required></div>
-                            <div class="col-md-4"><label class="form-label">Data Nasc.</label><input type="date" id="c-nasc" class="form-control"></div>
-                            <div class="col-md-6"><label class="form-label">CPF/CNPJ</label><input type="text" id="c-doc" class="form-control"></div>
-                            <div class="col-md-6"><label class="form-label">Telefone/WhatsApp</label><input type="tel" id="c-tel" class="form-control"></div>
-                            <div class="col-md-12"><label class="form-label">Endereço Completo</label><input type="text" id="c-end" class="form-control" placeholder="Rua, Número, Bairro, Cidade"></div>
-                            <div class="col-12 text-end"><button type="submit" class="btn btn-primary px-5">Salvar Ficha</button></div>
-                        </div>
-                    </div>
-                </form>
-            </div>
+        <div class="card p-4">
+            <h5 class="fw-bold mb-4">Cadastro de Nova Ficha</h5>
+            <form id="form-cliente" class="row g-3">
+                <div class="col-md-3 text-center">
+                    <div id="placeholder-img" class="avatar-placeholder mb-2"><i class="fas fa-user"></i></div>
+                    <img id="preview-foto" src="" class="mb-2">
+                    <input type="file" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this)">
+                </div>
+                <div class="col-md-9 row g-3">
+                    <div class="col-md-8"><label class="form-label">Nome Completo</label><input type="text" id="c-nome" class="form-control" required></div>
+                    <div class="col-md-4"><label class="form-label">Data Nasc.</label><input type="date" id="c-nasc" class="form-control"></div>
+                    <div class="col-md-6"><label class="form-label">CPF/CNPJ</label><input type="text" id="c-doc" class="form-control"></div>
+                    <div class="col-md-6"><label class="form-label">WhatsApp</label><input type="tel" id="c-tel" class="form-control"></div>
+                    <div class="col-md-12"><label class="form-label">Endereço</label><input type="text" id="c-end" class="form-control"></div>
+                    <div class="col-12 text-end"><button type="submit" class="btn btn-primary px-5">Criar Ficha</button></div>
+                </div>
+            </form>
         </div>
     </section>
 
     <section id="sec-list-cli" class="d-none">
-        <div class="row mt-4" id="cards-clientes-grid">
-            </div>
+        <div class="row g-4" id="clientes-grid"></div>
     </section>
 
     <section id="sec-hist" class="d-none">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span>FILTRAR VENDAS POR MÊS</span>
-                <select id="filtro-mes" class="form-select w-auto" onchange="renderHist()">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h6 class="mb-0 fw-bold">FILTRAR VENDAS</h6>
+                <select id="filtro-mes" class="form-select w-auto" onchange="renderVendas()">
                     <option value="01">Janeiro</option><option value="02">Fevereiro</option>
                     <option value="03">Março</option><option value="04" selected>Abril</option>
                     <option value="05">Maio</option><option value="06">Junho</option>
@@ -116,61 +107,51 @@
                     <option value="11">Novembro</option><option value="12">Dezembro</option>
                 </select>
             </div>
-            <div class="card-body">
-                <table class="table table-hover">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>Data</th><th>Cliente</th><th>Plano</th><th>Valor</th><th>Pagamento</th><th>Recebimento</th>
+                            <th>Data</th><th>Cliente</th><th>Plano</th><th>Valor</th><th>Pagto</th><th>Recebimento</th><th>Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="lista-vendas-mes"></tbody>
+                    <tbody id="lista-vendas-corpo"></tbody>
                 </table>
             </div>
         </div>
     </section>
 </div>
 
-<div class="modal fade" id="modalVenda" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+<div class="modal fade" id="modalFicha" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-4 border-0 shadow">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Efetuar Venda: <span id="venda-cliente-nome"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title">Ficha Detalhada</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form id="form-venda-acao">
-                <div class="modal-body row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Plano de Saúde</label>
-                        <select id="v-plano" class="form-select" required>
-                            <option value="Amil One">Amil One</option>
-                            <option value="Bradesco Saúde">Bradesco Saúde</option>
-                            <option value="SulAmérica">SulAmérica</option>
-                            <option value="Unimed">Unimed</option>
-                            <option value="Hapvida">Hapvida</option>
-                            <option value="Porto Seguro">Porto Seguro</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Tipo</label>
-                        <select id="v-tipo" class="form-select"><option>Individual (PF)</option><option>Empresa (PME)</option></select>
-                    </div>
-                    <div class="col-md-4"><label class="form-label">Valor do Plano</label><input type="number" id="v-valor" class="form-control" required></div>
-                    <div class="col-md-4"><label class="form-label">Data da Venda</label><input type="date" id="v-data" class="form-control" required></div>
-                    <div class="col-md-4">
-                        <label class="form-label">Forma Pagto</label>
-                        <select id="v-forma" class="form-select">
-                            <option>Pix</option><option>Cartão</option><option>Boleto</option>
-                        </select>
-                    </div>
-                    <div class="col-md-12 p-3 bg-light rounded border">
-                        <label class="fw-bold text-danger"><i class="fas fa-calendar-alt me-2"></i>AGENDAMENTO DE RECEBIMENTO</label>
-                        <div class="row">
-                            <div class="col-md-6"><label class="form-label">Quando você recebe?</label><input type="date" id="v-data-receber" class="form-control" required></div>
-                            <div class="col-md-6"><small class="text-muted d-block mt-4">O valor aparecerá como "A Receber" no seu painel até esta data.</small></div>
-                        </div>
-                    </div>
+            <div class="modal-body text-center" id="corpo-ficha">
                 </div>
-                <div class="modal-footer"><button type="submit" class="btn btn-success w-100">FINALIZAR E SALVAR</button></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalVenda" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="form-venda-final">
+                <div class="modal-header">
+                    <h5 class="modal-title">Venda para: <span id="nome-venda-cli"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body row g-3">
+                    <div class="col-12"><label class="form-label">Plano de Saúde</label>
+                        <select id="v-plano" class="form-select"><option>Hapvida</option><option>Unimed</option><option>Bradesco</option><option>Amil</option><option>SulAmérica</option></select>
+                    </div>
+                    <div class="col-md-6"><label class="form-label">Valor (R$)</label><input type="number" id="v-valor" class="form-control" required></div>
+                    <div class="col-md-6"><label class="form-label">Data Venda</label><input type="date" id="v-data" class="form-control" required></div>
+                    <div class="col-md-12"><label class="form-label">Data Agendada para Receber</label><input type="date" id="v-data-rec" class="form-control" required></div>
+                    <div class="col-md-12"><label class="form-label">Forma de Pagamento</label><select id="v-forma" class="form-select"><option>Pix</option><option>Cartão</option><option>Boleto</option></select></div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-success w-100">Registrar Venda</button></div>
             </form>
         </div>
     </div>
@@ -178,113 +159,142 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    let clientes = JSON.parse(localStorage.getItem('v_cli')) || [];
-    let vendas = JSON.parse(localStorage.getItem('v_ven')) || [];
-    let currentCliente = "";
+    let clientes = JSON.parse(localStorage.getItem('v3_cli')) || [];
+    let vendas = JSON.parse(localStorage.getItem('v3_ven')) || [];
+    let cliAtual = "";
 
     function showSection(id) {
         document.querySelectorAll('section').forEach(s => s.classList.add('d-none'));
-        document.getElementById('sec-' + id).classList.remove('d-none');
+        document.getElementById('sec-'+id).classList.remove('d-none');
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        renderHist(); renderCards(); updateDash();
+        if(id === 'list-cli') renderClientes();
+        if(id === 'hist') renderVendas();
+        updateDashboard();
     }
 
-    function handleFoto(input) {
+    function previewImage(input) {
         if (input.files && input.files[0]) {
-            let reader = new FileReader();
-            reader.onload = e => {
+            var reader = new FileReader();
+            reader.onload = function(e) {
                 document.getElementById('preview-foto').src = e.target.result;
                 document.getElementById('preview-foto').style.display = 'block';
                 document.getElementById('placeholder-img').style.display = 'none';
-            };
+            }
             reader.readAsDataURL(input.files[0]);
         }
     }
 
     document.getElementById('form-cliente').onsubmit = function(e) {
         e.preventDefault();
-        const cli = {
+        const novoCli = {
             id: Date.now(),
             nome: document.getElementById('c-nome').value,
             nasc: document.getElementById('c-nasc').value,
             doc: document.getElementById('c-doc').value,
             tel: document.getElementById('c-tel').value,
             end: document.getElementById('c-end').value,
-            foto: document.getElementById('preview-foto').src
+            foto: document.getElementById('preview-foto').src || ""
         };
-        clientes.push(cli);
-        localStorage.setItem('v_cli', JSON.stringify(clientes));
-        alert('Ficha cadastrada com sucesso!');
+        clientes.push(novoCli);
+        localStorage.setItem('v3_cli', JSON.stringify(clientes));
         this.reset();
         showSection('list-cli');
-    };
+    }
 
-    function renderCards() {
-        const grid = document.getElementById('cards-clientes-grid');
+    function renderClientes() {
+        const grid = document.getElementById('clientes-grid');
         grid.innerHTML = '';
         clientes.forEach(c => {
             grid.innerHTML += `
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <img src="${c.foto || '#'}" class="rounded-circle mb-3" style="width:80px;height:80px;object-fit:cover;background:#eee">
-                            <h5 class="fw-bold mb-1">${c.nome}</h5>
-                            <small class="text-muted d-block mb-3"><i class="fas fa-map-marker-alt"></i> ${c.end}</small>
-                            <button onclick="abrirVenda('${c.nome}')" class="btn btn-sm btn-outline-primary w-100 mb-2">EFETUAR VENDA</button>
-                            <button class="btn btn-sm btn-light w-100">VER FICHA COMPLETA</button>
-                        </div>
-                    </div>
-                </div>`;
+            <div class="col-md-4">
+                <div class="card h-100 text-center p-3">
+                    <img src="${c.foto || 'https://via.placeholder.com/100'}" class="rounded-circle mx-auto mb-3" style="width:80px;height:80px;object-fit:cover">
+                    <h6 class="fw-bold mb-1">${c.nome}</h6>
+                    <small class="text-muted d-block mb-3">${c.tel}</small>
+                    <button onclick="preparaVenda('${c.nome}')" class="btn btn-sm btn-outline-primary w-100 mb-2">EFETUAR VENDA</button>
+                    <button onclick="verFicha(${c.id})" class="btn btn-sm btn-light w-100">VER FICHA COMPLETA</button>
+                </div>
+            </div>`;
         });
     }
 
-    function abrirVenda(nome) {
-        currentCliente = nome;
-        document.getElementById('venda-cliente-nome').innerText = nome;
+    function verFicha(id) {
+        const c = clientes.find(x => x.id == id);
+        const corpo = document.getElementById('corpo-ficha');
+        corpo.innerHTML = `
+            <img src="${c.foto}" class="rounded-circle mb-3" style="width:120px;height:120px;object-fit:cover;border:4px solid #eee">
+            <h4>${c.nome}</h4>
+            <hr>
+            <div class="text-start">
+                <p><b>CPF/CNPJ:</b> ${c.doc}</p>
+                <p><b>Nascimento:</b> ${c.nasc}</p>
+                <p><b>WhatsApp:</b> ${c.tel}</p>
+                <p><b>Endereço:</b> ${c.end}</p>
+            </div>
+        `;
+        new bootstrap.Modal(document.getElementById('modalFicha')).show();
+    }
+
+    function preparaVenda(nome) {
+        cliAtual = nome;
+        document.getElementById('nome-venda-cli').innerText = nome;
         new bootstrap.Modal(document.getElementById('modalVenda')).show();
     }
 
-    document.getElementById('form-venda-acao').onsubmit = function(e) {
+    document.getElementById('form-venda-final').onsubmit = function(e) {
         e.preventDefault();
         const v = {
-            cliente: currentCliente,
+            id: Date.now(),
+            cliente: cliAtual,
             plano: document.getElementById('v-plano').value,
-            tipo: document.getElementById('v-tipo').value,
             valor: parseFloat(document.getElementById('v-valor').value),
             data: document.getElementById('v-data').value,
-            forma: document.getElementById('v-forma').value,
-            receber: document.getElementById('v-data-receber').value
+            recebimento: document.getElementById('v-data-rec').value,
+            forma: document.getElementById('v-forma').value
         };
         vendas.push(v);
-        localStorage.setItem('v_ven', JSON.stringify(vendas));
+        localStorage.setItem('v3_ven', JSON.stringify(vendas));
         bootstrap.Modal.getInstance(document.getElementById('modalVenda')).hide();
         showSection('hist');
-    };
+    }
 
-    function renderHist() {
-        const mesFiltro = document.getElementById('filtro-mes').value;
-        const body = document.getElementById('lista-vendas-mes');
-        body.innerHTML = '';
-        vendas.filter(v => v.data.split('-')[1] === mesFiltro).forEach(v => {
-            body.innerHTML += `
-                <tr>
-                    <td>${new Date(v.data).toLocaleDateString()}</td>
-                    <td class="fw-bold">${v.cliente}</td>
-                    <td><span class="badge bg-info">${v.plano}</span></td>
-                    <td>R$ ${v.valor.toLocaleString()}</td>
-                    <td>${v.forma}</td>
-                    <td class="text-danger">${new Date(v.receber).toLocaleDateString()}</td>
-                </tr>`;
+    function renderVendas() {
+        const mes = document.getElementById('filtro-mes').value;
+        const corpo = document.getElementById('lista-vendas-corpo');
+        corpo.innerHTML = '';
+        vendas.filter(v => v.data.split('-')[1] === mes).forEach(v => {
+            corpo.innerHTML += `
+            <tr>
+                <td>${new Date(v.data).toLocaleDateString()}</td>
+                <td class="fw-bold">${v.cliente}</td>
+                <td><span class="badge-plano">${v.plano}</span></td>
+                <td>R$ ${v.valor.toLocaleString()}</td>
+                <td>${v.forma}</td>
+                <td class="text-danger fw-bold">${new Date(v.recebimento).toLocaleDateString()}</td>
+                <td><i class="fas fa-trash btn-delete" onclick="apagarVenda(${v.id})"></i></td>
+            </tr>`;
         });
     }
 
-    function updateDash() {
-        document.getElementById('dash-clientes').innerText = clientes.length;
-        let total = vendas.reduce((acc, v) => acc + v.valor, 0);
-        document.getElementById('dash-total').innerText = `R$ ${total.toLocaleString()}`;
+    function apagarVenda(id) {
+        if(confirm("Deseja realmente apagar esta venda?")) {
+            vendas = vendas.filter(v => v.id !== id);
+            localStorage.setItem('v3_ven', JSON.stringify(vendas));
+            renderVendas();
+            updateDashboard();
+        }
     }
 
-    window.onload = () => { renderCards(); updateDash(); };
+    function updateDashboard() {
+        document.getElementById('dash-clientes').innerText = clientes.length;
+        let total = vendas.reduce((sum, v) => sum + v.valor, 0);
+        document.getElementById('dash-total').innerText = `R$ ${total.toLocaleString()}`;
+        
+        let aReceber = vendas.filter(v => new Date(v.recebimento) > new Date()).reduce((sum, v) => sum + v.valor, 0);
+        document.getElementById('dash-receber').innerText = `R$ ${aReceber.toLocaleString()}`;
+    }
+
+    window.onload = updateDashboard;
 </script>
 </body>
 </html>
