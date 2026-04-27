@@ -84,7 +84,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <label class="block text-xs font-black text-slate-500 uppercase mb-2">Nascimento</label>
                         <input type="date" id="nascimento" required class="input-clinical w-full p-4 rounded-2xl font-semibold text-slate-600">
@@ -97,26 +97,11 @@
                         <label class="block text-xs font-black text-slate-500 uppercase mb-2">Data Consulta</label>
                         <input type="date" id="dataConsulta" required class="input-clinical w-full p-4 rounded-2xl font-semibold">
                     </div>
-                    <div>
-                        <label class="block text-xs font-black text-slate-500 uppercase mb-2">Horário</label>
+                    <div class="md:col-span-3">
+                        <label class="block text-xs font-black text-slate-500 uppercase mb-2">Horário Disponível</label>
                         <select id="diaHora" required class="input-clinical w-full p-4 rounded-2xl font-bold cursor-pointer appearance-none">
-                            <option value="">Escolha a data...</option>
+                            <option value="">Escolha a data primeiro...</option>
                         </select>
-                    </div>
-                </div>
-
-                <div class="bg-slate-50 p-8 rounded-[2rem] border-2 border-dashed border-emerald-200 grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
-                    <div>
-                        <label class="block text-xs font-black text-emerald-800 uppercase mb-2">Peso Atual (kg)</label>
-                        <input type="number" step="0.1" id="peso" required class="input-clinical w-full p-4 rounded-2xl font-bold" placeholder="00.0">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black text-emerald-800 uppercase mb-2">Altura (m)</label>
-                        <input type="number" step="0.01" id="altura" required class="input-clinical w-full p-4 rounded-2xl font-bold" placeholder="1.00">
-                    </div>
-                    <div class="bg-emerald-600 p-5 rounded-2xl shadow-lg flex flex-col justify-center text-white text-center">
-                        <span id="resultadoIMC" class="text-xl font-black">IMC: --</span>
-                        <span id="classificacaoIMC" class="text-xs font-bold uppercase opacity-80 italic">Aguardando dados...</span>
                     </div>
                 </div>
 
@@ -245,7 +230,6 @@
     </main>
 
     <script type="module">
-        // --- CONFIGURAÇÃO FIREBASE ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
@@ -262,34 +246,14 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // --- VARIÁVEIS DE CONTROLE ---
         const SENHA_ADMIN = "253641";
         const horariosBase = ["20:00", "20:40", "21:20"];
-        const diasPermitidos = [1, 2, 4]; // Segunda, Terça, Quinta
+        const diasPermitidos = [1, 2, 4];
 
-        // --- FUNÇÕES DE AUXÍLIO ---
         const toBase64 = file => new Promise((res) => {
             const reader = new FileReader(); reader.readAsDataURL(file);
             reader.onload = () => res(reader.result);
         });
-
-        // --- CÁLCULO DE IMC ---
-        function calcularIMC() {
-            const p = parseFloat(document.getElementById('peso').value);
-            const a = parseFloat(document.getElementById('altura').value);
-            const res = document.getElementById('resultadoIMC');
-            const classif = document.getElementById('classificacaoIMC');
-            if (p > 0 && a > 0) {
-                const imc = (p / (a * a)).toFixed(1);
-                res.innerText = `IMC: ${imc}`;
-                let cat = imc < 18.5 ? "Baixo Peso" : imc < 25 ? "Normal" : imc < 30 ? "Sobrepeso" : "Obesidade";
-                classif.innerText = cat;
-                return { valor: imc, categoria: cat };
-            }
-            return null;
-        }
-        document.getElementById('peso').addEventListener('input', calcularIMC);
-        document.getElementById('altura').addEventListener('input', calcularIMC);
 
         // --- LÓGICA DE DATAS E HORÁRIOS ---
         const dataInput = document.getElementById('dataConsulta');
@@ -302,14 +266,12 @@
             const dataObj = new Date(valorData + 'T00:00:00');
             const diaSemana = dataObj.getDay();
 
-            // Verifica bloqueios e dias da semana
             onValue(ref(db, 'bloqueios'), (snap) => {
                 const listB = snap.val() || [];
                 if(!diasPermitidos.includes(diaSemana) || Object.values(listB).includes(valorData)) {
-                    alert("Data indisponível!");
+                    alert("Data indisponível para atendimento!");
                     dataInput.value = "";
                 } else {
-                    // Popular horários que não estão ocupados
                     onValue(ref(db, 'agendamentos'), (snapA) => {
                         const agendados = snapA.val() || {};
                         horariosBase.forEach(h => {
@@ -326,7 +288,6 @@
         // --- SALVAR AGENDAMENTO ---
         document.getElementById('formAgendamento').onsubmit = async (e) => {
             e.preventDefault();
-            const imcData = calcularIMC();
             const file = document.getElementById('exames').files[0];
             const pdfBase64 = file ? await toBase64(file) : null;
 
@@ -337,10 +298,6 @@
                 cassie: document.getElementById('cassie').value,
                 dataConsulta: document.getElementById('dataConsulta').value,
                 horario: document.getElementById('diaHora').value,
-                peso: document.getElementById('peso').value,
-                altura: document.getElementById('altura').value,
-                imc: imcData ? imcData.valor : '--',
-                classif: imcData ? imcData.categoria : '--',
                 motivo: document.getElementById('motivo').value,
                 medicacao: document.getElementById('medicacao').value,
                 pdf: pdfBase64,
@@ -348,7 +305,7 @@
             };
 
             push(ref(db, 'agendamentos'), novo).then(() => {
-                alert("✅ Agendamento Sincronizado!");
+                alert("✅ Agendamento Realizado com Sucesso!");
                 location.reload();
             });
         };
@@ -361,7 +318,7 @@
             }
         };
 
-        // --- SYNC REALTIME (ADMIN) ---
+        // --- SYNC REALTIME ---
         onValue(ref(db, 'agendamentos'), (snap) => {
             const corpo = document.getElementById('corpoAdmin');
             const data = snap.val();
@@ -378,7 +335,6 @@
                                 <div class="grid grid-cols-2 gap-x-4 gap-y-1">
                                     <div class="mini-data"><span class="label-mini">Zap:</span>${a.whatsapp}</div>
                                     <div class="mini-data"><span class="label-mini">Nasc:</span>${a.nascimento}</div>
-                                    <div class="mini-data"><span class="label-mini">IMC:</span>${a.imc} (${a.classif})</div>
                                     <div class="mini-data col-span-2 italic text-emerald-700 font-semibold">${a.motivo}</div>
                                 </div>
                             </td>
@@ -400,7 +356,6 @@
             document.getElementById('stat_pacientes').innerText = count;
         });
 
-        // Financeiro Realtime
         onValue(ref(db, 'financeiro'), (snap) => {
             const listF = snap.val();
             const container = document.getElementById('listaFinanceiro');
@@ -422,7 +377,6 @@
             document.getElementById('stat_saldo').innerText = `R$ ${(r-d).toFixed(2)}`;
         });
 
-        // Perfil Realtime
         onValue(ref(db, 'perfil'), (snap) => {
             const p = snap.val();
             if(p) {
@@ -434,8 +388,7 @@
             }
         });
 
-        // --- ACTIONS ---
-        window.removerItem = (path) => { if(confirm("Deseja apagar?")) remove(ref(db, path)); };
+        window.removerItem = (path) => { if(confirm("Deseja apagar este registro?")) remove(ref(db, path)); };
 
         document.getElementById('btnRegistrarFinanceiro').onclick = () => {
             const desc = document.getElementById('gest_desc').value;
@@ -454,7 +407,7 @@
                 endereco: document.getElementById('input_endereco').value
             };
             if(file) pData.foto = await toBase64(file);
-            set(ref(db, 'perfil'), pData).then(() => alert("Perfil Sincronizado!"));
+            set(ref(db, 'perfil'), pData).then(() => alert("Perfil Atualizado!"));
         };
 
         window.bloquearData = () => {
