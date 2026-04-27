@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vera Empreendedora | Gestão de Planos de Saúde</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f7fe; }
+        .sidebar { background: linear-gradient(180deg, #4e73df 0%, #224abe 100%); }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 15px; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-primary { background: #4e73df; transition: all 0.3s; }
+        .btn-primary:hover { background: #224abe; transform: translateY(-2px); }
+    </style>
+</head>
+<body class="text-gray-800">
+
+<div class="flex h-screen overflow-hidden">
+    <aside class="sidebar w-64 hidden md:flex flex-col text-white">
+        <div class="p-6 text-center">
+            <h1 class="text-2xl font-bold tracking-wider">VERA</h1>
+            <p class="text-xs opacity-75">EMPREENDEDORA</p>
+        </div>
+        <nav class="mt-10 flex-1">
+            <a href="#" onclick="showSection('dashboard')" class="flex items-center px-6 py-3 hover:bg-white/10 transition"><i class="fas fa-chart-line mr-3"></i> Dashboard</a>
+            <a href="#" onclick="showSection('clientes')" class="flex items-center px-6 py-3 hover:bg-white/10 transition"><i class="fas fa-users mr-3"></i> Clientes</a>
+            <a href="#" onclick="showSection('vendas')" class="flex items-center px-6 py-3 hover:bg-white/10 transition"><i class="fas fa-file-invoice-dollar mr-3"></i> Vendas</a>
+            <a href="#" onclick="showSection('relatorios')" class="flex items-center px-6 py-3 hover:bg-white/10 transition"><i class="fas fa-history mr-3"></i> Histórico Geral</a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto p-4 md:p-8">
+        
+        <header class="flex justify-between items-center mb-8">
+            <h2 id="section-title" class="text-2xl font-bold text-gray-700">Dashboard</h2>
+            <div class="bg-white px-4 py-2 rounded-full shadow-sm flex items-center">
+                <span class="text-sm font-medium text-gray-600">Olá, Vera!</span>
+                <div class="w-8 h-8 bg-blue-500 rounded-full ml-3 flex items-center justify-center text-white text-xs">VE</div>
+            </div>
+        </header>
+
+        <section id="dashboard" class="content-section">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="glass-card p-6 shadow-lg border-l-4 border-blue-500">
+                    <p class="text-sm text-gray-500 font-bold uppercase">Vendas do Mês</p>
+                    <h3 id="dash-total-vendas" class="text-3xl font-bold">R$ 0,00</h3>
+                </div>
+                <div class="glass-card p-6 shadow-lg border-l-4 border-green-500">
+                    <p class="text-sm text-gray-500 font-bold uppercase">Clientes Ativos</p>
+                    <h3 id="dash-total-clientes" class="text-3xl font-bold">0</h3>
+                </div>
+                <div class="glass-card p-6 shadow-lg border-l-4 border-purple-500">
+                    <p class="text-sm text-gray-500 font-bold uppercase">A Receber (Próx. 7 dias)</p>
+                    <h3 id="dash-pendente" class="text-3xl font-bold text-orange-500">R$ 0,00</h3>
+                </div>
+            </div>
+        </section>
+
+        <section id="clientes" class="content-section hidden">
+            <div class="glass-card p-6 shadow-lg">
+                <h3 class="text-xl font-bold mb-4">Novo Cadastro de Cliente</h3>
+                <form id="formCliente" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="nomeCliente" placeholder="Nome Completo" class="p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none" required>
+                    <input type="text" id="cpfCliente" placeholder="CPF ou CNPJ" class="p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none" required>
+                    <input type="email" id="emailCliente" placeholder="E-mail" class="p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
+                    <input type="tel" id="telCliente" placeholder="Telefone" class="p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
+                    <button type="submit" class="md:col-span-2 btn-primary text-white py-3 rounded-lg font-bold">Salvar Cliente</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="vendas" class="content-section hidden">
+            <div class="glass-card p-6 shadow-lg">
+                <h3 class="text-xl font-bold mb-4">Registrar Nova Venda</h3>
+                <form id="formVenda" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <select id="vendaCliente" class="p-3 border rounded-lg outline-none" required>
+                        <option value="">Selecionar Cliente...</option>
+                    </select>
+                    <select id="tipoPlano" class="p-3 border rounded-lg outline-none" required>
+                        <option value="Individual">Individual (PF)</option>
+                        <option value="Empresarial">Empresarial (PME)</option>
+                    </select>
+                    <input type="date" id="dataVenda" class="p-3 border rounded-lg outline-none" required>
+                    <input type="number" id="valorVenda" placeholder="Valor do Plano (R$)" class="p-3 border rounded-lg outline-none" required>
+                    <select id="formaPagamento" class="p-3 border rounded-lg outline-none" required>
+                        <option value="Boleto">Boleto</option>
+                        <option value="Cartão">Cartão de Crédito</option>
+                        <option value="Pix">Pix</option>
+                        <option value="Débito">Débito em Conta</option>
+                    </select>
+                    <div class="flex flex-col">
+                        <label class="text-xs text-gray-500 ml-1">Agendamento de Recebimento</label>
+                        <input type="date" id="dataRecebimento" class="p-3 border rounded-lg outline-none" required>
+                    </div>
+                    <button type="submit" class="md:col-span-2 bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-bold transition">Finalizar Venda</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="relatorios" class="content-section hidden">
+            <div class="glass-card p-6 shadow-lg">
+                <h3 class="text-xl font-bold mb-4">Controle Geral de Vendas</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="p-3 border">Data</th>
+                                <th class="p-3 border">Cliente</th>
+                                <th class="p-3 border">Tipo</th>
+                                <th class="p-3 border">Valor</th>
+                                <th class="p-3 border">Recebimento</th>
+                                <th class="p-3 border">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaVendas">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+    // Banco de Dados em Memória (LocalStorage)
+    let clientes = JSON.parse(localStorage.getItem('vera_clientes')) || [];
+    let vendas = JSON.parse(localStorage.getItem('vera_vendas')) || [];
+
+    // Navegação entre abas
+    function showSection(id) {
+        document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+        document.getElementById('section-title').innerText = id.charAt(0).toUpperCase() + id.slice(1);
+        renderData();
+    }
+
+    // Cadastro de Cliente
+    document.getElementById('formCliente').onsubmit = function(e) {
+        e.preventDefault();
+        const cliente = {
+            id: Date.now(),
+            nome: document.getElementById('nomeCliente').value,
+            cpf: document.getElementById('cpfCliente').value
+        };
+        clientes.push(cliente);
+        localStorage.setItem('vera_clientes', JSON.stringify(clientes));
+        alert('Cliente cadastrado com sucesso!');
+        this.reset();
+        renderData();
+    };
+
+    // Registro de Venda
+    document.getElementById('formVenda').onsubmit = function(e) {
+        e.preventDefault();
+        const venda = {
+            cliente: document.getElementById('vendaCliente').value,
+            tipo: document.getElementById('tipoPlano').value,
+            data: document.getElementById('dataVenda').value,
+            valor: parseFloat(document.getElementById('valorVenda').value),
+            forma: document.getElementById('formaPagamento').value,
+            recebimento: document.getElementById('dataRecebimento').value
+        };
+        vendas.push(venda);
+        localStorage.setItem('vera_vendas', JSON.stringify(vendas));
+        alert('Venda registrada!');
+        this.reset();
+        renderData();
+    };
+
+    // Atualizar UI
+    function renderData() {
+        // Atualiza Select de Clientes na aba Vendas
+        const selectVenda = document.getElementById('vendaCliente');
+        selectVenda.innerHTML = '<option value="">Selecionar Cliente...</option>';
+        clientes.forEach(c => {
+            selectVenda.innerHTML += `<option value="${c.nome}">${c.nome}</option>`;
+        });
+
+        // Atualiza Tabela
+        const tabela = document.getElementById('tabelaVendas');
+        tabela.innerHTML = '';
+        let total = 0;
+        vendas.forEach(v => {
+            total += v.valor;
+            tabela.innerHTML += `
+                <tr class="hover:bg-gray-50">
+                    <td class="p-3 border">${new Date(v.data).toLocaleDateString()}</td>
+                    <td class="p-3 border font-semibold">${v.cliente}</td>
+                    <td class="p-3 border">${v.tipo}</td>
+                    <td class="p-3 border">R$ ${v.valor.toLocaleString()}</td>
+                    <td class="p-3 border">${new Date(v.recebimento).toLocaleDateString()}</td>
+                    <td class="p-3 border"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">${v.forma}</span></td>
+                </tr>
+            `;
+        });
+
+        // Atualiza Dashboard
+        document.getElementById('dash-total-vendas').innerText = `R$ ${total.toLocaleString()}`;
+        document.getElementById('dash-total-clientes').innerText = clientes.length;
+    }
+
+    // Inicialização
+    window.onload = renderData;
+</script>
+
+</body>
+</html>
