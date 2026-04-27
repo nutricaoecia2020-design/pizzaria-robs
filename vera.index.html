@@ -3,133 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vera Empreendedora | CRM Pro V3</title>
+    <title>Vera Empreendedora | Livro de Vendas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --primary: #2c3e50; --accent: #3498db; --success: #27ae60; --danger: #e74c3c; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; color: #333; }
+        :root { --primary-dark: #1a252f; --accent-blue: #3498db; --paper-bg: #ffffff; }
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        .sidebar { background: var(--primary); min-height: 100vh; color: white; width: 260px; position: fixed; z-index: 1000; }
-        .sidebar .nav-link { color: rgba(255,255,255,0.7); margin: 5px 15px; border-radius: 8px; transition: 0.3s; cursor: pointer; }
-        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: var(--accent); color: white; }
+        /* Sidebar Estilizada */
+        .sidebar { background: var(--primary-dark); min-height: 100vh; width: 240px; position: fixed; color: white; transition: 0.3s; }
+        .nav-link { color: #adb5bd; margin: 10px 15px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { background: var(--accent-blue); color: white; }
+
+        .main-content { margin-left: 240px; padding: 30px; }
         
-        .main-content { margin-left: 260px; padding: 30px; }
-        .card { border: none; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        /* Estilo Tabela de Caderno */
+        .caderno-container { background: var(--paper-bg); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-top: 5px solid var(--accent-blue); }
+        .table thead { background: #f8f9fa; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
+        .table-hover tbody tr:hover { background-color: #f1f8ff; }
         
-        #preview-foto { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); display: none; margin: 0 auto; }
-        .avatar-placeholder { width: 100px; height: 100px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 30px; color: #999; margin: 0 auto; }
+        .status-receber { color: #e67e22; font-weight: bold; }
+        .status-pago { color: #27ae60; font-weight: bold; }
         
-        .badge-plano { background: #e1f5fe; color: #0288d1; font-weight: 600; padding: 5px 12px; border-radius: 20px; }
-        .btn-delete { color: var(--danger); cursor: pointer; transition: 0.3s; }
-        .btn-delete:hover { transform: scale(1.2); }
+        .foto-mini { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; }
+        
+        /* Botão Flutuante para novo cadastro */
+        .btn-novo { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; font-size: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
 
-<div class="sidebar d-flex flex-column">
-    <div class="p-4 text-center">
+<div class="sidebar">
+    <div class="p-4 text-center border-bottom border-secondary mb-4">
         <h4 class="fw-bold mb-0">VERA</h4>
-        <small class="text-uppercase opacity-50">Empreendedora</small>
+        <small class="text-info">EMPREENDEDORA</small>
     </div>
-    <ul class="nav flex-column mt-3">
-        <li class="nav-item"><a class="nav-link active" onclick="showSection('dash')"><i class="fas fa-home me-2"></i> Painel</a></li>
-        <li class="nav-item"><a class="nav-link" onclick="showSection('cli')"><i class="fas fa-user-plus me-2"></i> Novo Cliente</a></li>
-        <li class="nav-item"><a class="nav-link" onclick="showSection('list-cli')"><i class="fas fa-users me-2"></i> Fichas Clientes</a></li>
-        <li class="nav-item"><a class="nav-link" onclick="showSection('hist')"><i class="fas fa-calendar-alt me-2"></i> Histórico Mensal</a></li>
+    <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link active" onclick="showSection('painel')"><i class="fas fa-book me-2"></i> Livro de Vendas</a></li>
+        <li class="nav-item"><a class="nav-link" onclick="showSection('clientes')"><i class="fas fa-users me-2"></i> Fichas de Clientes</a></li>
     </ul>
 </div>
 
 <div class="main-content">
     <header class="d-flex justify-content-between align-items-center mb-4">
-        <h2 id="page-title" class="fw-bold">Painel de Controle</h2>
-        <div class="bg-white px-4 py-2 rounded-pill shadow-sm">Olá, <b>Vera!</b> <i class="fas fa-user-circle text-primary ms-2"></i></div>
+        <h2 id="titulo-pagina" class="fw-bold text-dark">Livro de Registro de Vendas</h2>
+        <div class="d-flex align-items-center gap-3">
+            <select id="filtro-mes" class="form-select w-auto shadow-sm" onchange="renderLivro()">
+                <option value="01">Janeiro</option><option value="02">Fevereiro</option>
+                <option value="03">Março</option><option value="04" selected>Abril</option>
+                <option value="05">Maio</option><option value="06">Junho</option>
+                <option value="07">Julho</option><option value="08">Agosto</option>
+                <option value="09">Setembro</option><option value="10">Outubro</option>
+                <option value="11">Novembro</option><option value="12">Dezembro</option>
+            </select>
+            <span class="badge bg-white text-dark p-2 shadow-sm">Olá, Vera! <i class="fas fa-user-circle text-info ms-1"></i></span>
+        </div>
     </header>
 
-    <section id="sec-dash">
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card p-4 border-start border-primary border-5">
-                    <small class="text-muted fw-bold">VENDAS TOTAIS</small>
-                    <h3 id="dash-total" class="fw-bold text-dark">R$ 0,00</h3>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card p-4 border-start border-success border-5">
-                    <small class="text-muted fw-bold">CLIENTES ATIVOS</small>
-                    <h3 id="dash-clientes" class="fw-bold text-dark">0</h3>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card p-4 border-start border-warning border-5">
-                    <small class="text-muted fw-bold text-warning">A RECEBER</small>
-                    <h3 id="dash-receber" class="fw-bold text-warning">R$ 0,00</h3>
-                </div>
-            </div>
+    <section id="sec-painel" class="caderno-container">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Data Venda</th>
+                        <th>Cliente</th>
+                        <th>Contato/Doc</th>
+                        <th>Plano / Tipo</th>
+                        <th>Valor</th>
+                        <th>Pagamento</th>
+                        <th>Recebimento</th>
+                        <th class="text-center">Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="corpo-livro">
+                    </tbody>
+            </table>
+        </div>
+        <div id="vazio-msg" class="text-center p-5 d-none text-muted">
+            <i class="fas fa-folder-open fa-3x mb-3"></i>
+            <p>Nenhuma venda registrada para este mês.</p>
         </div>
     </section>
 
-    <section id="sec-cli" class="d-none">
-        <div class="card p-4">
-            <h5 class="fw-bold mb-4">Cadastro de Nova Ficha</h5>
-            <form id="form-cliente" class="row g-3">
-                <div class="col-md-3 text-center">
-                    <div id="placeholder-img" class="avatar-placeholder mb-2"><i class="fas fa-user"></i></div>
-                    <img id="preview-foto" src="" class="mb-2">
-                    <input type="file" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this)">
-                </div>
-                <div class="col-md-9 row g-3">
-                    <div class="col-md-8"><label class="form-label">Nome Completo</label><input type="text" id="c-nome" class="form-control" required></div>
-                    <div class="col-md-4"><label class="form-label">Data Nasc.</label><input type="date" id="c-nasc" class="form-control"></div>
-                    <div class="col-md-6"><label class="form-label">CPF/CNPJ</label><input type="text" id="c-doc" class="form-control"></div>
-                    <div class="col-md-6"><label class="form-label">WhatsApp</label><input type="tel" id="c-tel" class="form-control"></div>
-                    <div class="col-md-12"><label class="form-label">Endereço</label><input type="text" id="c-end" class="form-control"></div>
-                    <div class="col-12 text-end"><button type="submit" class="btn btn-primary px-5">Criar Ficha</button></div>
-                </div>
-            </form>
-        </div>
-    </section>
-
-    <section id="sec-list-cli" class="d-none">
-        <div class="row g-4" id="clientes-grid"></div>
-    </section>
-
-    <section id="sec-hist" class="d-none">
-        <div class="card">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                <h6 class="mb-0 fw-bold">FILTRAR VENDAS</h6>
-                <select id="filtro-mes" class="form-select w-auto" onchange="renderVendas()">
-                    <option value="01">Janeiro</option><option value="02">Fevereiro</option>
-                    <option value="03">Março</option><option value="04" selected>Abril</option>
-                    <option value="05">Maio</option><option value="06">Junho</option>
-                    <option value="07">Julho</option><option value="08">Agosto</option>
-                    <option value="09">Setembro</option><option value="10">Outubro</option>
-                    <option value="11">Novembro</option><option value="12">Dezembro</option>
-                </select>
-            </div>
-            <div class="table-responsive">
-                <table class="table align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Data</th><th>Cliente</th><th>Plano</th><th>Valor</th><th>Pagto</th><th>Recebimento</th><th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="lista-vendas-corpo"></tbody>
-                </table>
-            </div>
-        </div>
+    <section id="sec-clientes" class="d-none">
+        <div class="row g-4" id="grid-clientes"></div>
     </section>
 </div>
 
-<div class="modal fade" id="modalFicha" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content rounded-4 border-0 shadow">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Ficha Detalhada</h5>
+<button class="btn btn-info text-white btn-novo" onclick="abrirModalCliente()" title="Novo Cliente">
+    <i class="fas fa-plus"></i>
+</button>
+
+<div class="modal fade" id="modalCliente" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title">Nova Ficha de Cliente</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body text-center" id="corpo-ficha">
+            <form id="form-cliente">
+                <div class="modal-body row g-3">
+                    <div class="col-md-4 text-center">
+                        <div id="foto-preview-box" class="bg-light border rounded mb-2" style="height: 150px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-user-circle fa-4x text-secondary" id="icon-placeholder"></i>
+                            <img id="img-preview" src="" class="d-none w-100 h-100" style="object-fit: cover;">
+                        </div>
+                        <input type="file" class="form-control form-control-sm" accept="image/*" onchange="previewFoto(this)">
+                    </div>
+                    <div class="col-md-8 row g-3">
+                        <div class="col-md-12"><label class="form-label">Nome Completo</label><input type="text" id="cli-nome" class="form-control" required></div>
+                        <div class="col-md-6"><label class="form-label">WhatsApp</label><input type="tel" id="cli-tel" class="form-control" required></div>
+                        <div class="col-md-6"><label class="form-label">CPF/CNPJ</label><input type="text" id="cli-doc" class="form-control"></div>
+                        <div class="col-md-12"><label class="form-label">Endereço Completo</label><input type="text" id="cli-end" class="form-control"></div>
+                        <div class="col-md-6"><label class="form-label">Data Nascimento</label><input type="date" id="cli-nasc" class="form-control"></div>
+                    </div>
                 </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-primary w-100">Salvar e Criar Ficha</button></div>
+            </form>
         </div>
     </div>
 </div>
@@ -137,21 +127,25 @@
 <div class="modal fade" id="modalVenda" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="form-venda-final">
-                <div class="modal-header">
-                    <h5 class="modal-title">Venda para: <span id="nome-venda-cli"></span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">Registrar Venda para <span id="venda-nome-cli"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="form-venda">
                 <div class="modal-body row g-3">
-                    <div class="col-12"><label class="form-label">Plano de Saúde</label>
-                        <select id="v-plano" class="form-select"><option>Hapvida</option><option>Unimed</option><option>Bradesco</option><option>Amil</option><option>SulAmérica</option></select>
+                    <div class="col-12">
+                        <label class="form-label">Plano de Saúde</label>
+                        <select id="ven-plano" class="form-select">
+                            <option>Hapvida</option><option>Unimed</option><option>Bradesco</option><option>SulAmérica</option><option>Amil</option>
+                        </select>
                     </div>
-                    <div class="col-md-6"><label class="form-label">Valor (R$)</label><input type="number" id="v-valor" class="form-control" required></div>
-                    <div class="col-md-6"><label class="form-label">Data Venda</label><input type="date" id="v-data" class="form-control" required></div>
-                    <div class="col-md-12"><label class="form-label">Data Agendada para Receber</label><input type="date" id="v-data-rec" class="form-control" required></div>
-                    <div class="col-md-12"><label class="form-label">Forma de Pagamento</label><select id="v-forma" class="form-select"><option>Pix</option><option>Cartão</option><option>Boleto</option></select></div>
+                    <div class="col-md-6"><label class="form-label">Tipo</label><select id="ven-tipo" class="form-select"><option>PF (Individual)</option><option>PME (Empresa)</option></select></div>
+                    <div class="col-md-6"><label class="form-label">Valor (R$)</label><input type="number" id="ven-valor" class="form-control" required></div>
+                    <div class="col-md-6"><label class="form-label">Data da Venda</label><input type="date" id="ven-data" class="form-control" required></div>
+                    <div class="col-md-6"><label class="form-label">Data Recebimento</label><input type="date" id="ven-agend" class="form-control" required></div>
+                    <div class="col-12"><label class="form-label">Forma de Pagamento</label><select id="ven-forma" class="form-select"><option>Pix</option><option>Cartão</option><option>Boleto</option><option>Dinheiro</option></select></div>
                 </div>
-                <div class="modal-footer"><button type="submit" class="btn btn-success w-100">Registrar Venda</button></div>
+                <div class="modal-footer"><button type="submit" class="btn btn-info text-white w-100">Confirmar Venda</button></div>
             </form>
         </div>
     </div>
@@ -159,142 +153,135 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    let clientes = JSON.parse(localStorage.getItem('v3_cli')) || [];
-    let vendas = JSON.parse(localStorage.getItem('v3_ven')) || [];
-    let cliAtual = "";
+    let clientes = JSON.parse(localStorage.getItem('vera_v4_cli')) || [];
+    let vendas = JSON.parse(localStorage.getItem('vera_v4_ven')) || [];
+    let cliSelecionado = "";
 
     function showSection(id) {
         document.querySelectorAll('section').forEach(s => s.classList.add('d-none'));
-        document.getElementById('sec-'+id).classList.remove('d-none');
+        document.getElementById('sec-' + id).classList.remove('d-none');
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        if(id === 'list-cli') renderClientes();
-        if(id === 'hist') renderVendas();
-        updateDashboard();
+        if(id === 'painel') renderLivro();
+        if(id === 'clientes') renderGridClientes();
     }
 
-    function previewImage(input) {
+    function previewFoto(input) {
         if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('preview-foto').src = e.target.result;
-                document.getElementById('preview-foto').style.display = 'block';
-                document.getElementById('placeholder-img').style.display = 'none';
-            }
+            let reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('img-preview').src = e.target.result;
+                document.getElementById('img-preview').classList.remove('d-none');
+                document.getElementById('icon-placeholder').classList.add('d-none');
+            };
             reader.readAsDataURL(input.files[0]);
         }
     }
 
+    function abrirModalCliente() { new bootstrap.Modal(document.getElementById('modalCliente')).show(); }
+
     document.getElementById('form-cliente').onsubmit = function(e) {
         e.preventDefault();
-        const novoCli = {
+        const novo = {
             id: Date.now(),
-            nome: document.getElementById('c-nome').value,
-            nasc: document.getElementById('c-nasc').value,
-            doc: document.getElementById('c-doc').value,
-            tel: document.getElementById('c-tel').value,
-            end: document.getElementById('c-end').value,
-            foto: document.getElementById('preview-foto').src || ""
+            nome: document.getElementById('cli-nome').value,
+            tel: document.getElementById('cli-tel').value,
+            doc: document.getElementById('cli-doc').value,
+            end: document.getElementById('cli-end').value,
+            nasc: document.getElementById('cli-nasc').value,
+            foto: document.getElementById('img-preview').src
         };
-        clientes.push(novoCli);
-        localStorage.setItem('v3_cli', JSON.stringify(clientes));
+        clientes.push(novo);
+        localStorage.setItem('vera_v4_cli', JSON.stringify(clientes));
         this.reset();
-        showSection('list-cli');
-    }
+        bootstrap.Modal.getInstance(document.getElementById('modalCliente')).hide();
+        renderGridClientes();
+        showSection('clientes');
+    };
 
-    function renderClientes() {
-        const grid = document.getElementById('clientes-grid');
+    function renderGridClientes() {
+        const grid = document.getElementById('grid-clientes');
         grid.innerHTML = '';
         clientes.forEach(c => {
             grid.innerHTML += `
-            <div class="col-md-4">
-                <div class="card h-100 text-center p-3">
-                    <img src="${c.foto || 'https://via.placeholder.com/100'}" class="rounded-circle mx-auto mb-3" style="width:80px;height:80px;object-fit:cover">
-                    <h6 class="fw-bold mb-1">${c.nome}</h6>
-                    <small class="text-muted d-block mb-3">${c.tel}</small>
-                    <button onclick="preparaVenda('${c.nome}')" class="btn btn-sm btn-outline-primary w-100 mb-2">EFETUAR VENDA</button>
-                    <button onclick="verFicha(${c.id})" class="btn btn-sm btn-light w-100">VER FICHA COMPLETA</button>
+            <div class="col-md-3">
+                <div class="card p-3 text-center shadow-sm">
+                    <img src="${c.foto || '#'}" class="rounded-circle mx-auto mb-2" style="width:70px;height:70px;object-fit:cover;background:#eee">
+                    <h6 class="mb-1 fw-bold">${c.nome}</h6>
+                    <button class="btn btn-sm btn-info text-white mb-1 w-100" onclick="abrirVenda('${c.nome}')">Nova Venda</button>
+                    <button class="btn btn-sm btn-outline-secondary w-100" onclick="alert('Ficha:\\nNome: ${c.nome}\\nCPF: ${c.doc}\\nEnd: ${c.end}')">Dados Completos</button>
                 </div>
             </div>`;
         });
     }
 
-    function verFicha(id) {
-        const c = clientes.find(x => x.id == id);
-        const corpo = document.getElementById('corpo-ficha');
-        corpo.innerHTML = `
-            <img src="${c.foto}" class="rounded-circle mb-3" style="width:120px;height:120px;object-fit:cover;border:4px solid #eee">
-            <h4>${c.nome}</h4>
-            <hr>
-            <div class="text-start">
-                <p><b>CPF/CNPJ:</b> ${c.doc}</p>
-                <p><b>Nascimento:</b> ${c.nasc}</p>
-                <p><b>WhatsApp:</b> ${c.tel}</p>
-                <p><b>Endereço:</b> ${c.end}</p>
-            </div>
-        `;
-        new bootstrap.Modal(document.getElementById('modalFicha')).show();
-    }
-
-    function preparaVenda(nome) {
-        cliAtual = nome;
-        document.getElementById('nome-venda-cli').innerText = nome;
+    function abrirVenda(nome) {
+        cliSelecionado = nome;
+        document.getElementById('venda-nome-cli').innerText = nome;
         new bootstrap.Modal(document.getElementById('modalVenda')).show();
     }
 
-    document.getElementById('form-venda-final').onsubmit = function(e) {
+    document.getElementById('form-venda').onsubmit = function(e) {
         e.preventDefault();
-        const v = {
+        const clienteObj = clientes.find(c => c.nome === cliSelecionado);
+        const venda = {
             id: Date.now(),
-            cliente: cliAtual,
-            plano: document.getElementById('v-plano').value,
-            valor: parseFloat(document.getElementById('v-valor').value),
-            data: document.getElementById('v-data').value,
-            recebimento: document.getElementById('v-data-rec').value,
-            forma: document.getElementById('v-forma').value
+            cliente: cliSelecionado,
+            contato: clienteObj ? clienteObj.tel : '---',
+            doc: clienteObj ? clienteObj.doc : '---',
+            plano: document.getElementById('ven-plano').value,
+            tipo: document.getElementById('ven-tipo').value,
+            valor: parseFloat(document.getElementById('ven-valor').value),
+            data: document.getElementById('ven-data').value,
+            agend: document.getElementById('ven-agend').value,
+            forma: document.getElementById('ven-forma').value
         };
-        vendas.push(v);
-        localStorage.setItem('v3_ven', JSON.stringify(vendas));
+        vendas.push(venda);
+        localStorage.setItem('vera_v4_ven', JSON.stringify(vendas));
         bootstrap.Modal.getInstance(document.getElementById('modalVenda')).hide();
-        showSection('hist');
-    }
+        renderLivro();
+        showSection('painel');
+    };
 
-    function renderVendas() {
-        const mes = document.getElementById('filtro-mes').value;
-        const corpo = document.getElementById('lista-vendas-corpo');
+    function renderLivro() {
+        const mesFiltro = document.getElementById('filtro-mes').value;
+        const corpo = document.getElementById('corpo-livro');
         corpo.innerHTML = '';
-        vendas.filter(v => v.data.split('-')[1] === mes).forEach(v => {
-            corpo.innerHTML += `
-            <tr>
-                <td>${new Date(v.data).toLocaleDateString()}</td>
-                <td class="fw-bold">${v.cliente}</td>
-                <td><span class="badge-plano">${v.plano}</span></td>
-                <td>R$ ${v.valor.toLocaleString()}</td>
-                <td>${v.forma}</td>
-                <td class="text-danger fw-bold">${new Date(v.recebimento).toLocaleDateString()}</td>
-                <td><i class="fas fa-trash btn-delete" onclick="apagarVenda(${v.id})"></i></td>
-            </tr>`;
-        });
-    }
-
-    function apagarVenda(id) {
-        if(confirm("Deseja realmente apagar esta venda?")) {
-            vendas = vendas.filter(v => v.id !== id);
-            localStorage.setItem('v3_ven', JSON.stringify(vendas));
-            renderVendas();
-            updateDashboard();
+        
+        let filtered = vendas.filter(v => v.data.split('-')[1] === mesFiltro);
+        
+        if(filtered.length === 0) {
+            document.getElementById('vazio-msg').classList.remove('d-none');
+        } else {
+            document.getElementById('vazio-msg').classList.add('d-none');
+            filtered.forEach(v => {
+                corpo.innerHTML += `
+                <tr>
+                    <td class="ps-4 text-muted">${new Date(v.data).toLocaleDateString()}</td>
+                    <td class="fw-bold text-primary">${v.cliente}</td>
+                    <td><small>${v.contato}<br>${v.doc}</small></td>
+                    <td><span class="badge bg-light text-dark border">${v.plano}</span><br><small class="text-muted">${v.tipo}</small></td>
+                    <td class="fw-bold">R$ ${v.valor.toLocaleString()}</td>
+                    <td><small class="badge bg-secondary">${v.forma}</small></td>
+                    <td class="${new Date(v.agend) > new Date() ? 'status-receber' : 'status-pago'}">
+                        ${new Date(v.agend).toLocaleDateString()}
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm text-danger" onclick="apagarVenda(${v.id})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
         }
     }
 
-    function updateDashboard() {
-        document.getElementById('dash-clientes').innerText = clientes.length;
-        let total = vendas.reduce((sum, v) => sum + v.valor, 0);
-        document.getElementById('dash-total').innerText = `R$ ${total.toLocaleString()}`;
-        
-        let aReceber = vendas.filter(v => new Date(v.recebimento) > new Date()).reduce((sum, v) => sum + v.valor, 0);
-        document.getElementById('dash-receber').innerText = `R$ ${aReceber.toLocaleString()}`;
+    function apagarVenda(id) {
+        if(confirm("Remover este registro do caderno?")) {
+            vendas = vendas.filter(v => v.id !== id);
+            localStorage.setItem('vera_v4_ven', JSON.stringify(vendas));
+            renderLivro();
+        }
     }
 
-    window.onload = updateDashboard;
+    window.onload = renderLivro;
 </script>
 </body>
 </html>
