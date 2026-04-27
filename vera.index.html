@@ -3,50 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vera Empreendedora | Gestão na Nuvem</title>
+    <title>Vera Empreendedora | Gestão Profissional</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
         :root { 
-            --bg-claro: #fffdf2; /* Amarelinho bem clarinho */
+            --bg-claro: #fffdf2; /* Amarelinho claro solicitado */
             --accent: #f1c40f; 
             --sidebar-color: #2c3e50;
             --danger: #e74c3c;
+            --text-dark: #2c3e50;
         }
         
         body { background-color: var(--bg-claro); font-family: 'Segoe UI', sans-serif; color: #444; }
         
-        /* Sidebar */
-        .sidebar { background: var(--sidebar-color); min-height: 100vh; width: 260px; position: fixed; color: white; z-index: 1000; }
-        .logo-area { padding: 30px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .logo-area h2 { font-size: 1.8rem; font-weight: 800; color: var(--accent); margin-bottom: 0; }
-        .logo-area small { letter-spacing: 2px; text-transform: uppercase; font-size: 0.7rem; }
+        /* Sidebar Customizada */
+        .sidebar { background: var(--sidebar-color); min-height: 100vh; width: 260px; position: fixed; color: white; z-index: 1000; transition: all 0.3s; }
+        .logo-area { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .logo-area h2 { font-size: 2.2rem; font-weight: 900; color: var(--accent); margin-bottom: 5px; }
+        .logo-area small { letter-spacing: 3px; text-transform: uppercase; font-size: 0.8rem; display: block; margin-bottom: 15px; }
         
+        /* Foto da Vera no Menu */
+        .perfil-img { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--accent); object-fit: cover; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+
         .nav-link { color: #bdc3c7; margin: 10px 15px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: 500; }
-        .nav-link:hover, .nav-link.active { background: var(--accent); color: #2c3e50; }
+        .nav-link:hover, .nav-link.active { background: var(--accent); color: var(--text-dark); }
 
         .main-content { margin-left: 260px; padding: 40px; }
         
-        /* Estilo Caderno Amarelo */
+        /* Cards e Tabelas Estilo Amarelo */
         .card-caderno { background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #f9f1c0; }
-        .table thead { background: #fef9e7; }
+        .table thead { background: #fef9e7; color: var(--text-dark); }
 
-        /* Alertas de Dinheiro */
+        /* Alerta Visual Piscante para Valores Futuros */
         .alerta-piscante { color: var(--danger); font-weight: bold; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
-        .btn-flutuante { position: fixed; bottom: 30px; right: 30px; width: 70px; height: 70px; border-radius: 50%; font-size: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.2); z-index: 999; border: none; background: var(--accent); color: #2c3e50; }
+        .btn-flutuante { position: fixed; bottom: 30px; right: 30px; width: 70px; height: 70px; border-radius: 50%; font-size: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.2); z-index: 999; border: none; background: var(--accent); color: var(--text-dark); }
         
-        .foto-mini { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+        .card-receber { border-left: 5px solid var(--danger); transition: transform 0.2s; }
+        .card-receber:hover { transform: translateY(-5px); }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <div class="logo-area text-center">
+    <div class="logo-area">
         <h2>VERA</h2>
         <small>Empreendedora</small>
+        <img src="VERA.jpg" alt="Vera" class="perfil-img">
     </div>
     <ul class="nav flex-column mt-4">
         <li class="nav-item"><a class="nav-link active" onclick="showSec('livro')"><i class="fas fa-list-ul me-2"></i> Livro de Vendas</a></li>
@@ -57,7 +63,7 @@
 
 <div class="main-content">
     <header class="d-flex justify-content-between align-items-center mb-5">
-        <h3 id="page-title" class="fw-bold">Livro de Vendas</h3>
+        <h3 id="page-title" class="fw-bold text-dark">Livro de Vendas</h3>
         <select id="filtro-mes" class="form-select w-auto shadow-sm" onchange="renderAll()">
             <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
             <option value="04" selected>Abril</option><option value="05">Maio</option><option value="06">Junho</option>
@@ -98,7 +104,7 @@
 
 <div class="modal fade" id="modalCli" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+        <div class="modal-content border-0">
             <div class="modal-header bg-warning">
                 <h5 class="modal-title fw-bold">Cadastrar Novo Cliente</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -120,7 +126,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <script>
-    // --- CONFIGURAÇÃO DO SEU FIREBASE (PREENCHA AQUI) ---
+    // Configuração do Firebase (Substitua as chaves se necessário)
     const firebaseConfig = {
         apiKey: "COLOQUE_AQUI",
         authDomain: "COLOQUE_AQUI",
@@ -131,14 +137,13 @@
         appId: "COLOQUE_AQUI"
     };
     
-    // Inicializa Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     let clientes = [];
     let vendas = [];
 
-    // Sincronização em tempo real com o Banco de Dados
+    // Sincronização em tempo real
     db.ref('clientes').on('value', snapshot => {
         clientes = [];
         snapshot.forEach(child => { clientes.push({id: child.key, ...child.val()}); });
@@ -178,7 +183,7 @@
         const mes = document.getElementById('filtro-mes').value;
         const hoje = new Date().toISOString().split('T')[0];
 
-        // Render Vendas
+        // Tabela de Vendas
         const corpoVendas = document.getElementById('corpo-vendas');
         corpoVendas.innerHTML = '';
         vendas.filter(v => v.data.split('-')[1] === mes).forEach(v => {
@@ -188,36 +193,55 @@
                 <td class="ps-4 small">${v.data.split('-').reverse().join('/')}</td>
                 <td class="fw-bold">${v.cliente}</td>
                 <td><span class="badge bg-light text-dark border">${v.plano}</span></td>
-                <td class="${futuro ? 'alerta-piscante' : 'fw-bold'}">R$ ${v.valor}</td>
+                <td class="${futuro ? 'alerta-piscante' : 'fw-bold text-success'}">
+                    ${futuro ? '<i class="fas fa-bell me-1"></i>' : ''} R$ ${v.valor}
+                </td>
                 <td>${v.forma}</td>
                 <td class="${futuro ? 'text-danger fw-bold' : ''}">${v.receber.split('-').reverse().join('/')}</td>
                 <td class="text-center"><button class="btn btn-sm text-danger" onclick="excluirVenda('${v.id}')"><i class="fas fa-trash"></i></button></td>
             </tr>`;
         });
 
-        // Render Clientes
+        // Aba "A Receber" Individualizado
+        const gridRec = document.getElementById('grid-receber');
+        gridRec.innerHTML = '';
+        vendas.filter(v => v.receber > hoje).forEach(v => {
+            gridRec.innerHTML += `
+            <div class="col-md-4">
+                <div class="card card-receber p-3 shadow-sm border-0">
+                    <h6 class="fw-bold text-dark">${v.cliente}</h6>
+                    <p class="mb-1 text-muted small">Plano: ${v.plano}</p>
+                    <h5 class="alerta-piscante">R$ ${v.valor}</h5>
+                    <div class="mt-2 pt-2 border-top">
+                        <small class="text-danger"><i class="fas fa-calendar-alt me-1"></i> Receber em: ${v.receber.split('-').reverse().join('/')}</small>
+                    </div>
+                </div>
+            </div>`;
+        });
+
+        // Lista de Clientes
         const gridCli = document.getElementById('grid-clientes');
         gridCli.innerHTML = '';
         clientes.forEach(c => {
             gridCli.innerHTML += `
             <div class="col-md-3">
-                <div class="card p-3 text-center shadow-sm border-0">
+                <div class="card p-3 text-center shadow-sm border-0 h-100">
                     <div class="mx-auto bg-warning-subtle rounded-circle mb-2 d-flex align-items-center justify-content-center" style="width:60px;height:60px">
                         <i class="fas fa-user text-warning fs-4"></i>
                     </div>
                     <h6 class="fw-bold mb-1">${c.nome}</h6>
                     <small class="text-muted d-block mb-3">${c.tel}</small>
                     <div class="d-grid gap-2">
-                        <button class="btn btn-sm btn-warning fw-bold" onclick="alert('Funcionalidade de Venda Ativa!')">NOVA VENDA</button>
-                        <button class="btn btn-sm btn-link text-danger p-0" onclick="excluirCli('${c.id}')">Apagar Ficha</button>
+                        <button class="btn btn-sm btn-outline-warning text-dark fw-bold" onclick="alert('Funcionalidade de Venda em breve!')">EFETUAR VENDA</button>
+                        <button class="btn btn-sm btn-link text-danger text-decoration-none" onclick="excluirCli('${c.id}')"><i class="fas fa-user-minus"></i> APAGAR CADASTRO</button>
                     </div>
                 </div>
             </div>`;
         });
     }
 
-    function excluirVenda(id) { if(confirm("Apagar venda?")) db.ref('vendas/'+id).remove(); }
-    function excluirCli(id) { if(confirm("Apagar cliente?")) db.ref('clientes/'+id).remove(); }
+    function excluirVenda(id) { if(confirm("Apagar esta venda permanentemente?")) db.ref('vendas/'+id).remove(); }
+    function excluirCli(id) { if(confirm("Apagar este cliente e todos os dados dele?")) db.ref('clientes/'+id).remove(); }
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
