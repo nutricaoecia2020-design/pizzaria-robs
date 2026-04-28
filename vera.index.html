@@ -3,28 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vera Empreendedora | Sistema Profissional</title>
+    <title>Vera Empreendedora | Gestão de Vendas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --primary: #1a252f; --accent: #3498db; --warning-red: #e74c3c; }
+        :root { --primary: #1a252f; --accent: #3498db; --danger: #e74c3c; }
         body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
         
+        /* Menu Lateral */
         .sidebar { background: var(--primary); min-height: 100vh; width: 250px; position: fixed; color: white; z-index: 100; }
         .nav-link { color: #adb5bd; margin: 8px 15px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
         .nav-link:hover, .nav-link.active { background: var(--accent); color: white; }
 
+        /* Área Principal */
         .main-content { margin-left: 250px; padding: 40px; }
-        .card-caderno { background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-top: 6px solid var(--accent); }
+        .card-container { background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 5px solid var(--accent); }
         
-        .alerta-piscante { color: var(--warning-red); font-weight: bold; animation: pulse-red 1.5s infinite; }
-        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .alerta-piscante { color: var(--danger); font-weight: bold; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        .foto-perfil { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; background: #eee; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .dep-box { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
-        .dep-label { font-size: 0.7rem; font-weight: bold; color: var(--accent); text-transform: uppercase; }
-
-        .btn-flutuante { position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; border-radius: 50%; font-size: 28px; box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4); z-index: 999; }
+        .foto-perfil { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; background: #eee; border: 2px solid #ddd; }
+        .dep-box { background: #f1f4f9; border: 1px solid #dee2e6; border-radius: 10px; padding: 15px; margin-bottom: 10px; }
+        
+        .btn-add { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; font-size: 24px; box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4); z-index: 999; }
     </style>
 </head>
 <body>
@@ -32,19 +33,19 @@
 <div class="sidebar d-flex flex-column">
     <div class="p-4 text-center">
         <h3 class="fw-bold text-white mb-0">VERA</h3>
-        <small class="text-info tracking-widest">EMPREENDEDORA</small>
+        <small class="text-info">EMPREENDEDORA</small>
     </div>
     <ul class="nav flex-column mt-4">
-        <li class="nav-item"><a class="nav-link active" onclick="showSec('livro', this)"><i class="fas fa-book-open me-2"></i> Livro de Vendas</a></li>
-        <li class="nav-item"><a class="nav-link" onclick="showSec('receber', this)"><i class="fas fa-hand-holding-usd me-2"></i> Valores a Receber</a></li>
-        <li class="nav-item"><a class="nav-link" onclick="showSec('clientes', this)"><i class="fas fa-users-cog me-2"></i> Gerenciar Clientes</a></li>
+        <li class="nav-item"><a class="nav-link active" onclick="mudarAba('livro', this)"><i class="fas fa-book-open me-2"></i> Livro de Registro</a></li>
+        <li class="nav-item"><a class="nav-link" onclick="mudarAba('receber', this)"><i class="fas fa-hand-holding-usd me-2"></i> Valores a Receber</a></li>
+        <li class="nav-item"><a class="nav-link" onclick="mudarAba('clientes', this)"><i class="fas fa-users-cog me-2"></i> Gerenciar Clientes</a></li>
     </ul>
 </div>
 
 <div class="main-content">
     <header class="d-flex justify-content-between align-items-center mb-5">
-        <h2 id="header-title" class="fw-bold">Livro de Registro</h2>
-        <select id="filtro-mes" class="form-select border-0 shadow-sm" style="width: 150px;" onchange="renderAll()">
+        <h2 id="titulo-pagina" class="fw-bold">Livro de Registro</h2>
+        <select id="filtro-mes" class="form-select border-0 shadow-sm" style="width: 150px;" onchange="renderizar()">
             <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
             <option value="04" selected>Abril</option><option value="05">Maio</option><option value="06">Junho</option>
             <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
@@ -52,21 +53,21 @@
         </select>
     </header>
 
-    <section id="sec-livro" class="card-caderno">
+    <section id="sec-livro" class="card-container">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-4">Data Venda</th>
+                        <th class="ps-4">Data</th>
                         <th>Cliente</th>
                         <th>Plano</th>
                         <th>Comissão</th>
                         <th>Pagamento</th>
-                        <th>Receber em</th>
+                        <th>Vencimento</th>
                         <th class="text-end pe-4">Ação</th>
                     </tr>
                 </thead>
-                <tbody id="lista-vendas"></tbody>
+                <tbody id="corpo-vendas"></tbody>
             </table>
         </div>
     </section>
@@ -80,45 +81,45 @@
     </section>
 </div>
 
-<button class="btn btn-info text-white btn-flutuante" onclick="abrirModalCli()"><i class="fas fa-user-plus"></i></button>
+<button class="btn btn-info text-white btn-add" onclick="abrirModalCli()"><i class="fas fa-user-plus"></i></button>
 
 <div class="modal fade" id="modalCli" tabindex="-1">
     <div class="modal-dialog modal-xl">
-        <div class="modal-content border-0 shadow">
+        <div class="modal-content border-0">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Ficha Completa do Beneficiário</h5>
+                <h5 class="modal-title fw-bold">FICHA COMPLETA DO BENEFICIÁRIO</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form id="f-cli">
                 <div class="modal-body p-4">
-                    <div class="row g-3 mb-4">
+                    <div class="row g-3">
                         <div class="col-md-3 text-center border-end">
                             <div class="bg-light border rounded mb-2 d-flex align-items-center justify-content-center" style="height:180px; overflow:hidden;">
-                                <img id="p-img" src="" class="d-none w-100 h-100" style="object-fit:cover">
-                                <i id="p-icon" class="fas fa-user fa-4x text-muted"></i>
+                                <img id="pre-img" src="" class="d-none w-100 h-100" style="object-fit:cover">
+                                <i id="pre-icon" class="fas fa-camera fa-4x text-muted"></i>
                             </div>
-                            <input type="file" id="f-upload" class="d-none" accept="image/*" onchange="readImg(this)">
-                            <button type="button" class="btn btn-sm btn-dark" onclick="document.getElementById('f-upload').click()">Alterar Foto</button>
+                            <input type="file" id="input-foto" class="d-none" accept="image/*" onchange="lerImg(this)">
+                            <button type="button" class="btn btn-sm btn-dark" onclick="document.getElementById('input-foto').click()">Alterar Foto</button>
                         </div>
                         <div class="col-md-9 row g-3">
-                            <div class="col-md-8"><label class="form-label">Nome Titular</label><input type="text" id="c-nome" class="form-control" required></div>
-                            <div class="col-md-4"><label class="form-label">WhatsApp</label><input type="tel" id="c-tel" class="form-control" required></div>
-                            <div class="col-md-4"><label class="form-label">CPF</label><input type="text" id="c-doc" class="form-control"></div>
-                            <div class="col-md-4"><label class="form-label">Nascimento</label><input type="date" id="c-nasc" class="form-control"></div>
-                            <div class="col-md-4"><label class="form-label">Estado Civil</label><select id="c-est" class="form-select"><option>Casado(a)</option><option>Solteiro(a)</option><option>Divorciado(a)</option></select></div>
-                            <div class="col-12"><label class="form-label">Endereço Completo</label><input type="text" id="c-end" class="form-control"></div>
+                            <div class="col-md-8"><label class="form-label">Nome Titular</label><input type="text" id="n-tit" class="form-control" required></div>
+                            <div class="col-md-4"><label class="form-label">WhatsApp</label><input type="tel" id="w-tit" class="form-control" required></div>
+                            <div class="col-md-4"><label class="form-label">CPF/CNPJ</label><input type="text" id="d-tit" class="form-control"></div>
+                            <div class="col-md-4"><label class="form-label">Nascimento</label><input type="date" id="na-tit" class="form-control"></div>
+                            <div class="col-md-4"><label class="form-label">Estado Civil</label><select id="e-tit" class="form-select"><option>Casado(a)</option><option>Solteiro(a)</option><option>Divorciado(a)</option></select></div>
+                            <div class="col-12"><label class="form-label">Endereço Completo</label><input type="text" id="en-tit" class="form-control"></div>
                         </div>
                     </div>
 
-                    <h6 class="fw-bold text-primary border-bottom pb-2 mb-3">DEPENDENTES (OPCIONAL)</h6>
+                    <h6 class="fw-bold text-primary mt-4 mb-3"><i class="fas fa-users me-2"></i>DADOS DOS DEPENDENTES (OPCIONAL)</h6>
                     <div class="row g-2">
                         <script>
                             for(let i=1; i<=4; i++) {
                                 document.write(`
                                     <div class="col-md-6">
                                         <div class="dep-box">
-                                            <span class="dep-label">Dependente 0${i}</span>
-                                            <input type="text" id="d${i}-n" class="form-control form-control-sm mb-1" placeholder="Nome">
+                                            <small class="fw-bold text-info">DEPENDENTE 0${i}</small>
+                                            <input type="text" id="d${i}-n" class="form-control form-control-sm mb-1" placeholder="Nome Completo">
                                             <div class="row g-1">
                                                 <div class="col-6"><input type="text" id="d${i}-c" class="form-control form-control-sm" placeholder="CPF"></div>
                                                 <div class="col-6"><input type="text" id="d${i}-p" class="form-control form-control-sm" placeholder="Parentesco"></div>
@@ -130,25 +131,27 @@
                         </script>
                     </div>
                 </div>
-                <div class="modal-footer"><button type="submit" class="btn btn-primary w-100 py-3 fw-bold">SALVAR FICHA COMPLETA</button></div>
+                <div class="modal-footer bg-light">
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold">SALVAR FICHA COMPLETA</button>
+                </div>
             </form>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="modalVen" tabindex="-1">
+<div class="modal fade" id="modalVenda" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content border-0">
-            <div class="modal-header bg-info text-white"><h5 class="modal-title">Efetuar Venda: <span id="v-alvo"></span></h5></div>
-            <form id="f-ven">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white"><h5 class="modal-title">Nova Venda: <span id="v-cliente"></span></h5></div>
+            <form id="f-venda">
                 <div class="modal-body row g-3">
-                    <div class="col-12"><label class="form-label">Plano</label><select id="v-pl" class="form-select"><option>Hapvida</option><option>Unimed</option><option>Bradesco</option><option>Amil</option></select></div>
-                    <div class="col-md-6"><label class="form-label">Valor R$</label><input type="number" id="v-vv" class="form-control" required></div>
-                    <div class="col-md-6"><label class="form-label">Data Venda</label><input type="date" id="v-dv" class="form-control" required></div>
-                    <div class="col-12"><label class="form-label text-danger fw-bold">Previsão de Recebimento</label><input type="date" id="v-rv" class="form-control border-danger" required></div>
-                    <div class="col-12"><label class="form-label">Forma de Pagamento</label><select id="v-fv" class="form-select"><option>Pix</option><option>Boleto</option><option>Cartão</option></select></div>
+                    <div class="col-12"><label class="form-label">Plano</label><select id="v-plano" class="form-select"><option>Hapvida</option><option>Unimed</option><option>Bradesco</option><option>Amil</option></select></div>
+                    <div class="col-md-6"><label class="form-label">Valor Comissão R$</label><input type="number" id="v-valor" class="form-control" step="0.01" required></div>
+                    <div class="col-md-6"><label class="form-label">Data da Venda</label><input type="date" id="v-data" class="form-control" required></div>
+                    <div class="col-12"><label class="form-label text-danger fw-bold">Data de Recebimento</label><input type="date" id="v-receber" class="form-control border-danger" required></div>
+                    <div class="col-12"><label class="form-label">Pagamento</label><select id="v-forma" class="form-select"><option>Pix</option><option>Boleto</option><option>Cartão</option></select></div>
                 </div>
-                <div class="modal-footer"><button type="submit" class="btn btn-success w-100">CONFIRMAR LANÇAMENTO</button></div>
+                <div class="modal-footer"><button type="submit" class="btn btn-success w-100">CONFIRMAR VENDA</button></div>
             </form>
         </div>
     </div>
@@ -159,36 +162,36 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // CONFIGURAÇÃO FIREBASE (SALVAMENTO REAL NA NUVEM)
+    // Configuração do seu Banco de Dados
     const firebaseConfig = { databaseURL: "https://veraempreendedora-default-rtdb.firebaseio.com/" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let db_cli = {}, db_ven = {}, sel_cli = "";
+    let dados_cli = {}, dados_ven = {}, cliente_selecionado = "";
 
-    // Sincronização em Tempo Real
+    // Sincronização em Tempo Real (Escuta o banco e atualiza a tela)
     db.ref().on('value', snap => {
-        const data = snap.val();
-        db_cli = data?.clientes || {};
-        db_ven = data?.vendas || {};
-        renderAll();
+        const d = snap.val();
+        dados_cli = d?.clientes || {};
+        dados_ven = d?.vendas || {};
+        renderizar();
     });
 
-    function showSec(id, el) {
+    function mudarAba(id, el) {
         document.querySelectorAll('section').forEach(s => s.classList.add('d-none'));
         document.getElementById('sec-'+id).classList.remove('d-none');
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         el.classList.add('active');
-        document.getElementById('header-title').innerText = el.innerText;
+        document.getElementById('titulo-pagina').innerText = el.innerText;
     }
 
-    function readImg(input) {
+    function lerImg(input) {
         if (input.files && input.files[0]) {
             let reader = new FileReader();
             reader.onload = e => {
-                document.getElementById('p-img').src = e.target.result;
-                document.getElementById('p-img').classList.remove('d-none');
-                document.getElementById('p-icon').classList.add('d-none');
+                document.getElementById('pre-img').src = e.target.result;
+                document.getElementById('pre-img').classList.remove('d-none');
+                document.getElementById('pre-icon').classList.add('d-none');
             };
             reader.readAsDataURL(input.files[0]);
         }
@@ -196,105 +199,107 @@
 
     function abrirModalCli() {
         document.getElementById('f-cli').reset();
-        document.getElementById('p-img').classList.add('d-none');
-        document.getElementById('p-icon').classList.remove('d-none');
+        document.getElementById('pre-img').classList.add('d-none');
+        document.getElementById('pre-icon').classList.remove('d-none');
         new bootstrap.Modal(document.getElementById('modalCli')).show();
     }
 
-    // SALVAR CLIENTE NO FIREBASE
+    // GRAVAR NO FIREBASE (CLIENTE)
     document.getElementById('f-cli').onsubmit = function(e) {
         e.preventDefault();
         const id = Date.now();
         const deps = [];
         for(let i=1; i<=4; i++) {
-            const n = document.getElementById(`d${i}-n`).value;
-            if(n) deps.push({ nome: n, cpf: document.getElementById(`d${i}-c`).value, par: document.getElementById(`d${i}-p`).value });
+            const nome = document.getElementById(`d${i}-n`).value;
+            if(nome) deps.push({ nome, cpf: document.getElementById(`d${i}-c`).value, par: document.getElementById(`d${i}-p`).value });
         }
 
-        const payload = {
+        const obj = {
             id,
-            nome: document.getElementById('c-nome').value,
-            tel: document.getElementById('c-tel').value,
-            doc: document.getElementById('c-doc').value,
-            end: document.getElementById('c-end').value,
-            nasc: document.getElementById('c-nasc').value,
-            est: document.getElementById('c-est').value,
-            foto: document.getElementById('p-img').src || "",
+            nome: document.getElementById('n-tit').value,
+            whatsapp: document.getElementById('w-tit').value,
+            cpf: document.getElementById('d-tit').value,
+            nasc: document.getElementById('na-tit').value,
+            est: document.getElementById('e-tit').value,
+            end: document.getElementById('en-tit').value,
+            foto: document.getElementById('pre-img').src || "",
             dependentes: deps
         };
 
-        db.ref('clientes/' + id).set(payload).then(() => {
+        db.ref('clientes/' + id).set(obj).then(() => {
             bootstrap.Modal.getInstance(document.getElementById('modalCli')).hide();
+            alert("Ficha Salva na Nuvem!");
         });
     };
 
     function abrirVenda(nome) {
-        sel_cli = nome;
-        document.getElementById('v-alvo').innerText = nome;
-        new bootstrap.Modal(document.getElementById('modalVen')).show();
+        cliente_selecionado = nome;
+        document.getElementById('v-cliente').innerText = nome;
+        new bootstrap.Modal(document.getElementById('modalVenda')).show();
     }
 
-    document.getElementById('f-ven').onsubmit = function(e) {
+    // GRAVAR NO FIREBASE (VENDA)
+    document.getElementById('f-venda').onsubmit = function(e) {
         e.preventDefault();
         const id = Date.now();
         db.ref('vendas/' + id).set({
-            id, cliente: sel_cli,
-            plano: document.getElementById('v-pl').value,
-            valor: parseFloat(document.getElementById('v-vv').value),
-            data: document.getElementById('v-dv').value,
-            receber: document.getElementById('v-rv').value,
-            forma: document.getElementById('v-fv').value
-        }).then(() => bootstrap.Modal.getInstance(document.getElementById('modalVen')).hide());
+            id, cliente: cliente_selecionado,
+            plano: document.getElementById('v-plano').value,
+            valor: parseFloat(document.getElementById('v-valor').value),
+            data: document.getElementById('v-data').value,
+            receber: document.getElementById('v-receber').value,
+            forma: document.getElementById('v-forma').value
+        }).then(() => bootstrap.Modal.getInstance(document.getElementById('modalVenda')).hide());
     };
 
-    function renderAll() {
+    function renderizar() {
         const mes = document.getElementById('filtro-mes').value;
         const hoje = new Date().toISOString().split('T')[0];
-        
-        // Render Vendas
-        const lista = document.getElementById('lista-vendas'); lista.innerHTML = '';
-        Object.values(db_ven).filter(v => v.data.split('-')[1] === mes).forEach(v => {
-            const pend = v.receber > hoje;
-            lista.innerHTML += `<tr>
+
+        // Tabela Vendas
+        const t = document.getElementById('corpo-vendas'); t.innerHTML = '';
+        Object.values(dados_ven).filter(v => v.data.split('-')[1] === mes).forEach(v => {
+            const atraso = v.receber > hoje;
+            t.innerHTML += `<tr>
                 <td class="ps-4 small">${v.data.split('-').reverse().join('/')}</td>
                 <td class="fw-bold">${v.cliente}</td>
                 <td><span class="badge bg-light text-dark border">${v.plano}</span></td>
-                <td class="${pend ? 'alerta-piscante' : 'text-success fw-bold'}">R$ ${v.valor.toLocaleString('pt-BR')}</td>
+                <td class="${atraso ? 'alerta-piscante' : 'text-success fw-bold'}">R$ ${v.valor.toLocaleString('pt-BR')}</td>
                 <td>${v.forma}</td>
                 <td>${v.receber.split('-').reverse().join('/')}</td>
-                <td class="text-end pe-4"><button class="btn btn-sm text-danger" onclick="delV('${v.id}')"><i class="fas fa-trash"></i></button></td>
+                <td class="text-end pe-4"><button class="btn btn-sm text-danger" onclick="apagarV('${v.id}')"><i class="fas fa-trash"></i></button></td>
             </tr>`;
         });
 
-        // Render Receber
-        const gr = document.getElementById('grid-receber'); gr.innerHTML = '';
-        Object.values(db_ven).filter(v => v.receber > hoje).forEach(v => {
-            gr.innerHTML += `<div class="col-md-4">
-                <div class="card border-0 shadow-sm p-3 border-start border-danger border-4">
-                    <h6 class="fw-bold text-primary mb-1">${v.cliente}</h6>
-                    <h5 class="alerta-piscante">R$ ${v.valor.toLocaleString('pt-BR')}</h5>
-                    <small class="text-muted">Previsão: ${v.receber.split('-').reverse().join('/')}</small>
-                </div></div>`;
-        });
-
-        // Render Clientes
+        // Grid Clientes
         const gc = document.getElementById('grid-clientes'); gc.innerHTML = '';
-        Object.values(db_cli).forEach(c => {
+        Object.values(dados_cli).forEach(c => {
             gc.innerHTML += `<div class="col-md-3">
                 <div class="card border-0 shadow-sm p-3 text-center h-100">
                     <img src="${c.foto || ''}" class="foto-perfil mx-auto mb-2">
                     <h6 class="fw-bold mb-0">${c.nome}</h6>
-                    <small class="text-muted d-block mb-3">${c.tel}</small>
+                    <small class="text-muted d-block mb-3">${c.whatsapp}</small>
                     <div class="d-grid gap-2">
-                        <button class="btn btn-sm btn-outline-info" onclick="abrirVenda('${c.nome}')">NOVA VENDA</button>
-                        <button class="btn btn-sm btn-light text-danger" onclick="delC('${c.id}')"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-sm btn-outline-info fw-bold" onclick="abrirVenda('${c.nome}')">NOVA VENDA</button>
+                        <button class="btn btn-sm btn-light text-danger" onclick="apagarC('${c.id}')"><i class="fas fa-trash"></i></button>
                     </div>
+                </div></div>`;
+        });
+
+        // Grid Receber
+        const gr = document.getElementById('grid-receber'); gr.innerHTML = '';
+        Object.values(dados_ven).filter(v => v.receber > hoje).forEach(v => {
+            gr.innerHTML += `<div class="col-md-4">
+                <div class="card border-0 shadow p-3 border-start border-danger border-4">
+                    <h6 class="fw-bold text-primary mb-1">${v.cliente}</h6>
+                    <h4 class="alerta-piscante">R$ ${v.valor.toLocaleString('pt-BR')}</h4>
+                    <small>Vencimento: ${v.receber.split('-').reverse().join('/')}</small>
                 </div></div>`;
         });
     }
 
-    function delV(id) { if(confirm("Apagar venda?")) db.ref('vendas/'+id).remove(); }
-    function delC(id) { if(confirm("Apagar cliente?")) db.ref('clientes/'+id).remove(); }
+    function apagarV(id) { if(confirm("Apagar venda?")) db.ref('vendas/'+id).remove(); }
+    function apagarC(id) { if(confirm("Apagar cliente?")) db.ref('clientes/'+id).remove(); }
 </script>
 </body>
 </html>
