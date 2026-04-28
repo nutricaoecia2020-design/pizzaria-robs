@@ -3,124 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VERA EMPREENDEDORA | Sistema na Nuvem</title>
+    <title>Vera Empreendedora | Sistema Sincronizado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --primary: #1a252f; --accent: #00d2ff; --bg: #f4f7f6; --success: #27ae60; --danger: #e74c3c; }
-        body { background-color: var(--bg); font-family: 'Segoe UI', sans-serif; }
+        :root { --sidebar-bg: #1a252f; --vera-blue: #00a8ff; --bg-gray: #f4f7f6; --text-light: #adb5bd; }
+        body { background-color: var(--bg-gray); font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+
+        /* Sidebar Estilo Foto 1 */
+        .sidebar { background: var(--sidebar-bg); min-height: 100vh; width: 250px; position: fixed; color: white; z-index: 1000; transition: 0.3s; }
+        .sidebar .logo-box { padding: 35px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .sidebar .logo-box h3 { font-weight: 800; margin: 0; letter-spacing: 1.5px; font-size: 24px; }
+        .sidebar .logo-box small { color: var(--vera-blue); font-size: 10px; font-weight: bold; text-transform: uppercase; }
         
-        /* Sidebar Estilizada */
-        .sidebar { background: var(--primary); min-height: 100vh; width: 250px; position: fixed; color: white; z-index: 1000; }
-        .nav-link { color: #adb5bd; margin: 8px 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; padding: 12px; text-decoration: none; transition: 0.3s; }
-        .nav-link:hover, .nav-link.active { background: var(--accent); color: white; }
+        .nav-menu { padding: 25px 15px; }
+        .nav-link { color: var(--text-light); padding: 14px 18px; display: flex; align-items: center; text-decoration: none; border-radius: 12px; margin-bottom: 8px; transition: 0.3s; cursor: pointer; border: none; background: none; width: 100%; text-align: left; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-link.active { background: var(--vera-blue); color: white; box-shadow: 0 4px 15px rgba(0, 168, 255, 0.3); }
+        .nav-link i { width: 30px; font-size: 20px; }
 
-        .main-content { margin-left: 250px; padding: 30px; min-height: 100vh; }
-        .card-custom { background: white; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 5px solid var(--accent); padding: 20px; }
+        /* Conteúdo Principal */
+        .main-content { margin-left: 250px; padding: 40px; min-height: 100vh; transition: 0.3s; }
+        .header-title { margin-bottom: 35px; }
+        .header-title h2 { font-weight: 800; color: #2c3e50; }
 
-        /* Animação Piscante para Valores Pendentes */
-        @keyframes alert-pulsar {
-            0% { box-shadow: 0 0 0px rgba(231, 76, 60, 0.3); }
-            50% { box-shadow: 0 0 15px rgba(231, 76, 60, 0.6); border-color: var(--danger); }
-            100% { box-shadow: 0 0 0px rgba(231, 76, 60, 0.3); }
+        /* Tabela Estilo Foto 2 */
+        .table-container { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .table thead { background: #f8f9fa; border-bottom: 2px solid var(--vera-blue); }
+        .table th { font-size: 11px; text-transform: uppercase; color: #95a5a6; padding: 18px; font-weight: 700; letter-spacing: 0.5px; }
+        .table td { padding: 18px; font-size: 14px; color: #2c3e50; border-bottom: 1px solid #f8f9fa; }
+
+        /* Cards Clientes Estilo Foto 4/6 */
+        .card-cliente { background: white; border-radius: 20px; border: none; box-shadow: 0 8px 20px rgba(0,0,0,0.04); padding: 25px; text-align: center; transition: 0.3s; height: 100%; position: relative; }
+        .card-cliente:hover { transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0,0,0,0.08); }
+        .foto-perfil { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #f8f9fa; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .card-cliente h5 { font-weight: 700; margin-bottom: 5px; color: #2c3e50; }
+        .card-cliente .zap-link { color: #27ae60; text-decoration: none; font-size: 13px; font-weight: 600; display: block; margin-bottom: 10px; }
+        .card-cliente .end-text { font-size: 12px; color: #7f8c8d; margin-bottom: 15px; min-height: 36px; }
+
+        /* Cards Receber Estilo Foto 3 */
+        @keyframes alert-pulsar { 0% { transform: scale(1); box-shadow: 0 0 0px rgba(231,76,60,0); } 50% { transform: scale(1.02); box-shadow: 0 0 20px rgba(231,76,60,0.2); } 100% { transform: scale(1); box-shadow: 0 0 0px rgba(231,76,60,0); } }
+        .card-pendente { border-left: 6px solid #e74c3c !important; animation: alert-pulsar 2s infinite; background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .badge-pendente { background: #e74c3c; color: white; font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 50px; }
+
+        /* Botão Adicionar Foto 7 */
+        .btn-add-main { position: fixed; bottom: 40px; right: 40px; width: 65px; height: 65px; border-radius: 50%; background: var(--vera-blue); color: white; border: none; font-size: 28px; box-shadow: 0 8px 25px rgba(0, 168, 255, 0.4); z-index: 1001; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+        .btn-add-main:hover { transform: scale(1.1) rotate(90deg); background: #0097e6; }
+
+        /* Ajustes Mobile */
+        @media (max-width: 768px) {
+            .sidebar { width: 80px; }
+            .sidebar .logo-box h3, .sidebar .logo-box small, .sidebar span { display: none; }
+            .main-content { margin-left: 80px; padding: 20px; }
         }
-        .card-piscante { animation: alert-pulsar 1.5s infinite; border-left: 8px solid var(--danger) !important; }
-
-        .foto-perfil { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; }
-        .btn-add { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: var(--accent); color: white; border: none; font-size: 24px; box-shadow: 0 4px 15px rgba(0,210,255,0.4); z-index: 2000; }
-        .badge-pendente { background-color: var(--danger); font-size: 0.7rem; padding: 4px 8px; }
     </style>
 </head>
 <body>
 
 <aside class="sidebar">
-    <div class="p-4 text-center">
-        <h4 class="fw-bold mb-0">VERA</h4>
-        <small class="text-accent">EMPREENDEDORA</small>
+    <div class="logo-box">
+        <h3>VERA</h3>
+        <small>Empreendedora</small>
     </div>
-    <nav class="mt-4">
-        <a class="nav-link active" id="link-vendas" onclick="mudarAba('vendas')"><i class="fas fa-book me-2"></i> Livro de Vendas</a>
-        <a class="nav-link" id="link-receber" onclick="mudarAba('receber')"><i class="fas fa-hand-holding-usd me-2"></i> Valores a Receber</a>
-        <a class="nav-link" id="link-clientes" onclick="mudarAba('clientes')"><i class="fas fa-users-cog me-2"></i> Gerenciar Clientes</a>
-    </nav>
+    <div class="nav-menu">
+        <button class="nav-link active" onclick="navegar('vendas', this)"><i class="fas fa-list-ul"></i> <span>Livro de Vendas</span></button>
+        <button class="nav-link" onclick="navegar('receber', this)"><i class="fas fa-clock"></i> <span>A Receber</span></button>
+        <button class="nav-link" onclick="navegar('clientes', this)"><i class="fas fa-users"></i> <span>Clientes</span></button>
+    </div>
 </aside>
 
 <main class="main-content">
-    <header class="d-flex justify-content-between align-items-center mb-4">
-        <h2 id="titulo-aba" class="fw-bold">Livro de Vendas</h2>
-        <select id="filtro-mes" class="form-select w-auto rounded-pill" onchange="renderizarTudo()">
-            <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
-            <option value="04" selected>Abril</option><option value="05">Maio</option><option value="06">Junho</option>
-            <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
-            <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
-        </select>
-    </header>
+    <div class="header-title d-flex justify-content-between align-items-center">
+        <h2 id="titulo-pagina">Livro de Vendas</h2>
+        <div class="d-flex gap-2">
+            <select class="form-select rounded-pill border-0 shadow-sm" id="filtroMes" onchange="buscarDados()">
+                <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
+                <option value="04" selected>Abril</option><option value="05">Maio</option><option value="06">Junho</option>
+                <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
+                <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+            </select>
+        </div>
+    </div>
 
-    <section id="aba-vendas" class="card-custom">
+    <section id="sec-vendas" class="table-container">
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
+            <table class="table table-hover align-middle mb-0">
                 <thead>
                     <tr>
-                        <th>Data Venda</th><th>Cliente</th><th>Plano/Tipo</th><th>Valor</th><th>Pagamento</th><th>Previsão Recebimento</th><th>Ação</th>
+                        <th class="ps-4">Data Venda</th>
+                        <th>Cliente</th>
+                        <th>Plano/Tipo</th>
+                        <th>Valor</th>
+                        <th>Pagamento</th>
+                        <th>Previsão Receber</th>
+                        <th class="text-end pe-4">Ação</th>
                     </tr>
                 </thead>
-                <tbody id="corpo-vendas"></tbody>
+                <tbody id="listaVendas">
+                    </tbody>
             </table>
         </div>
     </section>
 
-    <section id="aba-receber" class="d-none">
-        <div class="alert alert-info mb-4 small"><i class="fas fa-info-circle me-2"></i> Estes são os valores com recebimento agendado para datas futuras.</div>
-        <div class="row g-3" id="cards-receber"></div>
+    <section id="sec-receber" class="d-none">
+        <div class="row g-4" id="listaReceber">
+            </div>
     </section>
 
-    <section id="aba-clientes" class="d-none">
-        <div class="mb-4"><input type="text" id="busca-cli" class="form-control rounded-pill" placeholder="Buscar cliente por nome..." oninput="renderizarTudo()"></div>
-        <div class="row g-4" id="lista-clientes"></div>
+    <section id="sec-clientes" class="d-none">
+        <div class="mb-4">
+            <input type="text" class="form-control rounded-pill border-0 shadow-sm ps-4 py-2" id="buscaInput" placeholder="Pesquisar por nome do cliente..." oninput="buscarDados()">
+        </div>
+        <div class="row g-4" id="listaClientes">
+            </div>
     </section>
 </main>
 
-<button class="btn-add" onclick="abrirModalCliente()"><i class="fas fa-user-plus"></i></button>
+<button class="btn-add-main" onclick="abrirModalCliente()"><i class="fas fa-plus"></i></button>
 
-<div class="modal fade" id="modalCliente" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white"><h5>Nova Ficha do Cliente</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-            <form id="form-cliente">
-                <div class="modal-body row g-3">
+<div class="modal fade" id="modalCli" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-primary text-white border-0 py-3">
+                <h5 class="modal-title fw-bold">Ficha de Cadastro Vera</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formCliente">
+                <div class="modal-body p-4 row g-3">
                     <div class="col-md-4 text-center border-end">
-                        <div id="preview-img" class="mb-2" style="height: 150px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;"><i class="fas fa-camera fa-3x text-muted"></i></div>
-                        <input type="file" id="input-foto" class="form-control form-control-sm" accept="image/*">
+                        <div id="prev-container" class="rounded-4 mb-3 d-flex align-items-center justify-content-center bg-light" style="height: 180px; overflow: hidden; border: 2px dashed #ddd;">
+                            <i class="fas fa-user-circle fa-5x text-muted" id="icon-prev"></i>
+                        </div>
+                        <input type="file" id="inpFoto" class="form-control form-control-sm" accept="image/*" onchange="previewImagem(this)">
                     </div>
                     <div class="col-md-8 row g-3">
-                        <div class="col-12"><label class="small fw-bold">Nome</label><input type="text" id="c-nome" class="form-control" required></div>
-                        <div class="col-md-6"><label class="small fw-bold">WhatsApp</label><input type="tel" id="c-tel" class="form-control" required></div>
-                        <div class="col-md-6"><label class="small fw-bold">CPF</label><input type="text" id="c-cpf" class="form-control"></div>
-                        <div class="col-12"><label class="small fw-bold">Endereço</label><input type="text" id="c-end" class="form-control" placeholder="Rua, Número, Bairro..."></div>
-                        <div class="col-12 mt-3 text-primary fw-bold">Dependentes</div>
-                        <div class="col-6"><input type="text" id="dep-1" class="form-control form-control-sm" placeholder="Dep. 1"></div>
-                        <div class="col-6"><input type="text" id="dep-2" class="form-control form-control-sm" placeholder="Dep. 2"></div>
+                        <div class="col-12"><label class="small fw-bold">Nome Completo</label><input type="text" id="nome" class="form-control" required></div>
+                        <div class="col-md-6"><label class="small fw-bold">WhatsApp</label><input type="tel" id="zap" class="form-control" required placeholder="(00) 00000-0000"></div>
+                        <div class="col-md-6"><label class="small fw-bold">CPF</label><input type="text" id="cpf" class="form-control"></div>
+                        <div class="col-12"><label class="small fw-bold">Endereço Completo</label><input type="text" id="end" class="form-control" required placeholder="Rua, Número, Bairro, Cidade"></div>
+                        <div class="col-12 mt-2"><label class="small fw-bold text-primary">Dependentes (Opcional)</label></div>
+                        <div class="col-6"><input type="text" id="dep1" class="form-control form-control-sm" placeholder="Dependente 1"></div>
+                        <div class="col-6"><input type="text" id="dep2" class="form-control form-control-sm" placeholder="Dependente 2"></div>
                     </div>
                 </div>
-                <div class="modal-footer"><button type="submit" class="btn btn-primary w-100">SALVAR CLIENTE</button></div>
+                <div class="modal-footer border-0 p-4"><button type="submit" class="btn btn-primary w-100 py-2 fw-bold rounded-3">SALVAR NA NUVEM</button></div>
             </form>
         </div>
     </div>
 </div>
 
 <div class="modal fade" id="modalVenda" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-info text-white"><h5>Venda para <span id="v-nome-cli"></span></h5></div>
-            <form id="form-venda">
-                <div class="modal-body row g-3">
-                    <div class="col-12"><label class="small fw-bold">Plano</label><select id="v-plano" class="form-select"><option>Hapvida</option><option>Bradesco</option><option>Unimed</option><option>Amil</option></select></div>
-                    <div class="col-6"><label class="small fw-bold">Valor R$</label><input type="number" step="0.01" id="v-valor" class="form-control" required></div>
-                    <div class="col-6"><label class="small fw-bold">Data Venda</label><input type="date" id="v-data" class="form-control" required></div>
-                    <div class="col-12 text-danger fw-bold"><label class="small">Data Agendada para Receber</label><input type="date" id="v-receber" class="form-control border-danger" required></div>
-                    <div class="col-12"><label class="small fw-bold">Forma</label><select id="v-forma" class="form-select"><option>Pix</option><option>Dinheiro</option><option>Cartão</option></select></div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4">
+            <div class="modal-header bg-success text-white py-3"><h5 class="modal-title fw-bold">Venda: <span id="vCliNome"></span></h5></div>
+            <form id="formVenda">
+                <div class="modal-body p-4 row g-3">
+                    <div class="col-12"><label class="small fw-bold">Plano Escolhido</label><select id="vPlano" class="form-select"><option>Hapvida</option><option>Unimed</option><option>Bradesco</option><option>Amil</option><option>Outro</option></select></div>
+                    <div class="col-6"><label class="small fw-bold">Valor da Venda R$</label><input type="number" step="0.01" id="vValor" class="form-control" required></div>
+                    <div class="col-6"><label class="small fw-bold">Data da Venda</label><input type="date" id="vData" class="form-control" required></div>
+                    <div class="col-12"><label class="small fw-bold text-danger">Data do Recebimento (Previsão)</label><input type="date" id="vRec" class="form-control border-danger" required></div>
+                    <div class="col-12"><label class="small fw-bold">Meio de Pagamento</label><select id="vMeio" class="form-select"><option>Pix</option><option>Dinheiro</option><option>Cartão Crédito</option><option>Cartão Débito</option></select></div>
                 </div>
-                <div class="modal-footer"><button type="submit" class="btn btn-success w-100">CONFIRMAR VENDAS</button></div>
+                <div class="modal-footer border-0 p-4"><button type="submit" class="btn btn-success w-100 py-2 fw-bold">FINALIZAR VENDA</button></div>
             </form>
         </div>
     </div>
@@ -128,15 +172,15 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // SUBSTITUA PELOS DADOS DO SEU FIREBASE AQUI
+    // CONFIGURAÇÃO DO SEU FIREBASE (SUBSTITUA PELOS SEUS DADOS AQUI)
     const firebaseConfig = {
-        apiKey: "SUA_API_KEY",
-        authDomain: "veraempreendedora.firebaseapp.com",
-        databaseURL: "https://veraempreendedora-default-rtdb.firebaseio.com",
-        projectId: "veraempreendedora",
-        storageBucket: "veraempreendedora.appspot.com",
+        apiKey: "COLE_SUA_API_KEY_AQUI",
+        authDomain: "veraempreenderora.firebaseapp.com",
+        databaseURL: "https://veraempreenderora-default-rtdb.firebaseio.com",
+        projectId: "veraempreenderora",
+        storageBucket: "veraempreenderora.appspot.com",
         messagingSenderId: "SEU_ID",
         appId: "SEU_APP_ID"
     };
@@ -144,125 +188,151 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Variáveis Globais para Uso nas Telas
-    window.clientes = [];
-    window.vendas = [];
+    // FUNÇÕES GLOBAIS PARA O SISTEMA
+    window.buscarDados = () => {
+        const mesFiltro = document.getElementById('filtroMes').value;
+        const buscaCli = document.getElementById('buscaInput').value.toLowerCase();
+        const hoje = new Date().toISOString().split('T')[0];
 
-    // OUVIR DADOS EM TEMPO REAL
-    onValue(ref(db, 'clientes'), (snap) => {
-        const data = snap.val();
-        window.clientes = data ? Object.entries(data).map(([id, val]) => ({...val, db_id: id})) : [];
-        renderizarTudo();
-    });
+        // Carregar Clientes
+        onValue(ref(db, 'clientes'), (snap) => {
+            const container = document.getElementById('listaClientes');
+            container.innerHTML = "";
+            const data = snap.val();
+            if(data) {
+                Object.keys(data).forEach(id => {
+                    const c = data[id];
+                    if(c.nome.toLowerCase().includes(buscaCli)) {
+                        container.innerHTML += `
+                        <div class="col-md-4">
+                            <div class="card-cliente">
+                                <img src="${c.foto || 'https://via.placeholder.com/90'}" class="foto-perfil">
+                                <h5>${c.nome}</h5>
+                                <a href="https://wa.me/${c.zap.replace(/\D/g,'')}" target="_blank" class="zap-link"><i class="fab fa-whatsapp me-1"></i> ${c.zap}</a>
+                                <div class="end-text"><i class="fas fa-map-marker-alt me-1"></i> ${c.end}</div>
+                                <button class="btn btn-primary btn-sm w-100 rounded-pill mb-2 fw-bold" onclick="abrirVenda('${id}', '${c.nome}')">NOVA VENDA</button>
+                                <button class="btn btn-link btn-sm text-danger text-decoration-none" onclick="excluir('clientes', '${id}')"><i class="fas fa-trash-alt"></i> Excluir</button>
+                            </div>
+                        </div>`;
+                    }
+                });
+            }
+        });
 
-    onValue(ref(db, 'vendas'), (snap) => {
-        const data = snap.val();
-        window.vendas = data ? Object.entries(data).map(([id, val]) => ({...val, db_id: id})) : [];
-        renderizarTudo();
-    });
+        // Carregar Vendas e "A Receber"
+        onValue(ref(db, 'vendas'), (snap) => {
+            const tBody = document.getElementById('listaVendas');
+            const recBody = document.getElementById('listaReceber');
+            tBody.innerHTML = ""; recBody.innerHTML = "";
+            const data = snap.val();
+            if(data) {
+                Object.keys(data).forEach(id => {
+                    const v = data[id];
+                    // Tabela de Vendas (Filtro por mês)
+                    if(v.dataVenda.split('-')[1] === mesFiltro) {
+                        tBody.innerHTML += `
+                        <tr>
+                            <td class="ps-4">${v.dataVenda.split('-').reverse().join('/')}</td>
+                            <td class="fw-bold">${v.clienteNome}</td>
+                            <td><span class="badge bg-light text-dark border">${v.plano}</span></td>
+                            <td class="fw-bold text-primary">R$ ${parseFloat(v.valor).toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+                            <td><span class="badge bg-light text-dark border">${v.meio}</span></td>
+                            <td class="text-danger fw-bold">${v.dataRec.split('-').reverse().join('/')}</td>
+                            <td class="text-end pe-4"><button class="btn btn-link text-muted" onclick="excluir('vendas', '${id}')"><i class="fas fa-trash-alt"></i></button></td>
+                        </tr>`;
+                    }
+                    // Aba "A Receber" (Somente o que vence hoje ou no futuro)
+                    if(v.dataRec >= hoje) {
+                        recBody.innerHTML += `
+                        <div class="col-md-4">
+                            <div class="card-pendente">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="fw-bold mb-0 text-dark">${v.clienteNome}</h6>
+                                    <span class="badge-pendente">A RECEBER</span>
+                                </div>
+                                <h4 class="fw-bold text-danger mb-3">R$ ${parseFloat(v.valor).toLocaleString('pt-BR', {minimumFractionDigits:2})}</h4>
+                                <div class="small text-muted"><i class="fas fa-calendar-check me-2"></i>Vencimento: <strong>${v.dataRec.split('-').reverse().join('/')}</strong></div>
+                                <div class="small text-muted mt-1"><i class="fas fa-tag me-2"></i>Plano: ${v.plano}</div>
+                            </div>
+                        </div>`;
+                    }
+                });
+            }
+        });
+    };
 
-    // Funções de Escrita no Banco
-    window.salvarNoBanco = (caminho, objeto) => push(ref(db, caminho), objeto);
-    window.removerDoBanco = (caminho, id) => { if(confirm("Apagar permanentemente?")) remove(ref(db, `${caminho}/${id}`)); };
+    // Salvar Cliente
+    document.getElementById('formCliente').onsubmit = (e) => {
+        e.preventDefault();
+        const obj = {
+            nome: document.getElementById('nome').value,
+            zap: document.getElementById('zap').value,
+            cpf: document.getElementById('cpf').value,
+            end: document.getElementById('end').value,
+            dep1: document.getElementById('dep1').value,
+            dep2: document.getElementById('dep2').value,
+            foto: window.currentFoto || ""
+        };
+        push(ref(db, 'clientes'), obj).then(() => {
+            bootstrap.Modal.getInstance(document.getElementById('modalCli')).hide();
+            e.target.reset();
+            document.getElementById('prev-container').innerHTML = `<i class="fas fa-user-circle fa-5x text-muted"></i>`;
+        });
+    };
+
+    // Salvar Venda
+    document.getElementById('formVenda').onsubmit = (e) => {
+        e.preventDefault();
+        const obj = {
+            clienteId: window.currentCliId,
+            clienteNome: document.getElementById('vCliNome').innerText,
+            plano: document.getElementById('vPlano').value,
+            valor: document.getElementById('vValor').value,
+            dataVenda: document.getElementById('vData').value,
+            dataRec: document.getElementById('vRec').value,
+            meio: document.getElementById('vMeio').value
+        };
+        push(ref(db, 'vendas'), obj).then(() => {
+            bootstrap.Modal.getInstance(document.getElementById('modalVenda')).hide();
+            e.target.reset();
+        });
+    };
+
+    window.excluir = (caminho, id) => { if(confirm("Deseja apagar esse registro permanentemente?")) remove(ref(db, `${caminho}/${id}`)); };
+
+    window.onload = buscarDados;
 </script>
 
 <script>
-    // Navegação e UI
-    function mudarAba(aba) {
+    function navegar(aba, btn) {
         document.querySelectorAll('section').forEach(s => s.classList.add('d-none'));
+        document.getElementById('sec-'+aba).classList.remove('d-none');
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.getElementById('aba-'+aba).classList.remove('d-none');
-        document.getElementById('link-'+aba).classList.add('active');
-        const titulos = {vendas: "Livro de Vendas", receber: "Valores a Receber", clientes: "Gerenciar Clientes"};
-        document.getElementById('titulo-aba').innerText = titulos[aba];
+        btn.classList.add('active');
+        const titulos = {vendas: "Livro de Vendas", receber: "Valores a Receber", clientes: "Livro de Clientes"};
+        document.getElementById('titulo-pagina').innerText = titulos[aba];
     }
 
-    // Renderização Geral
-    function renderizarTudo() {
-        const mes = document.getElementById('filtro-mes').value;
-        const busca = document.getElementById('busca-cli').value.toLowerCase();
-        const hoje = new Date().toISOString().split('T')[0];
-
-        // 1. Renderizar Vendas (Filtro por Mês)
-        const corpoVendas = document.getElementById('corpo-vendas');
-        corpoVendas.innerHTML = window.vendas.filter(v => v.data.split('-')[1] === mes).map(v => `
-            <tr>
-                <td class="small text-muted">${v.data.split('-').reverse().join('/')}</td>
-                <td class="fw-bold">${v.cliente}</td>
-                <td><span class="badge bg-light text-dark border">${v.plano}</span></td>
-                <td><i class="fas fa-triangle-exclamation text-muted me-1"></i> R$ ${v.valor}</td>
-                <td><span class="badge bg-light text-dark border px-3">${v.forma}</span></td>
-                <td class="text-danger fw-bold">${v.receber.split('-').reverse().join('/')}</td>
-                <td><button class="btn btn-link text-muted p-0" onclick="window.removerDoBanco('vendas', '${v.db_id}')"><i class="fas fa-trash"></i></button></td>
-            </tr>`).join('');
-
-        // 2. Renderizar Clientes
-        const listaCli = document.getElementById('lista-clientes');
-        listaCli.innerHTML = window.clientes.filter(c => c.nome.toLowerCase().includes(busca)).map(c => `
-            <div class="col-md-4">
-                <div class="card card-custom text-center p-4">
-                    <img src="${c.foto || 'https://via.placeholder.com/80'}" class="foto-perfil mx-auto mb-2" style="width:80px; height:80px;">
-                    <h5 class="fw-bold mb-1">${c.nome}</h5>
-                    <small class="text-muted d-block">${c.tel}</small>
-                    <small class="text-muted d-block mb-3">${c.end || 'Sem endereço'}</small>
-                    <button class="btn btn-outline-info btn-sm w-100 mb-2 rounded-pill" onclick="abrirVenda('${c.nome}')">NOVA VENDA</button>
-                    <button class="btn btn-link btn-sm text-danger text-decoration-none" onclick="window.removerDoBanco('clientes', '${c.db_id}')"><i class="fas fa-user-minus me-1"></i> APAGAR CLIENTE</button>
-                </div>
-            </div>`).join('');
-
-        // 3. Renderizar Recebimentos Futuros (Efeito Piscante)
-        const cardsReceber = document.getElementById('cards-receber');
-        cardsReceber.innerHTML = window.vendas.filter(v => v.receber >= hoje).map(v => `
-            <div class="col-md-4">
-                <div class="card card-custom p-3 ${v.receber >= hoje ? 'card-piscante' : ''}">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div><h6 class="fw-bold text-primary mb-0">${v.cliente}</h6><small class="text-muted">Plano: ${v.plano}</small></div>
-                        <span class="badge badge-pendente rounded-pill">PENDENTE</span>
-                    </div>
-                    <h4 class="fw-bold text-danger mt-2">R$ ${v.valor}</h4>
-                    <hr class="my-2">
-                    <div class="small"><i class="fas fa-calendar-alt me-2 text-muted"></i>Receber em: <strong>${v.receber.split('-').reverse().join('/')}</strong></div>
-                </div>
-            </div>`).join('');
+    function abrirModalCliente() { new bootstrap.Modal(document.getElementById('modalCli')).show(); }
+    
+    function abrirVenda(id, nome) {
+        window.currentCliId = id;
+        document.getElementById('vCliNome').innerText = nome;
+        new bootstrap.Modal(document.getElementById('modalVenda')).show();
     }
 
-    // Gerenciamento de Imagem
-    document.getElementById('input-foto').onchange = (e) => {
-        const reader = new FileReader();
-        reader.onload = (ev) => document.getElementById('preview-img').innerHTML = `<img src="${ev.target.result}" class="w-100 h-100 object-fit-cover">`;
-        reader.readAsDataURL(e.target.files[0]);
-    };
-
-    // Cadastro de Cliente
-    function abrirModalCliente() { new bootstrap.Modal('#modalCliente').show(); }
-    document.getElementById('form-cliente').onsubmit = (e) => {
-        e.preventDefault();
-        const foto = document.querySelector('#preview-img img')?.src || "";
-        const c = {
-            nome: document.getElementById('c-nome').value, tel: document.getElementById('c-tel').value,
-            cpf: document.getElementById('c-cpf').value, end: document.getElementById('c-end').value,
-            foto: foto, dep: [document.getElementById('dep-1').value, document.getElementById('dep-2').value]
-        };
-        window.salvarNoBanco('clientes', c);
-        bootstrap.Modal.getInstance('#modalCliente').hide();
-        e.target.reset();
-        document.getElementById('preview-img').innerHTML = `<i class="fas fa-camera fa-3x text-muted"></i>`;
-    };
-
-    // Cadastro de Venda
-    function abrirVenda(nome) { document.getElementById('v-nome-cli').innerText = nome; new bootstrap.Modal('#modalVenda').show(); }
-    document.getElementById('form-venda').onsubmit = (e) => {
-        e.preventDefault();
-        const v = {
-            cliente: document.getElementById('v-nome-cli').innerText, plano: document.getElementById('v-plano').value,
-            valor: document.getElementById('v-valor').value, data: document.getElementById('v-data').value,
-            receber: document.getElementById('v-receber').value, forma: document.getElementById('v-forma').value
-        };
-        window.salvarNoBanco('vendas', v);
-        bootstrap.Modal.getInstance('#modalVenda').hide();
-        e.target.reset();
-    };
+    function previewImagem(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('prev-container').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
+                window.currentFoto = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
