@@ -17,7 +17,6 @@
         .main-content { margin-left: 250px; padding: 40px; }
         .card-caderno { background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-top: 6px solid var(--accent); }
         
-        /* Alerta Piscante */
         .alerta-piscante {
             color: var(--warning-red);
             font-weight: bold;
@@ -34,6 +33,11 @@
         .btn-excluir:hover { color: var(--warning-red); transform: scale(1.1); }
         
         .btn-flutuante { position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; border-radius: 50%; font-size: 28px; box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4); z-index: 999; }
+        
+        .search-container { position: relative; max-width: 400px; margin-bottom: 20px; }
+        .search-container input { padding-left: 35px; border-radius: 20px; }
+        .search-container i { position: absolute; left: 12px; top: 10px; color: #adb5bd; }
+        .dependentes-list { font-size: 0.75rem; color: #6c757d; font-style: italic; }
     </style>
 </head>
 <body>
@@ -90,6 +94,10 @@
     </section>
 
     <section id="sec-clientes" class="d-none">
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" id="busca-cliente" class="form-control shadow-sm" placeholder="Buscar cliente pelo nome..." onkeyup="renderAll()">
+        </div>
         <div class="row g-4" id="grid-clientes"></div>
     </section>
 </div>
@@ -115,10 +123,21 @@
                         <input type="file" class="form-control form-control-sm" accept="image/*" onchange="readImg(this)">
                     </div>
                     <div class="col-md-8 row g-3">
-                        <div class="col-12"><label class="form-label">Nome</label><input type="text" id="n-cli" class="form-control" required></div>
+                        <div class="col-12"><label class="form-label">Nome Completo</label><input type="text" id="n-cli" class="form-control" required></div>
                         <div class="col-md-6"><label class="form-label">WhatsApp</label><input type="tel" id="t-cli" class="form-control" required></div>
                         <div class="col-md-6"><label class="form-label">CPF/CNPJ</label><input type="text" id="d-cli" class="form-control"></div>
-                        <div class="col-12"><label class="form-label">Endereço</label><input type="text" id="e-cli" class="form-control"></div>
+                        
+                        <div class="col-12 mt-3">
+                            <h6 class="text-primary border-bottom pb-2"><i class="fas fa-users me-2"></i>Dependentes (Opcional)</h6>
+                            <div class="row g-2">
+                                <div class="col-6"><input type="text" id="dep1" class="form-control form-control-sm" placeholder="Dependente 1"></div>
+                                <div class="col-6"><input type="text" id="dep2" class="form-control form-control-sm" placeholder="Dependente 2"></div>
+                                <div class="col-6"><input type="text" id="dep3" class="form-control form-control-sm" placeholder="Dependente 3"></div>
+                                <div class="col-6"><input type="text" id="dep4" class="form-control form-control-sm" placeholder="Dependente 4"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mt-3"><label class="form-label">Endereço</label><input type="text" id="e-cli" class="form-control"></div>
                         <div class="col-md-6"><label class="form-label">Nascimento</label><input type="date" id="na-cli" class="form-control"></div>
                     </div>
                 </div>
@@ -173,10 +192,22 @@
         }
     }
 
-    function modalCli() { new bootstrap.Modal(document.getElementById('modalCli')).show(); }
+    function modalCli() { 
+        document.getElementById('f-cli').reset();
+        document.getElementById('p-img').classList.add('d-none');
+        document.getElementById('p-icon').classList.remove('d-none');
+        new bootstrap.Modal(document.getElementById('modalCli')).show(); 
+    }
 
     document.getElementById('f-cli').onsubmit = function(e) {
         e.preventDefault();
+        const deps = [
+            document.getElementById('dep1').value,
+            document.getElementById('dep2').value,
+            document.getElementById('dep3').value,
+            document.getElementById('dep4').value
+        ].filter(d => d !== "");
+
         db_cli.push({
             id: Date.now(),
             nome: document.getElementById('n-cli').value,
@@ -184,7 +215,8 @@
             doc: document.getElementById('d-cli').value,
             end: document.getElementById('e-cli').value,
             nasc: document.getElementById('na-cli').value,
-            foto: document.getElementById('p-img').src
+            foto: document.getElementById('p-img').src,
+            dependentes: deps
         });
         localStorage.setItem('v5_cli', JSON.stringify(db_cli));
         this.reset();
@@ -217,6 +249,7 @@
     function renderAll() {
         const mes = document.getElementById('filtro-mes').value;
         const hoje = new Date().toISOString().split('T')[0];
+        const termoBusca = document.getElementById('busca-cliente').value.toLowerCase();
         
         // Render Livro
         const lista = document.getElementById('lista-vendas');
@@ -257,19 +290,24 @@
             </div>`;
         });
 
-        // Render Clientes
+        // Render Clientes com Filtro e Dependentes
         const gridCli = document.getElementById('grid-clientes');
         gridCli.innerHTML = '';
-        db_cli.forEach(c => {
+        db_cli.filter(c => c.nome.toLowerCase().includes(termoBusca)).forEach(c => {
+            const listaDeps = c.dependentes && c.dependentes.length > 0 
+                ? `<div class="dependentes-list mt-1"><i class="fas fa-child me-1"></i>${c.dependentes.join(', ')}</div>` 
+                : '';
+
             gridCli.innerHTML += `
             <div class="col-md-4 col-lg-3">
                 <div class="card border-0 shadow-sm p-3 text-center h-100">
                     <img src="${c.foto || 'https://via.placeholder.com/80'}" class="foto-perfil mx-auto mb-3 shadow-sm">
                     <h6 class="fw-bold mb-1">${c.nome}</h6>
-                    <p class="text-muted small mb-3">${c.tel}</p>
-                    <div class="d-grid gap-2">
+                    <p class="text-muted small mb-1">${c.tel}</p>
+                    ${listaDeps}
+                    <div class="d-grid gap-2 mt-3">
                         <button class="btn btn-sm btn-outline-info" onclick="abrirVenda('${c.nome}')">NOVA VENDA</button>
-                        <button class="btn btn-sm btn-light text-danger border-0" onclick="delCli(${c.id})"><i class="fas fa-user-minus me-1"></i> APAGAR CLIENTE</button>
+                        <button class="btn btn-sm btn-light text-danger border-0" onclick="delCli(${c.id})"><i class="fas fa-user-minus me-1"></i> APAGAR</button>
                     </div>
                 </div>
             </div>`;
