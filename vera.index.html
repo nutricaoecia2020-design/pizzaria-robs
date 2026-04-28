@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vera Empreendedora | Fluxo Pro Cloud</title>
+    <title>Vera Empreendedora | Fluxo Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -17,6 +17,7 @@
         .main-content { margin-left: 250px; padding: 40px; }
         .card-caderno { background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-top: 6px solid var(--accent); }
         
+        /* Alerta Piscante */
         .alerta-piscante {
             color: var(--warning-red);
             font-weight: bold;
@@ -28,17 +29,11 @@
             100% { opacity: 1; }
         }
 
-        .foto-perfil { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; background: #eee; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .foto-perfil { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: #eee; }
         .btn-excluir { color: #bdc3c7; transition: 0.3s; border: none; background: none; }
         .btn-excluir:hover { color: var(--warning-red); transform: scale(1.1); }
         
-        .dep-box { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin-bottom: 10px; }
-        .dep-title { font-size: 0.75rem; font-weight: bold; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; display: block; }
-
         .btn-flutuante { position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; border-radius: 50%; font-size: 28px; box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4); z-index: 999; }
-        
-        /* Ajuste para inputs de dependentes */
-        .dep-box input { margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -104,93 +99,30 @@
 </button>
 
 <div class="modal fade" id="modalCli" tabindex="-1">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content border-0 shadow">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">FICHA COMPLETA DO BENEFICIÁRIO</h5>
+                <h5 class="modal-title">Nova Ficha do Cliente</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form id="f-cli">
-                <div class="modal-body p-4">
-                    <div class="row g-3">
-                        <div class="col-md-3 text-center border-end">
-                            <div class="bg-light border rounded mb-2 d-flex align-items-center justify-content-center" style="height:180px; overflow:hidden;">
-                                <img id="p-img" src="" class="d-none w-100 h-100" style="object-fit:cover">
-                                <i id="p-icon" class="fas fa-camera fa-4x text-muted"></i>
-                            </div>
-                            <input type="file" id="up-foto" class="d-none" accept="image/*" onchange="readImg(this)">
-                            <button type="button" class="btn btn-sm btn-dark w-100" onclick="document.getElementById('up-foto').click()">ALTERAR FOTO</button>
+                <div class="modal-body row g-3">
+                    <div class="col-md-4 text-center">
+                        <div class="bg-light border rounded mb-2 d-flex align-items-center justify-content-center" style="height:160px;">
+                            <img id="p-img" src="" class="d-none w-100 h-100 shadow-sm" style="object-fit:cover">
+                            <i id="p-icon" class="fas fa-camera fa-3x text-muted"></i>
                         </div>
-                        
-                        <div class="col-md-9 row g-3">
-                            <div class="col-md-8"><label class="form-label">Nome Titular</label><input type="text" id="n-cli" class="form-control" required></div>
-                            <div class="col-md-4"><label class="form-label">WhatsApp</label><input type="tel" id="t-cli" class="form-control" required></div>
-                            <div class="col-md-4"><label class="form-label">CPF/CNPJ</label><input type="text" id="d-cli" class="form-control"></div>
-                            <div class="col-md-4"><label class="form-label">Nascimento</label><input type="date" id="na-cli" class="form-control"></div>
-                            <div class="col-md-4"><label class="form-label">Estado Civil</label>
-                                <select id="e-cli" class="form-select">
-                                    <option>Solteiro(a)</option>
-                                    <option>Casado(a)</option>
-                                    <option>Divorciado(a)</option>
-                                    <option>Viúvo(a)</option>
-                                </select>
-                            </div>
-                            <div class="col-12"><label class="form-label">Endereço Completo</label><input type="text" id="en-cli" class="form-control"></div>
-                        </div>
+                        <input type="file" class="form-control form-control-sm" accept="image/*" onchange="readImg(this)">
                     </div>
-
-                    <h6 class="fw-bold text-primary mt-4 border-bottom pb-2"><i class="fas fa-users me-2"></i>DADOS DOS DEPENDENTES (OPCIONAL)</h6>
-                    
-                    <div class="row g-3 mt-1">
-                        <div class="col-md-6">
-                            <div class="dep-box">
-                                <span class="dep-title">Dependente 01</span>
-                                <input type="text" id="d1-n" class="form-control form-control-sm" placeholder="Nome Completo">
-                                <div class="row g-2">
-                                    <div class="col-6"><input type="text" id="d1-c" class="form-control form-control-sm" placeholder="CPF"></div>
-                                    <div class="col-6"><input type="text" id="d1-p" class="form-control form-control-sm" placeholder="Parentesco"></div>
-                                    <div class="col-12"><input type="date" id="d1-na" class="form-control form-control-sm"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="dep-box">
-                                <span class="dep-title">Dependente 02</span>
-                                <input type="text" id="d2-n" class="form-control form-control-sm" placeholder="Nome Completo">
-                                <div class="row g-2">
-                                    <div class="col-6"><input type="text" id="d2-c" class="form-control form-control-sm" placeholder="CPF"></div>
-                                    <div class="col-6"><input type="text" id="d2-p" class="form-control form-control-sm" placeholder="Parentesco"></div>
-                                    <div class="col-12"><input type="date" id="d2-na" class="form-control form-control-sm"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="dep-box">
-                                <span class="dep-title">Dependente 03</span>
-                                <input type="text" id="d3-n" class="form-control form-control-sm" placeholder="Nome Completo">
-                                <div class="row g-2">
-                                    <div class="col-6"><input type="text" id="d3-c" class="form-control form-control-sm" placeholder="CPF"></div>
-                                    <div class="col-6"><input type="text" id="d3-p" class="form-control form-control-sm" placeholder="Parentesco"></div>
-                                    <div class="col-12"><input type="date" id="d3-na" class="form-control form-control-sm"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="dep-box">
-                                <span class="dep-title">Dependente 04</span>
-                                <input type="text" id="d4-n" class="form-control form-control-sm" placeholder="Nome Completo">
-                                <div class="row g-2">
-                                    <div class="col-6"><input type="text" id="d4-c" class="form-control form-control-sm" placeholder="CPF"></div>
-                                    <div class="col-6"><input type="text" id="d4-p" class="form-control form-control-sm" placeholder="Parentesco"></div>
-                                    <div class="col-12"><input type="date" id="d4-na" class="form-control form-control-sm"></div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="col-md-8 row g-3">
+                        <div class="col-12"><label class="form-label">Nome</label><input type="text" id="n-cli" class="form-control" required></div>
+                        <div class="col-md-6"><label class="form-label">WhatsApp</label><input type="tel" id="t-cli" class="form-control" required></div>
+                        <div class="col-md-6"><label class="form-label">CPF/CNPJ</label><input type="text" id="d-cli" class="form-control"></div>
+                        <div class="col-12"><label class="form-label">Endereço</label><input type="text" id="e-cli" class="form-control"></div>
+                        <div class="col-md-6"><label class="form-label">Nascimento</label><input type="date" id="na-cli" class="form-control"></div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow">SALVAR FICHA COMPLETA</button>
-                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-primary w-100 py-2 fw-bold">SALVAR FICHA</button></div>
             </form>
         </div>
     </div>
@@ -214,27 +146,11 @@
     </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-    // CONFIGURAÇÃO FIREBASE - CONECTANDO AO SEU BANCO
-    const firebaseConfig = { databaseURL: "https://veraempreendedora-default-rtdb.firebaseio.com/" };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    let db_cli = {};
-    let db_ven = {};
+    let db_cli = JSON.parse(localStorage.getItem('v5_cli')) || [];
+    let db_ven = JSON.parse(localStorage.getItem('v5_ven')) || [];
     let cli_atual = "";
-
-    // ESCUTANDO DADOS EM TEMPO REAL
-    db.ref().on('value', snap => {
-        const dados = snap.val();
-        db_cli = dados?.clientes || {};
-        db_ven = dados?.vendas || {};
-        renderAll();
-    });
 
     function showSec(id) {
         document.querySelectorAll('section').forEach(s => s.classList.add('d-none'));
@@ -242,6 +158,7 @@
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         event.currentTarget.classList.add('active');
         document.getElementById('header-title').innerText = event.currentTarget.innerText;
+        renderAll();
     }
 
     function readImg(input) {
@@ -256,48 +173,23 @@
         }
     }
 
-    function modalCli() { 
-        document.getElementById('f-cli').reset();
-        document.getElementById('p-img').classList.add('d-none');
-        document.getElementById('p-icon').classList.remove('d-none');
-        new bootstrap.Modal(document.getElementById('modalCli')).show(); 
-    }
+    function modalCli() { new bootstrap.Modal(document.getElementById('modalCli')).show(); }
 
-    // SALVAR CLIENTE NO FIREBASE
     document.getElementById('f-cli').onsubmit = function(e) {
         e.preventDefault();
-        const id = Date.now();
-        
-        // Coleta dependentes
-        let dependentes = [];
-        for(let i=1; i<=4; i++) {
-            let nomeDep = document.getElementById(`d${i}-n`).value;
-            if(nomeDep) {
-                dependentes.push({
-                    nome: nomeDep,
-                    cpf: document.getElementById(`d${i}-c`).value,
-                    parentesco: document.getElementById(`d${i}-p`).value,
-                    nascimento: document.getElementById(`d${i}-na`).value
-                });
-            }
-        }
-
-        const novoCliente = {
-            id: id,
+        db_cli.push({
+            id: Date.now(),
             nome: document.getElementById('n-cli').value,
             tel: document.getElementById('t-cli').value,
             doc: document.getElementById('d-cli').value,
-            end: document.getElementById('en-cli').value,
+            end: document.getElementById('e-cli').value,
             nasc: document.getElementById('na-cli').value,
-            estadoCivil: document.getElementById('e-cli').value,
-            foto: document.getElementById('p-img').src || "",
-            dependentes: dependentes
-        };
-
-        db.ref('clientes/' + id).set(novoCliente).then(() => {
-            bootstrap.Modal.getInstance(document.getElementById('modalCli')).hide();
-            alert("Cliente salvo com sucesso!");
+            foto: document.getElementById('p-img').src
         });
+        localStorage.setItem('v5_cli', JSON.stringify(db_cli));
+        this.reset();
+        bootstrap.Modal.getInstance(document.getElementById('modalCli')).hide();
+        renderAll();
     };
 
     function abrirVenda(nome) {
@@ -306,23 +198,20 @@
         new bootstrap.Modal(document.getElementById('modalVen')).show();
     }
 
-    // SALVAR VENDA NO FIREBASE
     document.getElementById('f-ven').onsubmit = function(e) {
         e.preventDefault();
-        const id = Date.now();
-        const novaVenda = {
-            id: id,
+        db_ven.push({
+            id: Date.now(),
             cliente: cli_atual,
             plano: document.getElementById('pv').value,
             valor: parseFloat(document.getElementById('vv').value),
             data: document.getElementById('dv').value,
             receber: document.getElementById('rv').value,
             forma: document.getElementById('fv').value
-        };
-
-        db.ref('vendas/' + id).set(novaVenda).then(() => {
-            bootstrap.Modal.getInstance(document.getElementById('modalVen')).hide();
         });
+        localStorage.setItem('v5_ven', JSON.stringify(db_ven));
+        bootstrap.Modal.getInstance(document.getElementById('modalVen')).hide();
+        renderAll();
     };
 
     function renderAll() {
@@ -332,7 +221,7 @@
         // Render Livro
         const lista = document.getElementById('lista-vendas');
         lista.innerHTML = '';
-        Object.values(db_ven).filter(v => v.data.split('-')[1] === mes).forEach(v => {
+        db_ven.filter(v => v.data.split('-')[1] === mes).forEach(v => {
             const isFuturo = v.receber > hoje;
             lista.innerHTML += `
             <tr>
@@ -340,18 +229,18 @@
                 <td class="fw-bold">${v.cliente}</td>
                 <td>${v.plano}</td>
                 <td class="${isFuturo ? 'alerta-piscante' : 'fw-bold text-success'}">
-                    ${isFuturo ? '<i class="fas fa-exclamation-triangle me-1"></i>' : ''} R$ ${v.valor.toLocaleString('pt-BR')}
+                    ${isFuturo ? '<i class="fas fa-exclamation-triangle me-1"></i>' : ''} R$ ${v.valor.toLocaleString()}
                 </td>
                 <td><span class="badge bg-light text-dark border">${v.forma}</span></td>
                 <td class="${isFuturo ? 'text-danger fw-bold' : ''}">${v.receber.split('-').reverse().join('/')}</td>
-                <td class="text-end pe-4"><button class="btn-excluir" onclick="delVenda('${v.id}')"><i class="fas fa-trash"></i></button></td>
+                <td class="text-end pe-4"><button class="btn-excluir" onclick="delVenda(${v.id})"><i class="fas fa-trash"></i></button></td>
             </tr>`;
         });
 
         // Render Receber
         const gridRec = document.getElementById('lista-cards-receber');
         gridRec.innerHTML = '';
-        Object.values(db_ven).filter(v => v.receber > hoje).forEach(v => {
+        db_ven.filter(v => v.receber > hoje).forEach(v => {
             gridRec.innerHTML += `
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm p-3 border-start border-danger border-4">
@@ -360,7 +249,7 @@
                         <span class="badge bg-danger">PENDENTE</span>
                     </div>
                     <p class="mb-1 small">Plano: ${v.plano}</p>
-                    <h5 class="alerta-piscante mb-2">R$ ${v.valor.toLocaleString('pt-BR')}</h5>
+                    <h5 class="alerta-piscante mb-2">R$ ${v.valor.toLocaleString()}</h5>
                     <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
                         <small class="text-muted"><i class="far fa-calendar-check me-1"></i> Receber em: <b>${v.receber.split('-').reverse().join('/')}</b></small>
                     </div>
@@ -371,7 +260,7 @@
         // Render Clientes
         const gridCli = document.getElementById('grid-clientes');
         gridCli.innerHTML = '';
-        Object.values(db_cli).forEach(c => {
+        db_cli.forEach(c => {
             gridCli.innerHTML += `
             <div class="col-md-4 col-lg-3">
                 <div class="card border-0 shadow-sm p-3 text-center h-100">
@@ -380,15 +269,22 @@
                     <p class="text-muted small mb-3">${c.tel}</p>
                     <div class="d-grid gap-2">
                         <button class="btn btn-sm btn-outline-info" onclick="abrirVenda('${c.nome}')">NOVA VENDA</button>
-                        <button class="btn btn-sm btn-light text-danger border-0" onclick="delCli('${c.id}')"><i class="fas fa-user-minus me-1"></i> APAGAR CLIENTE</button>
+                        <button class="btn btn-sm btn-light text-danger border-0" onclick="delCli(${c.id})"><i class="fas fa-user-minus me-1"></i> APAGAR CLIENTE</button>
                     </div>
                 </div>
             </div>`;
         });
     }
 
-    function delVenda(id) { if(confirm("Apagar esta venda?")) db.ref('vendas/'+id).remove(); }
-    function delCli(id) { if(confirm("Isso apagará o cliente e histórico. Confirma?")) db.ref('clientes/'+id).remove(); }
+    function delVenda(id) { if(confirm("Apagar esta venda do histórico?")) { db_ven = db_ven.filter(v => v.id !== id); localStorage.setItem('v5_ven', JSON.stringify(db_ven)); renderAll(); } }
+    
+    function delCli(id) { 
+        if(confirm("ATENÇÃO: Isso apagará o cliente e TODO o histórico dele. Confirma?")) { 
+            db_cli = db_cli.filter(c => c.id !== id); 
+            localStorage.setItem('v5_cli', JSON.stringify(db_cli)); 
+            renderAll(); 
+        } 
+    }
 
     window.onload = renderAll;
 </script>
