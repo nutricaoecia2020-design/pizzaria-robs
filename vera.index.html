@@ -3,239 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vera Empreendedora | Sistema Profissional</title>
+    <title>Vera Empreendedora | Gestão de Vendas Premium</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --primary: #1a252f; --accent: #3498db; --warning-red: #e74c3c; --success-green: #27ae60; }
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
+        :root { --primary: #1a252f; --accent: #3498db; --warning-red: #e74c3c; --success-green: #27ae60; --light-bg: #f4f7f6; }
+        body { background-color: var(--light-bg); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
-        /* Sidebar */
-        .sidebar { background: var(--primary); min-height: 100vh; width: 260px; position: fixed; color: white; z-index: 1000; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
-        .nav-link { color: #adb5bd; margin: 10px 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; padding: 12px; }
-        .nav-link i { width: 25px; font-size: 1.1rem; }
-        .nav-link:hover, .nav-link.active { background: var(--accent); color: white; transform: translateX(5px); }
+        /* Sidebar Estilizada */
+        .sidebar { background: var(--primary); min-height: 100vh; width: 280px; position: fixed; color: white; z-index: 1000; box-shadow: 5px 0 15px rgba(0,0,0,0.1); }
+        .sidebar-brand { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-brand h3 { letter-spacing: 3px; font-weight: 800; margin-bottom: 0; }
+        .nav-link { color: #adb5bd; margin: 12px 20px; border-radius: 10px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; padding: 14px; font-weight: 500; }
+        .nav-link i { width: 30px; font-size: 1.2rem; }
+        .nav-link:hover, .nav-link.active { background: var(--accent); color: white; transform: translateX(8px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 
-        /* Main Content */
-        .main-content { margin-left: 260px; padding: 40px; transition: all 0.3s; }
-        .card-caderno { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-top: 6px solid var(--accent); animation: fadeIn 0.5s; }
+        /* Conteúdo Principal */
+        .main-content { margin-left: 280px; padding: 50px; transition: all 0.3s; }
+        .header-box { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; }
+        .card-caderno { background: white; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); border-top: 8px solid var(--accent); animation: slideUp 0.6s ease; overflow: hidden; }
         
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Estilos de Tabela e Cards */
-        .table thead { background-color: #f1f3f5; }
-        .alerta-piscante { color: var(--warning-red); font-weight: bold; animation: pulse-red 1.5s infinite; }
-        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        /* Tabela e Alertas */
+        .table thead th { background-color: #f8f9fa; border-bottom: 2px solid #dee2e6; color: #6c757d; font-size: 0.85rem; text-transform: uppercase; padding: 15px; }
+        .alerta-piscante { color: var(--warning-red); font-weight: 800; animation: blinker 1.2s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0.2; } }
 
-        .foto-perfil { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; background: #e9ecef; border: 3px solid white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: 0.3s; }
-        .foto-perfil:hover { transform: scale(1.1); }
+        /* Cards de Cliente */
+        .cliente-card { border: none; border-radius: 18px; transition: 0.4s; background: white; position: relative; }
+        .cliente-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .foto-perfil { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; background: #eee; border: 4px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         
-        .btn-excluir { color: #ced4da; transition: 0.3s; border: none; background: none; padding: 5px; }
-        .btn-excluir:hover { color: var(--warning-red); transform: rotate(10deg); }
+        /* Botões Flutuantes e Efeitos */
+        .btn-flutuante { position: fixed; bottom: 40px; right: 40px; width: 75px; height: 75px; border-radius: 50%; font-size: 32px; box-shadow: 0 10px 30px rgba(52, 152, 219, 0.4); z-index: 999; display: flex; align-items: center; justify-content: center; transition: 0.4s; }
+        .btn-flutuante:hover { transform: scale(1.15) rotate(180deg); }
+
+        /* Estilo dos Dependentes no Modal */
+        .dep-box { background: #fdfdfd; border-radius: 15px; padding: 20px; border: 1px solid #e9ecef; margin-bottom: 10px; transition: 0.3s; }
+        .dep-box:hover { border-color: var(--accent); background: #f8fbff; }
+        .dep-label { font-size: 0.75rem; font-weight: 800; color: var(--accent); margin-bottom: 12px; display: block; border-bottom: 1px solid #eee; }
         
-        .btn-flutuante { position: fixed; bottom: 35px; right: 35px; width: 70px; height: 70px; border-radius: 50%; font-size: 30px; box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5); z-index: 999; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        .btn-flutuante:hover { transform: scale(1.1) rotate(90deg); }
-
-        /* Seção de Dependentes */
-        .dep-container { background: #f8f9fa; border-radius: 12px; padding: 20px; border: 1px solid #dee2e6; margin-bottom: 15px; }
-        .dep-header { font-size: 0.85rem; font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid #dee2e6; padding-bottom: 5px; }
-        .form-label { font-weight: 600; font-size: 0.9rem; color: #495057; }
-
-        .badge-plano { background: #e3f2fd; color: #1976d2; padding: 5px 10px; border-radius: 5px; font-weight: bold; }
+        .form-control, .form-select { border-radius: 10px; padding: 12px; border: 1px solid #dce1e6; }
+        .form-control:focus { box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15); border-color: var(--accent); }
     </style>
 </head>
 <body>
 
 <div class="sidebar d-flex flex-column">
-    <div class="p-4 text-center">
-        <h3 class="fw-bold text-white mb-0" style="letter-spacing: 2px;">VERA</h3>
+    <div class="sidebar-brand">
+        <h3 class="text-white">VERA</h3>
         <small class="text-info opacity-75">GESTÃO DE VENDAS</small>
     </div>
-    <hr class="mx-3 opacity-25">
-    <ul class="nav flex-column mt-2">
-        <li class="nav-item"><a class="nav-link active" onclick="showSec('livro', this)"><i class="fas fa-th-list me-3"></i> Livro de Registro</a></li>
-        <li class="nav-item"><a class="nav-link" onclick="showSec('receber', this)"><i class="fas fa-money-bill-wave me-3"></i> Valores a Receber</a></li>
-        <li class="nav-item"><a class="nav-link" onclick="showSec('clientes', this)"><i class="fas fa-user-friends me-3"></i> Gerenciar Clientes</a></li>
+    <ul class="nav flex-column mt-4">
+        <li class="nav-item"><a class="nav-link active" onclick="nav('livro', this)"><i class="fas fa-list-ul"></i> Livro de Registro</a></li>
+        <li class="nav-item"><a class="nav-link" onclick="nav('receber', this)"><i class="fas fa-wallet"></i> Valores a Receber</a></li>
+        <li class="nav-item"><a class="nav-link" onclick="nav('clientes', this)"><i class="fas fa-users"></i> Gerenciar Clientes</a></li>
     </ul>
-    <div class="mt-auto p-4 small opacity-50 text-center">Cloud Sync Ativo</div>
+    <div class="mt-auto p-4 text-center">
+        <div class="badge bg-success-subtle text-success p-2 w-100"><i class="fas fa-cloud me-2"></i>Sincronizado</div>
+    </div>
 </div>
 
 <div class="main-content">
-    <header class="d-flex justify-content-between align-items-center mb-5">
+    <div class="header-box">
         <div>
-            <h2 id="header-title" class="fw-bold mb-0">Livro de Registro</h2>
-            <p class="text-muted">Acompanhamento de vendas e comissões</p>
+            <h2 id="view-title" class="fw-bold mb-1">Livro de Registro</h2>
+            <p id="view-subtitle" class="text-muted">Acompanhe seu desempenho e recebimentos futuros.</p>
         </div>
-        <div class="d-flex align-items-center gap-3">
-            <span class="fw-bold text-muted">Mês de Referência:</span>
-            <select id="filtro-mes" class="form-select border-0 shadow-sm" style="width: 160px; border-radius: 10px;" onchange="renderAll()">
+        <div class="d-flex align-items-center gap-3 bg-white p-2 rounded-3 shadow-sm">
+            <span class="small fw-bold text-secondary ps-2">MÊS:</span>
+            <select id="f-mes" class="form-select border-0 fw-bold" style="width: 150px;" onchange="refresh()">
                 <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
                 <option value="04" selected>Abril</option><option value="05">Maio</option><option value="06">Junho</option>
                 <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
                 <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
             </select>
         </div>
-    </header>
+    </div>
 
-    <section id="sec-livro" class="card-caderno">
-        <div class="table-responsive p-0">
+    <section id="v-livro" class="card-caderno">
+        <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead>
                     <tr>
-                        <th class="ps-4 py-3">DATA</th>
-                        <th>CLIENTE TITULAR</th>
-                        <th>PLANO / OPERADORA</th>
-                        <th>VALOR COMISSÃO</th>
-                        <th>PAGAMENTO</th>
-                        <th>PREVISÃO</th>
-                        <th class="text-end pe-4">AÇÕES</th>
+                        <th class="ps-4">Data Venda</th>
+                        <th>Cliente</th>
+                        <th>Plano/Tipo</th>
+                        <th>Valor Comissão</th>
+                        <th>Pagamento</th>
+                        <th>Previsão Recebimento</th>
+                        <th class="text-end pe-4">Ação</th>
                     </tr>
                 </thead>
-                <tbody id="lista-vendas">
-                    </tbody>
+                <tbody id="t-vendas"></tbody>
             </table>
         </div>
     </section>
 
-    <section id="sec-receber" class="d-none">
-        <div class="row g-4" id="lista-cards-receber">
-            </div>
+    <section id="v-receber" class="d-none">
+        <div class="row g-4" id="g-receber"></div>
     </section>
 
-    <section id="sec-clientes" class="d-none">
-        <div class="row g-4" id="grid-clientes">
-            </div>
+    <section id="v-clientes" class="d-none">
+        <div class="row g-4" id="g-clientes"></div>
     </section>
 </div>
 
-<button class="btn btn-info text-white btn-flutuante" onclick="abrirModalCadastro()" title="Cadastrar Novo Cliente">
-    <i class="fas fa-plus"></i>
-</button>
+<button class="btn btn-info text-white btn-flutuante" onclick="abrirNovoCliente()"><i class="fas fa-user-plus"></i></button>
 
-<div class="modal fade" id="modalCli" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="m-cli" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header bg-primary text-white py-3">
-                <h5 class="modal-title fw-bold"><i class="fas fa-user-edit me-2"></i> Cadastro Completo de Beneficiários</h5>
+                <h5 class="modal-title fw-bold"><i class="fas fa-address-card me-2"></i> FICHA COMPLETA DO BENEFICIÁRIO</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form id="f-cli">
+            <form id="form-cli">
                 <div class="modal-body p-4">
                     <div class="row g-4">
                         <div class="col-lg-3 text-center border-end">
-                            <label class="form-label d-block text-center mb-3">Foto do Perfil</label>
-                            <div class="position-relative d-inline-block">
-                                <div id="preview-box" class="bg-light rounded-circle border d-flex align-items-center justify-content-center mx-auto mb-3 shadow-inner" style="width:160px; height:160px; overflow: hidden;">
-                                    <img id="p-img" src="" class="d-none w-100 h-100" style="object-fit:cover">
-                                    <i id="p-icon" class="fas fa-user-circle fa-6x text-secondary"></i>
+                            <div class="mb-3">
+                                <div id="p-box" class="bg-light rounded-circle border mx-auto d-flex align-items-center justify-content-center shadow-inner" style="width:180px; height:180px; overflow:hidden;">
+                                    <img id="img-pre" src="" class="d-none w-100 h-100" style="object-fit:cover">
+                                    <i id="img-ico" class="fas fa-user fa-5x text-secondary"></i>
                                 </div>
-                                <label for="input-foto" class="btn btn-sm btn-dark position-absolute bottom-0 end-0 rounded-circle"><i class="fas fa-camera"></i></label>
-                                <input type="file" id="input-foto" class="d-none" accept="image/*" onchange="readImg(this)">
+                                <button type="button" class="btn btn-sm btn-dark mt-2" onclick="document.getElementById('f-upload').click()"><i class="fas fa-camera me-1"></i> Alterar Foto</button>
+                                <input type="file" id="f-upload" class="d-none" accept="image/*" onchange="previewFoto(this)">
                             </div>
-                            <p class="small text-muted mt-2">Clique na câmera para alterar</p>
                         </div>
-
                         <div class="col-lg-9">
-                            <h6 class="fw-bold text-primary mb-3"><i class="fas fa-id-card me-2"></i>DADOS DO TITULAR</h6>
+                            <h6 class="fw-bold text-primary mb-3">DADOS DO TITULAR</h6>
                             <div class="row g-3">
-                                <div class="col-md-8"><label class="form-label">Nome Completo</label><input type="text" id="n-cli" class="form-control" required></div>
-                                <div class="col-md-4"><label class="form-label">WhatsApp</label><input type="tel" id="t-cli" class="form-control" placeholder="(00) 00000-0000" required></div>
-                                <div class="col-md-4"><label class="form-label">CPF/CNPJ</label><input type="text" id="d-cli" class="form-control"></div>
-                                <div class="col-md-4"><label class="form-label">Data Nascimento</label><input type="date" id="na-cli" class="form-control"></div>
-                                <div class="col-md-4"><label class="form-label">Estado Civil</label><select id="est-cli" class="form-select"><option>Solteiro(a)</option><option>Casado(a)</option><option>Divorciado(a)</option><option>Viúvo(a)</option></select></div>
-                                <div class="col-12"><label class="form-label">Endereço Completo</label><input type="text" id="e-cli" class="form-control" placeholder="Rua, número, bairro, cidade..."></div>
+                                <div class="col-md-8"><label class="form-label">Nome Completo</label><input type="text" id="c-nome" class="form-control" required></div>
+                                <div class="col-md-4"><label class="form-label">WhatsApp</label><input type="tel" id="c-tel" class="form-control" required></div>
+                                <div class="col-md-4"><label class="form-label">CPF/CNPJ</label><input type="text" id="c-doc" class="form-control"></div>
+                                <div class="col-md-4"><label class="form-label">Data Nascimento</label><input type="date" id="c-nasc" class="form-control"></div>
+                                <div class="col-md-4"><label class="form-label">Estado Civil</label><select id="c-est" class="form-select"><option>Casado(a)</option><option>Solteiro(a)</option><option>Divorciado(a)</option><option>Viúvo(a)</option></select></div>
+                                <div class="col-12"><label class="form-label">Endereço Completo</label><input type="text" id="c-end" class="form-control"></div>
                             </div>
                         </div>
                     </div>
 
                     <hr class="my-4">
-
-                    <h6 class="fw-bold text-primary mb-4"><i class="fas fa-users me-2"></i>DADOS DOS DEPENDENTES (OPCIONAL)</h6>
+                    <h6 class="fw-bold text-primary mb-3"><i class="fas fa-users me-2"></i>DADOS DOS DEPENDENTES (OPCIONAL)</h6>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <div class="dep-container">
-                                <span class="dep-header">Dependente 01</span>
+                            <div class="dep-box">
+                                <span class="dep-label">DEPENDENTE 01</span>
+                                <input type="text" id="d1-n" class="form-control form-control-sm mb-2" placeholder="Nome Completo">
                                 <div class="row g-2">
-                                    <div class="col-12"><input type="text" id="dep1-nome" class="form-control form-control-sm" placeholder="Nome Completo"></div>
-                                    <div class="col-6"><input type="text" id="dep1-cpf" class="form-control form-control-sm" placeholder="CPF"></div>
-                                    <div class="col-6"><input type="text" id="dep1-par" class="form-control form-control-sm" placeholder="Parentesco"></div>
-                                    <div class="col-12"><label class="small text-muted mb-0">Nascimento:</label><input type="date" id="dep1-nasc" class="form-control form-control-sm"></div>
+                                    <div class="col-6"><input type="text" id="d1-c" class="form-control form-control-sm" placeholder="CPF"></div>
+                                    <div class="col-6"><input type="text" id="d1-p" class="form-control form-control-sm" placeholder="Tio/Filho/Cônjuge"></div>
+                                    <div class="col-12"><input type="date" id="d1-d" class="form-control form-control-sm"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="dep-container">
-                                <span class="dep-header">Dependente 02</span>
+                            <div class="dep-box">
+                                <span class="dep-label">DEPENDENTE 02</span>
+                                <input type="text" id="d2-n" class="form-control form-control-sm mb-2" placeholder="Nome Completo">
                                 <div class="row g-2">
-                                    <div class="col-12"><input type="text" id="dep2-nome" class="form-control form-control-sm" placeholder="Nome Completo"></div>
-                                    <div class="col-6"><input type="text" id="dep2-cpf" class="form-control form-control-sm" placeholder="CPF"></div>
-                                    <div class="col-6"><input type="text" id="dep2-par" class="form-control form-control-sm" placeholder="Parentesco"></div>
-                                    <div class="col-12"><label class="small text-muted mb-0">Nascimento:</label><input type="date" id="dep2-nasc" class="form-control form-control-sm"></div>
+                                    <div class="col-6"><input type="text" id="d2-c" class="form-control form-control-sm" placeholder="CPF"></div>
+                                    <div class="col-6"><input type="text" id="d2-p" class="form-control form-control-sm" placeholder="Parentesco"></div>
+                                    <div class="col-12"><input type="date" id="d2-d" class="form-control form-control-sm"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="dep-container">
-                                <span class="dep-header">Dependente 03</span>
+                            <div class="dep-box">
+                                <span class="dep-label">DEPENDENTE 03</span>
+                                <input type="text" id="d3-n" class="form-control form-control-sm mb-2" placeholder="Nome Completo">
                                 <div class="row g-2">
-                                    <div class="col-12"><input type="text" id="dep3-nome" class="form-control form-control-sm" placeholder="Nome Completo"></div>
-                                    <div class="col-6"><input type="text" id="dep3-cpf" class="form-control form-control-sm" placeholder="CPF"></div>
-                                    <div class="col-6"><input type="text" id="dep3-par" class="form-control form-control-sm" placeholder="Parentesco"></div>
-                                    <div class="col-12"><label class="small text-muted mb-0">Nascimento:</label><input type="date" id="dep3-nasc" class="form-control form-control-sm"></div>
+                                    <div class="col-6"><input type="text" id="d3-c" class="form-control form-control-sm" placeholder="CPF"></div>
+                                    <div class="col-6"><input type="text" id="d3-p" class="form-control form-control-sm" placeholder="Parentesco"></div>
+                                    <div class="col-12"><input type="date" id="d3-d" class="form-control form-control-sm"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="dep-container">
-                                <span class="dep-header">Dependente 04</span>
+                            <div class="dep-box">
+                                <span class="dep-label">DEPENDENTE 04</span>
+                                <input type="text" id="d4-n" class="form-control form-control-sm mb-2" placeholder="Nome Completo">
                                 <div class="row g-2">
-                                    <div class="col-12"><input type="text" id="dep4-nome" class="form-control form-control-sm" placeholder="Nome Completo"></div>
-                                    <div class="col-6"><input type="text" id="dep4-cpf" class="form-control form-control-sm" placeholder="CPF"></div>
-                                    <div class="col-6"><input type="text" id="dep4-par" class="form-control form-control-sm" placeholder="Parentesco"></div>
-                                    <div class="col-12"><label class="small text-muted mb-0">Nascimento:</label><input type="date" id="dep4-nasc" class="form-control form-control-sm"></div>
+                                    <div class="col-6"><input type="text" id="d4-c" class="form-control form-control-sm" placeholder="CPF"></div>
+                                    <div class="col-6"><input type="text" id="d4-p" class="form-control form-control-sm" placeholder="Parentesco"></div>
+                                    <div class="col-12"><input type="date" id="d4-d" class="form-control form-control-sm"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer bg-light p-3">
-                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary px-5 fw-bold">SALVAR FICHA COMPLETA</button>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary px-5 fw-bold shadow-sm">SALVAR FICHA COMPLETA</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="modalVen" tabindex="-1">
+<div class="modal fade" id="m-ven" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content border-0">
             <div class="modal-header bg-info text-white">
-                <h5 class="modal-title">Lançar Nova Venda: <span id="v-nome" class="fw-bold"></span></h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title"><i class="fas fa-shopping-cart me-2"></i> Lançar Venda: <span id="v-alvo" class="fw-bold"></span></h5>
             </div>
-            <form id="f-ven">
+            <form id="form-ven">
                 <div class="modal-body row g-3">
-                    <div class="col-12"><label class="form-label">Plano/Operadora</label><select id="pv" class="form-select"><option>Hapvida</option><option>Unimed</option><option>Bradesco</option><option>Amil</option><option>SulAmérica</option><option>Intermédica</option><option>OdontoPrev</option><option>Outro</option></select></div>
-                    <div class="col-12"><label class="form-label">Tipo</label><select id="tv" class="form-select"><option>Individual/Familiar</option><option>Empresarial (PME)</option><option>Coletivo Adesão</option></select></div>
-                    <div class="col-md-6"><label class="form-label">Valor Comissão R$</label><input type="number" id="vv" class="form-control" step="0.01" required></div>
-                    <div class="col-md-6"><label class="form-label">Data da Venda</label><input type="date" id="dv" class="form-control" required></div>
-                    <div class="col-12"><label class="form-label text-danger fw-bold">Previsão de Recebimento</label><input type="date" id="rv" class="form-control border-danger" required></div>
-                    <div class="col-12"><label class="form-label">Forma de Pagamento</label><select id="fv" class="form-select"><option>Pix</option><option>Boleto</option><option>Cartão</option><option>Dinheiro</option></select></div>
+                    <div class="col-12"><label class="form-label">Plano / Operadora</label><select id="v-plano" class="form-select"><option>Hapvida</option><option>Unimed</option><option>Bradesco</option><option>Amil</option><option>SulAmérica</option><option>Intermédica</option><option>OdontoPrev</option></select></div>
+                    <div class="col-12"><label class="form-label">Tipo de Contrato</label><select id="v-tipo" class="form-select"><option>Individual</option><option>Empresarial</option><option>Adesão</option></select></div>
+                    <div class="col-md-6"><label class="form-label">Comissão R$</label><input type="number" id="v-val" class="form-control" step="0.01" required></div>
+                    <div class="col-md-6"><label class="form-label">Data Venda</label><input type="date" id="v-data" class="form-control" required></div>
+                    <div class="col-12"><label class="form-label text-danger fw-bold">Data de Recebimento</label><input type="date" id="v-rec" class="form-control border-danger" required></div>
+                    <div class="col-12"><label class="form-label">Pagamento</label><select id="v-forma" class="form-select"><option>Pix</option><option>Boleto</option><option>Cartão</option></select></div>
                 </div>
-                <div class="modal-footer"><button type="submit" class="btn btn-success w-100 py-2 fw-bold">FINALIZAR LANÇAMENTO</button></div>
+                <div class="modal-footer"><button type="submit" class="btn btn-success w-100 py-3 fw-bold">CONFIRMAR LANÇAMENTO</button></div>
             </form>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="modalVerFicha" tabindex="-1">
-    <div class="modal-dialog modal-md">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-dark text-white"><h5 class="modal-title">Ficha do Cliente</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-            <div class="modal-body" id="detalhe-cliente-corpo"></div>
-        </div>
-    </div>
+<div class="modal fade" id="m-det" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content border-0"><div class="modal-body p-0" id="det-corpo"></div></div></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -243,211 +233,142 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // 1. CONFIGURAÇÃO FIREBASE (Vera Empreendedora)
+    // Configurações do Firebase
     const firebaseConfig = { databaseURL: "https://veraempreendedora-default-rtdb.firebaseio.com/" };
     firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const db = firebase.database();
 
-    let db_cli = {};
-    let db_ven = {};
-    let cli_atual = "";
+    let d_cli = {}, d_ven = {}, sel_cli = "";
 
-    // 2. SINCRONIZAÇÃO EM TEMPO REAL
-    database.ref().on('value', (snapshot) => {
-        const data = snapshot.val();
-        db_cli = data?.clientes || {};
-        db_ven = data?.vendas || {};
-        renderAll();
+    // Sincronização
+    db.ref().on('value', snap => {
+        const val = snap.val();
+        d_cli = val?.clientes || {};
+        d_ven = val?.vendas || {};
+        refresh();
     });
 
-    // 3. NAVEGAÇÃO ENTRE SEÇÕES
-    function showSec(id, elem) {
+    function nav(id, el) {
         document.querySelectorAll('section').forEach(s => s.classList.add('d-none'));
-        document.getElementById('sec-'+id).classList.remove('d-none');
+        document.getElementById('v-'+id).classList.remove('d-none');
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        elem.classList.add('active');
-        document.getElementById('header-title').innerText = elem.innerText;
-        renderAll();
+        el.classList.add('active');
+        document.getElementById('view-title').innerText = el.innerText;
+        refresh();
     }
 
-    // 4. PREVIEW DA FOTO
-    function readImg(input) {
+    function previewFoto(input) {
         if (input.files && input.files[0]) {
-            let reader = new FileReader();
-            reader.onload = e => {
-                document.getElementById('p-img').src = e.target.result;
-                document.getElementById('p-img').classList.remove('d-none');
-                document.getElementById('p-icon').classList.add('d-none');
+            let r = new FileReader();
+            r.onload = e => {
+                document.getElementById('img-pre').src = e.target.result;
+                document.getElementById('img-pre').classList.remove('d-none');
+                document.getElementById('img-ico').classList.add('d-none');
             };
-            reader.readAsDataURL(input.files[0]);
+            r.readAsDataURL(input.files[0]);
         }
     }
 
-    function abrirModalCadastro() {
-        document.getElementById('f-cli').reset();
-        document.getElementById('p-img').classList.add('d-none');
-        document.getElementById('p-icon').classList.remove('d-none');
-        new bootstrap.Modal(document.getElementById('modalCli')).show();
+    function abrirNovoCliente() {
+        document.getElementById('form-cli').reset();
+        document.getElementById('img-pre').classList.add('d-none');
+        document.getElementById('img-ico').classList.remove('d-none');
+        new bootstrap.Modal(document.getElementById('m-cli')).show();
     }
 
-    // 5. SALVAR CLIENTE NO FIREBASE (Titular + 4 Dependentes)
-    document.getElementById('f-cli').onsubmit = function(e) {
+    // SALVAR FICHA COMPLETA
+    document.getElementById('form-cli').onsubmit = function(e) {
         e.preventDefault();
         const id = Date.now();
-        
-        // Coleta dependentes de forma estruturada
-        const dependentes = [];
+        const deps = [];
         for(let i=1; i<=4; i++) {
-            const n = document.getElementById(`dep${i}-nome`).value;
-            if(n) {
-                dependentes.push({
-                    nome: n,
-                    cpf: document.getElementById(`dep${i}-cpf`).value,
-                    parentesco: document.getElementById(`dep${i}-par`).value,
-                    nascimento: document.getElementById(`dep${i}-nasc`).value
-                });
-            }
+            const n = document.getElementById(`d${i}-n`).value;
+            if(n) deps.push({ nome: n, cpf: document.getElementById(`d${i}-c`).value, par: document.getElementById(`d${i}-p`).value, nasc: document.getElementById(`d${i}-d`).value });
         }
 
         const data = {
-            id,
-            nome: document.getElementById('n-cli').value,
-            tel: document.getElementById('t-cli').value,
-            doc: document.getElementById('d-cli').value,
-            end: document.getElementById('e-cli').value,
-            nasc: document.getElementById('na-cli').value,
-            estadoCivil: document.getElementById('est-cli').value,
-            foto: document.getElementById('p-img').src || "",
-            dependentes: dependentes
+            id, nome: document.getElementById('c-nome').value, tel: document.getElementById('c-tel').value,
+            doc: document.getElementById('c-doc').value, end: document.getElementById('c-end').value,
+            nasc: document.getElementById('c-nasc').value, est: document.getElementById('c-est').value,
+            foto: document.getElementById('img-pre').src || "", dependentes: deps
         };
 
-        database.ref('clientes/' + id).set(data).then(() => {
-            bootstrap.Modal.getInstance(document.getElementById('modalCli')).hide();
-            alert("✅ Cliente cadastrado com sucesso!");
+        db.ref('clientes/' + id).set(data).then(() => {
+            bootstrap.Modal.getInstance(document.getElementById('m-cli')).hide();
+            alert("✅ Ficha salva com sucesso!");
         });
     };
 
-    // 6. VISUALIZAÇÃO DA FICHA
-    function verFicha(id) {
-        const c = db_cli[id];
-        if(!c) return;
-        let depHtml = "";
-        if(c.dependentes) {
-            c.dependentes.forEach(d => {
-                depHtml += `
-                <div class="mb-2 p-2 bg-light border-start border-3 border-info rounded">
-                    <div class="fw-bold small">${d.nome}</div>
-                    <div class="text-muted" style="font-size:0.75rem">CPF: ${d.cpf || '--'} | Par: ${d.parentesco || '--'} | Nasc: ${d.nascimento || '--'}</div>
-                </div>`;
-            });
-        }
-        
-        document.getElementById('detalhe-cliente-corpo').innerHTML = `
-            <div class="text-center mb-4">
-                <img src="${c.foto || 'https://via.placeholder.com/100'}" class="rounded-circle shadow" style="width:120px; height:120px; object-fit:cover">
-                <h4 class="fw-bold mt-2 mb-0">${c.nome}</h4>
-                <div class="text-primary fw-bold">${c.tel}</div>
-            </div>
-            <div class="row small g-2 mb-3">
-                <div class="col-6"><b>CPF:</b> ${c.doc || '--'}</div>
-                <div class="col-6"><b>Nasc:</b> ${c.nasc || '--'}</div>
-                <div class="col-12"><b>Endereço:</b> ${c.end || '--'}</div>
-            </div>
-            <h6 class="fw-bold border-bottom pb-1">Dependentes:</h6>
-            ${depHtml || '<p class="small text-muted">Nenhum dependente.</p>'}
-        `;
-        new bootstrap.Modal(document.getElementById('modalVerFicha')).show();
+    function lancarVenda(nome) {
+        sel_cli = nome;
+        document.getElementById('v-alvo').innerText = nome;
+        new bootstrap.Modal(document.getElementById('m-ven')).show();
     }
 
-    // 7. LANÇAR VENDA
-    function abrirVenda(nome) {
-        cli_atual = nome;
-        document.getElementById('v-nome').innerText = nome;
-        new bootstrap.Modal(document.getElementById('modalVen')).show();
-    }
-
-    document.getElementById('f-ven').onsubmit = function(e) {
+    document.getElementById('form-ven').onsubmit = function(e) {
         e.preventDefault();
         const id = Date.now();
-        const venda = {
-            id,
-            cliente: cli_atual,
-            plano: document.getElementById('pv').value,
-            tipo: document.getElementById('tv').value,
-            valor: parseFloat(document.getElementById('vv').value),
-            data: document.getElementById('dv').value,
-            receber: document.getElementById('rv').value,
-            forma: document.getElementById('fv').value
-        };
-        database.ref('vendas/' + id).set(venda).then(() => {
-            bootstrap.Modal.getInstance(document.getElementById('modalVen')).hide();
-        });
+        db.ref('vendas/' + id).set({
+            id, cliente: sel_cli, plano: document.getElementById('v-plano').value,
+            tipo: document.getElementById('v-tipo').value, valor: parseFloat(document.getElementById('v-val').value),
+            data: document.getElementById('v-data').value, receber: document.getElementById('v-rec').value,
+            forma: document.getElementById('v-forma').value
+        }).then(() => bootstrap.Modal.getInstance(document.getElementById('m-ven')).hide());
     };
 
-    // 8. RENDERIZAÇÃO GERAL
-    function renderAll() {
-        const mesFiltro = document.getElementById('filtro-mes').value;
+    function ver(id) {
+        const c = d_cli[id];
+        let h = `<div class="p-4 text-center bg-primary text-white rounded-top">
+            <img src="${c.foto || ''}" class="rounded-circle border border-4 border-white mb-2" style="width:100px; height:100px; object-fit:cover">
+            <h4>${c.nome}</h4></div><div class="p-4">
+            <p><b>CPF:</b> ${c.doc || '--'} | <b>Estado Civil:</b> ${c.est}</p>
+            <p><b>Endereço:</b> ${c.end || '--'}</p><hr><h6>DEPENDENTES:</h6>`;
+        if(c.dependentes) c.dependentes.forEach(d => h += `<div class="small mb-2 p-2 bg-light rounded"><b>${d.nome}</b> (${d.par}) - ${d.nasc}</div>`);
+        else h += `<p class="text-muted small">Nenhum dependente.</p>`;
+        document.getElementById('det-corpo').innerHTML = h + `</div>`;
+        new bootstrap.Modal(document.getElementById('m-det')).show();
+    }
+
+    function refresh() {
+        const mes = document.getElementById('f-mes').value;
         const hoje = new Date().toISOString().split('T')[0];
 
-        // Tabela Livro
-        const lista = document.getElementById('lista-vendas');
-        lista.innerHTML = '';
-        Object.values(db_ven).filter(v => v.data.split('-')[1] === mesFiltro).forEach(v => {
-            const atrasado = v.receber > hoje;
-            lista.innerHTML += `
-            <tr>
-                <td class="ps-4 small text-muted">${v.data.split('-').reverse().join('/')}</td>
-                <td class="fw-bold">${v.cliente}</td>
-                <td><span class="badge-plano">${v.plano}</span></td>
-                <td class="${atrasado ? 'alerta-piscante' : 'fw-bold text-success'}">R$ ${v.valor.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
-                <td><span class="badge bg-light text-dark border">${v.forma}</span></td>
-                <td>${v.receber.split('-').reverse().join('/')}</td>
-                <td class="text-end pe-4"><button class="btn-excluir" onclick="delVenda('${v.id}')"><i class="fas fa-trash"></i></button></td>
-            </tr>`;
+        // Tabela Vendas
+        const t = document.getElementById('t-vendas'); t.innerHTML = '';
+        Object.values(d_ven).filter(v => v.data.split('-')[1] === mes).forEach(v => {
+            const pend = v.receber > hoje;
+            t.innerHTML += `<tr><td class="ps-4 small">${v.data.split('-').reverse().join('/')}</td>
+                <td class="fw-bold">${v.cliente}</td><td><span class="badge bg-light text-dark border">${v.plano}</span></td>
+                <td class="${pend ? 'alerta-piscante' : 'text-success fw-bold'}">R$ ${v.valor.toLocaleString('pt-BR')}</td>
+                <td>${v.forma}</td><td>${v.receber.split('-').reverse().join('/')}</td>
+                <td class="text-end pe-4"><button class="btn btn-sm text-danger" onclick="delV('${v.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
         });
 
         // Grid Clientes
-        const grid = document.getElementById('grid-clientes');
-        grid.innerHTML = '';
-        Object.values(db_cli).forEach(c => {
-            grid.innerHTML += `
-            <div class="col-md-4 col-xl-3">
-                <div class="card border-0 shadow-sm p-3 text-center h-100 card-caderno">
-                    <img src="${c.foto || ''}" class="foto-perfil mx-auto mb-3 cursor-pointer" onclick="verFicha('${c.id}')">
-                    <h6 class="fw-bold mb-1">${c.nome}</h6>
-                    <p class="text-muted small mb-3">${c.tel}</p>
+        const gc = document.getElementById('g-clientes'); gc.innerHTML = '';
+        Object.values(d_cli).forEach(c => {
+            gc.innerHTML += `<div class="col-md-4 col-xl-3">
+                <div class="card cliente-card p-3 shadow-sm text-center h-100">
+                    <img src="${c.foto || ''}" class="foto-perfil mx-auto mb-3 cursor-pointer" onclick="ver('${c.id}')">
+                    <h6 class="fw-bold mb-1">${c.nome}</h6><p class="small text-muted mb-3">${c.tel}</p>
                     <div class="d-grid gap-2">
-                        <button class="btn btn-sm btn-outline-info" onclick="abrirVenda('${c.nome}')"><i class="fas fa-cart-plus me-1"></i> Nova Venda</button>
-                        <button class="btn btn-sm btn-light text-danger" onclick="delCli('${c.id}')">Remover</button>
-                    </div>
-                </div>
-            </div>`;
+                        <button class="btn btn-sm btn-outline-info" onclick="lancarVenda('${c.nome}')">NOVA VENDA</button>
+                        <button class="btn btn-sm btn-light text-danger border-0" onclick="delC('${c.id}')"><i class="fas fa-user-minus me-1"></i> APAGAR CLIENTE</button>
+                    </div></div></div>`;
         });
 
         // Cards Receber
-        const recGrid = document.getElementById('lista-cards-receber');
-        recGrid.innerHTML = '';
-        Object.values(db_ven).filter(v => v.receber > hoje).forEach(v => {
-            recGrid.innerHTML += `
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm p-3 border-start border-4 border-danger">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="badge bg-danger-subtle text-danger">AGENDADO</span>
-                        <small class="text-muted">${v.receber.split('-').reverse().join('/')}</small>
-                    </div>
-                    <h6 class="fw-bold mb-0">${v.cliente}</h6>
-                    <h4 class="alerta-piscante my-2">R$ ${v.valor.toLocaleString('pt-BR')}</h4>
-                    <p class="small text-muted mb-0">Referente a: ${v.plano}</p>
-                </div>
-            </div>`;
+        const gr = document.getElementById('g-receber'); gr.innerHTML = '';
+        Object.values(d_ven).filter(v => v.receber > hoje).forEach(v => {
+            gr.innerHTML += `<div class="col-md-4"><div class="card border-0 shadow-sm p-3 border-start border-4 border-danger">
+                <h6 class="fw-bold text-primary mb-1">${v.cliente}</h6><h4 class="alerta-piscante mb-1">R$ ${v.valor.toLocaleString('pt-BR')}</h4>
+                <small class="text-muted"><i class="far fa-calendar-alt me-1"></i> Receber: ${v.receber.split('-').reverse().join('/')}</small>
+                </div></div>`;
         });
     }
 
-    function delVenda(id) { if(confirm("Deseja excluir esta venda?")) database.ref('vendas/'+id).remove(); }
-    function delCli(id) { if(confirm("Excluir cliente e histórico?")) database.ref('clientes/'+id).remove(); }
-
-    window.onload = renderAll;
+    function delV(id) { if(confirm("Apagar venda?")) db.ref('vendas/'+id).remove(); }
+    function delC(id) { if(confirm("Apagar cliente e histórico?")) db.ref('clientes/'+id).remove(); }
 </script>
-
 </body>
 </html>
