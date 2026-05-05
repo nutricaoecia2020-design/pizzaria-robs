@@ -16,16 +16,19 @@
             --card: #1e1e1e;
             --text-dark: #333333;
             --text-white: #ffffff;
-            --success: #2ecc71;
-            --danger: #e74c3c;
+            --text-dim: #666666;
+            --success: #28a745;
+            --pascoa: #6c5ce7;
+            --accent: #ff79c6;
+            --warning-yellow: #fff200;
         }
 
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         
-        body { background: var(--bg-light); color: var(--text-dark); margin: 0; padding-bottom: 100px; }
+        body { background: var(--bg-light); color: var(--text-dark); margin: 0; padding-bottom: 50px; }
 
         header {
-            background: var(--primary);
+            background: rgba(0, 168, 255, 0.9);
             padding: 15px 20px;
             position: sticky;
             top: 0;
@@ -33,32 +36,33 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
         }
 
-        .status-badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-left: 10px;
+        .destaque-topo {
+            background: #0084c9; color: white; text-align: center; padding: 8px;
+            font-weight: 800; letter-spacing: 1px; font-size: 14px; text-transform: uppercase;
         }
 
-        .open { background: var(--success); color: white; }
-        .closed { background: var(--danger); color: white; }
+        .logo h1 { color: white; margin: 0; font-size: 22px; text-transform: uppercase; letter-spacing: 2px; }
 
         .cart-trigger {
             background: white; color: var(--primary); padding: 10px 18px; border-radius: 50px;
-            cursor: pointer; position: relative; font-weight: bold;
+            cursor: pointer; position: relative; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .cart-count {
+            position: absolute; top: -5px; right: -5px; background: var(--dark); color: white;
+            font-size: 12px; width: 20px; height: 20px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-weight: bold;
         }
 
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
 
         .banner-promo {
             background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
-            color: white; padding: 25px; border-radius: 20px; margin-bottom: 20px; text-align: center;
+            color: white; padding: 25px; border-radius: 20px; margin-bottom: 20px;
+            text-align: center; border: 3px solid #fff; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
         }
 
         .combo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
@@ -67,242 +71,273 @@
         
         .produto-card {
             background: var(--card); border-radius: 18px; overflow: hidden; color: white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: 0.3s; border: 1px solid #333;
         }
-        
-        .prod-img { width: 100%; height: 180px; object-fit: cover; background: #333; }
+        .prod-img { width: 100%; height: 180px; object-fit: cover; }
         .prod-info { padding: 15px; }
         .prod-price { color: var(--primary); font-weight: bold; font-size: 20px; }
 
-        input, select { width: 100%; padding: 12px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #ddd; }
+        input, select, textarea { width: 100%; padding: 12px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #ddd; }
 
-        .btn-add { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; transition: 0.3s; }
-        .btn-add:disabled { background: #ccc; cursor: not-allowed; }
-
-        /* Painel do Lojista */
-        #painelLojista {
-            margin-top: 50px;
-            padding: 20px;
-            background: #fff;
-            border: 2px dashed #ccc;
-            border-radius: 20px;
-        }
-
+        .btn-add { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
+        
         .cart-sidebar {
             position: fixed; right: -100%; top: 0; width: 350px; height: 100%;
             background: var(--card); z-index: 1001; transition: 0.4s; padding: 25px; color: white;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.3);
-            overflow-y: auto;
+            overflow-y: auto; box-shadow: -5px 0 20px rgba(0,0,0,0.5);
         }
         .cart-sidebar.active { right: 0; }
+
+        #statusLoja { padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; color: white; }
+        .aberto { background: var(--success); }
+        .fechado { background: #dc3545; }
+
+        /* Estilos do Painel */
+        #painelLojista { margin-top: 50px; padding: 30px; background: white; border-radius: 20px; border: 1px solid #ddd; }
 
         @media(max-width: 600px) { .cart-sidebar { width: 100%; } .combo-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
+<div class="destaque-topo">
+    <i class="fas fa-star"></i> PIZZARIA DELIVERY - BAIRRO LUZIA <i class="fas fa-star"></i>
+</div>
+
 <header>
-    <div class="logo" style="display:flex; align-items:center;">
-        <h1>Robs 🍕</h1>
-        <span id="statusLoja" class="status-badge closed">Verificando...</span>
-    </div>
+    <div class="logo"><h1>Robs<span>🍕</span></h1></div>
     <div class="cart-trigger" onclick="toggleCart()">
-        <i class="fas fa-shopping-cart"></i> (<span id="contagem">0</span>)
+        <i class="fas fa-shopping-basket"></i>
+        <span class="cart-count" id="contagem">0</span>
     </div>
 </header>
 
 <div class="container">
-    <div id="avisoLoja" style="display:none; background: #ffeaa7; color: #d63031; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-weight: bold; text-align: center;">
-        Loja Fechada! Você pode ver o cardápio, mas pedidos estão desativados.
+    <div style="text-align:center; margin-bottom: 20px; background: white; padding: 15px; border-radius: 15px;">
+        <div id="statusLoja">Carregando...</div>
+        <div style="margin-top:10px; font-size: 14px;"><i class="far fa-clock"></i> <span id="relogio">00:00:00</span></div>
     </div>
 
     <section class="banner-promo">
-        <h2>PROMOÇÃO MEIO A MEIO</h2>
-        <p>Escolha dois sabores por apenas <b>R$ 29,90</b></p>
+        <h2>PROMO QUINTA E SEXTA</h2>
+        <p>Meio a Meio (30cm) por <b>R$ 29,90</b></p>
         <div class="combo-grid">
             <select id="comboSabor1"><option value="">Carregando...</option></select>
             <select id="comboSabor2"><option value="">Carregando...</option></select>
         </div>
-        <button class="btn-add" style="background: #ff79c6;" onclick="addCombo()">ADICIONAR PROMO</button>
+        <button class="btn-add" style="background: var(--accent);" onclick="addCombo()">ADICIONAR PROMOÇÃO</button>
     </section>
 
-    <h2><i class="fas fa-pizza-slice"></i> Nosso Cardápio</h2>
-    <div id="produtos">Carregando pizzas da planilha...</div>
+    <h2 style="margin-bottom: 20px;"><i class="fas fa-pizza-slice"></i> Cardápio</h2>
+    <div id="produtos">Carregando cardápio...</div>
 
-    <div style="margin-top: 40px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-        <h3><i class="fas fa-truck"></i> Dados para Entrega</h3>
+    <div id="finalizacao" style="margin-top: 40px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+        <h3><i class="fas fa-truck"></i> Dados de Entrega</h3>
         <input id="nome" placeholder="Seu Nome">
-        <input id="endereco" placeholder="Endereço Completo e Bairro">
-        <input id="contato" placeholder="WhatsApp (DDD + Número)">
-        <select id="pagamento">
+        <input id="endereco" placeholder="Endereço (Rua, Número, Referência)">
+        <select id="bairro" onchange="renderCarrinho()">
+            <option value="" data-taxa="0">Escolha o Bairro</option>
+            <option value="Luzia" data-taxa="0">Luzia - Grátis</option>
+            <option value="Ponto Novo" data-taxa="0">Ponto Novo - Grátis</option>
+            <option value="Grageru" data-taxa="6">Grageru - R$ 6,00</option>
+            <option value="Salgado Filho" data-taxa="6">Salgado Filho - R$ 6,00</option>
+            <option value="Suíssa" data-taxa="6">Suíssa - R$ 6,00</option>
+            <option value="Atalaia" data-taxa="12">Atalaia - R$ 12,00</option>
+            <option value="Jabotiana" data-taxa="12">Jabotiana - R$ 12,00</option>
+        </select>
+        <input id="contato" placeholder="WhatsApp (79 99999-9999)">
+        <select id="pagamento" onchange="renderCarrinho()">
             <option value="Pix">Pix</option>
             <option value="Cartão">Cartão</option>
             <option value="Dinheiro">Dinheiro</option>
         </select>
-        <button id="btnFinalizar" class="btn-add" style="background: #25d366; padding: 18px; font-size: 18px;" onclick="finalizar()">
+        <input type="date" id="dataAgendamento">
+        <select id="horaAgendamento">
+            <option value="18:00 - 19:00">18:00 às 19:00</option>
+            <option value="19:00 - 20:00">19:00 às 20:00</option>
+            <option value="20:00 - 21:00">20:00 às 21:00</option>
+        </select>
+        <textarea id="obs" placeholder="Observações (Ex: sem cebola)"></textarea>
+        
+        <button id="btnFinalizar" class="btn-add" style="background: #25d366; padding: 20px; font-size: 18px;" onclick="finalizar()">
             <i class="fab fa-whatsapp"></i> ENVIAR PEDIDO AGORA
         </button>
     </div>
 
-    <!-- SEÇÃO DO LOJISTA -->
+    <!-- PAINEL DO LOJISTA -->
     <div id="painelLojista">
-        <h3><i class="fas fa-lock"></i> Painel do Lojista</h3>
-        <div id="loginLojista">
-            <input type="password" id="senhaLojista" placeholder="Senha do Painel">
+        <h3><i class="fas fa-user-shield"></i> Painel do Lojista</h3>
+        <div id="loginPainel">
+            <input type="password" id="senhaAcesso" placeholder="Senha do Painel">
             <button class="btn-add" onclick="acessarPainel()">Acessar Controle</button>
         </div>
         <div id="controlesLojista" style="display:none;">
-            <p><strong>Configurações Rápidas:</strong></p>
-            <button class="btn-add" style="background: #e74c3c; margin-bottom: 10px;" onclick="forçarFechamento(true)">Forçar Fechamento Emergencial</button>
-            <button class="btn-add" style="background: #2ecc71;" onclick="forçarFechamento(false)">Liberar Horário Automático</button>
-            <hr>
-            <p>Os pedidos também são registrados na sua planilha automaticamente.</p>
+            <p>Status da Loja: <span id="statusManual">Automático</span></p>
+            <button class="btn-add" style="background: #e74c3c; margin-bottom: 10px;" onclick="setForcedStatus(true)">Forçar Fechado</button>
+            <button class="btn-add" style="background: #2ecc71;" onclick="setForcedStatus(false)">Voltar ao Automático</button>
         </div>
     </div>
 </div>
 
+<!-- CARRINHO LATERAL -->
 <div class="cart-sidebar" id="cartSidebar">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h3>Seu Pedido</h3>
-        <span onclick="toggleCart()" style="cursor:pointer; color: var(--primary); font-size: 24px;">&times;</span>
+        <span onclick="toggleCart()" style="cursor:pointer; font-size: 24px;">&times;</span>
     </div>
     <div id="carrinhoItens"></div>
-    <div style="margin-top: 20px; font-size: 20px; font-weight: bold; text-align: right;">
+    <div style="margin-top: 20px; border-top: 1px solid #444; padding-top: 20px; font-size: 20px; font-weight: bold;">
         Total: R$ <span id="total">0.00</span>
     </div>
 </div>
 
 <script>
+    // URL DA SUA GOOGLE PLANILHA (Mantenha a sua URL do Apps Script aqui)
     const API_URL = "https://script.google.com/macros/s/AKfycbzK5DrWIcbh1p_0VGzc5PQIbke6PJS6RoGwbrkNxUNLQor1-oaQoks3Hxs2f5o9upFi/exec";
     
     let carrinho = [];
     let produtosDoBanco = [];
     let forçadoFechado = false;
 
-    // Horários
-    const HORA_ABRE = 18;
-    const HORA_FECHA = 23;
-    const MIN_FECHA = 30;
-
-    function verificarStatusLoja() {
-        const agora = new Date();
-        const hora = agora.getHours();
-        const min = agora.getMinutes();
-        const statusBadge = document.getElementById("statusLoja");
-        const btn = document.getElementById("btnFinalizar");
-        const aviso = document.getElementById("avisoLoja");
-
-        let aberta = false;
-        if (hora > HORA_ABRE && hora < HORA_FECHA) aberta = true;
-        else if (hora === HORA_ABRE) aberta = true;
-        else if (hora === HORA_FECHA && min < MIN_FECHA) aberta = true;
-
-        if (aberta && !forçadoFechado) {
-            statusBadge.innerText = "Aberto";
-            statusBadge.className = "status-badge open";
-            btn.disabled = false;
-            aviso.style.display = "none";
-        } else {
-            statusBadge.innerText = "Fechado";
-            statusBadge.className = "status-badge closed";
-            btn.disabled = true;
-            aviso.style.display = "block";
-        }
-    }
-
+    // Carregar Produtos da Planilha
     async function carregarProdutos() {
         try {
-            const response = await fetch(API_URL);
-            produtosDoBanco = await response.json();
+            const res = await fetch(API_URL);
+            produtosDoBanco = await res.json();
+            
             const lista = document.getElementById("produtos");
             const s1 = document.getElementById("comboSabor1");
             const s2 = document.getElementById("comboSabor2");
             
             lista.innerHTML = "";
-            s1.innerHTML = s2.innerHTML = '<option value="">Escolha</option>';
+            s1.innerHTML = s2.innerHTML = '<option value="">Escolha o sabor</option>';
 
-            produtosDoBanco.forEach((p, index) => {
+            produtosDoBanco.forEach((p, i) => {
                 s1.innerHTML += `<option value="${p.nome}">${p.nome}</option>`;
                 s2.innerHTML += `<option value="${p.nome}">${p.nome}</option>`;
                 lista.innerHTML += `
                     <div class="produto-card">
                         <img src="${p.url_imagem}" class="prod-img" onerror="this.src='https://via.placeholder.com/300x180?text=Pizza'">
                         <div class="prod-info">
-                            <div><strong>${p.nome}</strong></div>
+                            <strong>${p.nome}</strong>
                             <div class="prod-price">R$ ${parseFloat(p.preco).toFixed(2)}</div>
-                            <button class="btn-add" onclick="add(${index})">Adicionar</button>
+                            <button class="btn-add" onclick="add(${i})">Adicionar</button>
                         </div>
                     </div>`;
             });
-        } catch (e) { console.log("Erro ao carregar"); }
+        } catch (e) { console.error("Erro ao carregar cardápio"); }
     }
 
-    function acessarPainel() {
-        const senha = document.getElementById("senhaLojista").value;
-        if(senha === "123") { // Altere sua senha aqui
-            document.getElementById("loginLojista").style.display = "none";
-            document.getElementById("controlesLojista").style.display = "block";
-        } else { alert("Senha incorreta!"); }
-    }
-
-    function forçarFechamento(valor) {
-        forçadoFechado = valor;
-        verificarStatusLoja();
-        alert(valor ? "Loja fechada manualmente!" : "Seguindo horário automático!");
-    }
-
+    // Lógica de Carrinho
     window.add = (i) => { carrinho.push(produtosDoBanco[i]); renderCarrinho(); };
+    
     window.addCombo = () => {
-        const v1 = document.getElementById("comboSabor1").value;
-        const v2 = document.getElementById("comboSabor2").value;
-        if(v1 && v2) {
-            carrinho.push({ nome: `Combo: ${v1}/${v2}`, preco: 29.90 });
+        const s1 = document.getElementById("comboSabor1").value;
+        const s2 = document.getElementById("comboSabor2").value;
+        if(s1 && s2) {
+            carrinho.push({ nome: `Combo Promo: ${s1} / ${s2}`, preco: 29.90 });
             renderCarrinho();
-        }
+        } else { alert("Selecione os dois sabores!"); }
     };
 
-    function renderCarrinho() {
+    window.renderCarrinho = () => {
         const area = document.getElementById("carrinhoItens");
-        let total = 0;
+        const selBairro = document.getElementById("bairro");
+        const taxa = parseFloat(selBairro.options[selBairro.selectedIndex].getAttribute("data-taxa") || 0);
+        
+        let subtotal = 0;
         area.innerHTML = "";
+        
         carrinho.forEach((p, i) => {
-            total += parseFloat(p.preco);
-            area.innerHTML += `<div style="padding:10px; border-bottom:1px solid #444;">${p.nome} - R$ ${p.preco}</div>`;
+            subtotal += parseFloat(p.preco);
+            area.innerHTML += `<div style="padding:10px; border-bottom:1px solid #444; display:flex; justify-content:space-between;">
+                <span>${p.nome}</span> <span>R$ ${p.preco}</span>
+            </div>`;
         });
-        document.getElementById("total").innerText = total.toFixed(2);
+
+        const totalFinal = subtotal + taxa;
+        document.getElementById("total").innerText = totalFinal.toFixed(2);
         document.getElementById("contagem").innerText = carrinho.length;
-    }
+    };
 
-    function toggleCart() { document.getElementById('cartSidebar').classList.toggle('active'); }
+    window.toggleCart = () => document.getElementById('cartSidebar').classList.toggle('active');
 
-    function finalizar() {
+    // Finalizar Pedido (WhatsApp + Planilha)
+    async function finalizar() {
         const nome = document.getElementById("nome").value;
         const end = document.getElementById("endereco").value;
-        if(!nome || !end || carrinho.length === 0) return alert("Preencha os dados!");
-
-        const itens = carrinho.map(p => p.nome).join(", ");
+        const bairro = document.getElementById("bairro").value;
+        const tel = document.getElementById("contato").value;
         const total = document.getElementById("total").innerText;
 
-        fetch(API_URL, {
-            method: "POST",
-            mode: "no-cors",
-            body: JSON.stringify({
-                cliente: nome,
-                telefone: document.getElementById("contato").value,
-                endereco: end,
-                produtos: itens,
-                total: total,
-                pagamento: document.getElementById("pagamento").value
-            })
-        });
+        if(!nome || !end || carrinho.length === 0) return alert("Preencha seu nome, endereço e adicione itens!");
 
-        const msg = `*PEDIDO ROBS*\n*Nome:* ${nome}\n*Itens:* ${itens}\n*Total:* R$ ${total}`;
-        window.open(`https://wa.me/5579920001038?text=${encodeURIComponent(msg)}`);
+        const produtosTxt = carrinho.map(p => p.nome).join(", ");
+        const dataPed = document.getElementById("dataAgendamento").value;
+        const horaPed = document.getElementById("horaAgendamento").value;
+
+        // 1. Enviar para a Google Planilha
+        try {
+            fetch(API_URL, {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify({
+                    cliente: nome,
+                    telefone: tel,
+                    endereco: `${end} - ${bairro}`,
+                    produtos: produtosTxt,
+                    total: total,
+                    pagamento: document.getElementById("pagamento").value,
+                    data_entrega: `${dataPed} às ${horaPed}`
+                })
+            });
+        } catch (e) { console.log("Erro ao salvar na planilha"); }
+
+        // 2. Abrir WhatsApp
+        const msg = `*NOVO PEDIDO ROBS*\n\n*Cliente:* ${nome}\n*Itens:* ${produtosTxt}\n*Total:* R$ ${total}\n*Endereço:* ${end}, ${bairro}\n*Data:* ${dataPed} às ${horaPed}`;
+        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(msg)}`);
+        location.reload();
     }
 
-    setInterval(verificarStatusLoja, 30000);
-    verificarStatusLoja();
+    // Relógio e Status
+    function verificarStatus() {
+        const agora = new Date();
+        const hora = agora.getHours();
+        const statusBadge = document.getElementById("statusLoja");
+        
+        document.getElementById("relogio").innerText = agora.toLocaleTimeString('pt-BR');
+
+        let aberto = (hora >= 18 && hora < 23); // Abre as 18h e fecha 23h
+
+        if (aberto && !forçadoFechado) {
+            statusBadge.innerText = "🟢 LOJA ABERTA";
+            statusBadge.className = "aberto";
+        } else {
+            statusBadge.innerText = "🔴 FECHADO (AGENDAMENTOS LIBERADOS)";
+            statusBadge.className = "fechado";
+        }
+    }
+
+    // Painel do Lojista
+    window.acessarPainel = () => {
+        const senha = document.getElementById("senhaAcesso").value;
+        if(senha === "253641") {
+            document.getElementById("loginPainel").style.display = "none";
+            document.getElementById("controlesLojista").style.display = "block";
+        } else { alert("Senha incorreta!"); }
+    };
+
+    window.setForcedStatus = (val) => {
+        forçadoFechado = val;
+        document.getElementById("statusManual").innerText = val ? "FECHADO MANUALMENTE" : "Automático";
+        verificarStatus();
+    };
+
+    setInterval(verificarStatus, 1000);
     carregarProdutos();
+    
+    // Setar data mínima como hoje no agendamento
+    document.getElementById('dataAgendamento').valueAsDate = new Date();
 </script>
 
 </body>
