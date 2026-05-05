@@ -16,6 +16,8 @@
             --card: #1e1e1e;
             --text-dark: #333333;
             --text-white: #ffffff;
+            --success: #2ecc71;
+            --danger: #e74c3c;
         }
 
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
@@ -35,7 +37,17 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .logo h1 { margin: 0; font-size: 22px; text-transform: uppercase; }
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+
+        .open { background: var(--success); color: white; }
+        .closed { background: var(--danger); color: white; }
 
         .cart-trigger {
             background: white; color: var(--primary); padding: 10px 18px; border-radius: 50px;
@@ -59,15 +71,13 @@
         }
         
         .prod-img { width: 100%; height: 180px; object-fit: cover; background: #333; }
-        
         .prod-info { padding: 15px; }
-        
         .prod-price { color: var(--primary); font-weight: bold; font-size: 20px; }
 
         input, select { width: 100%; padding: 12px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #ddd; }
 
         .btn-add { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; transition: 0.3s; }
-        .btn-add:hover { opacity: 0.9; transform: scale(1.02); }
+        .btn-add:disabled { background: #ccc; cursor: not-allowed; }
 
         .cart-sidebar {
             position: fixed; right: -100%; top: 0; width: 350px; height: 100%;
@@ -83,13 +93,20 @@
 <body>
 
 <header>
-    <div class="logo"><h1>Robs 🍕</h1></div>
+    <div class="logo" style="display:flex; align-items:center;">
+        <h1>Robs 🍕</h1>
+        <span id="statusLoja" class="status-badge closed">Verificando...</span>
+    </div>
     <div class="cart-trigger" onclick="toggleCart()">
-        <i class="fas fa-shopping-cart"></i> Carrinho (<span id="contagem">0</span>)
+        <i class="fas fa-shopping-cart"></i> (<span id="contagem">0</span>)
     </div>
 </header>
 
 <div class="container">
+    <div id="avisoLoja" style="display:none; background: #ffeaa7; color: #d63031; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-weight: bold; text-align: center;">
+        Estamos fechados no momento. Você pode montar seu carrinho, mas o pedido só será enviado no horário de abertura.
+    </div>
+
     <section class="banner-promo">
         <h2>PROMOÇÃO MEIO A MEIO</h2>
         <p>Escolha dois sabores por apenas <b>R$ 29,90</b></p>
@@ -113,8 +130,8 @@
             <option value="Cartão">Cartão</option>
             <option value="Dinheiro">Dinheiro</option>
         </select>
-        <button class="btn-add" style="background: #25d366; padding: 18px; font-size: 18px;" onclick="finalizar()">
-            <i class="fab fa-whatsapp"></i> ENVIAR PEDIDO VIA WHATSAPP
+        <button id="btnFinalizar" class="btn-add" style="background: #25d366; padding: 18px; font-size: 18px;" onclick="finalizar()">
+            <i class="fab fa-whatsapp"></i> ENVIAR PEDIDO AGORA
         </button>
     </div>
 </div>
@@ -132,11 +149,42 @@
 </div>
 
 <script>
-    // LINK ATUALIZADO PELO USUÁRIO
+    // URL DO SEU SCRIPT (Mantenha o link que funcionou)
     const API_URL = "https://script.google.com/macros/s/AKfycbzK5DrWIcbh1p_0VGzc5PQIbke6PJS6RoGwbrkNxUNLQor1-oaQoks3Hxs2f5o9upFi/exec";
 
     let carrinho = [];
     let produtosDoBanco = [];
+
+    // CONFIGURAÇÃO DE HORÁRIO (Exemplo: 18:00 às 23:30)
+    const HORA_ABRE = 18;
+    const HORA_FECHA = 23;
+    const MIN_FECHA = 30;
+
+    function verificarStatusLoja() {
+        const agora = new Date();
+        const hora = agora.getHours();
+        const min = agora.getMinutes();
+        const statusBadge = document.getElementById("statusLoja");
+        const aviso = document.getElementById("avisoLoja");
+        const btn = document.getElementById("btnFinalizar");
+
+        let aberta = false;
+        if (hora > HORA_ABRE && hora < HORA_FECHA) aberta = true;
+        else if (hora === HORA_ABRE && min >= 0) aberta = true;
+        else if (hora === HORA_FECHA && min < MIN_FECHA) aberta = true;
+
+        if (aberta) {
+            statusBadge.innerText = "Loja Aberta";
+            statusBadge.className = "status-badge open";
+            aviso.style.display = "none";
+            btn.disabled = false;
+        } else {
+            statusBadge.innerText = "Loja Fechada";
+            statusBadge.className = "status-badge closed";
+            aviso.style.display = "block";
+            btn.disabled = true;
+        }
+    }
 
     async function carregarProdutos() {
         const lista = document.getElementById("produtos");
@@ -165,8 +213,7 @@
                     </div>`;
             });
         } catch (e) {
-            console.error(e);
-            lista.innerHTML = "<div style='color:red; padding: 20px;'>Erro ao carregar cardápio. Verifique se o Script está implantado como 'Qualquer Pessoa'.</div>";
+            lista.innerHTML = "<div style='color:red'>Erro ao carregar cardápio.</div>";
         }
     }
 
@@ -179,10 +226,9 @@
     window.addCombo = () => {
         const v1 = document.getElementById("comboSabor1").value;
         const v2 = document.getElementById("comboSabor2").value;
-        if(!v1 || !v2) return alert("Por favor, selecione os 2 sabores da promoção!");
-        carrinho.push({ nome: `Meio a Meio: ${v1} / ${v2}`, preco: 29.90 });
+        if(!v1 || !v2) return alert("Selecione os 2 sabores!");
+        carrinho.push({ nome: `Combo: ${v1}/${v2}`, preco: 29.90 });
         renderCarrinho();
-        toggleCart();
     };
 
     window.remover = (i) => { carrinho.splice(i, 1); renderCarrinho(); };
@@ -192,20 +238,12 @@
         const area = document.getElementById("carrinhoItens");
         let total = 0;
         area.innerHTML = "";
-        
-        if(carrinho.length === 0) {
-            area.innerHTML = "<p style='text-align:center; opacity:0.5'>Seu carrinho está vazio.</p>";
-        }
-
         carrinho.forEach((p, i) => {
             total += parseFloat(p.preco);
             area.innerHTML += `
-                <div style="display:flex; justify-content:space-between; align-items:center; background:#333; padding:12px; border-radius:8px; margin-bottom:8px">
-                    <div style="font-size: 14px;">${p.nome}</div>
-                    <div style="display:flex; align-items:center; gap: 10px;">
-                        <span style="font-weight:bold">R$ ${parseFloat(p.preco).toFixed(2)}</span>
-                        <span style="color:#ff5555; cursor:pointer; font-size: 20px;" onclick="remover(${i})">&times;</span>
-                    </div>
+                <div style="display:flex; justify-content:space-between; background:#333; padding:10px; border-radius:8px; margin-bottom:8px">
+                    <span>${p.nome}</span>
+                    <span style="color:#ff5555; cursor:pointer" onclick="remover(${i})">Remover</span>
                 </div>`;
         });
         document.getElementById("total").innerText = total.toFixed(2);
@@ -215,47 +253,33 @@
     window.finalizar = async function() {
         const nome = document.getElementById("nome").value;
         const end = document.getElementById("endereco").value;
-        const tel = document.getElementById("contato").value;
-        const pag = document.getElementById("pagamento").value;
-
-        if(!nome || !end || carrinho.length === 0) return alert("Preencha nome, endereço e adicione itens!");
+        if(!nome || !end || carrinho.length === 0) return alert("Preencha tudo!");
 
         const itens = carrinho.map(p => p.nome).join(", ");
         const total = document.getElementById("total").innerText;
 
-        // Envio para a planilha
-        try {
-            fetch(API_URL, {
-                method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify({
-                    cliente: nome,
-                    telefone: tel,
-                    endereco: end,
-                    produtos: itens,
-                    total: total,
-                    pagamento: pag
-                })
-            });
-        } catch(e) { console.log("Erro ao salvar dados."); }
+        fetch(API_URL, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify({
+                cliente: nome,
+                telefone: document.getElementById("contato").value,
+                endereco: end,
+                produtos: itens,
+                total: total,
+                pagamento: document.getElementById("pagamento").value
+            })
+        });
 
-        // WhatsApp
-        const msg = `*NOVO PEDIDO - PIZZARIA ROBS*\n` +
-                    `------------------------------\n` +
-                    `*Cliente:* ${nome}\n` +
-                    `*Endereço:* ${end}\n` +
-                    `*Pagamento:* ${pag}\n` +
-                    `------------------------------\n` +
-                    `*Itens:* ${itens}\n` +
-                    `*TOTAL:* R$ ${total}`;
-        
+        const msg = `*NOVO PEDIDO - ROBS*\n\n*Cliente:* ${nome}\n*Endereço:* ${end}\n*Itens:* ${itens}\n*Total:* R$ ${total}`;
         window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(msg)}`);
     };
 
+    setInterval(verificarStatusLoja, 60000); // Atualiza status a cada minuto
+    verificarStatusLoja();
     carregarProdutos();
 </script>
 
 </body>
 </html>
-
 
