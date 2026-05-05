@@ -126,7 +126,7 @@
 </div>
 
 <script>
-    // LINK ATUALIZADO CONFORME VERSÃO 4 (image_1d367c.png)
+    // LINK ATUALIZADO BASEADO NA ÚLTIMA VERSÃO GERADA
     const API_URL = "https://script.google.com/macros/s/AKfycbxuBAMceglNdOG5u39SB86OBhHo6sYUgg2x54CmwtJalhocCPcqedaiZFQZ1WSS3h_hcA/exec";
 
     let carrinho = [];
@@ -159,11 +159,11 @@
                     </div>`;
             });
         } catch (e) {
-            lista.innerHTML = "Erro: Verifique se a aba da planilha se chama 'produtos'.";
+            lista.innerHTML = "Erro ao carregar dados. Verifique o Script e a Planilha.";
         }
     }
 
-    window.add = (i) => { carrinho.push(produtosDoBanco[i]); renderCarrinho(); alert('Adicionado!'); };
+    window.add = (i) => { carrinho.push(produtosDoBanco[i]); renderCarrinho(); };
     
     window.addCombo = () => {
         const v1 = document.getElementById("comboSabor1").value;
@@ -171,7 +171,6 @@
         if(!v1 || !v2) return alert("Selecione os 2 sabores da promoção!");
         carrinho.push({ nome: `Meio a Meio: ${v1}/${v2}`, preco: 29.90 });
         renderCarrinho();
-        alert('Promoção adicionada!');
     };
 
     window.remover = (i) => { carrinho.splice(i, 1); renderCarrinho(); };
@@ -201,7 +200,6 @@
         const itens = carrinho.map(p => p.nome).join(", ");
         const total = document.getElementById("total").innerText;
 
-        // Tenta enviar para a aba 'pedidos' na planilha
         fetch(API_URL, {
             method: "POST",
             mode: "no-cors",
@@ -224,7 +222,6 @@
 
 </body>
 </html>
-
 
 
 
