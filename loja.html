@@ -18,19 +18,11 @@
             --text-white: #ffffff;
             --text-dim: #666666;
             --success: #28a745;
-            --pascoa: #6c5ce7;
-            --accent: #ff79c6;
-            --warning-yellow: #fff200;
         }
 
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         
-        body { 
-            background: var(--bg-light); 
-            color: var(--text-dark); 
-            margin: 0; 
-            padding-bottom: 50px; 
-        }
+        body { background: var(--bg-light); color: var(--text-dark); margin: 0; padding-bottom: 50px; }
 
         header {
             background: rgba(0, 168, 255, 0.9);
@@ -41,37 +33,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
             backdrop-filter: blur(10px);
-        }
-
-        .destaque-topo {
-            background: #0084c9;
             color: white;
-            text-align: center;
-            padding: 8px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            font-size: 14px;
-            text-transform: uppercase;
         }
 
-        .parceria-delivery {
-            background: #ef4444;
-            color: white;
-            font-size: 11px;
-            padding: 2px 10px;
-            border-radius: 50px;
-            display: inline-block;
-            margin-top: 4px;
-            font-weight: 600;
-        }
-
-        .logo h1 { color: white; margin: 0; font-size: 22px; text-transform: uppercase; letter-spacing: 2px; }
+        .logo h1 { margin: 0; font-size: 22px; text-transform: uppercase; letter-spacing: 2px; }
 
         .cart-trigger {
             background: white; color: var(--primary); padding: 10px 18px; border-radius: 50px;
-            cursor: pointer; position: relative; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            cursor: pointer; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         .cart-count {
             position: absolute; top: -5px; right: -5px; background: var(--dark); color: white;
@@ -89,74 +59,35 @@
 
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
 
-        .header-meta { 
-            text-align: center; 
-            margin-bottom: 30px; 
-            background: white; 
-            padding: 20px; 
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }
-
         .banner-promo {
             background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
             color: white; padding: 25px; border-radius: 20px; margin-bottom: 20px;
-            text-align: center; border: 3px solid #fff; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
-            position: relative; overflow: hidden;
+            text-align: center; border: 3px solid #fff;
         }
 
         .combo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
-        .btn-pascoa { background: #ff79c6; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; }
+        .btn-promo { background: #ff79c6; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; }
 
-        .campanha-insta {
-            background: #ffffff; border-radius: 20px; padding: 20px; margin-bottom: 30px;
-            border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; gap: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-        .btn-insta { 
-            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-            color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none;
-            font-weight: bold; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;
-        }
-
-        #statusLoja { padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; display: inline-block; color: white; }
-        .aberto { background: var(--success); }
-        .fechado { background: #dc3545; }
-        
         #produtos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .produto-card {
             background: var(--card); border-radius: 18px; overflow: hidden;
-            transition: 0.3s; border: 1px solid #333; color: white;
+            border: 1px solid #333; color: white;
         }
-        .prod-img { width: 100%; height: 180px; object-fit: cover; }
+        .prod-img { width: 100%; height: 180px; object-fit: cover; background: #333; }
         .prod-info { padding: 15px; }
         .prod-price { color: var(--primary); font-weight: bold; font-size: 20px; }
 
-        input, select, textarea {
-            width: 100%; background: #ffffff; border: 1px solid #ddd; color: #333;
-            padding: 12px; border-radius: 10px; margin-bottom: 12px; outline: none;
-        }
+        input, select { width: 100%; padding: 12px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #ddd; }
 
-        .btn { border: none; border-radius: 10px; cursor: pointer; font-weight: 600; padding: 12px; transition: 0.2s; width: 100%; }
-        .btn-add { background: var(--primary); color: white; }
+        .btn-add { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
 
-        .float-btns { position: fixed; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 99; }
-        .circle-btn { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 24px; }
-
-        @media(max-width: 600px) { 
-            .cart-sidebar { width: 100%; } 
-            .combo-grid { grid-template-columns: 1fr; }
-        }
+        @media(max-width: 600px) { .cart-sidebar { width: 100%; } .combo-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-<div class="destaque-topo">
-    <i class="fas fa-star"></i> PIZZARIA DELIVERY - BAIRRO LUZIA <i class="fas fa-star"></i>
-</div>
-
 <header>
-    <div class="logo"><h1>Robs<span>🍕</span></h1></div>
+    <div class="logo"><h1>Robs 🍕</h1></div>
     <div class="cart-trigger" onclick="toggleCart()">
         <i class="fas fa-shopping-basket"></i>
         <span class="cart-count" id="contagem">0</span>
@@ -164,47 +95,35 @@
 </header>
 
 <div class="container">
-    <div class="header-meta">
-        <div id="statusLoja">Carregando...</div>
-        <div style="font-size: 14px; color: var(--text-dim)">
-            <i class="far fa-clock"></i> <span id="relogio">00:00:00</span>
-        </div>
+    <div style="text-align: center; margin-bottom: 20px;">
+        <span id="statusLoja" style="padding: 5px 15px; border-radius: 20px; color: white; font-weight: bold;">Verificando...</span>
     </div>
 
     <section class="banner-promo">
-        <h2>PROMO PARA AS QUINTAS E SEXTAS</h2>
-        <p>Escolha dois sabores por apenas <b>R$ 29,90</b></p>
+        <h2>PROMOÇÃO DA SEMANA</h2>
+        <p>Dois sabores por apenas <b>R$ 29,90</b></p>
         <div class="combo-grid">
             <select id="comboSabor1"><option value="">Carregando...</option></select>
             <select id="comboSabor2"><option value="">Carregando...</option></select>
         </div>
-        <button class="btn-pascoa" onclick="addCombo()">ADICIONAR PIZZA AO CARRINHO</button>
+        <button class="btn-promo" onclick="addCombo()">ADICIONAR PROMOÇÃO</button>
     </section>
 
-    <h2 style="margin-bottom: 25px;"><i class="fas fa-pizza-slice"></i> Nosso Cardápio</h2>
+    <h2><i class="fas fa-pizza-slice"></i> Nosso Cardápio</h2>
     <div id="produtos">Carregando cardápio...</div>
 
-    <div id="finalizacao" style="margin-top: 40px; background: white; padding: 25px; border-radius: 20px;">
+    <div style="margin-top: 40px; background: white; padding: 25px; border-radius: 20px;">
         <h3><i class="fas fa-truck"></i> Finalizar Pedido</h3>
         <input id="nome" placeholder="Seu Nome">
-        <input id="endereco" placeholder="Endereço Completo">
-        <select id="bairro" onchange="renderCarrinho()">
-            <option value="" data-taxa="0">Selecione o Bairro</option>
-            <option value="Luzia" data-taxa="0">Luzia - Grátis</option>
-            <option value="Ponto Novo" data-taxa="0">Ponto Novo - Grátis</option>
-            <option value="Grageru" data-taxa="6">Grageru - R$ 6,00</option>
-            <option value="Salgado Filho" data-taxa="6">Salgado Filho - R$ 6,00</option>
-            <option value="Suíssa" data-taxa="6">Suíssa - R$ 6,00</option>
-            <option value="Aeroporto" data-taxa="12">Aeroporto - R$ 12,00</option>
-        </select>
-        <input id="contato" placeholder="WhatsApp (79999999999)">
+        <input id="endereco" placeholder="Endereço e Bairro">
+        <input id="contato" placeholder="WhatsApp (DDD + Número)">
         <select id="pagamento">
             <option value="Pix">Pix</option>
-            <option value="Dinheiro">Dinheiro</option>
             <option value="Cartão">Cartão</option>
+            <option value="Dinheiro">Dinheiro</option>
         </select>
-        <button class="btn btn-add" style="padding: 18px; font-size: 18px;" onclick="finalizar()">
-            <i class="fab fa-whatsapp"></i> ENVIAR PEDIDO
+        <button class="btn-add" style="background: #25d366; padding: 18px;" onclick="finalizar()">
+            <i class="fab fa-whatsapp"></i> ENVIAR PELO WHATSAPP
         </button>
     </div>
 </div>
@@ -213,37 +132,31 @@
     <span class="close-cart" onclick="toggleCart()"><i class="fas fa-times"></i></span>
     <h3>Seu Carrinho</h3>
     <div id="carrinhoItens"></div>
-    <div style="margin-top: 20px; border-top: 1px solid #444; padding-top: 20px;">
-        <div style="display:flex; justify-content:space-between; font-size: 20px; font-weight: bold;">
-            <span>Total:</span>
-            <span style="color: var(--primary)">R$ <span id="total">0.00</span></span>
-        </div>
+    <hr>
+    <div style="display:flex; justify-content:space-between; font-size: 20px; font-weight: bold;">
+        <span>Total:</span>
+        <span>R$ <span id="total">0.00</span></span>
     </div>
 </div>
 
-<div class="float-btns">
-    <a href="https://wa.me/5579999769581" class="circle-btn" style="background: #25d366;"><i class="fab fa-whatsapp"></i></a>
-</div>
-
 <script>
-    // LINK DA SUA PLANILHA (APPS SCRIPT)
-    const API_URL = "https://script.google.com/macros/s/AKfycbxwg7Py7C5vpb0NmLT2qbYOujqUTZ7pMUKHbUgGM7N_40qROk48y5v9HAghnZXXRR5pqQ/exec";
+    // SEU LINK DO APPS SCRIPT ATUALIZADO
+    const API_URL = "https://script.google.com/macros/s/AKfycbx0YVnht7nSwp9N98fS5wBgmZ6J7Wz7OXn2zyCUtfGncoyW3YtT4t6HArmFW51s3IG6/exec";
 
     let carrinho = [];
     let produtosDoBanco = [];
 
-    // CARREGAR PRODUTOS
     async function carregarProdutos() {
+        const lista = document.getElementById("produtos");
+        const s1 = document.getElementById("comboSabor1");
+        const s2 = document.getElementById("comboSabor2");
+
         try {
             const response = await fetch(API_URL);
             produtosDoBanco = await response.json();
             
-            const s1 = document.getElementById("comboSabor1");
-            const s2 = document.getElementById("comboSabor2");
-            const lista = document.getElementById("produtos");
-
-            s1.innerHTML = s2.innerHTML = '<option value="">Selecione um sabor</option>';
             lista.innerHTML = "";
+            s1.innerHTML = s2.innerHTML = '<option value="">Escolha um sabor</option>';
 
             produtosDoBanco.forEach((p, index) => {
                 s1.innerHTML += `<option value="${p.nome}">${p.nome}</option>`;
@@ -251,97 +164,82 @@
 
                 lista.innerHTML += `
                     <div class="produto-card">
-                        <img src="${p.url_imagem || 'https://via.placeholder.com/300x200'}" class="prod-img">
+                        <img src="${p.url_imagem}" class="prod-img" onerror="this.src='https://via.placeholder.com/300x180?text=Pizza'">
                         <div class="prod-info">
-                            <div style="font-weight:600; min-height: 40px;">${p.nome}</div>
+                            <div style="font-weight:bold">${p.nome}</div>
                             <div class="prod-price">R$ ${parseFloat(p.preco).toFixed(2)}</div>
-                            <button class="btn btn-add" style="margin-top:10px" onclick="add(${index})">Adicionar</button>
+                            <button class="btn-add" style="margin-top:10px" onclick="add(${index})">Adicionar</button>
                         </div>
                     </div>`;
             });
-        } catch (e) { console.error(e); }
+        } catch (e) {
+            lista.innerHTML = "Erro ao carregar. Verifique o nome da aba 'produtos' na planilha.";
+        }
     }
 
-    // FUNÇÕES DO CARRINHO
     window.add = (i) => { carrinho.push(produtosDoBanco[i]); renderCarrinho(); };
+    
     window.addCombo = () => {
-        const s1 = document.getElementById("comboSabor1").value;
-        const s2 = document.getElementById("comboSabor2").value;
-        if(!s1 || !s2) return alert("Escolha os dois sabores!");
-        carrinho.push({ nome: `Meio a Meio: ${s1}/${s2}`, preco: 29.90 });
+        const v1 = document.getElementById("comboSabor1").value;
+        const v2 = document.getElementById("comboSabor2").value;
+        if(!v1 || !v2) return alert("Selecione os sabores!");
+        carrinho.push({ nome: `Combo: ${v1} / ${v2}`, preco: 29.90 });
         renderCarrinho();
     };
+
     window.remover = (i) => { carrinho.splice(i, 1); renderCarrinho(); };
     window.toggleCart = () => document.getElementById('cartSidebar').classList.toggle('active');
 
     window.renderCarrinho = () => {
         const area = document.getElementById("carrinhoItens");
-        const selBairro = document.getElementById("bairro");
-        const taxa = parseFloat(selBairro.options[selBairro.selectedIndex].getAttribute("data-taxa") || 0);
-        let subtotal = 0;
+        let total = 0;
         area.innerHTML = "";
-        
         carrinho.forEach((p, i) => {
-            subtotal += parseFloat(p.preco);
-            area.innerHTML += `
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px; background:#333; padding:10px; border-radius:10px;">
-                    <span style="font-size:13px">${p.nome}</span>
-                    <button onclick="remover(${i})" style="background:none; border:none; color:red; cursor:pointer;"><i class="fas fa-times"></i></button>
-                </div>`;
+            total += parseFloat(p.preco);
+            area.innerHTML += `<div style="display:flex; justify-content:space-between; background:#333; padding:10px; border-radius:8px; margin-bottom:5px">
+                <span>${p.nome}</span>
+                <button onclick="remover(${i})" style="background:none; border:none; color:red; cursor:pointer">X</button>
+            </div>`;
         });
-        document.getElementById("total").innerText = (subtotal + taxa).toFixed(2);
+        document.getElementById("total").innerText = total.toFixed(2);
         document.getElementById("contagem").innerText = carrinho.length;
     };
 
-    // FINALIZAR E ENVIAR PARA PLANILHA + WHATSAPP
     window.finalizar = async function() {
         const nome = document.getElementById("nome").value;
         const end = document.getElementById("endereco").value;
-        const bairro = document.getElementById("bairro").value;
-        const zap = document.getElementById("contato").value;
-        if(!nome || !end || !bairro || carrinho.length === 0) return alert("Preencha todos os campos!");
+        if(!nome || !end || carrinho.length === 0) return alert("Dados incompletos!");
 
         const itens = carrinho.map(p => p.nome).join(", ");
         const total = document.getElementById("total").innerText;
 
-        // Salva na planilha (aba pedidos)
+        // Envia para a planilha
         fetch(API_URL, {
             method: "POST",
             mode: "no-cors",
             body: JSON.stringify({
                 cliente: nome,
-                telefone: zap,
-                endereco: `${end} - ${bairro}`,
+                telefone: document.getElementById("contato").value,
+                endereco: end,
                 produtos: itens,
                 total: total,
                 pagamento: document.getElementById("pagamento").value
             })
         });
 
-        // Envia WhatsApp
-        const msg = `*NOVO PEDIDO - ROBS*\n\n*Cliente:* ${nome}\n*Endereço:* ${end}\n*Bairro:* ${bairro}\n*Itens:* ${itens}\n*Total:* R$ ${total}\n*Pagamento:* ${document.getElementById("pagamento").value}`;
+        const msg = `*PEDIDO ROBS*\n*Cliente:* ${nome}\n*Itens:* ${itens}\n*Total:* R$ ${total}`;
         window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(msg)}`);
-        
-        alert("Pedido enviado!");
-        carrinho = [];
-        renderCarrinho();
     };
 
-    // RELOGIO E STATUS
-    function atualizarTempo() {
-        const agora = new Date();
-        document.getElementById('relogio').textContent = agora.toLocaleTimeString('pt-BR');
-        const hora = agora.getHours();
-        const status = document.getElementById("statusLoja");
-        if(hora >= 18 && hora < 23) {
-            status.innerHTML = "🟢 ABERTO"; status.className = "aberto";
-        } else {
-            status.innerHTML = "🔴 FECHADO"; status.className = "fechado";
-        }
+    function checkStatus() {
+        const h = new Date().getHours();
+        const s = document.getElementById("statusLoja");
+        if(h >= 18 && h < 23) { s.innerText = "🟢 ABERTO AGORA"; s.style.background = "#28a745"; }
+        else { s.innerText = "🔴 FECHADO NO MOMENTO"; s.style.background = "#dc3545"; }
     }
 
-    setInterval(atualizarTempo, 1000);
-    document.addEventListener("DOMContentLoaded", carregarProdutos);
+    checkStatus();
+    carregarProdutos();
 </script>
 
 </body>
