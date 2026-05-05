@@ -7,9 +7,6 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
@@ -108,37 +105,6 @@
             position: relative; overflow: hidden;
         }
 
-        .aviso-limitado {
-            display: block;
-            font-size: 12px;
-            color: var(--warning-yellow);
-            font-weight: 900;
-            text-transform: uppercase;
-            margin-top: 5px;
-            animation: blinker 1s linear infinite;
-        }
-
-        @keyframes blinker {
-            50% { opacity: 0; }
-        }
-
-        .animacao-agendar {
-            position: absolute; right: 15px; top: 15px;
-            background: #fff; color: var(--pascoa);
-            padding: 8px 12px; border-radius: 50px;
-            font-size: 11px; font-weight: 900;
-            animation: pulse-glow 2s infinite;
-            display: flex; align-items: center; gap: 5px;
-            box-shadow: 0 0 15px rgba(255,255,255,0.5);
-            pointer-events: none;
-        }
-
-        @keyframes pulse-glow {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; box-shadow: 0 0 25px rgba(255,255,255,0.8); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
         .combo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .btn-pascoa { background: #ff79c6; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; }
 
@@ -147,8 +113,6 @@
             border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; gap: 20px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
-        .insta-info h3 { margin: 0; color: var(--accent); font-size: 18px; }
-        .insta-info p { margin: 5px 0; font-size: 13px; color: var(--text-dim); }
         .btn-insta { 
             background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
             color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none;
@@ -159,12 +123,6 @@
         .aberto { background: var(--success); }
         .fechado { background: #dc3545; }
         
-        .aviso-agendamento {
-            display: none; background: #fff3cd; color: #856404; padding: 10px;
-            border-radius: 10px; margin-bottom: 15px; font-size: 14px;
-            border: 1px solid #ffeeba; font-weight: 600;
-        }
-
         #produtos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .produto-card {
             background: var(--card); border-radius: 18px; overflow: hidden;
@@ -179,33 +137,15 @@
             padding: 12px; border-radius: 10px; margin-bottom: 12px; outline: none;
         }
 
-        .label-agendamento { font-size: 12px; font-weight: bold; color: var(--primary); margin-bottom: 5px; display: block; text-transform: uppercase; }
-
         .btn { border: none; border-radius: 10px; cursor: pointer; font-weight: 600; padding: 12px; transition: 0.2s; width: 100%; }
         .btn-add { background: var(--primary); color: white; }
-        .btn-flash { background: #28a745 !important; transform: scale(0.95); }
 
         .float-btns { position: fixed; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 99; }
         .circle-btn { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 24px; }
 
-        .cart-tax-row {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(0, 168, 255, 0.1); padding: 10px; border-radius: 10px;
-            margin-top: 10px; border: 1px solid var(--primary);
-        }
-
-        .aviso-obrigatorio { font-size: 13px; color: var(--primary); font-weight: 400; margin-left: 10px; }
-
-        /* PAINEL DO LOJISTA STYLES */
-        #painelLojista { margin-top: 80px; padding: 40px 20px; background: #f8f9fa; border-top: 4px solid var(--primary); }
-        .card-pedido { background: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; border-left: 6px solid var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.08); position: relative; }
-        .badge-pedido { background: var(--primary); color: white; padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .link-zap { color: #25d366; text-decoration: none; font-weight: bold; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; margin-top: 5px; }
-
         @media(max-width: 600px) { 
             .cart-sidebar { width: 100%; } 
             .combo-grid { grid-template-columns: 1fr; }
-            .campanha-insta { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
@@ -213,8 +153,6 @@
 
 <div class="destaque-topo">
     <i class="fas fa-star"></i> PIZZARIA DELIVERY - BAIRRO LUZIA <i class="fas fa-star"></i>
-    <br>
-    <span class="parceria-delivery"><i class="fas fa-handshake"></i> Loja Parceira Quero Delivery</span>
 </div>
 
 <header>
@@ -228,103 +166,44 @@
 <div class="container">
     <div class="header-meta">
         <div id="statusLoja">Carregando...</div>
-        <div id="msgAgendamento" class="aviso-agendamento">
-            <i class="fas fa-calendar-alt"></i> No momento estamos fechados, mas você pode deixar seu pedido agendado para o final de semana!
-        </div>
         <div style="font-size: 14px; color: var(--text-dim)">
-            <i class="far fa-clock"></i> <span id="relogio">00:00:00</span> | 
-            <i class="far fa-calendar-alt"></i> <span id="data">--/--/--</span>
+            <i class="far fa-clock"></i> <span id="relogio">00:00:00</span>
         </div>
     </div>
 
     <section class="banner-promo">
-        <div class="animacao-agendar"><i class="fas fa-clock"></i> AGENDE AGORA!</div>
-        <h2>
-            PROMO PARA AS QUINTAS E SEXTAS
-            <span class="aviso-limitado">⚠️ Quantidades Limitadas ⚠️<br><small>Devido a muitos agendamentos</small></span>
-        </h2>
-        <p>Escolha dois sabores (meio a meio) por apenas <b>R$ 29,90</b></p>
+        <h2>PROMO PARA AS QUINTAS E SEXTAS</h2>
+        <p>Escolha dois sabores por apenas <b>R$ 29,90</b></p>
         <div class="combo-grid">
-            <select id="comboSabor1"><option value="">Carregando sabores...</option></select>
-            <select id="comboSabor2"><option value="">Carregando sabores...</option></select>
+            <select id="comboSabor1"><option value="">Carregando...</option></select>
+            <select id="comboSabor2"><option value="">Carregando...</option></select>
         </div>
-        <button class="btn-pascoa" id="btnCombo" onclick="window.addComboPascoa()">
-            <i class="fas fa-cart-plus"></i> ADICIONAR PIZZA AO CARRINHO
-        </button>
+        <button class="btn-pascoa" onclick="addCombo()">ADICIONAR PIZZA AO CARRINHO</button>
     </section>
 
-    <section class="campanha-insta">
-        <div style="font-size: 40px;">📸</div>
-        <div class="insta-info">
-            <h3>SIGA-NOS NO INSTAGRAM</h3>
-            <p>Fique por dentro das novidades e promoções diárias!</p>
-            <a href="https://www.instagram.com/robs_pizzaria" target="_blank" class="btn-insta">
-                <i class="fab fa-instagram"></i> SEGUIR @robs_pizzaria
-            </a>
-        </div>
-    </section>
-
-    <h2 style="margin-bottom: 25px; display: flex; align-items: center; flex-wrap: wrap;">
-        <i class="fas fa-pizza-slice"></i> &nbsp;Cardápio 
-        <span class="aviso-obrigatorio">(Mínimo de 2 sabores/itens)</span>
-    </h2>
+    <h2 style="margin-bottom: 25px;"><i class="fas fa-pizza-slice"></i> Nosso Cardápio</h2>
     <div id="produtos">Carregando cardápio...</div>
 
-    <div id="finalizacao" style="margin-top: 40px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+    <div id="finalizacao" style="margin-top: 40px; background: white; padding: 25px; border-radius: 20px;">
         <h3><i class="fas fa-truck"></i> Finalizar Pedido</h3>
         <input id="nome" placeholder="Seu Nome">
-        <input id="endereco" placeholder="Endereço Completo (Rua, Número, Apto)">
-        
-        <select id="bairro" onchange="window.renderCarrinho()">
-            <option value="" data-taxa="0">Escolha o Bairro para entrega</option>
-            <option value="Aeroporto" data-taxa="12">Aeroporto - R$ 12,00</option>
-            <option value="Atalaia" data-taxa="12">Atalaia - R$ 12,00</option>
-            <option value="Coroa do Meio" data-taxa="12">Coroa do Meio - R$ 12,00</option>
-            <option value="Farolândia" data-taxa="12">Farolândia - R$ 12,00</option>
-            <option value="Getúlio Vargas" data-taxa="10">Getúlio Vargas - R$ 10,00</option>
-            <option value="Grageru" data-taxa="6">Grageru - R$ 6,00</option>
-            <option value="Jabotiana" data-taxa="12">Jabotiana - R$ 12,00</option>
+        <input id="endereco" placeholder="Endereço Completo">
+        <select id="bairro" onchange="renderCarrinho()">
+            <option value="" data-taxa="0">Selecione o Bairro</option>
             <option value="Luzia" data-taxa="0">Luzia - Grátis</option>
             <option value="Ponto Novo" data-taxa="0">Ponto Novo - Grátis</option>
+            <option value="Grageru" data-taxa="6">Grageru - R$ 6,00</option>
             <option value="Salgado Filho" data-taxa="6">Salgado Filho - R$ 6,00</option>
-            <option value="São Conrado" data-taxa="12">São Conrado - R$ 12,00</option>
-            <option value="São José" data-taxa="12">São José - R$ 12,00</option>
             <option value="Suíssa" data-taxa="6">Suíssa - R$ 6,00</option>
-            <option value="Treze de Julho" data-taxa="12">Treze de Julho - R$ 12,00</option>
+            <option value="Aeroporto" data-taxa="12">Aeroporto - R$ 12,00</option>
         </select>
-
         <input id="contato" placeholder="WhatsApp (79999999999)">
-        
-        <select id="pagamento" onchange="window.renderCarrinho()">
-            <option value="Dinheiro">Dinheiro</option>
+        <select id="pagamento">
             <option value="Pix">Pix</option>
+            <option value="Dinheiro">Dinheiro</option>
             <option value="Cartão">Cartão</option>
         </select>
-
-        <label class="label-agendamento">Tipo de Pedido:</label>
-        <select id="tipoPedido">
-            <option value="Pedido Normal">Pedido Normal</option>
-            <option value="Pedido da Promoção">Pedido da Promoção</option>
-        </select>
-
-        <label class="label-agendamento">Data de Entrega/Agendamento:</label>
-        <input type="date" id="dataAgendamento">
-
-        <label class="label-agendamento">Horário Disponível:</label>
-        <select id="horaAgendamento">
-            <option value="18:00 - 19:00">18:00 às 19:00</option>
-            <option value="19:00 - 20:00">19:00 às 20:00</option>
-            <option value="20:00 - 21:00">20:00 às 21:00</option>
-        </select>
-
-        <textarea id="obs" placeholder="Observações adicionais..."></textarea>
-        
-        <div id="pixArea" style="display:none; background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border: 1px dashed var(--primary); margin-bottom: 15px;">
-            <p style="margin:0 0 10px 0">Chave Pix: <b>rcsv74@gmail.com</b></p>
-            <button class="btn" style="background: var(--primary); width: auto; padding: 5px 15px; font-size: 13px;" onclick="window.copiarPix()">Copiar Chave</button>
-        </div>
-
-        <button id="btnFinalizar" class="btn btn-add" style="padding: 18px; font-size: 18px;" onclick="window.finalizar()">
+        <button class="btn btn-add" style="padding: 18px; font-size: 18px;" onclick="finalizar()">
             <i class="fab fa-whatsapp"></i> ENVIAR PEDIDO
         </button>
     </div>
@@ -334,308 +213,139 @@
     <span class="close-cart" onclick="toggleCart()"><i class="fas fa-times"></i></span>
     <h3>Seu Carrinho</h3>
     <div id="carrinhoItens"></div>
-    <div id="taxaNoCarrinho"></div>
-    
     <div style="margin-top: 20px; border-top: 1px solid #444; padding-top: 20px;">
         <div style="display:flex; justify-content:space-between; font-size: 20px; font-weight: bold;">
             <span>Total:</span>
             <span style="color: var(--primary)">R$ <span id="total">0.00</span></span>
         </div>
-        <button class="btn btn-add" style="margin-top: 20px;" onclick="toggleCart()">Continuar Comprando</button>
     </div>
 </div>
-
-<section id="painelLojista" class="container">
-    <div style="text-align: center; margin-bottom: 25px;">
-        <h2 style="color: var(--dark);"><i class="fas fa-user-shield"></i> Painel do Lojista</h2>
-        <div id="loginPainel">
-            <input type="password" id="senhaAcesso" placeholder="Digite a senha" style="max-width: 250px; display: inline-block;">
-            <button class="btn btn-add" style="width: auto; padding: 12px 30px;" onclick="window.acessarPainel()">Acessar Painel</button>
-        </div>
-    </div>
-
-    <div id="conteudoPainel" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-            <h3 style="margin:0">Gestão de Pedidos</h3>
-            <div style="display:flex; gap:10px;">
-                <button class="btn" style="background: #666; color: white; width: auto;" onclick="window.carregarPedidosPainel()">
-                    <i class="fas fa-sync"></i> Atualizar
-                </button>
-            </div>
-        </div>
-        <div id="listaPedidosRecentes">Carregando histórico...</div>
-    </div>
-</section>
 
 <div class="float-btns">
     <a href="https://wa.me/5579999769581" class="circle-btn" style="background: #25d366;"><i class="fab fa-whatsapp"></i></a>
-    <a href="https://www.instagram.com/robs_pizzaria" class="circle-btn" style="background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%);"><i class="fab fa-instagram"></i></a>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp, getDocs, orderBy, query, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+<script>
+    // LINK DA SUA PLANILHA (APPS SCRIPT)
+    const API_URL = "https://script.google.com/macros/s/AKfycbxwg7Py7C5vpb0NmLT2qbYOujqUTZ7pMUKHbUgGM7N_40qROk48y5v9HAghnZXXRR5pqQ/exec";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyD-SUA_CHAVE_FIREBASE", 
-    authDomain: "robs-pizzariadelivery.firebaseapp.com",
-    projectId: "robs-pizzariadelivery",
-    storageBucket: "robs-pizzariadelivery.appspot.com",
-    messagingSenderId: "338805720977",
-    appId: "1:338805720977:web:8666359590892994406a48"
-};
+    let carrinho = [];
+    let produtosDoBanco = [];
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const _supabase = supabase.createClient('https://gsvvyktjeqlmhspqzppy.supabase.co','sb_publishable_0lVSMGWIIYBvwu_iWWWPKw_qvoAHjOs');
+    // CARREGAR PRODUTOS
+    async function carregarProdutos() {
+        try {
+            const response = await fetch(API_URL);
+            produtosDoBanco = await response.json();
+            
+            const s1 = document.getElementById("comboSabor1");
+            const s2 = document.getElementById("comboSabor2");
+            const lista = document.getElementById("produtos");
 
-let carrinho = [];
-let produtosDoBanco = [];
+            s1.innerHTML = s2.innerHTML = '<option value="">Selecione um sabor</option>';
+            lista.innerHTML = "";
 
-function feedback(el) {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const g = ctx.createGain();
-    osc.connect(g); g.connect(ctx.destination);
-    osc.frequency.value = 800; g.gain.value = 0.1;
-    osc.start(); osc.stop(ctx.currentTime + 0.1);
-    if(el) {
-        el.classList.add('btn-flash');
-        setTimeout(() => el.classList.remove('btn-flash'), 250);
+            produtosDoBanco.forEach((p, index) => {
+                s1.innerHTML += `<option value="${p.nome}">${p.nome}</option>`;
+                s2.innerHTML += `<option value="${p.nome}">${p.nome}</option>`;
+
+                lista.innerHTML += `
+                    <div class="produto-card">
+                        <img src="${p.url_imagem || 'https://via.placeholder.com/300x200'}" class="prod-img">
+                        <div class="prod-info">
+                            <div style="font-weight:600; min-height: 40px;">${p.nome}</div>
+                            <div class="prod-price">R$ ${parseFloat(p.preco).toFixed(2)}</div>
+                            <button class="btn btn-add" style="margin-top:10px" onclick="add(${index})">Adicionar</button>
+                        </div>
+                    </div>`;
+            });
+        } catch (e) { console.error(e); }
     }
-}
 
-window.toggleCart = () => document.getElementById('cartSidebar').classList.toggle('active');
-window.copiarPix = () => { navigator.clipboard.writeText("rcsv74@gmail.com"); alert("Chave Pix copiada!"); };
+    // FUNÇÕES DO CARRINHO
+    window.add = (i) => { carrinho.push(produtosDoBanco[i]); renderCarrinho(); };
+    window.addCombo = () => {
+        const s1 = document.getElementById("comboSabor1").value;
+        const s2 = document.getElementById("comboSabor2").value;
+        if(!s1 || !s2) return alert("Escolha os dois sabores!");
+        carrinho.push({ nome: `Meio a Meio: ${s1}/${s2}`, preco: 29.90 });
+        renderCarrinho();
+    };
+    window.remover = (i) => { carrinho.splice(i, 1); renderCarrinho(); };
+    window.toggleCart = () => document.getElementById('cartSidebar').classList.toggle('active');
 
-function atualizarTempo() {
-    const agora = new Date();
-    const relogio = document.getElementById('relogio');
-    const data = document.getElementById('data');
-    if(relogio) relogio.textContent = agora.toLocaleTimeString('pt-BR');
-    if(data) data.textContent = agora.toLocaleDateString('pt-BR');
-    verificarHorario();
-}
-setInterval(atualizarTempo, 1000);
-
-async function carregarProdutos(){
-    const {data:produtos} = await _supabase.from('produtos').select('*');
-    produtosDoBanco = produtos;
-    
-    const s1 = document.getElementById("comboSabor1");
-    const s2 = document.getElementById("comboSabor2");
-    s1.innerHTML = '<option value="">Selecione o 1º sabor</option>';
-    s2.innerHTML = '<option value="">Selecione o 2º sabor</option>';
-    
-    produtos.forEach(p => {
-        let opt = `<option value="${p.nome}">${p.nome}</option>`;
-        s1.innerHTML += opt;
-        s2.innerHTML += opt;
-    });
-
-    let lista = document.getElementById("produtos");
-    lista.innerHTML = "";
-    produtos.forEach((p, index) => {
-        lista.innerHTML += `
-            <div class="produto-card">
-                <img src="${p.url_imagem||'https://via.placeholder.com/300x200'}" class="prod-img">
-                <div class="prod-info">
-                    <div style="font-weight:600; min-height: 40px;">${p.nome}</div>
-                    <div class="prod-price">R$ ${parseFloat(p.preco).toFixed(2)}</div>
-                    <button class="btn btn-add" id="btn-add-${index}" style="margin-top:10px" onclick="window.add(${index})">Adicionar</button>
-                </div>
-            </div>`;
-    });
-}
-
-window.addComboPascoa = () => {
-    const sab1 = document.getElementById("comboSabor1").value;
-    const sab2 = document.getElementById("comboSabor2").value;
-    if(!sab1 || !sab2) return alert("Escolha os dois sabores para sua pizza meio a meio!");
-    const itemCombo = { nome: `🍕 PROMO QUINTA/SEXTA (30cm): ½ ${sab1} / ½ ${sab2}`, preco: 29.90 };
-    feedback(document.getElementById("btnCombo"));
-    carrinho.push(itemCombo);
-    window.renderCarrinho();
-}
-
-window.add = (i) => { 
-    feedback(document.getElementById(`btn-add-${i}`));
-    carrinho.push(produtosDoBanco[i]); 
-    window.renderCarrinho(); 
-}
-
-window.remover = (i) => { carrinho.splice(i,1); window.renderCarrinho(); }
-
-window.removerTaxa = () => {
-    document.getElementById("bairro").value = "";
-    window.renderCarrinho();
-}
-
-window.renderCarrinho = function(){
-    let area = document.getElementById("carrinhoItens"); 
-    let areaTaxa = document.getElementById("taxaNoCarrinho");
-    area.innerHTML = ""; 
-    let subtotal = 0;
-
-    carrinho.forEach((p,i)=>{ 
-        subtotal += parseFloat(p.preco);
-        area.innerHTML += `
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px; background:#333; padding:10px; border-radius:10px; border-left: 4px solid var(--primary);">
-            <span style="font-size:14px">${p.nome}</span>
-            <button class="btn-acao btn-del" style="background:transparent" onclick="window.remover(${i})"><i class="fas fa-times"></i></button>
-        </div>`;
-    });
-
-    const selBairro = document.getElementById("bairro");
-    const bairroNome = selBairro.value;
-    const taxaValor = parseFloat(selBairro.options[selBairro.selectedIndex].getAttribute("data-taxa") || 0);
-
-    if (bairroNome !== "") {
-        areaTaxa.innerHTML = `
-        <div class="cart-tax-row">
-            <span style="font-size:13px"><i class="fas fa-motorcycle"></i> ${bairroNome}</span>
-            <div style="display:flex; align-items:center; gap:10px;">
-                <span style="font-weight:bold">${taxaValor === 0 ? 'Grátis' : 'R$ '+taxaValor.toFixed(2)}</span>
-                <button class="btn-acao btn-del" style="background:transparent" onclick="window.removerTaxa()"><i class="fas fa-times"></i></button>
-            </div>
-        </div>`;
-    } else { areaTaxa.innerHTML = ""; }
-
-    let totalGeral = subtotal + taxaValor;
-    document.getElementById("total").innerText = totalGeral.toFixed(2);
-    document.getElementById("contagem").innerText = carrinho.length;
-    document.getElementById("pixArea").style.display = (document.getElementById("pagamento").value === "Pix" && totalGeral > 0) ? "block" : "none";
-}
-
-window.finalizar = async function(){
-    const btn = document.getElementById("btnFinalizar");
-    feedback(btn);
-
-    let n = document.getElementById("nome").value;
-    let e = document.getElementById("endereco").value;
-    let b = document.getElementById("bairro").value;
-    let c = document.getElementById("contato").value;
-    let p = document.getElementById("pagamento").value;
-    let tPedido = document.getElementById("tipoPedido").value;
-    let dAgend = document.getElementById("dataAgendamento").value;
-    let hAgend = document.getElementById("horaAgendamento").value;
-    let o = document.getElementById("obs").value;
-    let t = document.getElementById("total").innerText;
-    
-    if(!n || !e || !b || !c || !dAgend) return alert("Por favor, preencha todos os dados!");
-    if(carrinho.length === 0) return alert("Seu carrinho está vazio!");
-
-    let listaProd = ""; 
-    carrinho.forEach(item => { listaProd += `• ${item.nome}\n`; });
-    
-    let textoWhatsApp = `*NOVO PEDIDO ROBS*\n\n${listaProd}\n📍 *Bairro:* ${b}\n🏠 *Endereço:* ${e}\n💰 *Total:* R$ ${t}\n👤 *Cliente:* ${n}\n💳 *Pagamento:* ${p}\n\n📅 *Agendamento:* ${dAgend.split('-').reverse().join('/')}\n⏰ *Horário:* ${hAgend}\n💎 *Tipo:* ${tPedido}`;
-    if(o) textoWhatsApp += `\n\n📝 *Obs:* ${o}`;
-
-    try {
-        await addDoc(collection(db, "pedidos"), { 
-            cliente: n, endereco: e, bairro: b, telefone: c, pagamento: p,
-            produtos: listaProd, total: t, status: 'Pendente', data: serverTimestamp(),
-            agendamento: `${dAgend.split('-').reverse().join('/')} às ${hAgend}`, tipo: tPedido, obs: o
-        });
-        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(textoWhatsApp)}`);
-        location.reload();
-    } catch(err) { alert("Erro ao processar pedido."); }
-}
-
-function verificarHorario(){
-    let agora = new Date(); 
-    let dia = agora.getDay(); 
-    let hora = agora.getHours();
-    let min = agora.getMinutes();
-    let tempoAtual = hora + (min/60);
-    let diaUtil = (dia >= 3 && dia <= 6) || dia == 0;
-    let horaUtil = (tempoAtual >= 18 && tempoAtual < 23);
-    let aberto = diaUtil && horaUtil;
-    let status = document.getElementById("statusLoja");
-    let msgAgendamento = document.getElementById("msgAgendamento");
-
-    if(status) {
-        if(aberto) {
-            status.innerHTML = "🟢 LOJA ABERTA";
-            status.className = "aberto";
-            if(msgAgendamento) msgAgendamento.style.display = "none";
-        } else {
-            status.innerHTML = "🔴 FECHADO (AGENDAMENTO DISPONÍVEL)";
-            status.className = "fechado";
-            if(msgAgendamento) msgAgendamento.style.display = "block";
-        }
-    }
-}
-
-// LOGICA DO PAINEL
-window.acessarPainel = function() {
-    const senha = document.getElementById("senhaAcesso").value;
-    if(senha === "253641") {
-        document.getElementById("loginPainel").style.display = "none";
-        document.getElementById("conteudoPainel").style.display = "block";
-        window.carregarPedidosPainel();
-    } else {
-        alert("Senha incorreta!");
-    }
-}
-
-window.carregarPedidosPainel = async function() {
-    const area = document.getElementById("listaPedidosRecentes");
-    area.innerHTML = "Buscando pedidos...";
-    
-    try {
-        const q = query(collection(db, "pedidos"), orderBy("data", "desc"), limit(25));
-        const snap = await getDocs(q);
+    window.renderCarrinho = () => {
+        const area = document.getElementById("carrinhoItens");
+        const selBairro = document.getElementById("bairro");
+        const taxa = parseFloat(selBairro.options[selBairro.selectedIndex].getAttribute("data-taxa") || 0);
+        let subtotal = 0;
         area.innerHTML = "";
         
-        if(snap.empty) {
-            area.innerHTML = "<p style='text-align:center; color:#666;'>Nenhum pedido no banco de dados.</p>";
-            return;
-        }
-
-        snap.forEach(doc => {
-            const d = doc.data();
+        carrinho.forEach((p, i) => {
+            subtotal += parseFloat(p.preco);
             area.innerHTML += `
-                <div class="card-pedido">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                        <div>
-                            <strong>${d.cliente}</strong> <span class="badge-pedido">${d.tipo}</span><br>
-                            <small>${d.bairro} - ${d.endereco}</small><br>
-                            <a href="https://wa.me/55${d.telefone.replace(/\D/g,'')}" target="_blank" class="link-zap">
-                                <i class="fab fa-whatsapp"></i> ${d.telefone}
-                            </a>
-                        </div>
-                        <div style="text-align:right">
-                            <span style="color:var(--primary); font-weight:bold; font-size:18px;">R$ ${d.total}</span><br>
-                            <small>${d.pagamento}</small>
-                        </div>
-                    </div>
-                    <div style="background:#f8f9fa; padding:12px; border-radius:10px; margin-top:10px; font-size:13px; border: 1px solid #eee; white-space:pre-line;">
-                        ${d.produtos}
-                    </div>
-                    <div style="margin-top:10px; font-size:12px; color:#555;">
-                        <i class="fas fa-clock"></i> Entrega: <strong>${d.agendamento}</strong><br>
-                        ${d.obs ? `<i class="fas fa-comment-dots"></i> <b>Obs:</b> ${d.obs}` : ''}
-                    </div>
-                </div>
-            `;
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; background:#333; padding:10px; border-radius:10px;">
+                    <span style="font-size:13px">${p.nome}</span>
+                    <button onclick="remover(${i})" style="background:none; border:none; color:red; cursor:pointer;"><i class="fas fa-times"></i></button>
+                </div>`;
         });
-    } catch(e) { area.innerHTML = "Erro ao conectar com Firebase."; }
-}
+        document.getElementById("total").innerText = (subtotal + taxa).toFixed(2);
+        document.getElementById("contagem").innerText = carrinho.length;
+    };
 
-const inputData = document.getElementById('dataAgendamento');
-if(inputData) {
-    const hoje = new Date().toISOString().split('T')[0];
-    inputData.setAttribute('min', hoje);
-}
+    // FINALIZAR E ENVIAR PARA PLANILHA + WHATSAPP
+    window.finalizar = async function() {
+        const nome = document.getElementById("nome").value;
+        const end = document.getElementById("endereco").value;
+        const bairro = document.getElementById("bairro").value;
+        const zap = document.getElementById("contato").value;
+        if(!nome || !end || !bairro || carrinho.length === 0) return alert("Preencha todos os campos!");
 
-verificarHorario();
-carregarProdutos();
+        const itens = carrinho.map(p => p.nome).join(", ");
+        const total = document.getElementById("total").innerText;
+
+        // Salva na planilha (aba pedidos)
+        fetch(API_URL, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify({
+                cliente: nome,
+                telefone: zap,
+                endereco: `${end} - ${bairro}`,
+                produtos: itens,
+                total: total,
+                pagamento: document.getElementById("pagamento").value
+            })
+        });
+
+        // Envia WhatsApp
+        const msg = `*NOVO PEDIDO - ROBS*\n\n*Cliente:* ${nome}\n*Endereço:* ${end}\n*Bairro:* ${bairro}\n*Itens:* ${itens}\n*Total:* R$ ${total}\n*Pagamento:* ${document.getElementById("pagamento").value}`;
+        window.open(`https://wa.me/5579999769581?text=${encodeURIComponent(msg)}`);
+        
+        alert("Pedido enviado!");
+        carrinho = [];
+        renderCarrinho();
+    };
+
+    // RELOGIO E STATUS
+    function atualizarTempo() {
+        const agora = new Date();
+        document.getElementById('relogio').textContent = agora.toLocaleTimeString('pt-BR');
+        const hora = agora.getHours();
+        const status = document.getElementById("statusLoja");
+        if(hora >= 18 && hora < 23) {
+            status.innerHTML = "🟢 ABERTO"; status.className = "aberto";
+        } else {
+            status.innerHTML = "🔴 FECHADO"; status.className = "fechado";
+        }
+    }
+
+    setInterval(atualizarTempo, 1000);
+    document.addEventListener("DOMContentLoaded", carregarProdutos);
 </script>
+
 </body>
 </html>
-
-
 
 
 
