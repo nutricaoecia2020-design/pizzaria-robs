@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeliGestor Pro v6.0 | ROBS DELIVERY - ERP & PDV</title>
+    <title>DeliGestor Pro v6.1 | ROBS DELIVERY - ERP & PDV</title>
     
     <!-- Ícones e Fontes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -238,7 +238,7 @@
             width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto;
         }
 
-        /* CONFIGURAÇÃO DE IMPRESSÃO - CORREÇÃO DA IMAGEM image_2ad1f8.png */
+        /* CONFIGURAÇÃO DE IMPRESSÃO */
         #cupom-fiscal, #relatorio-imprimir { 
             display: none; 
             font-family: 'Courier New', Courier, monospace; 
@@ -261,6 +261,21 @@
             #relatorio-imprimir h2, #relatorio-imprimir h3 { margin-bottom: 10px; }
             #relatorio-imprimir div { margin-bottom: 5px; }
         }
+
+        /* Agenda */
+        .agenda-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .compromisso-card {
+            background: white;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
     </style>
 </head>
 <body>
@@ -268,11 +283,13 @@
 <nav>
     <div class="logo-area">
         <h2>ROBS DELIVERY</h2>
-        <small style="color: var(--text-dim);">Sistema Integrado v6.0</small>
+        <small style="color: var(--text-dim);">Sistema Integrado v6.1</small>
     </div>
     <div class="nav-item active" onclick="mudarTab('pdv')"><i class="fas fa-cash-register"></i> Frente de Caixa</div>
     <div class="nav-item" onclick="mudarTab('receitas')"><i class="fas fa-utensils"></i> Receitas/Produção</div>
     <div class="nav-item" onclick="mudarTab('contabil')"><i class="fas fa-calculator"></i> Gestão Contábil</div>
+    <div class="nav-item" onclick="mudarTab('clientes')"><i class="fas fa-users"></i> Cadastro Clientes</div>
+    <div class="nav-item" onclick="mudarTab('agenda')"><i class="fas fa-calendar-alt"></i> Agenda</div>
     <div class="nav-item" onclick="mudarTab('estoque')"><i class="fas fa-boxes"></i> Estoque Avançado</div>
     <div class="nav-item" onclick="mudarTab('caixa')"><i class="fas fa-chart-line"></i> Relatório de Vendas</div>
     
@@ -385,7 +402,7 @@
         </div>
     </div>
 
-    <!-- ABA GESTÃO CONTÁBIL (ERP) -->
+    <!-- ABA GESTÃO CONTÁBIL -->
     <div id="contabil" class="section">
         <h1>Gestão Empresarial & Contabilidade</h1>
         <p style="color: var(--text-dim); margin-bottom: 20px;">Controle financeiro centralizado</p>
@@ -424,13 +441,38 @@
         </div>
     </div>
 
-    <!-- ABA ESTOQUE AVANÇADO -->
+    <!-- ABA CADASTRO DE CLIENTES -->
+    <div id="clientes" class="section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h1>Cadastro de Clientes</h1>
+            <button class="btn btn-primary" onclick="abrirModalCliente()"><i class="fas fa-plus"></i> Novo Cliente</button>
+        </div>
+        <div class="glass-card">
+            <table class="pdv-table">
+                <thead>
+                    <tr><th>ID</th><th>Nome</th><th>Telefone</th><th>Email</th><th>Endereço</th><th>Ações</th></tr>
+                </thead>
+                <tbody id="tabela-clientes"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ABA AGENDA -->
+    <div id="agenda" class="section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h1>Agenda de Compromissos</h1>
+            <button class="btn btn-success" onclick="abrirModalCompromisso()"><i class="fas fa-plus"></i> Novo Compromisso</button>
+        </div>
+        <div class="agenda-grid" id="lista-agenda"></div>
+    </div>
+
+    <!-- ABA ESTOQUE -->
     <div id="estoque" class="section">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
             <h1>Controle de Estoque</h1>
             <div style="display: flex; gap: 10px;">
                 <button class="btn btn-warning" onclick="imprimirRelatorio('estoque')"><i class="fas fa-print"></i> Relatório</button>
-                <button class="btn btn-primary" onclick="abrirModalProduto()"><i class="fas fa-plus"></i> Entrada Manual</button>
+                <button class="btn btn-primary" onclick="abrirModalProduto()"><i class="fas fa-plus"></i> Novo Produto</button>
             </div>
         </div>
         <div class="glass-card">
@@ -473,23 +515,72 @@
     </div>
 </main>
 
-<!-- MODAIS DO SISTEMA ERP -->
+<!-- MODAL ERP -->
 <div id="erp-modal" class="modal-overlay">
     <div class="modal-content">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2 id="erp-titulo">Módulo</h2>
             <button class="btn btn-danger" onclick="fecharErp()">X</button>
         </div>
-        <div id="erp-body">
-            <!-- Conteúdo dinâmico via JS -->
-        </div>
+        <div id="erp-body"></div>
         <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px; display: flex; justify-content: flex-end;">
             <button class="btn btn-primary" onclick="imprimirModal()"><i class="fas fa-print"></i> Gerar Relatório</button>
         </div>
     </div>
 </div>
 
-<!-- ELEMENTOS DE IMPRESSÃO (CORRIGIDOS PARA EVITAR SOBREPOSIÇÃO) -->
+<!-- MODAL PRODUTO -->
+<div id="modal-produto" class="modal-overlay">
+    <div class="modal-content">
+        <h2 id="modal-produto-titulo">Novo Produto</h2>
+        <div style="display: grid; gap: 15px; margin-top: 20px;">
+            <input type="text" id="prod-nome" placeholder="Nome do produto">
+            <input type="number" id="prod-preco" placeholder="Preço R$">
+            <input type="number" id="prod-estoque" placeholder="Estoque inicial">
+            <input type="text" id="prod-unidade" placeholder="Unidade (Kg/Un)" value="Un">
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success flex-1" onclick="salvarProduto()">Salvar</button>
+                <button class="btn btn-danger flex-1" onclick="fecharModalProduto()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CLIENTE -->
+<div id="modal-cliente" class="modal-overlay">
+    <div class="modal-content">
+        <h2 id="modal-cliente-titulo">Novo Cliente</h2>
+        <div style="display: grid; gap: 15px; margin-top: 20px;">
+            <input type="text" id="cli-nome" placeholder="Nome completo">
+            <input type="text" id="cli-telefone" placeholder="Telefone/WhatsApp">
+            <input type="email" id="cli-email" placeholder="Email">
+            <input type="text" id="cli-endereco" placeholder="Endereço completo">
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success flex-1" onclick="salvarCliente()">Salvar</button>
+                <button class="btn btn-danger flex-1" onclick="fecharModalCliente()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL COMPROMISSO -->
+<div id="modal-compromisso" class="modal-overlay">
+    <div class="modal-content">
+        <h2>Novo Compromisso</h2>
+        <div style="display: grid; gap: 15px; margin-top: 20px;">
+            <input type="text" id="comp-titulo" placeholder="Título do compromisso">
+            <input type="text" id="comp-cliente" placeholder="Cliente/Encarregado">
+            <input type="datetime-local" id="comp-data">
+            <textarea id="comp-descricao" placeholder="Descrição" rows="3"></textarea>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success flex-1" onclick="salvarCompromisso()">Salvar</button>
+                <button class="btn btn-danger flex-1" onclick="fecharModalCompromisso()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ELEMENTOS DE IMPRESSÃO -->
 <div id="cupom-fiscal"></div>
 <div id="relatorio-imprimir"></div>
 
@@ -500,6 +591,8 @@
         {id: 102, nome: "Queijo Muçarela", preco: 48.00, unidade: "Kg", estoque: 10},
         {id: 103, nome: "Bolo de Rolo", preco: 25.00, unidade: "Un", estoque: 15}
     ];
+    let clientes = JSON.parse(localStorage.getItem('robs_clientes')) || [];
+    let compromissos = JSON.parse(localStorage.getItem('robs_compromissos')) || [];
     let vendas = JSON.parse(localStorage.getItem('robs_vendas')) || [];
     let contasPagar = JSON.parse(localStorage.getItem('robs_pagar')) || [];
     let contasReceber = JSON.parse(localStorage.getItem('robs_receber')) || [];
@@ -513,9 +606,12 @@
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+        event.target.closest('.nav-item').classList.add('active');
         
         if(id === 'estoque') renderizarEstoque();
         if(id === 'caixa') renderizarRelatorios();
+        if(id === 'clientes') renderizarClientes();
+        if(id === 'agenda') renderizarAgenda();
         if(id === 'receitas') calcularReceita();
     }
 
@@ -530,6 +626,7 @@
             carrinho.push({ ...produto, qtd, subtotal: produto.preco * qtd, tempId: Date.now() });
             renderCarrinho();
             document.getElementById('busca-produto').value = '';
+            document.getElementById('qtd-produto').value = 1;
             document.getElementById('busca-produto').focus();
         } else { alert("Produto não encontrado!"); }
     }
@@ -540,7 +637,7 @@
         let total = 0;
         carrinho.forEach(i => {
             total += i.subtotal;
-            corpo.innerHTML += `<tr><td>${i.nome}</td><td>${i.qtd}</td><td>R$ ${i.preco.toFixed(2)}</td><td>R$ ${i.subtotal.toFixed(2)}</td><td><i class="fas fa-trash" onclick="removerItem(${i.tempId})"></i></td></tr>`;
+            corpo.innerHTML += `<tr><td>${i.nome}</td><td>${i.qtd}</td><td>R$ ${i.preco.toFixed(2)}</td><td>R$ ${i.subtotal.toFixed(2)}</td><td><i class="fas fa-trash text-danger" style="cursor:pointer;" onclick="removerItem(${i.tempId})"></i></td></tr>`;
         });
         document.getElementById('total-venda').innerText = `R$ ${total.toFixed(2)}`;
     }
@@ -571,7 +668,6 @@
         localStorage.setItem('robs_vendas', JSON.stringify(vendas));
         localStorage.setItem('robs_produtos', JSON.stringify(produtos));
 
-        // Limpa áreas de impressão antes de gerar
         document.getElementById('relatorio-imprimir').innerHTML = "";
         
         let cupomHtml = `
@@ -579,7 +675,7 @@
                 <strong style="font-size: 18px;">ROBS DELIVERY</strong><br>
                 Bairro Luzia, Aracaju - SE<br>
                 <hr style="border-top: 1px dashed #000; margin: 10px 0;">
-                PEDIDO DE VENDA
+                PEDIDO DE VENDA #${novaVenda.id}
             </center>
             <div style="margin: 10px 0;">
                 ${carrinho.map(i => `<div>${i.nome} x${i.qtd} = R$ ${i.subtotal.toFixed(2)}</div>`).join('')}
@@ -594,25 +690,11 @@
         
         carrinho = [];
         renderCarrinho();
+        calcularTroco();
         alert("Venda Finalizada!");
     }
 
-    function gerarOrcamento() {
-        if(carrinho.length === 0) return alert("Adicione itens para gerar orçamento!");
-        const total = document.getElementById('total-venda').innerText;
-        
-        // Limpa cupom para não sobrepor no PDF (conforme image_2ad1f8.png)
-        document.getElementById('cupom-fiscal').innerHTML = "";
-
-        let html = `<h2>ORÇAMENTO - ROBS DELIVERY</h2><hr style="margin:10px 0;">`;
-        html += carrinho.map(i => `<div style="margin:5px 0;">${i.nome} x ${i.qtd} - R$ ${i.subtotal.toFixed(2)}</div>`).join('');
-        html += `<hr style="margin:10px 0;"><h3>Total: ${total}</h3><p style="font-size:12px; margin-top:10px;">Válido por 5 dias.</p>`;
-        
-        document.getElementById('relatorio-imprimir').innerHTML = html;
-        window.print();
-    }
-
-    // --- MÓDULOS ERP ---
+    // --- MÓDULOS ERP (COM DELETE CORRIGIDO) ---
     function abrirErp(modulo) {
         const modal = document.getElementById('erp-modal');
         const body = document.getElementById('erp-body');
@@ -629,34 +711,33 @@
         }
 
         if(modulo === 'contas_pagar') {
-            titulo.innerText = "Contas a Pagar (Planejamento)";
+            titulo.innerText = "Contas a Pagar";
             body.innerHTML = `
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr 150px; gap:10px; margin-bottom:20px;">
                     <input type="text" id="pagar-desc" placeholder="Fornecedor/Conta">
                     <input type="number" id="pagar-valor" placeholder="Valor R$">
                     <input type="date" id="pagar-data">
-                    <button class="btn btn-primary" onclick="addFinanceiro('pagar')">Lançar Conta</button>
+                    <button class="btn btn-primary" onclick="addFinanceiro('pagar')">Lançar</button>
                 </div>
                 <table class="pdv-table">
-                    <thead><tr><th>Descrição</th><th>Vencimento</th><th>Valor</th></tr></thead>
-                    <tbody>${contasPagar.map(c => `<tr><td>${c.desc}</td><td>${c.data}</td><td>R$ ${parseFloat(c.valor).toFixed(2)}</td></tr>`).join('')}</tbody>
+                    <thead><tr><th>ID</th><th>Descrição</th><th>Vencimento</th><th>Valor</th><th>Ações</th></tr></thead>
+                    <tbody>${contasPagar.map(c => `<tr><td>#${c.id || 'N/A'}</td><td>${c.desc}</td><td>${c.data}</td><td>R$ ${parseFloat(c.valor).toFixed(2)}</td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:10px;" onclick="deletarFinanceiro('pagar', ${c.id || 'null'})">X</button></td></tr>`).join('')}</tbody>
                 </table>
             `;
         }
 
-        // CORREÇÃO DO MÓDULO CONTAS A RECEBER (image_2acdfa.png)
         if(modulo === 'contas_receber') {
-            titulo.innerText = "Contas a Receber (Previsão)";
+            titulo.innerText = "Contas a Receber";
             body.innerHTML = `
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr 150px; gap:10px; margin-bottom:20px;">
                     <input type="text" id="receber-desc" placeholder="Cliente/Origem">
                     <input type="number" id="receber-valor" placeholder="Valor R$">
                     <input type="date" id="receber-data">
-                    <button class="btn btn-success" onclick="addFinanceiro('receber')">Lançar Recebível</button>
+                    <button class="btn btn-success" onclick="addFinanceiro('receber')">Lançar</button>
                 </div>
                 <table class="pdv-table">
-                    <thead><tr><th>Descrição</th><th>Previsão</th><th>Valor</th></tr></thead>
-                    <tbody>${contasReceber.map(c => `<tr><td>${c.desc}</td><td>${c.data}</td><td>R$ ${parseFloat(c.valor).toFixed(2)}</td></tr>`).join('')}</tbody>
+                    <thead><tr><th>ID</th><th>Descrição</th><th>Previsão</th><th>Valor</th><th>Ações</th></tr></thead>
+                    <tbody>${contasReceber.map(c => `<tr><td>#${c.id || 'N/A'}</td><td>${c.desc}</td><td>${c.data}</td><td>R$ ${parseFloat(c.valor).toFixed(2)}</td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:10px;" onclick="deletarFinanceiro('receber', ${c.id || 'null'})">X</button></td></tr>`).join('')}</tbody>
                 </table>
             `;
         }
@@ -704,17 +785,251 @@
         const valor = document.getElementById(tipo + '-valor').value;
         const data = document.getElementById(tipo + '-data').value;
         
-        if(desc && valor) {
+        if(desc && valor && data) {
+            const lancamento = {id: Date.now(), desc, valor: parseFloat(valor), data};
             if(tipo === 'pagar') {
-                contasPagar.push({desc, valor, data});
+                contasPagar.push(lancamento);
                 localStorage.setItem('robs_pagar', JSON.stringify(contasPagar));
             } else {
-                contasReceber.push({desc, valor, data});
+                contasReceber.push(lancamento);
+                localStorage.setItem('robs_receber', JSON.stringify(contasReceber));
+            }
+            abrirErp('contas_' + tipo);
+            document.getElementById(tipo + '-desc').value = '';
+            document.getElementById(tipo + '-valor').value = '';
+            document.getElementById(tipo + '-data').value = '';
+        } else {
+            alert('Preencha todos os campos!');
+        }
+    }
+
+    function deletarFinanceiro(tipo, id) {
+        if(confirm('Confirmar exclusão?')) {
+            if(tipo === 'pagar') {
+                contasPagar = contasPagar.filter(c => c.id != id);
+                localStorage.setItem('robs_pagar', JSON.stringify(contasPagar));
+            } else {
+                contasReceber = contasReceber.filter(c => c.id != id);
                 localStorage.setItem('robs_receber', JSON.stringify(contasReceber));
             }
             abrirErp('contas_' + tipo);
         }
     }
+
+    // --- ESTOQUE (CORRIGIDO) ---
+    function abrirModalProduto(editId = null) {
+        const modal = document.getElementById('modal-produto');
+        const titulo = document.getElementById('modal-produto-titulo');
+        
+        if(editId) {
+            const prod = produtos.find(p => p.id === editId);
+            if(prod) {
+                titulo.innerText = 'Editar Produto';
+                document.getElementById('prod-nome').value = prod.nome;
+                document.getElementById('prod-preco').value = prod.preco;
+                document.getElementById('prod-estoque').value = prod.estoque;
+                document.getElementById('prod-unidade').value = prod.unidade;
+            }
+        } else {
+            titulo.innerText = 'Novo Produto';
+            document.getElementById('prod-nome').value = '';
+            document.getElementById('prod-preco').value = '';
+            document.getElementById('prod-estoque').value = '';
+            document.getElementById('prod-unidade').value = 'Un';
+        }
+        modal.style.display = 'flex';
+    }
+
+    function salvarProduto() {
+        const nome = document.getElementById('prod-nome').value;
+        const preco = parseFloat(document.getElementById('prod-preco').value);
+        const estoque = parseFloat(document.getElementById('prod-estoque').value);
+        const unidade = document.getElementById('prod-unidade').value;
+        
+        if(nome && preco >= 0 && estoque >= 0) {
+            const novoId = produtos.length ? Math.max(...produtos.map(p => p.id)) + 1 : 101;
+            const produto = {id: novoId, nome, preco, estoque, unidade};
+            produtos.push(produto);
+            localStorage.setItem('robs_produtos', JSON.stringify(produtos));
+            fecharModalProduto();
+            renderizarEstoque();
+            alert('Produto salvo!');
+        } else {
+            alert('Preencha todos os campos corretamente!');
+        }
+    }
+
+    function excluirProd(id) {
+        if(confirm('Excluir este produto?')) {
+            produtos = produtos.filter(p => p.id !== id);
+            localStorage.setItem('robs_produtos', JSON.stringify(produtos));
+            renderizarEstoque();
+        }
+    }
+
+    function renderizarEstoque() {
+        const tabela = document.getElementById('tabela-estoque');
+        tabela.innerHTML = produtos.map(p => {
+            const status = p.estoque < 5 ? '<span style="color:red; font-weight:bold;">Crítico</span>' : '<span style="color:green">Ok</span>';
+            return `<tr>
+                <td>#${p.id}</td>
+                <td>${p.nome}</td>
+                <td>R$ ${p.preco.toFixed(2)}</td>
+                <td>${p.estoque} ${p.unidade}</td>
+                <td>${status}</td>
+                <td>
+                    <button class="btn btn-primary" style="padding:4px 8px; font-size:10px; margin-right:5px;" onclick="abrirModalProduto(${p.id})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-danger" style="padding:4px 8px; font-size:10px;" onclick="excluirProd(${p.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    // --- CLIENTES ---
+    function abrirModalCliente(editId = null) {
+        const modal = document.getElementById('modal-cliente');
+        const titulo = document.getElementById('modal-cliente-titulo');
+        
+        if(editId) {
+            const cli = clientes.find(c => c.id === editId);
+            if(cli) {
+                titulo.innerText = 'Editar Cliente';
+                document.getElementById('cli-nome').value = cli.nome;
+                document.getElementById('cli-telefone').value = cli.telefone;
+                document.getElementById('cli-email').value = cli.email;
+                document.getElementById('cli-endereco').value = cli.endereco;
+            }
+        } else {
+            titulo.innerText = 'Novo Cliente';
+            document.getElementById('cli-nome').value = '';
+            document.getElementById('cli-telefone').value = '';
+            document.getElementById('cli-email').value = '';
+            document.getElementById('cli-endereco').value = '';
+        }
+        modal.style.display = 'flex';
+    }
+
+    function salvarCliente() {
+        const nome = document.getElementById('cli-nome').value;
+        const telefone = document.getElementById('cli-telefone').value;
+        const email = document.getElementById('cli-email').value;
+        const endereco = document.getElementById('cli-endereco').value;
+        
+        if(nome && telefone) {
+            const novoId = clientes.length ? Math.max(...clientes.map(c => c.id)) + 1 : 1;
+            const cliente = {id: novoId, nome, telefone, email, endereco};
+            clientes.push(cliente);
+            localStorage.setItem('robs_clientes', JSON.stringify(clientes));
+            fecharModalCliente();
+            renderizarClientes();
+            alert('Cliente salvo!');
+        } else {
+            alert('Nome e telefone são obrigatórios!');
+        }
+    }
+
+    function renderizarClientes() {
+        const tabela = document.getElementById('tabela-clientes');
+        tabela.innerHTML = clientes.map(c => {
+            return `<tr>
+                <td>#${c.id}</td>
+                <td>${c.nome}</td>
+                <td>${c.telefone}</td>
+                <td>${c.email || '-'}</td>
+                <td>${c.endereco || '-'}</td>
+                <td>
+                    <button class="btn btn-primary" style="padding:4px 8px; font-size:10px;" onclick="abrirModalCliente(${c.id})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    // --- AGENDA ---
+    function abrirModalCompromisso(editId = null) {
+        const modal = document.getElementById('modal-compromisso');
+        if(editId) {
+            const comp = compromissos.find(c => c.id === editId);
+            if(comp) {
+                document.getElementById('comp-titulo').value = comp.titulo;
+                document.getElementById('comp-cliente').value = comp.cliente;
+                document.getElementById('comp-data').value = comp.data;
+                document.getElementById('comp-descricao').value = comp.descricao;
+            }
+        } else {
+            document.getElementById('comp-titulo').value = '';
+            document.getElementById('comp-cliente').value = '';
+            document.getElementById('comp-data').value = '';
+            document.getElementById('comp-descricao').value = '';
+        }
+        modal.style.display = 'flex';
+    }
+
+    function salvarCompromisso() {
+        const titulo = document.getElementById('comp-titulo').value;
+        const cliente = document.getElementById('comp-cliente').value;
+        const data = document.getElementById('comp-data').value;
+        const descricao = document.getElementById('comp-descricao').value;
+        
+        if(titulo && data) {
+            const novoId = compromissos.length ? Math.max(...compromissos.map(c => c.id)) + 1 : 1;
+            const compromisso = {id: novoId, titulo, cliente, data, descricao};
+            compromissos.push(compromisso);
+            localStorage.setItem('robs_compromissos', JSON.stringify(compromissos));
+            fecharModalCompromisso();
+            renderizarAgenda();
+            alert('Compromisso salvo!');
+        } else {
+            alert('Título e data são obrigatórios!');
+        }
+    }
+
+    function renderizarAgenda() {
+        const lista = document.getElementById('lista-agenda');
+        lista.innerHTML = compromissos.map(c => {
+            const data = new Date(c.data);
+            const hoje = new Date();
+            const status = data < hoje ? 'Vencido' : 'Pendente';
+            const cor = data < hoje ? 'var(--danger)' : 'var(--primary)';
+            return `
+                <div class="compromisso-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h4 style="color: ${cor}; margin-bottom: 5px;">${c.titulo}</h4>
+                        <span style="background: ${cor}20; color: ${cor}; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: bold;">${status}</span>
+                    </div>
+                    <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 10px;">${c.cliente}</p>
+                    <small style="color: var(--text-dim);">${data.toLocaleString()}</small>
+                    <div style="margin-top: 10px; display: flex; gap: 5px;">
+                        <button class="btn btn-primary" style="padding: 4px 8px; font-size: 11px;" onclick="abrirModalCompromisso(${c.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger" style="padding: 4px 8px; font-size: 11px;" onclick="excluirCompromisso(${c.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function excluirCompromisso(id) {
+        if(confirm('Excluir compromisso?')) {
+            compromissos = compromissos.filter(c => c.id !== id);
+            localStorage.setItem('robs_compromissos', JSON.stringify(compromissos));
+            renderizarAgenda();
+        }
+    }
+
+    // --- UTILITÁRIOS ---
+    function fecharModalProduto() { document.getElementById('modal-produto').style.display = 'none'; }
+    function fecharModalCliente() { document.getElementById('modal-cliente').style.display = 'none'; }
+    function fecharModalCompromisso() { document.getElementById('modal-compromisso').style.display = 'none'; }
+    function fecharErp() { document.getElementById('erp-modal').style.display = 'none'; }
 
     function salvarEmpresa() {
         empresa.razao = document.getElementById('emp-razao').value;
@@ -723,24 +1038,13 @@
         alert("Dados salvos!");
     }
 
-    function fecharErp() { document.getElementById('erp-modal').style.display = 'none'; }
-
-    // --- ESTOQUE & RELATÓRIOS ---
-    function renderizarEstoque() {
-        const tabela = document.getElementById('tabela-estoque');
-        tabela.innerHTML = produtos.map(p => {
-            const status = p.estoque < 5 ? '<span style="color:red; font-weight:bold;">Crítico</span>' : '<span style="color:green">Ok</span>';
-            return `<tr><td>#${p.id}</td><td>${p.nome}</td><td>R$ ${p.preco.toFixed(2)}</td><td>${p.estoque} ${p.unidade}</td><td>${status}</td><td><button class="btn btn-danger" style="padding:5px 10px; font-size:11px;" onclick="excluirProd(${p.id})">Remover</button></td></tr>`;
-        }).join('');
-    }
-
     function renderizarRelatorios() {
         const corpo = document.getElementById('tabela-vendas-dia');
         let total = 0, pix = 0, cartao = 0;
         corpo.innerHTML = vendas.slice().reverse().map(v => {
             total += v.total;
             if(v.metodo === 'Pix') pix += v.total;
-            if(v.metodo.includes('Cartão') || v.metodo.includes('Crédito') || v.metodo.includes('Débito')) cartao += v.total;
+            if(v.metodo.includes('Cartão') || v.metodo.includes('Débito') || v.metodo.includes('Crédito')) cartao += v.total;
             return `<tr><td>${v.hora}</td><td>${v.metodo}</td><td>R$ ${v.total.toFixed(2)}</td><td><button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="estorno(${v.id})">Estorno</button></td></tr>`;
         }).join('');
         document.getElementById('rep-total').innerText = `R$ ${total.toFixed(2)}`;
@@ -749,8 +1053,16 @@
         document.getElementById('rep-qtd').innerText = vendas.length;
     }
 
+    function estorno(id) {
+        if(confirm('Estornar venda?')) {
+            vendas = vendas.filter(v => v.id !== id);
+            localStorage.setItem('robs_vendas', JSON.stringify(vendas));
+            renderizarRelatorios();
+        }
+    }
+
     function imprimirRelatorio(tipo) {
-        document.getElementById('cupom-fiscal').innerHTML = ""; // Garante limpeza
+        document.getElementById('cupom-fiscal').innerHTML = "";
         let html = `<h1>RELATÓRIO DE ${tipo.toUpperCase()}</h1><hr style="margin:15px 0;">`;
         if(tipo === 'estoque') {
             html += produtos.map(p => `<div style="margin-bottom:8px;">${p.nome} - Estoque: <b>${p.estoque} ${p.unidade}</b></div>`).join('');
@@ -764,12 +1076,25 @@
     function imprimirModal() {
         const content = document.getElementById('erp-body').innerHTML;
         const titulo = document.getElementById('erp-titulo').innerText;
-        document.getElementById('cupom-fiscal').innerHTML = ""; // Garante limpeza
+        document.getElementById('cupom-fiscal').innerHTML = "";
         document.getElementById('relatorio-imprimir').innerHTML = `<h2>${titulo}</h2><hr style="margin:15px 0;">${content}`;
         window.print();
     }
 
-    // --- UTILITÁRIOS ---
+    function gerarOrcamento() {
+        if(carrinho.length === 0) return alert("Adicione itens para gerar orçamento!");
+        const total = document.getElementById('total-venda').innerText;
+        
+        document.getElementById('cupom-fiscal').innerHTML = "";
+
+        let html = `<h2>ORÇAMENTO - ROBS DELIVERY</h2><hr style="margin:10px 0;">`;
+        html += carrinho.map(i => `<div style="margin:5px 0;">${i.nome} x ${i.qtd} - R$ ${i.subtotal.toFixed(2)}</div>`).join('');
+        html += `<hr style="margin:10px 0;"><h3>Total: ${total}</h3><p style="font-size:12px; margin-top:10px;">Válido por 5 dias.</p>`;
+        
+        document.getElementById('relatorio-imprimir').innerHTML = html;
+        window.print();
+    }
+
     function calcularReceita() {
         const qtdFormas = parseFloat(document.getElementById('input-formas').value) || 0;
         const fator = qtdFormas / BASE_RECEITA.formas;
@@ -793,7 +1118,9 @@
         document.getElementById('valor-troco').innerText = `R$ ${Math.max(0, recebido - total).toFixed(2)}`;
     }
 
+    // Inicialização
     setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+    document.getElementById('busca-produto').focus();
 </script>
 
 </body>
