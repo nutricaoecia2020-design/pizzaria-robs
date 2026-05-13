@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Gerador ABNT - Margem Inferior Ajustada</title>
+    <title>Gerador ABNT - Roberto Carlos Silva Vasconcelos</title>
     <style>
         :root { --sidebar-width: 450px; }
         * { box-sizing: border-box; }
@@ -28,13 +28,10 @@
         
         .folha {
             width: 210mm; min-height: 297mm; background: white;
-            /* AJUSTE DE MARGEM: 3cm superior/esquerda, 2cm direita, 4cm inferior para maior recuo */
-            padding: 3cm 2cm 4cm 3cm; 
+            padding: 3cm 2cm 2cm 3cm; 
             font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; color: black;
             text-align: justify; position: relative; margin-bottom: 30px; box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            overflow: hidden; display: flex; flex-direction: column;
         }
 
         .center { text-align: center; }
@@ -44,9 +41,7 @@
         .indent { text-indent: 1.5cm; }
         .page-num { position: absolute; top: 2cm; right: 2cm; font-size: 10pt; }
         
-        /* Tópicos à esquerda */
-        .topico-esquerda { text-align: left; font-weight: bold; text-transform: uppercase; margin-bottom: 1em; }
-
+        .topico-esquerda { text-align: left; font-weight: bold; text-transform: uppercase; margin-bottom: 1em; margin-top: 1em; }
         .spacer-8 { height: 8em; } 
         .spacer-23 { height: 23em; }
 
@@ -64,69 +59,73 @@
     <div id="editor">
         <div class="section-box">
             <h2>1. Capa e Identificação</h2>
-            <label>Instituição / Curso</label>
-            <input type="text" id="in-inst" oninput="sync()" value="CENTRO UNIVERSITÁRIO ESTÁCIO DE SERGIPE">
-            <input type="text" id="in-curso" oninput="sync()" value="DIREITO">
             <label>Nome do Aluno</label>
-            <input type="text" id="in-aluno" oninput="sync()" placeholder="Nome completo">
+            <input type="text" id="in-aluno" oninput="sync()" value="ROBERTO CARLOS SILVA VASCONCELOS">
             <label>Título do Artigo</label>
-            <input type="text" id="in-titulo" oninput="sync()" placeholder="Título do trabalho">
+            <textarea id="in-titulo" oninput="sync()">AS MEDIDAS PROTETIVAS DE URGÊNCIA E SUA EFETIVIDADE NA PREVENÇÃO DO FEMINICÍDIO</textarea>
             <label>Cidade / Ano</label>
-            <input type="text" id="in-cidade" oninput="sync()" value="ARACAJU">
+            <input type="text" id="in-cidade" oninput="sync()" value="ARACAJU – SE">
             <input type="text" id="in-ano" oninput="sync()" value="2026">
         </div>
 
         <div class="section-box">
-            <h2>2. Elementos Textuais</h2>
-            <label>Sumário (Espaçamento Duplo)</label>
-            <textarea id="in-sumario" rows="4" oninput="sync()">INTRODUÇÃO
-1. TÍTULO DO TÓPICO
-2. TÍTULO DO TÓPICO
-3. DESENVOLVIMENTO
-CONCLUSÃO
+            <h2>2. Elementos Pré-Textuais</h2>
+            <label>Resumo</label>
+            <textarea id="in-resumo" rows="4" oninput="sync()">O presente Trabalho de Conclusão de Curso analisa a efetividade das medidas protetivas de urgência previstas na Lei nº 11.340/2006, conhecida como Lei Maria da Penha, como instrumento de prevenção ao feminicídio no Brasil...</textarea>
+            <label>Sumário</label>
+            <textarea id="in-sumario" rows="6" oninput="sync()">1 INTRODUÇÃO
+1.1 JUSTIFICATIVA
+2 O CONTEXTO HISTÓRICO E A LEI MARIA DA PENHA
+3 AS MEDIDAS PROTETIVAS DE URGÊNCIA
+4 EFETIVIDADE E DESAFIOS
+5 CONCLUSÃO
 REFERÊNCIAS</textarea>
-            <label>Introdução</label>
-            <textarea id="in-intro" rows="3" oninput="sync()"></textarea>
-            <label>3. Desenvolvimento (Texto Completo)</label>
-            <textarea id="in-desenv" rows="8" oninput="sync()"></textarea>
         </div>
 
-        <button onclick="window.print()">GERAR PDF COMPLETO</button>
+        <div class="section-box">
+            <h2>3. Elementos Textuais</h2>
+            <label>Introdução</label>
+            <textarea id="in-intro" rows="6" oninput="sync()">A violência doméstica e familiar contra a mulher não é um fenômeno moderno, mas sim uma herança de uma estrutura social patriarcal que, durante séculos, legitimou a subordinação feminina...</textarea>
+            <label>Desenvolvimento (Tópico 2)</label>
+            <textarea id="in-desenv" rows="6" oninput="sync()">A violência contra a mulher possui raízes históricas profundas na estrutura patriarcal da sociedade brasileira. Durante muitos anos, a mulher foi considerada juridicamente subordinada ao homem...</textarea>
+        </div>
+
+        <button onclick="window.print()">GERAR PDF DO TCC</button>
     </div>
 
     <div id="preview-container">
         <div class="folha">
             <div class="center bold uppercase t14">
-                <div id="out-inst">NOME DA INSTITUIÇÃO</div>
-                <div id="out-curso">NOME DO CURSO</div>
+                CENTRO UNIVERSITÁRIO ESTÁCIO DE SERGIPE<br>CURSO DE DIREITO
             </div>
             <div class="spacer-8"></div>
-            <div class="center bold uppercase t14" id="out-aluno">NOME DO ALUNO</div>
+            <div class="center bold uppercase t14" id="out-aluno"></div>
             <div class="spacer-8"></div>
-            <div class="center t14" id="out-titulo">Título do artigo científico</div>
+            <div class="center bold uppercase t14" id="out-titulo"></div>
             <div class="spacer-23"></div>
             <div class="center bold uppercase">
-                <span id="out-cidade">ARACAJU</span>, <span id="out-ano">2026</span>
+                <span id="out-cidade"></span><br><span id="out-ano"></span>
             </div>
         </div>
 
         <div class="folha">
             <div class="page-num">2</div>
-            <div class="center bold uppercase" id="out-titulo-rep" style="font-size: 12pt;">TÍTULO DO ARTIGO</div>
-            <div class="center" id="out-aluno-rep">Nome do Aluno</div>
+            <div class="topico-esquerda">RESUMO</div>
+            <div id="out-resumo" style="white-space: pre-line; margin-bottom: 2em;"></div>
             
-            <br><br>
             <div class="topico-esquerda">SUMÁRIO</div>
-            <div id="out-sumario" style="white-space: pre-line; line-height: 2.0; margin-top: 10px;"></div>
-
-            <br><br>
-            <div class="topico-esquerda">INTRODUÇÃO</div>
-            <div id="out-intro" class="indent" style="white-space: pre-line;"></div>
+            <div id="out-sumario" style="white-space: pre-line; line-height: 1.8;"></div>
         </div>
 
         <div class="folha">
             <div class="page-num">3</div>
-            <div class="topico-esquerda">3. DESENVOLVIMENTO</div>
+            <div class="topico-esquerda">1 INTRODUÇÃO</div>
+            <div id="out-intro" class="indent" style="white-space: pre-line;"></div>
+        </div>
+
+        <div class="folha">
+            <div class="page-num">4</div>
+            <div class="topico-esquerda">2 O CONTEXTO HISTÓRICO</div>
             <div id="out-desenv" class="indent" style="white-space: pre-line;"></div>
         </div>
     </div>
@@ -134,12 +133,11 @@ REFERÊNCIAS</textarea>
     <script>
         function sync() {
             const fields = {
-                'in-inst': 'out-inst',
-                'in-curso': 'out-curso',
                 'in-aluno': 'out-aluno',
                 'in-titulo': 'out-titulo',
                 'in-cidade': 'out-cidade',
                 'in-ano': 'out-ano',
+                'in-resumo': 'out-resumo',
                 'in-sumario': 'out-sumario',
                 'in-intro': 'out-intro',
                 'in-desenv': 'out-desenv'
@@ -149,17 +147,14 @@ REFERÊNCIAS</textarea>
                 let val = document.getElementById(inId).value;
                 let outElement = document.getElementById(fields[inId]);
                 
-                if (inId === 'in-aluno') {
-                    outElement.innerText = val.toUpperCase() || "NOME DO ALUNO";
-                    document.getElementById('out-aluno-rep').innerText = val;
-                } else if (inId === 'in-titulo') {
-                    outElement.innerText = val || "Título do artigo";
-                    document.getElementById('out-titulo-rep').innerText = val.toUpperCase();
+                if (inId === 'in-aluno' || inId === 'in-titulo') {
+                    outElement.innerText = val.toUpperCase();
                 } else {
-                    outElement.innerText = val || "";
+                    outElement.innerText = val;
                 }
             }
         }
+        // Inicializa os dados
         sync();
     </script>
 </body>
