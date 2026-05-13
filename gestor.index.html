@@ -238,14 +238,28 @@
             width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto;
         }
 
-        /* Impressão Cupom */
-        #cupom-fiscal, #relatorio-imprimir { display: none; font-family: 'Courier New', Courier, monospace; width: 300px; padding: 15px; color: #000; }
+        /* CONFIGURAÇÃO DE IMPRESSÃO - CORREÇÃO DA IMAGEM image_2ad1f8.png */
+        #cupom-fiscal, #relatorio-imprimir { 
+            display: none; 
+            font-family: 'Courier New', Courier, monospace; 
+            width: 100%; 
+            padding: 20px; 
+            color: #000; 
+        }
         
         @media print { 
-            body * { visibility: hidden; } 
-            body::before { display: none; }
-            #cupom-fiscal, #cupom-fiscal *, #relatorio-imprimir, #relatorio-imprimir * { visibility: visible; } 
-            #cupom-fiscal, #relatorio-imprimir { position: absolute; left: 0; top: 0; display: block !important; width: 100%; } 
+            body * { display: none !important; } 
+            #cupom-fiscal, #relatorio-imprimir { 
+                display: block !important; 
+                position: relative;
+                visibility: visible;
+            }
+            #cupom-fiscal *, #relatorio-imprimir * { 
+                display: block !important; 
+                visibility: visible; 
+            }
+            #relatorio-imprimir h2, #relatorio-imprimir h3 { margin-bottom: 10px; }
+            #relatorio-imprimir div { margin-bottom: 5px; }
         }
     </style>
 </head>
@@ -475,19 +489,8 @@
     </div>
 </div>
 
-<!-- CUPOM E RELATÓRIOS PARA IMPRESSÃO -->
-<div id="cupom-fiscal">
-    <center>
-        <strong style="font-size: 18px;">ROBS DELIVERY</strong><br>
-        Bairro Luzia, Aracaju - SE<br>
-        <hr style="border-top: 1px dashed #000;">
-        PEDIDO DE VENDA
-    </center>
-    <div id="cupom-lista" style="margin: 10px 0;"></div>
-    <hr style="border-top: 1px dashed #000;">
-    <div id="cupom-total"></div>
-</div>
-
+<!-- ELEMENTOS DE IMPRESSÃO (CORRIGIDOS PARA EVITAR SOBREPOSIÇÃO) -->
+<div id="cupom-fiscal"></div>
 <div id="relatorio-imprimir"></div>
 
 <script>
@@ -551,7 +554,6 @@
         const total = parseFloat(document.getElementById('total-venda').innerText.replace('R$ ', ''));
         if(carrinho.length === 0) return alert("Carrinho vazio!");
 
-        // Baixa automática de estoque
         carrinho.forEach(item => {
             let prod = produtos.find(p => p.id === item.id);
             if(prod) prod.estoque -= item.qtd;
@@ -569,21 +571,43 @@
         localStorage.setItem('robs_vendas', JSON.stringify(vendas));
         localStorage.setItem('robs_produtos', JSON.stringify(produtos));
 
-        // Cupom
-        document.getElementById('cupom-lista').innerHTML = carrinho.map(i => `<div>${i.nome} x${i.qtd} = R$ ${i.subtotal.toFixed(2)}</div>`).join('');
-        document.getElementById('cupom-total').innerHTML = `TOTAL: R$ ${total.toFixed(2)}<br>PAGTO: ${novaVenda.metodo}`;
+        // Limpa áreas de impressão antes de gerar
+        document.getElementById('relatorio-imprimir').innerHTML = "";
         
+        let cupomHtml = `
+            <center>
+                <strong style="font-size: 18px;">ROBS DELIVERY</strong><br>
+                Bairro Luzia, Aracaju - SE<br>
+                <hr style="border-top: 1px dashed #000; margin: 10px 0;">
+                PEDIDO DE VENDA
+            </center>
+            <div style="margin: 10px 0;">
+                ${carrinho.map(i => `<div>${i.nome} x${i.qtd} = R$ ${i.subtotal.toFixed(2)}</div>`).join('')}
+            </div>
+            <hr style="border-top: 1px dashed #000; margin: 10px 0;">
+            <b>TOTAL: R$ ${total.toFixed(2)}</b><br>
+            PAGTO: ${novaVenda.metodo}
+        `;
+        
+        document.getElementById('cupom-fiscal').innerHTML = cupomHtml;
         window.print();
+        
         carrinho = [];
         renderCarrinho();
-        alert("Venda Finalizada com Baixa de Estoque!");
+        alert("Venda Finalizada!");
     }
 
     function gerarOrcamento() {
+        if(carrinho.length === 0) return alert("Adicione itens para gerar orçamento!");
         const total = document.getElementById('total-venda').innerText;
-        let html = `<h2>ORÇAMENTO - ROBS DELIVERY</h2><hr>`;
-        html += carrinho.map(i => `<div>${i.nome} x ${i.qtd} - R$ ${i.subtotal.toFixed(2)}</div>`).join('');
-        html += `<hr><h3>Total: ${total}</h3><p>Válido por 5 dias.</p>`;
+        
+        // Limpa cupom para não sobrepor no PDF (conforme image_2ad1f8.png)
+        document.getElementById('cupom-fiscal').innerHTML = "";
+
+        let html = `<h2>ORÇAMENTO - ROBS DELIVERY</h2><hr style="margin:10px 0;">`;
+        html += carrinho.map(i => `<div style="margin:5px 0;">${i.nome} x ${i.qtd} - R$ ${i.subtotal.toFixed(2)}</div>`).join('');
+        html += `<hr style="margin:10px 0;"><h3>Total: ${total}</h3><p style="font-size:12px; margin-top:10px;">Válido por 5 dias.</p>`;
+        
         document.getElementById('relatorio-imprimir').innerHTML = html;
         window.print();
     }
@@ -599,7 +623,7 @@
             titulo.innerText = "Configurações da Empresa";
             body.innerHTML = `
                 <label>Razão Social</label><input type="text" id="emp-razao" value="${empresa.razao}">
-                <label>CNPJ</label><input type="text" id="emp-cnpj" value="${empresa.cnpj}">
+                <label style="margin-top:10px; display:block;">CNPJ</label><input type="text" id="emp-cnpj" value="${empresa.cnpj}">
                 <button class="btn btn-success" style="margin-top:15px" onclick="salvarEmpresa()">Salvar Dados</button>
             `;
         }
@@ -611,60 +635,84 @@
                     <input type="text" id="pagar-desc" placeholder="Fornecedor/Conta">
                     <input type="number" id="pagar-valor" placeholder="Valor R$">
                     <input type="date" id="pagar-data">
-                    <button class="btn btn-primary" onclick="addPagar()">Lançar Conta</button>
+                    <button class="btn btn-primary" onclick="addFinanceiro('pagar')">Lançar Conta</button>
                 </div>
                 <table class="pdv-table">
                     <thead><tr><th>Descrição</th><th>Vencimento</th><th>Valor</th></tr></thead>
-                    <tbody>${contasPagar.map(c => `<tr><td>${c.desc}</td><td>${c.data}</td><td>R$ ${c.valor}</td></tr>`).join('')}</tbody>
+                    <tbody>${contasPagar.map(c => `<tr><td>${c.desc}</td><td>${c.data}</td><td>R$ ${parseFloat(c.valor).toFixed(2)}</td></tr>`).join('')}</tbody>
+                </table>
+            `;
+        }
+
+        // CORREÇÃO DO MÓDULO CONTAS A RECEBER (image_2acdfa.png)
+        if(modulo === 'contas_receber') {
+            titulo.innerText = "Contas a Receber (Previsão)";
+            body.innerHTML = `
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
+                    <input type="text" id="receber-desc" placeholder="Cliente/Origem">
+                    <input type="number" id="receber-valor" placeholder="Valor R$">
+                    <input type="date" id="receber-data">
+                    <button class="btn btn-success" onclick="addFinanceiro('receber')">Lançar Recebível</button>
+                </div>
+                <table class="pdv-table">
+                    <thead><tr><th>Descrição</th><th>Previsão</th><th>Valor</th></tr></thead>
+                    <tbody>${contasReceber.map(c => `<tr><td>${c.desc}</td><td>${c.data}</td><td>R$ ${parseFloat(c.valor).toFixed(2)}</td></tr>`).join('')}</tbody>
                 </table>
             `;
         }
 
         if(modulo === 'ativo_passivo') {
-            titulo.innerText = "Balanço: Ativos e Passivos";
+            titulo.innerText = "Balanço Patrimonial";
             const totalEstoque = produtos.reduce((acc, p) => acc + (p.preco * p.estoque), 0);
-            const totalReceber = contasReceber.reduce((acc, c) => acc + parseFloat(c.valor), 0);
-            const totalPagar = contasPagar.reduce((acc, c) => acc + parseFloat(c.valor), 0);
+            const totalReceber = contasReceber.reduce((acc, c) => acc + parseFloat(c.valor || 0), 0);
+            const totalPagar = contasPagar.reduce((acc, c) => acc + parseFloat(c.valor || 0), 0);
             
             body.innerHTML = `
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                    <div class="glass-card" style="background:#f0fdf4">
-                        <h4>ATIVOS (O que você tem)</h4>
+                    <div class="glass-card" style="background:#f0fdf4; margin:0;">
+                        <h4 style="color:#15803d">ATIVOS</h4>
                         <p>Estoque: R$ ${totalEstoque.toFixed(2)}</p>
                         <p>Contas a Receber: R$ ${totalReceber.toFixed(2)}</p>
-                        <hr><strong>Total: R$ ${(totalEstoque+totalReceber).toFixed(2)}</strong>
+                        <hr style="margin:10px 0;"><strong>Total: R$ ${(totalEstoque+totalReceber).toFixed(2)}</strong>
                     </div>
-                    <div class="glass-card" style="background:#fef2f2">
-                        <h4>PASSIVOS (O que você deve)</h4>
+                    <div class="glass-card" style="background:#fef2f2; margin:0;">
+                        <h4 style="color:#b91c1c">PASSIVOS</h4>
                         <p>Contas a Pagar: R$ ${totalPagar.toFixed(2)}</p>
-                        <hr><strong>Total: R$ ${totalPagar.toFixed(2)}</strong>
+                        <hr style="margin:10px 0;"><strong>Total: R$ ${totalPagar.toFixed(2)}</strong>
                     </div>
                 </div>
             `;
         }
         
         if(modulo === 'razao_geral') {
-            titulo.innerText = "Razão Geral de Contas";
+            titulo.innerText = "Razão Geral";
             body.innerHTML = `
                 <table class="pdv-table">
                     <thead><tr><th>Data</th><th>Operação</th><th>Tipo</th><th>Valor</th></tr></thead>
                     <tbody>
                         ${vendas.map(v => `<tr><td>${v.hora}</td><td>Venda PDV</td><td>Crédito</td><td style="color:green">+R$ ${v.total.toFixed(2)}</td></tr>`).join('')}
                         ${contasPagar.map(p => `<tr><td>${p.data}</td><td>${p.desc}</td><td>Débito</td><td style="color:red">-R$ ${p.valor}</td></tr>`).join('')}
+                        ${contasReceber.map(r => `<tr><td>${r.data}</td><td>${r.desc}</td><td>Crédito</td><td style="color:green">+R$ ${r.valor}</td></tr>`).join('')}
                     </tbody>
                 </table>
             `;
         }
     }
 
-    function addPagar() {
-        const desc = document.getElementById('pagar-desc').value;
-        const valor = document.getElementById('pagar-valor').value;
-        const data = document.getElementById('pagar-data').value;
+    function addFinanceiro(tipo) {
+        const desc = document.getElementById(tipo + '-desc').value;
+        const valor = document.getElementById(tipo + '-valor').value;
+        const data = document.getElementById(tipo + '-data').value;
+        
         if(desc && valor) {
-            contasPagar.push({desc, valor, data});
-            localStorage.setItem('robs_pagar', JSON.stringify(contasPagar));
-            abrirErp('contas_pagar');
+            if(tipo === 'pagar') {
+                contasPagar.push({desc, valor, data});
+                localStorage.setItem('robs_pagar', JSON.stringify(contasPagar));
+            } else {
+                contasReceber.push({desc, valor, data});
+                localStorage.setItem('robs_receber', JSON.stringify(contasReceber));
+            }
+            abrirErp('contas_' + tipo);
         }
     }
 
@@ -681,8 +729,8 @@
     function renderizarEstoque() {
         const tabela = document.getElementById('tabela-estoque');
         tabela.innerHTML = produtos.map(p => {
-            const status = p.estoque < 5 ? '<span style="color:red">Crítico</span>' : '<span style="color:green">Ok</span>';
-            return `<tr><td>#${p.id}</td><td>${p.nome}</td><td>R$ ${p.preco.toFixed(2)}</td><td>${p.estoque} ${p.unidade}</td><td>${status}</td><td><button onclick="excluirProd(${p.id})">Remover</button></td></tr>`;
+            const status = p.estoque < 5 ? '<span style="color:red; font-weight:bold;">Crítico</span>' : '<span style="color:green">Ok</span>';
+            return `<tr><td>#${p.id}</td><td>${p.nome}</td><td>R$ ${p.preco.toFixed(2)}</td><td>${p.estoque} ${p.unidade}</td><td>${status}</td><td><button class="btn btn-danger" style="padding:5px 10px; font-size:11px;" onclick="excluirProd(${p.id})">Remover</button></td></tr>`;
         }).join('');
     }
 
@@ -693,7 +741,7 @@
             total += v.total;
             if(v.metodo === 'Pix') pix += v.total;
             if(v.metodo.includes('Cartão') || v.metodo.includes('Crédito') || v.metodo.includes('Débito')) cartao += v.total;
-            return `<tr><td>${v.hora}</td><td>${v.metodo}</td><td>R$ ${v.total.toFixed(2)}</td><td><button onclick="estorno(${v.id})">Estorno</button></td></tr>`;
+            return `<tr><td>${v.hora}</td><td>${v.metodo}</td><td>R$ ${v.total.toFixed(2)}</td><td><button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="estorno(${v.id})">Estorno</button></td></tr>`;
         }).join('');
         document.getElementById('rep-total').innerText = `R$ ${total.toFixed(2)}`;
         document.getElementById('rep-pix').innerText = `R$ ${pix.toFixed(2)}`;
@@ -702,11 +750,12 @@
     }
 
     function imprimirRelatorio(tipo) {
-        let html = `<h1>RELATÓRIO DE ${tipo.toUpperCase()}</h1><hr>`;
+        document.getElementById('cupom-fiscal').innerHTML = ""; // Garante limpeza
+        let html = `<h1>RELATÓRIO DE ${tipo.toUpperCase()}</h1><hr style="margin:15px 0;">`;
         if(tipo === 'estoque') {
-            html += produtos.map(p => `<div>${p.nome} - Estoque: ${p.estoque} ${p.unidade}</div>`).join('');
+            html += produtos.map(p => `<div style="margin-bottom:8px;">${p.nome} - Estoque: <b>${p.estoque} ${p.unidade}</b></div>`).join('');
         } else {
-            html += vendas.map(v => `<div>${v.hora} - ${v.metodo} - R$ ${v.total.toFixed(2)}</div>`).join('');
+            html += vendas.map(v => `<div style="margin-bottom:8px;">${v.hora} - ${v.metodo} - <b>R$ ${v.total.toFixed(2)}</b></div>`).join('');
         }
         document.getElementById('relatorio-imprimir').innerHTML = html;
         window.print();
@@ -715,7 +764,8 @@
     function imprimirModal() {
         const content = document.getElementById('erp-body').innerHTML;
         const titulo = document.getElementById('erp-titulo').innerText;
-        document.getElementById('relatorio-imprimir').innerHTML = `<h1>${titulo}</h1><hr>${content}`;
+        document.getElementById('cupom-fiscal').innerHTML = ""; // Garante limpeza
+        document.getElementById('relatorio-imprimir').innerHTML = `<h2>${titulo}</h2><hr style="margin:15px 0;">${content}`;
         window.print();
     }
 
