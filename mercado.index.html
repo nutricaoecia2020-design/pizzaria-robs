@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Mini Mercado - PDV</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --success: #27ae60;
+            --danger: #c0392b;
+            --light: #f8f9fa;
+            --dark: #34495e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #eec;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Formulários e Inputs */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #219653; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #962d22; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #1a252f; }
+
+        /* Tabela de Estoque */
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th { background: var(--light); position: sticky; top: 0; }
+
+        /* Caixa Registradora (PDV) */
+        .pdv-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .total-box {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: right;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .cupom-fiscal-preview {
+            background: #ffffe0;
+            border: 1px dashed #999;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 15px;
+            max-height: 250px;
+            overflow-y: auto;
+            font-size: 13px;
+        }
+
+        /* Estilo de impressão oculto na tela */
+        #secao-impressao {
+            display: none;
+        }
+
+        @media print {
+            body * { display: none; }
+            #secao-impressao, #secao-impressao * { display: block; }
+            #secao-impressao {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 58mm; /* Ajustável para 80mm se necessário */
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- LADO ESQUERDO: CADASTRO E ESTOQUE -->
+    <div>
+        <!-- Cadastro de Produto -->
+        <div class="card">
+            <h2>📦 Cadastro de Produto</h2>
+            <form id="form-cadastro" onsubmit="cadastrarProduto(event)">
+                <div class="form-group">
+                    <label>Código de Barras / ID</label>
+                    <input type="text" id="cad-codigo" required placeholder="Ex: 1001 ou use leitor">
+                </div>
+                <div class="form-group">
+                    <label>Nome do Produto</label>
+                    <input type="text" id="cad-nome" required placeholder="Ex: Arroz Tio João 1kg">
+                </div>
+                <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label>Preço de Venda (R$)</label>
+                        <input type="number" id="cad-preco" step="0.01" required placeholder="0,00">
+                    </div>
+                    <div class="form-group">
+                        <label>Qtd em Estoque</label>
+                        <input type="number" id="cad-estoque" required placeholder="0">
+                    </div>
+                </div>
+                <button type="submit" class="btn-success" style="width: 100%; margin-top: 10px;">Salvar no Estoque</button>
+            </form>
+        </div>
+
+        <!-- Lista de Produtos / Estoque -->
+        <div class="card">
+            <h2>🏪 Estoque Disponível</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cód</th>
+                            <th>Produto</th>
+                            <th>Preço</th>
+                            <th>Qtd</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-produtos">
+                        <!-- Inserido via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- LADO DIREITO: CAIXA REGISTRADORA (PDV) -->
+    <div>
+        <div class="card">
+            <h2>🛒 Caixa Registradora (PDV)</h2>
+            
+            <div class="pdv-layout">
+                <div class="total-box">
+                    Total: R$ <span id="pdv-total">0,00</span>
+                </div>
+
+                <form id="form-venda" onsubmit="adicionarItemVenda(event)">
+                    <div class="grid-2" style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                        <div class="form-group">
+                            <label>Código do Produto</label>
+                            <input type="text" id="venda-codigo" required placeholder="Bip ou digite o código">
+                        </div>
+                        <div class="form-group">
+                            <label>Qtd</label>
+                            <input type="number" id="venda-qtd" value="1" min="1" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%;">Inserir Item (Enter)</button>
+                </form>
+
+                <div>
+                    <label>Itens do Cupom Atual:</label>
+                    <div class="cupom-fiscal-preview" id="cupom-preview">
+                        --- CUPOM EM ABERTO ---
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                    <button class="btn-danger" onclick="cancelarVenda()">Cancelar Venda</button>
+                    <button class="btn-success" style="font-size: 16px;" onclick="fecharVenda()">Fechar e Imprimir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Área Invisível para a Impressora Térmica -->
+<div id="secao-impressao"></div>
+
+<script>
+    // Inicialização do banco de dados local (LocalStorage)
+    let produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+    let carrinho = [];
+
+    // Renderiza a tabela de estoque ao iniciar
+    atualizarTabelaEstoque();
+
+    // --- FUNÇÕES DE CADASTRO E ESTOQUE ---
+    function cadastrarProduto(e) {
+        e.preventDefault();
+        
+        const codigo = document.getElementById('cad-codigo').value.trim();
+        const nome = document.getElementById('cad-nome').value.trim();
+        const preco = parseFloat(document.getElementById('cad-preco').value);
+        const estoque = parseInt(document.getElementById('cad-estoque').value);
+
+        // Verifica se o código já existe para atualizar ou se cria um novo
+        const index = produtos.findIndex(p => p.codigo === codigo);
+        if (index !== -1) {
+            produtos[index] = { codigo, nome, preco, estoque };
+            alert("Produto atualizado com sucesso!");
+        } else {
+            produtos.push({ codigo, nome, preco, estoque });
+            alert("Produto cadastrado com sucesso!");
+        }
+
+        salvarDados();
+        atualizarTabelaEstoque();
+        document.getElementById('form-cadastro').reset();
+        document.getElementById('cad-codigo').focus();
+    }
+
+    function excluirProduto(codigo) {
+        if(confirm("Deseja realmente excluir este produto do sistema?")) {
+            produtos = produtos.filter(p => p.codigo !== codigo);
+            salvarDados();
+            atualizarTabelaEstoque();
+        }
+    }
+
+    function atualizarTabelaEstoque() {
+        const tbody = document.getElementById('lista-produtos');
+        tbody.innerHTML = '';
+
+        if(produtos.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#999;">Nenhum produto cadastrado.</td></tr>`;
+            return;
+        }
+
+        produtos.forEach(p => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${p.codigo}</td>
+                <td><strong>${p.nome}</strong></td>
+                <td>R$ ${p.preco.toFixed(2)}</td>
+                <td style="color: ${p.estoque <= 3 ? 'var(--danger)' : 'black'}; font-weight: bold">${p.estoque}</td>
+                <td>
+                    <button class="btn-danger" style="padding: 3px 8px; font-size:11px;" onclick="excluirProduto('${p.codigo}')">X</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function salvarDados() {
+        localStorage.setItem('produtos', JSON.stringify(produtos));
+    }
+
+
+    // --- FUNÇÕES DA REGISTRADORA DE CAIXA (PDV) ---
+    function adicionarItemVenda(e) {
+        e.preventDefault();
+        const codigo = document.getElementById('venda-codigo').value.trim();
+        const qtd = parseInt(document.getElementById('venda-qtd').value);
+
+        // Encontra o produto no estoque
+        const produto = produtos.find(p => p.codigo === codigo);
+
+        if (!produto) {
+            alert("Produto não encontrado no estoque!");
+            return;
+        }
+
+        if (produto.estoque < qtd) {
+            alert(`Estoque insuficiente! Apenas ${produto.estoque} unidades disponíveis.`);
+            return;
+        }
+
+        // Verifica se o item já está no carrinho atual
+        const itemCarrinho = carrinho.find(item => item.codigo === codigo);
+        if (itemCarrinho) {
+            if(produto.estoque < (itemCarrinho.qtd + qtd)) {
+                alert("Quantidade total solicitada excede o estoque disponível!");
+                return;
+            }
+            itemCarrinho.qtd += qtd;
+        } else {
+            carrinho.push({
+                codigo: produto.codigo,
+                nome: produto.nome,
+                preco: produto.preco,
+                qtd: qtd
+            });
+        }
+
+        document.getElementById('form-venda').reset();
+        document.getElementById('venda-codigo').focus();
+        atualizarPainelVenda();
+    }
+
+    function calcularTotalVenda() {
+        return carrinho.reduce((total, item) => total + (item.preco * item.qtd), 0);
+    }
+
+    function atualizarPainelVenda() {
+        const total = calcularTotalVenda();
+        document.getElementById('pdv-total').innerText = total.toFixed(2);
+
+        // Atualiza o preview do Cupom na tela
+        const preview = document.getElementById('cupom-preview');
+        if (carrinho.length === 0) {
+            preview.innerHTML = "--- CUPOM EM ABERTO ---";
+            return;
+        }
+
+        let htmlCupom = `*** MINI MERCADO LOCAL ***<br>`;
+        htmlCupom += `Data: ${new Date().toLocaleString()}<br>`;
+        htmlCupom += `--------------------------------<br>`;
+        htmlCupom += `CÓD | ITEM | QTD | VL UN | TOTAL<br>`;
+        htmlCupom += `--------------------------------<br>`;
+        
+        carrinho.forEach((item, index) => {
+            let totalItem = item.preco * item.qtd;
+            htmlCupom += `${index+1} ${item.nome}<br>`;
+            htmlCupom += `    ${item.qtd}x R$ ${item.preco.toFixed(2)} = R$ ${totalItem.toFixed(2)}<br>`;
+        });
+
+        htmlCupom += `--------------------------------<br>`;
+        htmlCupom += `<strong>TOTAL: R$ ${total.toFixed(2)}</strong><br>`;
+        
+        preview.innerHTML = htmlCupom;
+    }
+
+    function cancelarVenda() {
+        if (carrinho.length === 0) return;
+        if (confirm("Deseja realmente cancelar a venda atual?")) {
+            carrinho = [];
+            atualizarPainelVenda();
+        }
+    }
+
+    function fecharVenda() {
+        if (carrinho.length === 0) {
+            alert("O carrinho está vazio!");
+            return;
+        }
+
+        // 1. Baixar do estoque real
+        carrinho.forEach(itemVenda => {
+            const produtoEstoque = produtos.find(p => p.codigo === itemVenda.codigo);
+            if (produtoEstoque) {
+                produtoEstoque.estoque -= itemVenda.qtd;
+            }
+        });
+
+        salvarDados();
+        atualizarTabelaEstoque();
+
+        // 2. Gerar conteúdo de impressão para o cupom térmico
+        const total = calcularTotalVenda();
+        let txtCupom = `
+            <div style="text-align: center; font-weight: bold; font-size: 14px;">MINI MERCADO COMPLETO</div>
+            <div style="text-align: center;">Rua do Comércio, 123 - Centro</div>
+            <div style="text-align: center;">Fone: (00) 99999-9999</div>
+            ----------------------------------------<br>
+            <strong>CUPOM NÃO FISCAL</strong><br>
+            DATA: ${new Date().toLocaleDateString()}  HORA: ${new Date().toLocaleTimeString()}<br>
+            ----------------------------------------<br>
+            <table style="width:100%; font-size:11px; font-family:monospace;">
+                <thead>
+                    <tr style="border-bottom: 1px dashed #000;">
+                        <th style="padding:2px 0;">ITEM</th>
+                        <th style="padding:2px 0; text-align:center;">QTD</th>
+                        <th style="padding:2px 0; text-align:right;">UN</th>
+                        <th style="padding:2px 0; text-align:right;">TOTAL</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        carrinho.forEach((item, index) => {
+            let subtotal = item.preco * item.qtd;
+            txtCupom += `
+                <tr>
+                    <td colspan="4" style="padding-top:4px;">${String(index+1).padStart(2, '0')} - ${item.nome}</td>
+                </tr>
+                <tr style="border-bottom: 1px dotted #ccc;">
+                    <td></td>
+                    <td style="text-align:center;">${item.qtd}</td>
+                    <td style="text-align:right;">${item.preco.toFixed(2)}</td>
+                    <td style="text-align:right;">${subtotal.toFixed(2)}</td>
+                </tr>
+            `;
+        });
+
+        txtCupom += `
+                </tbody>
+            </table>
+            ----------------------------------------<br>
+            <div style="text-align: right; font-size: 14px; font-weight: bold;">
+                TOTAL: R$ ${total.toFixed(2)}
+            </div>
+            ----------------------------------------<br>
+            <div style="text-align: center; margin-top: 10px;">
+                Obrigado pela preferência!<br>Volte Sempre.
+            </div>
+            <br><br>.
+        `;
+
+        // Envia para a seção oculta de impressão e dispara a caixa de diálogo do sistema
+        document.getElementById('secao-impressao').innerHTML = txtCupom;
+        window.print();
+
+        // Limpa o carrinho para a próxima venda
+        carrinho = [];
+        atualizarPainelVenda();
+    }
+</script>
+
+</body>
+</html>
