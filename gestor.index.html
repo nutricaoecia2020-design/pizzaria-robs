@@ -950,6 +950,9 @@
         <i class="fas fa-trash"></i>
     </button>
 </td>
+</tr>`;
+        }).join('');
+    }
 function excluirCliente(id) {
     if(confirm('Excluir este cliente?')) {
         clientes = clientes.filter(c => c.id !== id);
@@ -957,10 +960,6 @@ function excluirCliente(id) {
         renderizarClientes();
     }
 }
-            </tr>`;
-        }).join('');
-    }
-
     // --- AGENDA ---
     function abrirModalCompromisso(editId = null) {
         const modal = document.getElementById('modal-compromisso');
