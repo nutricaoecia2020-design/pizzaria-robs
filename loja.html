@@ -268,34 +268,6 @@
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* Estilos específicos para o painel do Pix */
-        .pix-container {
-            background: #262626;
-            border: 1px solid var(--primary);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        .pix-qr {
-            width: 180px;
-            height: 180px;
-            background: white;
-            padding: 5px;
-            border-radius: 8px;
-            margin: 10px auto;
-            display: block;
-        }
-        .pix-chave-box {
-            background: #181818;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            word-break: break-all;
-            margin-top: 5px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
         @media(max-width: 600px) { 
             .cart-sidebar { width: 100%; } 
             .grid-produtos { grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -342,11 +314,12 @@
                 <i class="far fa-clock"></i>
                 <strong>Funcionamento</strong>
                 <span>18:00 às 23:30</span>
+                <span>De Quinta a Domingo</span>
             </div>
             <div class="info-item">
                 <i class="fas fa-motorcycle"></i>
                 <strong>Delivery</strong>
-                <span>30-50 min</span>
+                <span>40-70 min</span>
             </div>
         </div>
     </div>
@@ -395,19 +368,11 @@
             <option value="Atalaia" data-taxa="12">Atalaia - R$ 12,00</option>
         </select>
         <input id="contato" placeholder="WhatsApp (DDD + Número)">
-        <select id="pagamento" onchange="togglePixInfo()">
+        <select id="pagamento">
             <option value="Pix">Pix</option>
             <option value="Cartão">Cartão</option>
             <option value="Dinheiro">Dinheiro</option>
         </select>
-
-        <div id="pixInfoContainer" class="pix-container">
-            <span style="font-size:14px; font-weight:bold; color:var(--primary);"><i class="fas fa-qrcode"></i> Pague agora via Pix</span>
-            <img class="pix-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=00020101021126660014br.gov.bcb.pix0136f0750134-d84a-48ff-864c-f8a3036e34855204000053039865802BR5916Cantinho%20do%20Robs6007Aracaju62070503***63046C49" alt="QR Code Pix">
-            <div style="font-size:12px; margin-top:5px; color:var(--text-dim)">Chave Aleatória Pix:</div>
-            <div class="pix-chave-box">f0750134-d84a-48ff-864c-f8a3036e3485</div>
-        </div>
-
         <div style="margin-bottom: 10px; color: var(--text-dim); font-weight: bold; font-size: 14px;">Data para entrega/agendamento:</div>
         <input type="date" id="dataAgendamento">
         <textarea id="obs" placeholder="Alguma observação? (Ex: tirar cebola, troco para R$ 50)"></textarea>
@@ -573,24 +538,12 @@
 
     window.toggleCart = () => document.getElementById('cartSidebar').classList.toggle('active');
 
-    // Controla visibilidade do bloco informativo do Pix
-    function togglePixInfo() {
-        const formaPagamento = document.getElementById("pagamento").value;
-        const pixContainer = document.getElementById("pixInfoContainer");
-        if(formaPagamento === "Pix") {
-            pixContainer.style.display = "block";
-        } else {
-            pixContainer.style.display = "none";
-        }
-    }
-
     async function finalizar() {
         const nome = document.getElementById("nome").value;
         const end = document.getElementById("endereco").value;
         const bairro = document.getElementById("bairro").value;
         const total = document.getElementById("total").innerText;
         const contato = document.getElementById("contato").value;
-        const pagamento = document.getElementById("pagamento").value;
 
         if(!nome || !end || carrinho.length === 0 || !bairro) return alert("Por favor, preencha todos os dados!");
 
@@ -600,13 +553,7 @@
         const dataPed = document.getElementById("dataAgendamento").value;
         const obs = document.getElementById("obs").value;
 
-        // Configura o cabeçalho dinâmico e aviso extra caso a forma de pagamento selecionada for Pix
-        let statusPagamentoTxt = `*Forma de Pagamento:* ${pagamento}`;
-        if(pagamento === "Pix") {
-            statusPagamentoTxt += `\n⚠️ *PAGAMENTO VIA PIX REALIZADO! FAZENDO CONFERÊNCIA...*`;
-        }
-
-        const msg = `*NOVO PEDIDO ROBS*\n\n*Cliente:* ${nome}\n*WhatsApp:* ${contato}\n\n*Itens:*\n• ${produtosTxt}\n\n*Total:* R$ ${total}\n*Endereço:* ${end}\n*Bairro:* ${bairro}\n*Agendamento:* ${dataPed}\n${statusPagamentoTxt}\n*Obs:* ${obs}`;
+        const msg = `*NOVO PEDIDO ROBS*\n\n*Cliente:* ${nome}\n*WhatsApp:* ${contato}\n\n*Itens:*\n• ${produtosTxt}\n\n*Total:* R$ ${total}\n*Endereço:* ${end}\n*Bairro:* ${bairro}\n*Agendamento:* ${dataPed}\n*Obs:* ${obs}`;
         
         // Aguarda levemente o som rodar antes de redirecionar
         setTimeout(() => {
@@ -635,8 +582,6 @@
     setInterval(verificarStatus, 30000);
     carregarProdutos();
     document.getElementById('dataAgendamento').valueAsDate = new Date();
-    // Executa no carregamento inicial para o Pix aparecer já por padrão
-    togglePixInfo();
 </script>
 
 </body>
