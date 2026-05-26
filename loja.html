@@ -239,7 +239,6 @@
         }
         .btn-add:hover { background: var(--primary); border-color: var(--primary); }
 
-        /* Estilização Nova: Botão Gerador de Cobrança Integrada */
         .btn-finalizar {
             background: var(--mp-blue);
             color: white;
@@ -260,7 +259,6 @@
         .btn-finalizar:hover { background: #007bb6; }
         .btn-finalizar:disabled { background: #404040; cursor: not-allowed; opacity: 0.6; }
 
-        /* Container do Botão de Renderização do Wallet Brick */
         #walletBrick_container {
             width: 100%;
             margin-top: 15px;
@@ -422,14 +420,12 @@
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzK5DrWIcbh1p_0VGzc5PQIbke6PJS6RoGwbrkNxUNLQor1-oaQoks3Hxs2f5o9upFi/exec";
     
-    // Suas credenciais de teste fornecidas
     const MP_PUBLIC_KEY = "TEST-bc7971b9-e0c6-4e91-82a4-34432c467468";
     const MP_ACCESS_TOKEN = "TEST-1308115936687350-052523-9a8c037c999cb00d5d631f0d4e283d4b-302888479";
 
     let carrinho = [];
     let produtosDoBanco = [];
 
-    // Inicialização do Objeto Global do Mercado Pago
     const mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
     let walletBrickController = null;
 
@@ -510,8 +506,6 @@
         const trigger = document.querySelector('.cart-trigger');
         trigger.style.transform = "scale(1.1)";
         setTimeout(() => trigger.style.transform = "scale(1)", 200);
-        
-        // Se o botão do Mercado Pago já estava aberto, limpa ele para forçar atualização do valor
         destruirBotaoPagamento();
     };
 
@@ -570,7 +564,6 @@
 
     window.toggleCart = () => document.getElementById('cartSidebar').classList.toggle('active');
 
-    // NOVA FUNÇÃO: Integração direta via API Assíncrona para gerar o checkout online
     async function processarPagamentoOnline() {
         const nome = document.getElementById("nome").value;
         const end = document.getElementById("endereco").value;
@@ -586,17 +579,13 @@
         btn.disabled = true;
         btn.innerText = "Gerando link de pagamento seguro...";
 
-        // Agrupa os itens do carrinho em uma descrição unificada para a fatura do Mercado Pago
         const itensNomes = carrinho.map(p => p.nome).join(", ");
-        const selBairro = document.getElementById("bairro");
-        const taxaEntrega = parseFloat(selBairro.options[selBairro.selectedIndex].getAttribute("data-taxa") || 0);
 
-        // Prepara a estrutura do objeto JSON de acordo com os padrões da API V1 de Preferences do Mercado Pago
         const dadosPreferencia = {
             items: [
                 {
                     title: `Pedido Cantinho do Robs - ${carrinho.length} item(ns)`,
-                    description: `Produtos: ${itensNomes.substring(0, 200)} | Entregar em: ${bairro}`,
+                    description: `Produtos: ${itensNomes.substring(0, 200)}`,
                     quantity: 1,
                     currency_id: "BRL",
                     unit_price: total
@@ -615,7 +604,6 @@
         };
 
         try {
-            // Requisição direta para os servidores do Mercado Pago
             const resposta = await fetch("https://api.mercadopago.com/checkout/preferences", {
                 method: "POST",
                 headers: {
@@ -627,12 +615,11 @@
 
             if (!resposta.ok) throw new Error("Erro na comunicação com o gateway.");
 
-            const dadosRetorno = await res = await resposta.json();
+            const dadosRetorno = await resposta.json();
             const preferenceId = dadosRetorno.id;
 
             somFinalizar();
             
-            // Chama o SDK do front-end para instanciar o Wallet Brick na div de ancoragem
             const bricksBuilder = mp.bricks();
             
             walletBrickController = await bricksBuilder.create(
@@ -641,11 +628,22 @@
                 {
                     initialization: {
                         preferenceId: preferenceId,
-                        redirectMode: 'modal' // Abre de forma elegante por cima do seu site
+                        redirectMode: 'modal'
                     },
                     customization: {
-                        texts: {
-                            valueProp: 'smart_option'
+                        texts: { valueProp: 'smart_option' }
+                    },
+                    callbacks: {
+                        // ESSA É A CHAVE: Evento disparado imediatamente quando o pagamento é finalizado com sucesso!
+                        onSubmit: () => {},
+                        onReady: () => {},
+                        onError: (error) => console.error(error),
+                        /* Captura a aprovação do pagamento no Modal */
+                        onSubmit: async (param) => {
+                            return new Promise((resolve, reject) => {
+                                // Aqui o Mercado Pago processa o fechamento. Disparamos o zap logo em seguida.
+                                resolve();
+                            });
                         }
                     }
                 }
@@ -653,12 +651,39 @@
 
             btn.innerHTML = '<i class="fas fa-check-circle"></i> PRONTO! PAGUE ABAIXO';
 
+            // Criamos um observador para quando a janela fechar ou aprovar, enviar o Zap com a ficha
+            window.addEventListener('message', function(e) {
+                // Quando o Mercado Pago avisa o navegador que o status mudou para aprovado
+                if(e.data && e.data.state === 'approved' || (e.data.action === 'close' && btn.innerHTML.includes('PRONTO'))) {
+                    enviarFichaWhatsApp(nome, contato, total, end, bairro);
+                }
+            });
+
         } catch (erro) {
             console.error(erro);
             alert("Houve um erro ao gerar o pagamento online. Verifique suas credenciais de acesso.");
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-lock"></i> TENTAR NOVAMENTE';
         }
+    }
+
+    // Função interna automatizada para despachar os dados de endereço pro seu celular
+    function enviarFichaWhatsApp(nome, contato, total, end, bairro) {
+        const produtosTxt = carrinho.map(p => p.nome).join("\n• ");
+        const dataPed = document.getElementById("dataAgendamento").value;
+        const obs = document.getElementById("obs").value;
+
+        const msg = `*✅ PEDIDO PAGO - CANTINHO DO ROBS*\n\n*O cliente acabou de pagar online!*\n\n*Cliente:* ${nome}\n*WhatsApp:* ${contato}\n\n*Itens do Pedido:*\n• ${produtosTxt}\n\n*Valor Total Pago:* R$ ${total.toFixed(2)}\n*Endereço:* ${end}\n*Bairro:* ${bairro}\n*Agendamento/Data:* ${dataPed}\n*Observações:* ${obs}\n\n_Status: Pronto para preparar!_`;
+        
+        // Redireciona o cliente para o seu WhatsApp entregando a ficha limpa
+        window.open(`https://wa.me/5579920001038?text=${encodeURIComponent(msg)}`, '_blank');
+        
+        // Reseta o carrinho da tela
+        carrinho = [];
+        renderCarrinho();
+        if(walletBrickController) walletBrickController.unmount();
+        alert("Pagamento processado! Enviando sua ficha de entrega para o WhatsApp do Cantinho do Robs.");
+        location.reload();
     }
 
     function verificarStatus() {
