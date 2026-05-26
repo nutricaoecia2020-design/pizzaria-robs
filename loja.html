@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cantinho do Robs | Delivery</title>
+    <title>Cantinho do Robs | Delivery & Pagamento Online</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
 
     <style>
         :root {
@@ -19,6 +21,7 @@
             --text-dim: #a3a3a3;
             --accent-gold: #f59e0b;    
             --danger: #ef4444;
+            --mp-blue: #009ee3;
         }
 
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
@@ -151,7 +154,6 @@
         .info-item i { color: #ef4444; font-size: 16px; margin-bottom: 5px; display: block; }
         .info-item span { display: block; color: var(--text-dim); font-size: 11px; margin-top: 2px; }
 
-        /* NOVA ABA SUBSTUTA: Painel Informativo de Destaques Rápidos */
         .banner-destaques-loja {
             background: rgba(34, 197, 94, 0.1);
             border: 1px dashed var(--primary);
@@ -237,8 +239,9 @@
         }
         .btn-add:hover { background: var(--primary); border-color: var(--primary); }
 
+        /* Estilização Nova: Botão Gerador de Cobrança Integrada */
         .btn-finalizar {
-            background: #25d366;
+            background: var(--mp-blue);
             color: white;
             width: 100%;
             border: none;
@@ -246,7 +249,7 @@
             border-radius: 12px;
             font-size: 18px;
             font-weight: 700;
-            margin-bottom: 0;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -254,7 +257,14 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .btn-finalizar:hover { background: #1ebd59; }
+        .btn-finalizar:hover { background: #007bb6; }
+        .btn-finalizar:disabled { background: #404040; cursor: not-allowed; opacity: 0.6; }
+
+        /* Container do Botão de Renderização do Wallet Brick */
+        #walletBrick_container {
+            width: 100%;
+            margin-top: 15px;
+        }
 
         .cart-sidebar {
             position: fixed; right: -100%; top: 0; width: 400px; height: 100%;
@@ -325,13 +335,13 @@
 
     <div class="banner-destaques-loja">
         <div class="destaque-item">
-            <i class="fas fa-check-circle"></i> Aceitamos Pix, Cartão e Dinheiro
+            <i class="fas fa-check-circle"></i> Pagamento Online 100% Seguro
         </div>
         <div class="destaque-item">
             <i class="fas fa-map-marker-alt"></i> Entrega Grátis Luzia e Ponto Novo
         </div>
         <div class="destaque-item">
-            <i class="fas fa-shield-alt"></i> Pedido Seguro via WhatsApp
+            <i class="fas fa-shield-alt"></i> Integração Direta Mercado Pago
         </div>
     </div>
 
@@ -355,9 +365,11 @@
     </div>
 
     <div id="finalizacao" style="margin-top: 50px; background: #1f1f1f; padding: 25px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.03);">
-        <h3 style="margin-top:0; margin-bottom:20px; font-size: 20px;"><i class="fas fa-truck" style="color:var(--primary)"></i> Dados de Entrega</h3>
+        <h3 style="margin-top:0; margin-bottom:20px; font-size: 20px;"><i class="fas fa-credit-card" style="color:var(--mp-blue)"></i> Dados para Pagamento & Entrega</h3>
+        
         <input id="nome" placeholder="Seu Nome Completo">
-        <input id="endereco" placeholder="Endereço (Rua, Número, Ponto de Ref.)">
+        <input id="endereco" placeholder="Endereço Completo (Rua, Número, Ponto de Ref.)">
+        
         <select id="bairro" onchange="renderCarrinho()">
             <option value="" data-taxa="0">Escolha o Bairro</option>
             <option value="Luzia" data-taxa="0">Luzia - Grátis</option>
@@ -366,19 +378,18 @@
             <option value="Salgado Filho" data-taxa="6">Salgado Filho - R$ 6,00</option>
             <option value="Atalaia" data-taxa="12">Atalaia - R$ 12,00</option>
         </select>
+        
         <input id="contato" placeholder="WhatsApp (DDD + Número)">
-        <select id="pagamento">
-            <option value="Pix">Pix</option>
-            <option value="Cartão">Cartão</option>
-            <option value="Dinheiro">Dinheiro</option>
-        </select>
+        
         <div style="margin-bottom: 10px; color: var(--text-dim); font-weight: bold; font-size: 14px;">Data para entrega/agendamento:</div>
         <input type="date" id="dataAgendamento">
-        <textarea id="obs" placeholder="Alguma observação? (Ex: tirar cebola, troco para R$ 50)"></textarea>
+        <textarea id="obs" placeholder="Alguma observação sobre os itens do seu pedido?"></textarea>
         
-        <button class="btn-finalizar" onclick="finalizar()">
-            <i class="fab fa-whatsapp"></i> ENVIAR PARA O WHATSAPP
+        <button class="btn-finalizar" id="btnGerarPagamento" onclick="processarPagamentoOnline()">
+            <i class="fas fa-lock"></i> IR PARA O PAGAMENTO ONLINE
         </button>
+
+        <div id="walletBrick_container"></div>
     </div>
 </div>
 
@@ -410,17 +421,25 @@
 
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzK5DrWIcbh1p_0VGzc5PQIbke6PJS6RoGwbrkNxUNLQor1-oaQoks3Hxs2f5o9upFi/exec";
+    
+    // Suas credenciais de teste fornecidas
+    const MP_PUBLIC_KEY = "TEST-bc7971b9-e0c6-4e91-82a4-34432c467468";
+    const MP_ACCESS_TOKEN = "TEST-1308115936687350-052523-9a8c037c999cb00d5d631f0d4e283d4b-302888479";
+
     let carrinho = [];
     let produtosDoBanco = [];
 
-    // Sons gerados nativamente via Web Audio API (Dispensa arquivos externos de áudio)
+    // Inicialização do Objeto Global do Mercado Pago
+    const mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
+    let walletBrickController = null;
+
     function somAdicionar() {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.08); // A5
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime); 
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.08); 
         gain.gain.setValueAtTime(0.1, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
         osc.connect(gain);
@@ -434,10 +453,10 @@
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
-        osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
-        osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); // G5
-        osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.3); // C6
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime); 
+        osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); 
+        osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); 
+        osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.3); 
         gain.gain.setValueAtTime(0.15, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
         osc.connect(gain);
@@ -487,23 +506,37 @@
     window.add = (i) => { 
         carrinho.push(produtosDoBanco[i]); 
         renderCarrinho(); 
-        somAdicionar(); // Aciona o som ao incluir no carrinho
+        somAdicionar(); 
         const trigger = document.querySelector('.cart-trigger');
         trigger.style.transform = "scale(1.1)";
         setTimeout(() => trigger.style.transform = "scale(1)", 200);
+        
+        // Se o botão do Mercado Pago já estava aberto, limpa ele para forçar atualização do valor
+        destruirBotaoPagamento();
     };
 
     window.removerItem = (index) => {
         carrinho.splice(index, 1);
         renderCarrinho();
+        destruirBotaoPagamento();
     };
 
     window.limparCarrinho = () => {
         if(confirm("Deseja esvaziar o carrinho?")) {
             carrinho = [];
             renderCarrinho();
+            destruirBotaoPagamento();
         }
     };
+
+    function destruirBotaoPagamento() {
+        if (walletBrickController) {
+            walletBrickController.unmount();
+            walletBrickController = null;
+        }
+        document.getElementById("btnGerarPagamento").disabled = false;
+        document.getElementById("btnGerarPagamento").innerHTML = '<i class="fas fa-lock"></i> IR PARA O PAGAMENTO ONLINE';
+    }
 
     window.renderCarrinho = () => {
         const area = document.getElementById("carrinhoItens");
@@ -537,30 +570,95 @@
 
     window.toggleCart = () => document.getElementById('cartSidebar').classList.toggle('active');
 
-    async function finalizar() {
+    // NOVA FUNÇÃO: Integração direta via API Assíncrona para gerar o checkout online
+    async function processarPagamentoOnline() {
         const nome = document.getElementById("nome").value;
         const end = document.getElementById("endereco").value;
         const bairro = document.getElementById("bairro").value;
-        const total = document.getElementById("total").innerText;
+        const total = parseFloat(document.getElementById("total").innerText);
         const contato = document.getElementById("contato").value;
 
-        if(!nome || !end || carrinho.length === 0 || !bairro) return alert("Por favor, preencha todos os dados!");
+        if(!nome || !end || carrinho.length === 0 || !bairro || !contato) {
+            return alert("Por favor, preencha todos os dados de entrega e adicione itens ao carrinho!");
+        }
 
-        somFinalizar(); // Toca o som de conclusão com sucesso
+        const btn = document.getElementById("btnGerarPagamento");
+        btn.disabled = true;
+        btn.innerText = "Gerando link de pagamento seguro...";
 
-        const produtosTxt = carrinho.map(p => p.nome).join("\n• ");
-        const dataPed = document.getElementById("dataAgendamento").value;
-        const obs = document.getElementById("obs").value;
+        // Agrupa os itens do carrinho em uma descrição unificada para a fatura do Mercado Pago
+        const itensNomes = carrinho.map(p => p.nome).join(", ");
+        const selBairro = document.getElementById("bairro");
+        const taxaEntrega = parseFloat(selBairro.options[selBairro.selectedIndex].getAttribute("data-taxa") || 0);
 
-        const msg = `*NOVO PEDIDO ROBS*\n\n*Cliente:* ${nome}\n*WhatsApp:* ${contato}\n\n*Itens:*\n• ${produtosTxt}\n\n*Total:* R$ ${total}\n*Endereço:* ${end}\n*Bairro:* ${bairro}\n*Agendamento:* ${dataPed}\n*Obs:* ${obs}`;
-        
-        // Aguarda levemente o som rodar antes de redirecionar
-        setTimeout(() => {
-            window.open(`https://wa.me/5579920001038?text=${encodeURIComponent(msg)}`);
-            carrinho = [];
-            renderCarrinho();
-            location.reload();
-        }, 500);
+        // Prepara a estrutura do objeto JSON de acordo com os padrões da API V1 de Preferences do Mercado Pago
+        const dadosPreferencia = {
+            items: [
+                {
+                    title: `Pedido Cantinho do Robs - ${carrinho.length} item(ns)`,
+                    description: `Produtos: ${itensNomes.substring(0, 200)} | Entregar em: ${bairro}`,
+                    quantity: 1,
+                    currency_id: "BRL",
+                    unit_price: total
+                }
+            ],
+            payer: {
+                name: nome,
+                phone: { number: contato }
+            },
+            back_urls: {
+                success: window.location.href,
+                failure: window.location.href,
+                pending: window.location.href
+            },
+            auto_return: "approved"
+        };
+
+        try {
+            // Requisição direta para os servidores do Mercado Pago
+            const resposta = await fetch("https://api.mercadopago.com/checkout/preferences", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${MP_ACCESS_TOKEN}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(dadosPreferencia)
+            });
+
+            if (!resposta.ok) throw new Error("Erro na comunicação com o gateway.");
+
+            const dadosRetorno = await res = await resposta.json();
+            const preferenceId = dadosRetorno.id;
+
+            somFinalizar();
+            
+            // Chama o SDK do front-end para instanciar o Wallet Brick na div de ancoragem
+            const bricksBuilder = mp.bricks();
+            
+            walletBrickController = await bricksBuilder.create(
+                'wallet',
+                'walletBrick_container',
+                {
+                    initialization: {
+                        preferenceId: preferenceId,
+                        redirectMode: 'modal' // Abre de forma elegante por cima do seu site
+                    },
+                    customization: {
+                        texts: {
+                            valueProp: 'smart_option'
+                        }
+                    }
+                }
+            );
+
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> PRONTO! PAGUE ABAIXO';
+
+        } catch (erro) {
+            console.error(erro);
+            alert("Houve um erro ao gerar o pagamento online. Verifique suas credenciais de acesso.");
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-lock"></i> TENTAR NOVAMENTE';
+        }
     }
 
     function verificarStatus() {
