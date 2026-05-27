@@ -3,61 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Status do Pedido | Cantinho do Robs</title>
+    <title>Acompanhamento | Cantinho do Robs</title>
     <style>
-        body { background-color: #121212; color: #ffffff; font-family: 'Segoe UI', Tahoma, sans-serif; text-align: center; margin: 0; padding: 20px; }
+        body { background-color: #121212; color: #ffffff; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; }
         .container { background: #1e1e1e; padding: 30px; border-radius: 20px; border: 2px solid #25d366; max-width: 450px; margin: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1 { color: #25d366; margin-bottom: 5px; }
-        #timer { font-size: 50px; font-weight: bold; margin: 15px 0; color: #ffcc00; }
-        .info { margin: 20px 0; border-top: 1px solid #333; padding-top: 20px; }
-        .btn-grupo { display: block; background: #25d366; color: white; padding: 15px; text-decoration: none; border-radius: 10px; font-weight: bold; margin-top: 20px; transition: 0.3s; }
-        .btn-grupo:hover { background: #1da851; }
-        .footer { margin-top: 25px; font-size: 13px; color: #888; }
+        h1 { color: #25d366; }
+        #timer { font-size: 50px; font-weight: bold; color: #ffcc00; margin: 20px 0; }
+        .box { margin-top: 25px; border-top: 1px solid #333; padding-top: 20px; }
+        input { padding: 12px; width: 80%; border-radius: 8px; border: none; margin-bottom: 10px; font-size: 16px; }
+        button { background: #25d366; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        button:hover { background: #1da851; }
     </style>
 </head>
 <body>
-
     <div class="container">
         <h1>Cantinho do Robs</h1>
-        <p>Pedido recebido com sucesso! Estamos preparando tudo com carinho.</p>
-        
+        <p>Pedido recebido. Tempo estimado de entrega:</p>
         <div id="timer">60:00</div>
         
-        <p>O pagamento será realizado no ato da entrega.</p>
-        <p>Dúvidas? (79) 92000-1038</p>
-
-        <div class="info">
-            <h3>🍕 CANTINHO DO ROBS – GRUPO DE AVISOS 🍰</h3>
-            <p style="font-size: 14px; text-align: left;">
-                Bem-vindos ao nosso grupo oficial! Aqui você acompanha:<br>
-                ✅ Confirmação de pedidos<br>
-                ✅ Status das entregas<br>
-                ✅ Promoções e novidades<br>
-                ✅ Lançamentos do cardápio
-            </p>
-            <a href="https://chat.whatsapp.com/GEVXmyUJTez1KztXQn3uTR" class="btn-grupo">
-                Participar do Grupo de Avisos
-            </a>
-        </div>
-
-        <div class="footer">
-            Cantinho do Robs - Qualidade em primeiro lugar ❤️
+        <div class="box">
+            <h3>Finalizar Entrega (Entregador)</h3>
+            <input type="number" id="codigo" placeholder="4 dígitos do cliente" maxlength="4">
+            <br>
+            <button onclick="finalizar()">Confirmar Entrega</button>
         </div>
     </div>
 
     <script>
-        let tempo = 3600; 
+        // Lógica do cronômetro
+        let tempo = 3600;
         const display = document.querySelector('#timer');
-        const countdown = setInterval(() => {
+        const interval = setInterval(() => {
             let m = Math.floor(tempo / 60);
             let s = tempo % 60;
             display.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
-            if (tempo <= 0) {
-                clearInterval(countdown);
-                display.textContent = "Pedido a caminho! 🚀";
-            }
-            tempo--;
+            if (tempo > 0) tempo--;
+            else clearInterval(interval);
         }, 1000);
+
+        // Lógica de envio para a Planilha
+        function finalizar() {
+            let cod = document.getElementById('codigo').value;
+            let url = "SUA_URL_AQUI"; // <https://script.google.com/macros/s/AKfycbyrTaDgZWTdA_f_nxon7Cvs_82eEtWMOUNhjywLRa5VToPtDpsyJGDgRy0dk3l8xiq8eA/exec
+            
+            if(cod.length === 4) {
+                fetch(url, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ acao: "finalizar", codigo: cod })
+                }).then(() => {
+                    alert("Entrega registrada com sucesso!");
+                    window.location.href = "https://chat.whatsapp.com/GEVXmyUJTez1KztXQn3uTR";
+                });
+            } else {
+                alert("Por favor, digite os 4 dígitos corretos.");
+            }
+        }
     </script>
 </body>
 </html>
