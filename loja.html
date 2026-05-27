@@ -397,6 +397,9 @@
             <span>Subtotal:</span>
             <span>R$ <span id="subtotalVal">0.00</span></span>
         </div>
+        
+        <div id="alertaMinimo" style="font-size: 13px; font-weight: 700; margin-bottom: 15px; text-align: center; padding: 8px; border-radius: 8px; display: none;"></div>
+
         <div style="font-size: 24px; font-weight: 900; display:flex; justify-content: space-between; color: var(--primary);">
             <span>Total:</span>
             <span>R$ <span id="total">0.00</span></span>
@@ -445,6 +448,22 @@
         gain.connect(ctx.destination);
         osc.start();
         osc.stop(ctx.currentTime + 0.6);
+    }
+
+    // SOM DE ERRO/ALERTA PARA O PEDIDO MÍNIMO
+    function somErro() {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, ctx.currentTime);
+        osc.frequency.setValueAtTime(120, ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.3);
     }
 
     async function carregarProdutos() {
@@ -511,12 +530,15 @@
         const msgVazio = document.getElementById("vazioMsg");
         const selBairro = document.getElementById("bairro");
         const taxa = parseFloat(selBairro.options[selBairro.selectedIndex].getAttribute("data-taxa") || 0);
+        const alertaMinimo = document.getElementById("alertaMinimo");
         
         let subtotal = 0;
         area.innerHTML = "";
         
-        if (carrinho.length === 0) msgVazio.style.display = "block";
-        else {
+        if (carrinho.length === 0) {
+            msgVazio.style.display = "block";
+            alertaMinimo.style.display = "none";
+        } else {
             msgVazio.style.display = "none";
             carrinho.forEach((p, i) => {
                 subtotal += parseFloat(p.preco);
@@ -529,6 +551,18 @@
                         <button style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:16px;" onclick="removerItem(${i})"><i class="fas fa-trash"></i></button>
                     </div>`;
             });
+
+            // LÓGICA DO ALERTA VISUAL DO PEDIDO MÍNIMO
+            alertaMinimo.style.display = "block";
+            if (subtotal < 30) {
+                alertaMinimo.style.background = "rgba(239, 68, 68, 0.15)";
+                alertaMinimo.style.color = "var(--danger)";
+                alertaMinimo.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Falta R$ ${(30 - subtotal).toFixed(2)} para o mínimo de R$ 30,00`;
+            } else {
+                alertaMinimo.style.background = "rgba(34, 197, 94, 0.15)";
+                alertaMinimo.style.color = "var(--primary)";
+                alertaMinimo.innerHTML = `<i class="fas fa-check-circle"></i> Pedido mínimo atingido!`;
+            }
         }
 
         document.getElementById("subtotalVal").innerText = subtotal.toFixed(2);
@@ -546,6 +580,14 @@
         const contato = document.getElementById("contato").value;
 
         if(!nome || !end || carrinho.length === 0 || !bairro) return alert("Por favor, preencha todos os dados!");
+
+        // VALIDAÇÃO DE VALOR MÍNIMO ANTES DE ENVIAR
+        let subtotalAtual = carrinho.reduce((acc, p) => acc + parseFloat(p.preco), 0);
+        if (subtotalAtual < 30) {
+            somErro(); // Toca o som de alerta/erro
+            alert(`Atenção: O valor mínimo do pedido para entrega deve ser de R$ 30,00 (Subtotal atual: R$ ${subtotalAtual.toFixed(2)}). Por favor, adicione mais itens.`);
+            return;
+        }
 
         somFinalizar(); // Toca o som de conclusão com sucesso
 
