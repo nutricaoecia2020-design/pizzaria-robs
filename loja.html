@@ -1,3 +1,4 @@
+HTML
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -302,7 +303,12 @@
         <h2>Cantinho do Robs</h2>
         <p>Pizzas, Salgados & Bebidas</p>
         
-        <div id="statusLoja">Carregando...</div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+            <div id="statusLoja">Carregando...</div>
+            <div style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid #f59e0b; padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 600;">
+                <i class="fas fa-info-circle"></i> Loja aberta de quinta a domingo - Estamos funcionando para agendamento
+            </div>
+        </div>
         
         <div class="info-bar-grid">
             <div class="info-item">
@@ -417,14 +423,13 @@
     let carrinho = [];
     let produtosDoBanco = [];
 
-    // Sons gerados nativamente via Web Audio API (Dispensa arquivos externos de áudio)
     function somAdicionar() {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.08); // A5
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.08);
         gain.gain.setValueAtTime(0.1, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
         osc.connect(gain);
@@ -438,10 +443,10 @@
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
-        osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
-        osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); // G5
-        osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.3); // C6
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+        osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1);
+        osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2);
+        osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.3);
         gain.gain.setValueAtTime(0.15, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
         osc.connect(gain);
@@ -450,7 +455,6 @@
         osc.stop(ctx.currentTime + 0.6);
     }
 
-    // SOM DE ERRO/ALERTA PARA O PEDIDO MÍNIMO
     function somErro() {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
@@ -507,7 +511,7 @@
     window.add = (i) => { 
         carrinho.push(produtosDoBanco[i]); 
         renderCarrinho(); 
-        somAdicionar(); // Aciona o som ao incluir no carrinho
+        somAdicionar();
         const trigger = document.querySelector('.cart-trigger');
         trigger.style.transform = "scale(1.1)";
         setTimeout(() => trigger.style.transform = "scale(1)", 200);
@@ -552,7 +556,6 @@
                     </div>`;
             });
 
-            // LÓGICA DO ALERTA VISUAL DO PEDIDO MÍNIMO
             alertaMinimo.style.display = "block";
             if (subtotal < 30) {
                 alertaMinimo.style.background = "rgba(239, 68, 68, 0.15)";
@@ -581,15 +584,14 @@
 
         if(!nome || !end || carrinho.length === 0 || !bairro) return alert("Por favor, preencha todos os dados!");
 
-        // VALIDAÇÃO DE VALOR MÍNIMO ANTES DE ENVIAR
         let subtotalAtual = carrinho.reduce((acc, p) => acc + parseFloat(p.preco), 0);
         if (subtotalAtual < 30) {
-            somErro(); // Toca o som de alerta/erro
+            somErro();
             alert(`Atenção: O valor mínimo do pedido para entrega deve ser de R$ 30,00 (Subtotal atual: R$ ${subtotalAtual.toFixed(2)}). Por favor, adicione mais itens.`);
             return;
         }
 
-        somFinalizar(); // Toca o som de conclusão com sucesso
+        somFinalizar();
 
         const produtosTxt = carrinho.map(p => p.nome).join("\n• ");
         const dataPed = document.getElementById("dataAgendamento").value;
@@ -597,7 +599,6 @@
 
         const msg = `*NOVO PEDIDO ROBS*\n\n*Cliente:* ${nome}\n*WhatsApp:* ${contato}\n\n*Itens:*\n• ${produtosTxt}\n\n*Total:* R$ ${total}\n*Endereço:* ${end}\n*Bairro:* ${bairro}\n*Agendamento:* ${dataPed}\n*Obs:* ${obs}`;
         
-        // Aguarda levemente o som rodar antes de redirecionar
         setTimeout(() => {
             window.open(`https://wa.me/5579920001038?text=${encodeURIComponent(msg)}`);
             carrinho = [];
