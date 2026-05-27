@@ -1,71 +1,28 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acompanhamento | Cantinho do Robs</title>
-    <style>
-        body { background-color: #121212; color: #ffffff; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; }
-        .container { background: #1e1e1e; padding: 30px; border-radius: 20px; border: 2px solid #25d366; max-width: 450px; margin: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1 { color: #25d366; }
-        #timer { font-size: 50px; font-weight: bold; color: #ffcc00; margin: 20px 0; }
-        .box { margin-top: 25px; border-top: 1px solid #333; padding-top: 20px; }
-        input { padding: 12px; width: 80%; border-radius: 8px; border: none; margin-bottom: 10px; font-size: 16px; color: #000; }
-        button { background: #25d366; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .grupo-link { display: block; margin-top: 20px; color: #25d366; text-decoration: none; font-weight: bold; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Cantinho do Robs</h1>
-        <p>Pedido recebido. Tempo estimado de entrega:</p>
-        <div id="timer">60:00</div>
-        
-        <div class="box">
-            <h3>Finalizar Entrega (Entregador)</h3>
-            <input type="number" id="codigo" placeholder="4 dígitos do cliente" maxlength="4">
-            <br>
-            <button onclick="finalizar()">Confirmar Entrega</button>
-        </div>
-
-        <div class="box">
-            <h3>🍕 Grupo de Avisos 🍰</h3>
-            <p style="font-size: 14px;">Acompanhe seu pedido, promoções e novidades!</p>
-            <a href="https://chat.whatsapp.com/GEVXmyUJTez1KztXQn3uTR" class="grupo-link">Entrar no Grupo de Avisos</a>
-        </div>
-    </div>
-
-    <script>
-        // Lógica do cronômetro
-        let tempo = 3600;
-        const display = document.querySelector('#timer');
-        const interval = setInterval(() => {
-            let m = Math.floor(tempo / 60);
-            let s = tempo % 60;
-            display.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
-            if (tempo > 0) tempo--;
-            else clearInterval(interval);
-        }, 1000);
-
-        // Lógica de envio para a Planilha
+// Lógica de envio e mensagem para o grupo
         function finalizar() {
             let cod = document.getElementById('codigo').value;
-            let url = "https://script.google.com/macros/s/AKfycbyrTaDgZWTdA_f_nxon7Cvs_82eEtWMOUNhjywLRa5VToPtDpsyJGDgRy0dk3l8xiq8eA/exec"; 
+            let urlPlanilha = "COLE_AQUI_SUA_URL_DO_APPS_SCRIPT"; 
             
             if(cod.length === 4) {
-                fetch(url, {
+                // Registra na planilha
+                fetch(urlPlanilha, {
                     method: "POST",
                     mode: "no-cors",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ acao: "finalizar", codigo: cod })
-                }).then(() => {
-                    alert("Entrega registrada! Vamos para o grupo.");
-                    window.location.href = "https://chat.whatsapp.com/GEVXmyUJTez1KztXQn3uTR";
                 });
+
+                // Prepara a mensagem para o grupo de avisos
+                let msg = "✅ *Entrega Concluída com Sucesso!*%0A%0A" +
+                          "🕒 *Pedido aceito:* " + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}) + "%0A" +
+                          "📦 *Entrega finalizada no app pelo entregador.*%0A%0A" +
+                          "Obrigado, Cantinho do Robs! ❤️";
+
+                // Abre o link do WhatsApp com a mensagem pronta
+                window.open("https://wa.me/5579920001038?text=" + msg, "_blank");
+                
+                alert("Entrega registrada! Agora envie a confirmação no grupo.");
             } else {
                 alert("Por favor, digite os 4 dígitos corretos.");
             }
         }
-    </script>
-</body>
-</html>
