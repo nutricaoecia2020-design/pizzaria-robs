@@ -35,15 +35,13 @@
     </div>
 
     <script>
-        // Define o tempo total em segundos (60 minutos)
+        <script>
+        // Define o tempo total em 60 minutos
         const TEMPO_TOTAL = 3600;
         
-        // Verifica se já existe um horário de início salvo para este cliente
-        let inicio = localStorage.getItem('tempoInicio');
-        if (!inicio) {
-            inicio = Date.now();
-            localStorage.setItem('tempoInicio', inicio);
-        }
+        // FORÇA O INÍCIO: Sempre que carregar, gera um novo horário de início
+        let inicio = Date.now();
+        localStorage.setItem('tempoInicio', inicio);
 
         const display = document.querySelector('#timer');
         
@@ -67,12 +65,9 @@
             let url = "https://script.google.com/macros/s/AKfycbyrTaDgZWTdA_f_nxon7Cvs_82eEtWMOUNhjywLRa5VToPtDpsyJGDgRy0dk3l8xiq8eA/exec";
             
             if(cod.length === 4) {
-                // Para o cronômetro localmente
                 clearInterval(timerInterval);
                 display.textContent = "00:00";
-                localStorage.removeItem('tempoInicio'); // Reseta para uma próxima vez
 
-                // Registra na planilha
                 fetch(url, { method: "POST", mode: "no-cors", body: JSON.stringify({ acao: "finalizar", codigo: cod }) });
                 
                 let agora = new Date();
@@ -92,5 +87,3 @@
             }
         }
     </script>
-</body>
-</html>
