@@ -35,10 +35,8 @@
     </div>
 
     <script>
-        // Registra o horário que o cliente abriu o link
-        const horarioAbertura = new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+        const momentoAbertura = new Date();
 
-        // Relógio Digital
         function atualizarRelogio() {
             document.getElementById('relogio').textContent = new Date().toLocaleTimeString('pt-BR');
         }
@@ -51,20 +49,26 @@
             
             if(cod.length === 4) {
                 const agora = new Date();
-                const horarioFinalizacao = agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+                // Cálculo de tempo
+                const diferencaMs = agora - momentoAbertura;
+                const minutosDecorridos = Math.round(diferencaMs / 60000);
+                
                 const dataAtual = agora.toLocaleDateString('pt-BR');
+                const horaAbertura = momentoAbertura.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+                const horaFinalizacao = agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
                 let doisUltimos = cod.slice(-2);
                 
-                // Registra na planilha
                 fetch(url, { method: "POST", mode: "no-cors", body: JSON.stringify({ acao: "finalizar", codigo: cod }) });
                 
-                // Mensagem formatada para o grupo
                 let msg = `✅ *ENTREGA FINALIZADA!*%0A%0A` +
                           `📅 Data: ${dataAtual}%0A` +
-                          `🕒 Abertura do link: ${horarioAbertura}%0A` +
-                          `🏁 Hora da entrega: ${horarioFinalizacao}%0A%0A` +
+                          `🕒 Abertura do link: ${horaAbertura}%0A` +
+                          `🏁 Hora da entrega: ${horaFinalizacao}%0A` +
+                          `⏳ Tempo total: ${minutosDecorridos} minuto(s)%0A%0A` +
                           `📦 Pedidos com final *${doisUltimos}* confirmados com sucesso no ato da entrega.%0A%0A` +
-                          `🍕 Agradecemos pelo seu pedido e volte sempre! ❤️`;
+                          `🍕 Agradecemos pelo seu pedido e volte sempre!%0A` +
+                          `✨ Esperamos por você novamente!%0A%0A` +
+                          `📖 *Confira nosso cardápio:* [https://www.robsaju.space/]`;
                 
                 window.open("https://wa.me/5579920001038?text=" + msg, "_blank");
             } else {
