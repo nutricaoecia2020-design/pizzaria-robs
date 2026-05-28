@@ -35,13 +35,31 @@
     </div>
 
     <script>
-        let tempo = 3600;
+        // Define o tempo total em segundos (60 minutos)
+        const TEMPO_TOTAL = 3600;
+        
+        // Verifica se já existe um horário de início salvo para este cliente
+        let inicio = localStorage.getItem('tempoInicio');
+        if (!inicio) {
+            inicio = Date.now();
+            localStorage.setItem('tempoInicio', inicio);
+        }
+
         const display = document.querySelector('#timer');
+        
         let timerInterval = setInterval(() => {
-            let m = Math.floor(tempo / 60);
-            let s = tempo % 60;
-            display.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
-            if (tempo > 0) tempo--;
+            let agora = Date.now();
+            let decorrido = Math.floor((agora - inicio) / 1000);
+            let restante = TEMPO_TOTAL - decorrido;
+
+            if (restante <= 0) {
+                display.textContent = "00:00";
+                clearInterval(timerInterval);
+            } else {
+                let m = Math.floor(restante / 60);
+                let s = restante % 60;
+                display.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+            }
         }, 1000);
 
         function finalizar() {
@@ -49,15 +67,14 @@
             let url = "https://script.google.com/macros/s/AKfycbyrTaDgZWTdA_f_nxon7Cvs_82eEtWMOUNhjywLRa5VToPtDpsyJGDgRy0dk3l8xiq8eA/exec";
             
             if(cod.length === 4) {
-                // Zera o cronômetro visualmente
-                tempo = 0;
-                display.textContent = "00:00";
+                // Para o cronômetro localmente
                 clearInterval(timerInterval);
+                display.textContent = "00:00";
+                localStorage.removeItem('tempoInicio'); // Reseta para uma próxima vez
 
                 // Registra na planilha
                 fetch(url, { method: "POST", mode: "no-cors", body: JSON.stringify({ acao: "finalizar", codigo: cod }) });
                 
-                // Monta mensagem com data e hora
                 let agora = new Date();
                 let data = agora.toLocaleDateString('pt-BR');
                 let hora = agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
