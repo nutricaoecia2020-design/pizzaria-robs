@@ -396,20 +396,10 @@
         </select>
         <textarea id="obs" placeholder="Alguma observação? (Ex: tirar cebola, troco para R$ 50)"></textarea>
         
-   async function finalizar() {
-    // 1. Coleta os dados do pedido (ajuste os IDs conforme o seu HTML)
-    const nome = document.getElementById("nome").value; // Exemplo de ID
-    const itens = document.getElementById("itens").innerText; // Exemplo de ID
-    const idPedido = Math.floor(Math.random() * 10000); // Gera um ID aleatório
-    const URL_API = "https://script.google.com/macros/s/AKfycbxbhbYuvZrmNDmrODxAbpZUm0HKnor2diJgXklzDfFquNo1vXjMDyEQOaiGH9aFTgUbIA/exec"; // A URL que você copiou no passo anterior
-
-    // 2. Envia para a Planilha Google
-    await fetch(`${URL_API}?acao=adicionar&data=${new Date().toLocaleDateString()}&nome=${nome}&itens=${itens}&id=${idPedido}`);
-
-    // 3. Abre o WhatsApp (o que você já faz hoje)
-    const urlZap = ""https://api.whatsapp.com/send?phone=5579920001038&text=Novo%20Pedido%20do%20Cantinho%20do%20Robs";";
-    window.open(urlZap, "_blank");
-}
+        <button class="btn-finalizar" onclick="finalizar()">
+            <i class="fab fa-whatsapp"></i> ENVIAR PARA O WHATSAPP
+        </button>
+    </div>
 </div>
 
 <div class="cart-sidebar" id="cartSidebar">
