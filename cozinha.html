@@ -1,32 +1,33 @@
-<div id="display-pedidos" style="font-size: 40px; text-align: center; margin: 20px; font-weight: bold;">
-    VERIFICANDO PEDIDOS...
+<div id="painel" style="font-size: 60px; text-align: center; margin-top: 100px; font-family: sans-serif;">
+    CARREGANDO...
 </div>
 
 <script>
-    async function checar() {
+    async function rodar() {
         try {
-            let url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbd2hQ8KHs-kQotr2Wbkr8oy9JdNWhQAHEL6X5HPk7bSHUW-nLQ1tlo4cOklwSBHD0BddoX1eOlWfJ/pub?gid=0&single=true&output=csv";
-            let res = await fetch(url);
-            let texto = await res.text();
+            let link = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbd2hQ8KHs-kQotr2Wbkr8oy9JdNWhQAHEL6X5HPk7bSHUW-nLQ1tlo4cOklwSBHD0BddoX1eOlWfJ/pub?gid=0&single=true&output=csv";
+            let resposta = await fetch(link);
+            let texto = await resposta.text();
             let linhas = texto.split('\n');
-            let num = linhas[1].split(',')[0];
+            let valor = linhas[1].split(',')[0];
             
-            let el = document.getElementById("display-pedidos");
-            el.innerText = "PEDIDOS: " + num;
+            let caixa = document.getElementById("painel");
+            caixa.innerText = "PEDIDOS: " + valor;
             
-            if (parseInt(num) > 0) {
-                el.style.color = "red";
-                el.style.animation = "piscar 1s infinite";
+            if (parseInt(valor) > 0) {
+                caixa.style.color = "red";
+                caixa.style.animation = "piscar 1s infinite";
             } else {
-                el.style.color = "black";
-                el.style.animation = "none";
+                caixa.style.color = "black";
+                caixa.style.animation = "none";
             }
-        } catch(e) {
-            console.log("Erro ao carregar");
+        } catch(erro) {
+            console.log("Aguardando...");
         }
     }
-    setInterval(checar, 3000);
-    checar();
+    
+    setInterval(rodar, 3000);
+    rodar();
 </script>
 
 <style>
