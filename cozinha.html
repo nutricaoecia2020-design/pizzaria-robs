@@ -1,0 +1,40 @@
+<div id="display-pedidos" style="font-size: 40px; text-align: center; margin: 20px; padding: 20px; border: 2px solid #ccc;">
+    CARREGANDO PEDIDOS...
+</div>
+
+<style>
+    .piscar { animation: piscar 1s linear infinite; color: red; font-weight: bold; border-color: red !important; }
+    @keyframes piscar { 50% { opacity: 0; } }
+</style>
+
+<script>
+async function buscarContador() {
+    try {
+        // Link copiado da sua planilha publicada
+        const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbd2hQ8KHs-kQotr2Wbkr8oy9JdNWhQAHEL6X5HPk7bSHUW-nLQ1tlo4cOklwSBHD0BddoX1eOlWfJ/pub?gid=0&single=true&output=csv";
+        
+        const resposta = await fetch(url);
+        const csv = await resposta.text();
+        const linhas = csv.split('\n');
+        
+        // A célula A2 está na segunda linha (índice 1)
+        const contador = linhas[1].split(',')[0]; 
+        
+        const display = document.getElementById("display-pedidos");
+        display.innerText = "PEDIDOS RECEBIDOS: " + contador;
+        
+        // Se for maior que 0, adiciona a classe para piscar
+        if (parseInt(contador) > 0) {
+            display.classList.add("piscar");
+        } else {
+            display.classList.remove("piscar");
+        }
+    } catch (e) {
+        console.error("Erro ao ler pedidos:", e);
+    }
+}
+
+// Atualiza a cada 5 segundos
+setInterval(buscarContador, 5000);
+buscarContador(); // Chama uma vez logo ao carregar
+</script>
